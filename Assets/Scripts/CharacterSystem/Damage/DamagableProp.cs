@@ -36,17 +36,28 @@ public class DamagableProp :
     public float Stunlock { get => 0; set { return; } }
 
 
-    public void SendDamage(Damage damage)
+    public virtual void SendDamage(Damage damage)
     {
-        if (Undestroyable) return;
-
-        OnGetDamage.Invoke(damage.Value);
-
         Health -= damage.Value;
 
-        if (Health <= 0)
+        if (Health <= 0 && IsServer)
         {
-            Destroy();
+            NetworkObject.Despawn(false);
+        }
+
+        var VecrtorToTarget = damage.Sender.transform.position - transform.position;
+        VecrtorToTarget.Normalize();
+        
+        if (OnHitEffect != null)
+        {
+            OnHitEffect.SetVector3("Direction", VecrtorToTarget * damage.PushForce);
+
+            OnHitEffect.Play();
+        }
+
+        if (TryGetComponent<Rigidbody>(out var rigidbody))
+        {
+            rigidbody.AddForce(VecrtorToTarget * damage.PushForce);
         }
     }
 

@@ -79,6 +79,30 @@ public class NetworkCharacter :
         rigidbody.AddForce(transform.forward * force);
     }
 
+    public virtual void SendDamage(Damage damage)
+    {
+        Health -= damage.Value;
+
+        if (Health <= 0 && IsServer)
+        {
+            Dead_ClientRpc();
+
+            NetworkObject.Despawn(false);
+        }
+
+        var VecrtorToTarget = damage.Sender.transform.position - transform.position;
+        VecrtorToTarget.Normalize();
+        
+        if (OnHitEffect != null)
+        {
+            OnHitEffect.SetVector3("Direction", VecrtorToTarget * damage.PushForce);
+
+            OnHitEffect.Play();
+        }
+          
+        rigidbody.AddForce(VecrtorToTarget * damage.PushForce);
+    }
+
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
@@ -214,16 +238,5 @@ public class NetworkCharacter :
         Dead();
     }
 
-    public void SendDamage(Damage damage)
-    {
-        Health -= damage.Value;
-        Debug.Log(damage);
 
-        if (Health <= 0 && IsServer)
-        {
-            Dead_ClientRpc();
-
-            NetworkObject.Despawn(false);
-        }
-    }
 }

@@ -81,11 +81,12 @@ public class ColliderCastAttackOrigin : AttackOrigin
     {
         foreach (var cast in casters)
         {
-            var damage = new Damage();
-            damage.Value = cast.Damage * Multiplayer;
-
             foreach (var collider in cast.CastCollider(transform))
             {
+                var damage = cast.damage;
+                damage *= Multiplayer;
+                damage.Sender = Reciever;
+
                 var VecrtorToTarget = collider.transform.position - transform.position;
 
                 if (impulseSource != null)
@@ -96,35 +97,18 @@ public class ColliderCastAttackOrigin : AttackOrigin
                 if (collider.gameObject.TryGetComponent<IDamagable>(out var damagable))
                 {
                     damagable.SendDamage(damage);
-                    damagable.Stunlock = Mathf.Max(damagable.Stunlock, damage.Value / 50);
-                    
-                    VisualEffect effect = damagable.OnHitEffect;
-
-                    if (effect != null)
-                    {
-                        effect.SetVector3("Direction", VecrtorToTarget * 3);
-
-                        effect.Play();
-                    }
                 }
-
-                if (collider.gameObject.TryGetComponent<Rigidbody>(out var rigidbody))
-                {                   
-                    rigidbody.AddForce(VecrtorToTarget.normalized * cast.PushForce * Multiplayer);
-                }
-
             }
         }
-
-        OnAttackEvent.Invoke();
     }
 
 
     [Serializable]
     public abstract class Caster 
     {
-        public float Damage = 10;
-        public float PushForce = 100;
+        public Damage damage;
+        
+
 
         public abstract Collider[] CastCollider(Transform transform);
         public abstract void CastColliderGizmos(Transform transform);

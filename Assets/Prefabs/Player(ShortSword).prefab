@@ -131,6 +131,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inputAction: {fileID: 2243838571553120747, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   _IsPerforming: 1
+  Reciever: {fileID: 1769513124016902838}
   BeforeAttackDelay: 0.1
   AfterAttackDelay: 0.2
   casters:
@@ -225,16 +226,22 @@ MonoBehaviour:
     - rid: 5300107413289173336
       type: {class: ColliderCastAttackOrigin/BoxCaster, ns: , asm: CharacterSystem}
       data:
-        Damage: 30
-        PushForce: 100
+        damage:
+          Value: 30
+          Sender: {fileID: 0}
+          Stunlock: 1
+          PushForce: 150
         position: {x: 0, y: 0, z: 1.66}
         size: {x: 1, y: 0.37, z: 0.57}
         angle: {x: 0, y: 0, z: 0}
     - rid: 5300107413289173339
       type: {class: ColliderCastAttackOrigin/BoxCaster, ns: , asm: CharacterSystem}
       data:
-        Damage: 10
-        PushForce: 70
+        damage:
+          Value: 30
+          Sender: {fileID: 0}
+          Stunlock: 1
+          PushForce: 150
         position: {x: -1.33, y: 0, z: 1.02}
         size: {x: 0.28, y: 1, z: 0.37}
         angle: {x: 0, y: -50, z: 90}
@@ -405,6 +412,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inputAction: {fileID: 2243838571553120747, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   _IsPerforming: 0
+  Reciever: {fileID: 1769513124016902838}
   BeforeAttackDelay: 0.1
   AfterAttackDelay: 0.2
   casters:
@@ -499,16 +507,22 @@ MonoBehaviour:
     - rid: 5300107413289173335
       type: {class: ColliderCastAttackOrigin/BoxCaster, ns: , asm: CharacterSystem}
       data:
-        Damage: 30
-        PushForce: 100
+        damage:
+          Value: 30
+          Sender: {fileID: 0}
+          Stunlock: 1
+          PushForce: 150
         position: {x: 0, y: 0, z: 1.66}
         size: {x: 1, y: 0.37, z: 0.57}
         angle: {x: 0, y: 0, z: 0}
     - rid: 5300107413289173338
       type: {class: ColliderCastAttackOrigin/BoxCaster, ns: , asm: CharacterSystem}
       data:
-        Damage: 10
-        PushForce: 70
+        damage:
+          Value: 30
+          Sender: {fileID: 0}
+          Stunlock: 1
+          PushForce: 150
         position: {x: -1.33, y: 0, z: 1.02}
         size: {x: 0.28, y: 1, z: 0.37}
         angle: {x: 0, y: 50, z: 90}

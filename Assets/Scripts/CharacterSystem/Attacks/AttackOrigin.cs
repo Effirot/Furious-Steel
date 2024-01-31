@@ -14,7 +14,7 @@ public abstract class AttackOrigin : NetworkBehaviour
     private bool _IsPerforming = true;
 
     [SerializeField]
-    public PlayerNetworkCharacter Player = null;
+    public NetworkCharacter Reciever = null;
 
 
     public bool IsPerforming { 
