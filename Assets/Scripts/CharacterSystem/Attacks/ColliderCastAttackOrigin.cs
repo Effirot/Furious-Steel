@@ -9,7 +9,8 @@ using UnityEngine.VFX;
 
 public class ColliderCastAttackOrigin : AttackOrigin
 {
-
+    [Space]
+    [Header("Delay")]
     [SerializeField, Range(0, 10)]
     public float BeforeAttackDelay;
 
@@ -19,9 +20,16 @@ public class ColliderCastAttackOrigin : AttackOrigin
     [SerializeField, SerializeReference, SubclassSelector]
     protected Caster[] casters;
 
+    [Space]
+    [Header("Impulse")]
+    [SerializeField, Range(0, 5)]
+    private float impulseForce = 0.01f;
+
     [SerializeField]
     private CinemachineImpulseSource impulseSource;
 
+    [Space]
+    [Header("Events")]
     [SerializeField]
     public UnityEvent OnStartAttackEvent = new();
 
@@ -34,18 +42,14 @@ public class ColliderCastAttackOrigin : AttackOrigin
 
     protected override IEnumerator AttackProcessRoutine()
     {
-        Debug.Log("Start");
-
         OnStartAttackEvent.Invoke();
         yield return new WaitForSeconds(BeforeAttackDelay);
 
-        Attack();
+        ExecuteCasters();
         OnAttackEvent.Invoke();
 
         yield return new WaitForSeconds(AfterAttackDelay);
         OnEndAttackEvent.Invoke();
-
-        Debug.Log("End");
 
         EndAttack();
     }
@@ -86,7 +90,7 @@ public class ColliderCastAttackOrigin : AttackOrigin
 
                 if (impulseSource != null)
                 {
-                    impulseSource.GenerateImpulse(VecrtorToTarget * damage.Value / 90);
+                    impulseSource.GenerateImpulse(VecrtorToTarget * damage.Value * impulseForce);
                 }
 
                 if (collider.gameObject.TryGetComponent<IDamagable>(out var damagable))

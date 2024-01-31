@@ -10,6 +10,9 @@ public class DamagableProp :
     IDamagable
 {
     [SerializeField]
+    private bool Undestroyable = false;
+
+    [SerializeField]
     private NetworkVariable<float> network_Health = new (100, NetworkVariableReadPermission.Owner, NetworkVariableWritePermission.Server);
 
     [field : SerializeField]
@@ -35,6 +38,8 @@ public class DamagableProp :
 
     public void SendDamage(Damage damage)
     {
+        if (Undestroyable) return;
+
         OnGetDamage.Invoke(damage.Value);
 
         Health -= damage.Value;

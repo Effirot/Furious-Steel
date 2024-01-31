@@ -10,6 +10,13 @@ public abstract class AttackOrigin : NetworkBehaviour
     [SerializeField]
     private InputActionReference inputAction;
 
+    [SerializeField]
+    private bool _IsPerforming = true;
+
+    [SerializeField]
+    public PlayerNetworkCharacter Player = null;
+
+
     public bool IsPerforming { 
         get => _IsPerforming; 
         set 
@@ -42,15 +49,12 @@ public abstract class AttackOrigin : NetworkBehaviour
         set => network_isPressed.Value = value;
     }
 
-    [SerializeField]
-    private bool _IsPerforming = true;
-
     private Coroutine attackProcess = null;
 
     private NetworkVariable<bool> network_isPressed = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
     
-    public void Attack()
+    public void StartAttack()
     {
         if (attackProcess == null)
         {
@@ -75,7 +79,7 @@ public abstract class AttackOrigin : NetworkBehaviour
     {
         if (NewValue && UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject  == null)
         {
-            Attack();
+            StartAttack();
         }
     }
 
