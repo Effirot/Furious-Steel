@@ -14,25 +14,22 @@ public class NetworkCharacter :
     NetworkBehaviour,
     IDamagable
 {
-    // [RuntimeInitializeOnLoadMethod]
-    // private static void A()
-    // {
-    //     Application.targetFrameRate = 60;
-    // }
-
     new public Rigidbody rigidbody { get; private set; }
 
     [field : SerializeField]
-    public virtual float Speed { get; set; }
+    public virtual float Speed { get; set; } = 5;
 
     [field : SerializeField]
-    public virtual bool StunlockProtection { get; set; }
+    public virtual bool IsMoving { get; set; } = true;
 
     [field : SerializeField]
-    public VisualEffect OnHitEffect { get; private set; }
+    public virtual bool StunlockProtection { get; set; } = false;
+
+    [field : SerializeField]
+    public VisualEffect OnHitEffect { get; private set; } = null;
     
     [field : SerializeField]
-    public VisualEffect StulockEffect { get; private set; }
+    public VisualEffect StulockEffect { get; private set; } = null;
 
     [field : SerializeField]
     private float MaxHealth = 100;
@@ -76,6 +73,11 @@ public class NetworkCharacter :
             network_movementVector.Value = vector.normalized;
         }
     } 
+
+    public void PushForward(float force)
+    {
+        rigidbody.AddForce(transform.forward * force);
+    }
 
     public override void OnNetworkSpawn()
     {
@@ -134,22 +136,28 @@ public class NetworkCharacter :
 
     private void CalculateMovement()
     {
-        rigidbody.velocity = Vector3.Lerp(
-            rigidbody.velocity, 
-            new Vector3(
-                MovementVector.x * Speed, 
-                rigidbody.velocity.y, 
-                MovementVector.y * Speed), 
-            0.2f
-        );
+        if (IsMoving)
+        {
+            rigidbody.velocity = Vector3.Lerp(
+                rigidbody.velocity, 
+                new Vector3(
+                    MovementVector.x * Speed, 
+                    rigidbody.velocity.y, 
+                    MovementVector.y * Speed), 
+                0.2f
+            );
+        }
     }
     private void RotateCharacter()
     {
-        var lookVector = new Vector3 (MovementVector.x, 0, MovementVector.y);
-
-        if (lookVector.magnitude > 0.1f)
+        if (IsMoving)
         {
-            rigidbody.rotation = Quaternion.Lerp(rigidbody.rotation, Quaternion.LookRotation(lookVector), 0.2f);
+            var lookVector = new Vector3 (MovementVector.x, 0, MovementVector.y);
+
+            if (lookVector.magnitude > 0.1f)
+            {
+                rigidbody.rotation = Quaternion.Lerp(rigidbody.rotation, Quaternion.LookRotation(lookVector), 0.4f);
+            }
         }
     }
     private void InterpolateToServerPosition()

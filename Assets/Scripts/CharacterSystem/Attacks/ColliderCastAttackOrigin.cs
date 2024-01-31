@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Cinemachine;
 using UnityEngine;
 using UnityEngine.Events;
@@ -33,6 +34,8 @@ public class ColliderCastAttackOrigin : AttackOrigin
 
     protected override IEnumerator AttackProcessRoutine()
     {
+        Debug.Log("Start");
+
         OnStartAttackEvent.Invoke();
         yield return new WaitForSeconds(BeforeAttackDelay);
 
@@ -41,6 +44,8 @@ public class ColliderCastAttackOrigin : AttackOrigin
 
         yield return new WaitForSeconds(AfterAttackDelay);
         OnEndAttackEvent.Invoke();
+
+        Debug.Log("End");
 
         EndAttack();
     }
@@ -51,7 +56,19 @@ public class ColliderCastAttackOrigin : AttackOrigin
         {
             foreach(var caster in casters)
             {
-                caster?.CastColliderGizmos(transform);
+                if (caster != null)
+                {
+                    if (caster.CastCollider(transform).Any())
+                    {
+                        Gizmos.color = Color.red;
+                    }
+                    else
+                    {   
+                        Gizmos.color = Color.yellow;
+                    }
+
+                    caster.CastColliderGizmos(transform);
+                }
             }
         }
     }
@@ -102,8 +119,8 @@ public class ColliderCastAttackOrigin : AttackOrigin
     [Serializable]
     public abstract class Caster 
     {
-        public float Damage;
-        public float PushForce;
+        public float Damage = 10;
+        public float PushForce = 100;
 
         public abstract Collider[] CastCollider(Transform transform);
         public abstract void CastColliderGizmos(Transform transform);
@@ -112,9 +129,9 @@ public class ColliderCastAttackOrigin : AttackOrigin
     [Serializable]
     public class BoxCaster : Caster
     {
-        public Vector3 position;
-        public Vector3 size;
-        public Vector3 angle;
+        public Vector3 position = Vector3.zero;
+        public Vector3 size = Vector3.one;
+        public Vector3 angle = Vector3.zero;
 
         public override Collider[] CastCollider(Transform transform)
         {
@@ -132,7 +149,7 @@ public class ColliderCastAttackOrigin : AttackOrigin
     public class SphereCaster : Caster
     {
         public Vector3 position;
-        public float radius;
+        public float radius = 1;
 
         public override Collider[] CastCollider(Transform transform)
         {
@@ -146,4 +163,29 @@ public class ColliderCastAttackOrigin : AttackOrigin
             Gizmos.DrawWireSphere(Vector3.zero, radius);
         }
     }
+    [Serializable]
+    public class RaycastCaster : Caster
+    {
+        public Vector3 origin;
+        public Vector3 direction;
+        public float maxDistance;
+
+        public override Collider[] CastCollider(Transform transform)
+        {
+            if (Physics.Raycast((transform.rotation * origin) + transform.position, transform.rotation * direction, out var hit, maxDistance))
+            {
+                return new Collider[] { hit.collider };
+            }
+            else
+            {
+                return new Collider[0];
+            }
+        }
+
+        public override void CastColliderGizmos(Transform transform)
+        {
+            Gizmos.DrawRay((transform.rotation * origin) + transform.position, (transform.rotation * direction.normalized) * maxDistance);
+        }
+    }
+
 }

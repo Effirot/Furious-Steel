@@ -144,12 +144,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3032335676155191540}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 1, w: 0}
-  m_LocalPosition: {x: 0, y: 0.23, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: 1, w: 0}
+  m_LocalPosition: {x: 0.87021214, y: -0.9926369, z: -1.4909035}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1288931942115344864}
+  m_Father: {fileID: 4826080782350224500}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 180}
 --- !u!2083052967 &8969161782971985061
 VisualEffect:
@@ -259,7 +259,19 @@ MonoBehaviour:
   impulseSource: {fileID: 2882146555197406475}
   OnStartAttackEvent:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 5804015679080351171}
+        m_TargetAssemblyTypeName: NetworkCharacter, CharacterSystem
+        m_MethodName: set_IsMoving
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   OnAttackEvent:
     m_PersistentCalls:
       m_Calls:
@@ -275,9 +287,33 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 5804015679080351171}
+        m_TargetAssemblyTypeName: NetworkCharacter, CharacterSystem
+        m_MethodName: PushForward
+        m_Mode: 4
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 200
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   OnEndAttackEvent:
     m_PersistentCalls:
       m_Calls:
+      - m_Target: {fileID: 5804015679080351171}
+        m_TargetAssemblyTypeName: NetworkCharacter, CharacterSystem
+        m_MethodName: set_IsMoving
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
       - m_Target: {fileID: 5358639741464668191}
         m_TargetAssemblyTypeName: AttackOrigin, CharacterSystem
         m_MethodName: set_IsPerforming
@@ -349,11 +385,11 @@ Transform:
   m_GameObject: {fileID: 3418843053462479471}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.23, z: 0}
+  m_LocalPosition: {x: 0.87021214, y: -0.9926369, z: -1.4909035}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1288931942115344864}
+  m_Father: {fileID: 4826080782350224500}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!2083052967 &294268214321093526
 VisualEffect:
@@ -460,7 +496,19 @@ MonoBehaviour:
   impulseSource: {fileID: 2882146555197406475}
   OnStartAttackEvent:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 5804015679080351171}
+        m_TargetAssemblyTypeName: NetworkCharacter, CharacterSystem
+        m_MethodName: set_IsMoving
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   OnAttackEvent:
     m_PersistentCalls:
       m_Calls:
@@ -476,9 +524,33 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 5804015679080351171}
+        m_TargetAssemblyTypeName: NetworkCharacter, CharacterSystem
+        m_MethodName: PushForward
+        m_Mode: 4
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 200
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   OnEndAttackEvent:
     m_PersistentCalls:
       m_Calls:
+      - m_Target: {fileID: 5804015679080351171}
+        m_TargetAssemblyTypeName: NetworkCharacter, CharacterSystem
+        m_MethodName: set_IsMoving
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
       - m_Target: {fileID: 2162986441881022586}
         m_TargetAssemblyTypeName: AttackOrigin, CharacterSystem
         m_MethodName: set_IsPerforming
@@ -522,6 +594,40 @@ MonoBehaviour:
         position: {x: -1.33, y: 0, z: 1.02}
         size: {x: 0.28, y: 1, z: 0.37}
         angle: {x: 0, y: -50, z: 90}
+--- !u!1 &4899340080851929698
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4826080782350224500}
+  m_Layer: 6
+  m_Name: SwordWeapon
+  m_TagString: Weapon
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4826080782350224500
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4899340080851929698}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.87021214, y: 1.2226369, z: 1.4909035}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 65540025097670814}
+  - {fileID: 5317572481283142448}
+  - {fileID: 3285434590755086695}
+  m_Father: {fileID: 1288931942115344864}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5531747597064851384
 GameObject:
   m_ObjectHideFlags: 0
@@ -729,10 +835,8 @@ Transform:
   m_Children:
   - {fileID: 76381107486062636}
   - {fileID: 27375010714119427}
-  - {fileID: 65540025097670814}
-  - {fileID: 5317572481283142448}
-  - {fileID: 3285434590755086695}
   - {fileID: 5408229129947063215}
+  - {fileID: 4826080782350224500}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &2121179658645009559
@@ -870,6 +974,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <Speed>k__BackingField: 5
+  <IsMoving>k__BackingField: 1
   <StunlockProtection>k__BackingField: 0
   <OnHitEffect>k__BackingField: {fileID: 0}
   <StulockEffect>k__BackingField: {fileID: 0}
@@ -905,12 +1010,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8511394144810436813}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0.23, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: 0.7071068, w: 0.7071068}
+  m_LocalPosition: {x: 0.87021214, y: -0.9926369, z: -1.4909035}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1288931942115344864}
+  m_Father: {fileID: 4826080782350224500}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
 --- !u!2083052967 &8106247688543916528
 VisualEffect:
@@ -1019,7 +1124,19 @@ MonoBehaviour:
   impulseSource: {fileID: 2882146555197406475}
   OnStartAttackEvent:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 5804015679080351171}
+        m_TargetAssemblyTypeName: NetworkCharacter, CharacterSystem
+        m_MethodName: set_IsMoving
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   OnAttackEvent:
     m_PersistentCalls:
       m_Calls:
@@ -1034,6 +1151,30 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 5804015679080351171}
+        m_TargetAssemblyTypeName: NetworkCharacter, CharacterSystem
+        m_MethodName: PushForward
+        m_Mode: 4
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 400
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 5804015679080351171}
+        m_TargetAssemblyTypeName: NetworkCharacter, CharacterSystem
+        m_MethodName: set_IsMoving
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
         m_CallState: 2
   OnEndAttackEvent:
     m_PersistentCalls:

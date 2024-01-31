@@ -26,7 +26,10 @@ public abstract class AttackOrigin : NetworkBehaviour
                 {
                     IsPressed = false;
 
-                    EndAttack();
+                    if (IsAttacking)
+                    {
+                        EndAttack();
+                    }
                 }
             }
         } 
@@ -70,7 +73,7 @@ public abstract class AttackOrigin : NetworkBehaviour
 
     protected virtual void OnPressStateChanged(bool OldValue, bool NewValue)
     {
-        if (NewValue)
+        if (NewValue && UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject  == null)
         {
             Attack();
         }
