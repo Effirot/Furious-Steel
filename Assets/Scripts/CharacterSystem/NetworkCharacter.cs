@@ -34,6 +34,9 @@ public class NetworkCharacter :
     [field : SerializeField]
     private float MaxHealth = 100;
 
+    [SerializeField]
+    private UnityEvent<float> OnHealthChanged = new();
+
     public float Health { 
         get => network_health.Value; 
         set { 
@@ -44,12 +47,10 @@ public class NetworkCharacter :
         } 
     }
 
-    [SerializeField]
-    private UnityEvent<float> OnHealthChanged = new();
-
     public Vector2 MovementVector => network_movementVector.Value;
     
     public bool IsStunned => Stunlock > 0;
+
     public float Stunlock {
         get => network_stunlock.Value;
         set 
@@ -66,7 +67,6 @@ public class NetworkCharacter :
     private NetworkVariable<Vector3> network_position = new NetworkVariable<Vector3>(Vector3.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);    
     private NetworkVariable<Vector2> network_movementVector = new NetworkVariable<Vector2>(Vector2.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
-
     protected void SetMovementVector(Vector2 vector)
     {
         if (IsOwner)
@@ -79,7 +79,7 @@ public class NetworkCharacter :
     {
         Health -= damage.Value;
 
-        if (Health <= 0 && IsServer)
+        if (Health <= 0 && IsServer && IsSpawned)
         {
             Dead_ClientRpc();
 
@@ -91,7 +91,10 @@ public class NetworkCharacter :
         
         if (OnHitEffect != null)
         {
-            OnHitEffect.SetVector3("Direction", VecrtorToTarget * damage.PushForce);
+            if (OnHitEffect.HasVector3("Direction"))
+            {
+                OnHitEffect.SetVector3("Direction", VecrtorToTarget * damage.PushForce);
+            }
 
             OnHitEffect.Play();
         }
@@ -192,7 +195,7 @@ public class NetworkCharacter :
             }
             else
             {
-                GetComponent<Rigidbody>().position = Vector3.Lerp(rigidbody.position, network_position.Value, 0.3f);
+                GetComponent<Rigidbody>().position = Vector3.Lerp(rigidbody.position, network_position.Value, 0.15f);
             }
         }
     }
@@ -233,7 +236,11 @@ public class NetworkCharacter :
     [ClientRpc]
     private void Dead_ClientRpc()
     {
+        StopAllCoroutines();
+        
         Dead();
+
+        gameObject.layer = LayerMask.NameToLayer("Untouchable");
     }
 
 
