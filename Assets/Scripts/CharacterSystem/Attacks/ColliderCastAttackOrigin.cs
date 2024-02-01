@@ -9,13 +9,22 @@ using UnityEngine.VFX;
 
 public class ColliderCastAttackOrigin : AttackOrigin
 {
+    [SerializeField]
+    private Vector3 RecieverPushDirection = Vector3.forward * 5;
+
     [Space]
-    [Header("Delay")]
+    [Header("Attack")]
     [SerializeField, Range(0, 10)]
     public float BeforeAttackDelay;
 
+    [SerializeField]
+    private bool DisableMovingBeforeAttack = true;
+
     [SerializeField, Range(0, 10)]
     public float AfterAttackDelay;
+
+    [SerializeField]
+    private bool DisableMovingAfterAttack = true;
 
     [SerializeField, SerializeReference, SubclassSelector]
     protected Caster[] casters;
@@ -42,20 +51,30 @@ public class ColliderCastAttackOrigin : AttackOrigin
 
     protected override IEnumerator AttackProcessRoutine()
     {
+        Reciever.IsMoving = !DisableMovingBeforeAttack;
+
         OnStartAttackEvent.Invoke();
         yield return new WaitForSeconds(BeforeAttackDelay);
 
-        ExecuteCasters();
+        Execute();
         OnAttackEvent.Invoke();
 
+        Reciever.IsMoving = !DisableMovingAfterAttack;
         yield return new WaitForSeconds(AfterAttackDelay);
         OnEndAttackEvent.Invoke();
+
+        Reciever.IsMoving = true;
 
         EndAttack();
     }
 
     private void OnDrawGizmosSelected()
     {
+        if (Reciever != null)
+        {
+            DrawArrow(Reciever.transform.position, RecieverPushDirection, Color.cyan);
+        }
+
         if (casters != null)
         {
             foreach(var caster in casters)
@@ -77,8 +96,24 @@ public class ColliderCastAttackOrigin : AttackOrigin
         }
     }
 
-    protected void ExecuteCasters(float Multiplayer = 1)
+    public static void DrawArrow(Vector3 pos, Vector3 direction, Color color, float arrowHeadLength = 0.25f, float arrowHeadAngle = 20.0f)
     {
+        Gizmos.color = color;
+        Gizmos.DrawRay(pos, direction);
+       
+        Vector3 right = Quaternion.LookRotation(direction) * Quaternion.Euler(0,180+arrowHeadAngle,0) * new Vector3(0,0,1);
+        Vector3 left = Quaternion.LookRotation(direction) * Quaternion.Euler(0,180-arrowHeadAngle,0) * new Vector3(0,0,1);
+        Gizmos.DrawRay(pos + direction, right * arrowHeadLength);
+        Gizmos.DrawRay(pos + direction, left * arrowHeadLength);
+    }
+ 
+
+    protected void Execute(float Multiplayer = 1)
+    {
+        if (Reciever.IsStunned) return;
+
+        Reciever?.rigidbody?.AddForce(Reciever.transform.rotation * RecieverPushDirection * 200);
+
         foreach (var cast in casters)
         {
             foreach (var collider in cast.CastCollider(transform))
@@ -107,8 +142,6 @@ public class ColliderCastAttackOrigin : AttackOrigin
     public abstract class Caster 
     {
         public Damage damage;
-        
-
 
         public abstract Collider[] CastCollider(Transform transform);
         public abstract void CastColliderGizmos(Transform transform);

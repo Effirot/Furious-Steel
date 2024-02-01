@@ -49,6 +49,7 @@ public class NetworkCharacter :
 
     public Vector2 MovementVector => network_movementVector.Value;
     
+    public bool IsStunned => Stunlock > 0;
     public float Stunlock {
         get => network_stunlock.Value;
         set 
@@ -72,11 +73,6 @@ public class NetworkCharacter :
         {
             network_movementVector.Value = vector.normalized;
         }
-    } 
-
-    public void PushForward(float force)
-    {
-        rigidbody.AddForce(transform.forward * force);
     }
 
     public virtual void SendDamage(Damage damage)
@@ -90,7 +86,7 @@ public class NetworkCharacter :
             NetworkObject.Despawn(false);
         }
 
-        var VecrtorToTarget = damage.Sender.transform.position - transform.position;
+        var VecrtorToTarget = transform.position - damage.Sender.transform.position;
         VecrtorToTarget.Normalize();
         
         if (OnHitEffect != null)
@@ -118,6 +114,8 @@ public class NetworkCharacter :
     public override void OnNetworkDespawn()
     {
         base.OnNetworkDespawn();
+
+        StopAllCoroutines();
 
         SwitchOffRigidbodyConstraints();
     }
@@ -207,7 +205,7 @@ public class NetworkCharacter :
 
             if (StulockEffect != null)
             {
-                if (Stunlock > 0)
+                if (IsStunned)
                 {
                     StulockEffect.Play();
                 }

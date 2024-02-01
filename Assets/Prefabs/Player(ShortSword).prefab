@@ -27,8 +27,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2035339157865001977}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: -0.21643952, w: 0.97629607}
-  m_LocalPosition: {x: 0.87021214, y: -0.9926369, z: -1.4909035}
+  m_LocalRotation: {x: -0, y: -0, z: -0.21643952, w: 0.97629607}
+  m_LocalPosition: {x: 0, y: 0.23000002, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -42,7 +42,7 @@ VisualEffect:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2035339157865001977}
   m_Enabled: 1
-  m_Asset: {fileID: 8926484042661614526, guid: 9848a1cdeb4d7c0469b94c2ad7f5f27f, type: 3}
+  m_Asset: {fileID: 8926484042661614526, guid: 2fd2f69822791f348a9cdc271110e1d9, type: 3}
   m_InitialEventName: 
   m_InitialEventNameOverriden: 1
   m_StartSeed: 0
@@ -132,8 +132,11 @@ MonoBehaviour:
   inputAction: {fileID: 2243838571553120747, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   _IsPerforming: 1
   Reciever: {fileID: 1769513124016902838}
+  RecieverPushDirection: {x: 0, y: 0, z: 2}
   BeforeAttackDelay: 0.1
+  DisableMovingBeforeAttack: 1
   AfterAttackDelay: 0.2
+  DisableMovingAfterAttack: 1
   casters:
   - rid: 5300107413289173336
   - rid: 5300107413289173339
@@ -141,19 +144,7 @@ MonoBehaviour:
   impulseSource: {fileID: 8069854907343219326}
   OnStartAttackEvent:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1769513124016902838}
-        m_TargetAssemblyTypeName: NetworkCharacter, CharacterSystem
-        m_MethodName: set_IsMoving
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   OnAttackEvent:
     m_PersistentCalls:
       m_Calls:
@@ -169,33 +160,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 1769513124016902838}
-        m_TargetAssemblyTypeName: NetworkCharacter, CharacterSystem
-        m_MethodName: PushForward
-        m_Mode: 4
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 200
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
   OnEndAttackEvent:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1769513124016902838}
-        m_TargetAssemblyTypeName: NetworkCharacter, CharacterSystem
-        m_MethodName: set_IsMoving
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
       - m_Target: {fileID: 1959137025283990398}
         m_TargetAssemblyTypeName: AttackOrigin, CharacterSystem
         m_MethodName: set_IsPerforming
@@ -230,7 +197,7 @@ MonoBehaviour:
           Value: 30
           Sender: {fileID: 0}
           Stunlock: 1
-          PushForce: 150
+          PushForce: 500
         position: {x: 0, y: 0, z: 1.66}
         size: {x: 1, y: 0.37, z: 0.57}
         angle: {x: 0, y: 0, z: 0}
@@ -241,7 +208,7 @@ MonoBehaviour:
           Value: 30
           Sender: {fileID: 0}
           Stunlock: 1
-          PushForce: 150
+          PushForce: 500
         position: {x: -1.33, y: 0, z: 1.02}
         size: {x: 0.28, y: 1, z: 0.37}
         angle: {x: 0, y: -50, z: 90}
@@ -270,7 +237,7 @@ Transform:
   m_GameObject: {fileID: 5233896359722885561}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.87021214, y: 1.2226369, z: 1.4909035}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -305,8 +272,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6313514907697953945}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0, z: 0.976296, w: -0.21643949}
-  m_LocalPosition: {x: 0.87021214, y: -0.9926369, z: -1.4909035}
+  m_LocalRotation: {x: -0, y: -0, z: 0.97629607, w: -0.2164395}
+  m_LocalPosition: {x: 0, y: 0.23000002, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -320,7 +287,7 @@ VisualEffect:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6313514907697953945}
   m_Enabled: 1
-  m_Asset: {fileID: 8926484042661614526, guid: 9848a1cdeb4d7c0469b94c2ad7f5f27f, type: 3}
+  m_Asset: {fileID: 8926484042661614526, guid: 2fd2f69822791f348a9cdc271110e1d9, type: 3}
   m_InitialEventName: 
   m_InitialEventNameOverriden: 1
   m_StartSeed: 0
@@ -413,8 +380,11 @@ MonoBehaviour:
   inputAction: {fileID: 2243838571553120747, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   _IsPerforming: 0
   Reciever: {fileID: 1769513124016902838}
+  RecieverPushDirection: {x: 0, y: 0, z: 2}
   BeforeAttackDelay: 0.1
+  DisableMovingBeforeAttack: 1
   AfterAttackDelay: 0.2
+  DisableMovingAfterAttack: 1
   casters:
   - rid: 5300107413289173335
   - rid: 5300107413289173338
@@ -422,19 +392,7 @@ MonoBehaviour:
   impulseSource: {fileID: 8069854907343219326}
   OnStartAttackEvent:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1769513124016902838}
-        m_TargetAssemblyTypeName: NetworkCharacter, CharacterSystem
-        m_MethodName: set_IsMoving
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   OnAttackEvent:
     m_PersistentCalls:
       m_Calls:
@@ -450,33 +408,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 1769513124016902838}
-        m_TargetAssemblyTypeName: NetworkCharacter, CharacterSystem
-        m_MethodName: PushForward
-        m_Mode: 4
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 200
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
   OnEndAttackEvent:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1769513124016902838}
-        m_TargetAssemblyTypeName: NetworkCharacter, CharacterSystem
-        m_MethodName: set_IsMoving
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
       - m_Target: {fileID: 9173640893545387886}
         m_TargetAssemblyTypeName: AttackOrigin, CharacterSystem
         m_MethodName: set_IsPerforming
@@ -511,7 +445,7 @@ MonoBehaviour:
           Value: 30
           Sender: {fileID: 0}
           Stunlock: 1
-          PushForce: 150
+          PushForce: 500
         position: {x: 0, y: 0, z: 1.66}
         size: {x: 1, y: 0.37, z: 0.57}
         angle: {x: 0, y: 0, z: 0}
@@ -522,7 +456,7 @@ MonoBehaviour:
           Value: 30
           Sender: {fileID: 0}
           Stunlock: 1
-          PushForce: 150
+          PushForce: 500
         position: {x: -1.33, y: 0, z: 1.02}
         size: {x: 0.28, y: 1, z: 0.37}
         angle: {x: 0, y: 50, z: 90}

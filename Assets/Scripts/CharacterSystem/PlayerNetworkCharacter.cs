@@ -26,11 +26,6 @@ public class PlayerNetworkCharacter : NetworkCharacter
         }
     }
 
-    protected override void Awake()
-    {
-        base.Awake();
-    }
-
     private void LinkToMainCamera()
     {
         if (Camera.main.TryGetComponent<CinemachineVirtualCamera>(out var virtualCamera))

@@ -38,26 +38,32 @@ public class DamagableProp :
 
     public virtual void SendDamage(Damage damage)
     {
-        Health -= damage.Value;
-
-        if (Health <= 0 && IsServer)
+        if (!Undestroyable) 
         {
-            NetworkObject.Despawn(false);
-        }
+            Health -= damage.Value;
 
-        var VecrtorToTarget = damage.Sender.transform.position - transform.position;
-        VecrtorToTarget.Normalize();
+            if (Health <= 0 && IsServer)
+            {
+                NetworkObject.Despawn(false);
+            }
+        }
         
-        if (OnHitEffect != null)
-        {
-            OnHitEffect.SetVector3("Direction", VecrtorToTarget * damage.PushForce);
-
-            OnHitEffect.Play();
-        }
+        var VecrtorToTarget = transform.position - damage.Sender.transform.position;
+        VecrtorToTarget.Normalize();
 
         if (TryGetComponent<Rigidbody>(out var rigidbody))
         {
             rigidbody.AddForce(VecrtorToTarget * damage.PushForce);
+        }
+        
+        if (OnHitEffect != null)
+        {
+            if (OnHitEffect.HasVector3("Direction"))
+            {
+                OnHitEffect.SetVector3("Direction", VecrtorToTarget * damage.Value);
+            }
+
+            OnHitEffect.Play();
         }
     }
 

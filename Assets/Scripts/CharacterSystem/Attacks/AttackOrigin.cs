@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.TextCore.Text;
 using static UnityEngine.InputSystem.InputAction;
 
 public abstract class AttackOrigin : NetworkBehaviour
@@ -56,7 +57,7 @@ public abstract class AttackOrigin : NetworkBehaviour
     
     public void StartAttack()
     {
-        if (attackProcess == null)
+        if (attackProcess == null && IsPerforming)
         {
             attackProcess = StartCoroutine(AttackProcessRoutine());
         }

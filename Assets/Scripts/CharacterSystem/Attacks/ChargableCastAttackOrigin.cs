@@ -29,7 +29,7 @@ public class ChargableColliderCastAttackOrigin : ColliderCastAttackOrigin
                 }
             }
 
-            ExecuteCasters(charge / BeforeAttackDelay);
+            Execute(charge / BeforeAttackDelay);
             OnAttackEvent.Invoke();
 
             charge = 0;
