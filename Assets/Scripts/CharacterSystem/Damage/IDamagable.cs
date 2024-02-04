@@ -23,6 +23,7 @@ namespace CharacterSystem.DamageMath
     {
         public float Value;
 
+        [NonSerialized]
         public NetworkCharacter Sender;
 
         public float Stunlock;

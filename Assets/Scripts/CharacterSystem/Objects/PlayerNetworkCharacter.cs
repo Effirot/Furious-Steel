@@ -9,6 +9,9 @@ namespace CharacterSystem.Objects
 {
     public class PlayerNetworkCharacter : NetworkCharacter
     {
+        public static event OnCharacterStateChangedDelegate OnPlayerCharacterDead = delegate { };
+        public static event OnCharacterStateChangedDelegate OnPlayerCharacterSpawn = delegate { };
+
         [SerializeField]
         private InputActionReference moveInput;
 
@@ -24,16 +27,27 @@ namespace CharacterSystem.Objects
                 action.performed += OnMove;
                 action.canceled += OnMove;
 
-                LinkToMainCamera();
+                ObservCharacter();
             }
         }
 
-        private void LinkToMainCamera()
+        protected override void Dead()
         {
-            if (Camera.main.TryGetComponent<CinemachineVirtualCamera>(out var virtualCamera))
-            {
-                virtualCamera.Follow = transform;
-            }
+            base.Dead();
+
+            OnPlayerCharacterDead.Invoke(this);
+        }
+
+        protected override void Spawn()
+        {
+            base.Spawn();
+
+            OnPlayerCharacterSpawn.Invoke(this);
+        }
+
+        private void ObservCharacter()
+        {
+            CharacterUI.Singleton.observingCharacter = this;
         }
 
         private void OnMove(CallbackContext input)

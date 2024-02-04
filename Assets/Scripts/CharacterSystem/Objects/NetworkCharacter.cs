@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using CharacterSystem.Blocking;
 using CharacterSystem.DamageMath;
+using JetBrains.Annotations;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.AI;
@@ -22,9 +24,10 @@ namespace CharacterSystem.Objects
         
         public static event OnCharacterStateChangedDelegate OnCharacterDead = delegate { };
         public static event OnCharacterStateChangedDelegate OnCharacterSpawn = delegate { };
-        public static event OnCharacterSendDamageDelegate OnCharacterSendDamage = delegate { };
 
         new public Rigidbody rigidbody { get; private set; }
+
+        public Animator animator { get; private set; }
 
         [field : SerializeField]
         public virtual float Speed { get; set; } = 5;
@@ -42,16 +45,29 @@ namespace CharacterSystem.Objects
         public VisualEffect StulockEffect { get; private set; } = null;
 
         [field : SerializeField]
-        private float MaxHealth = 100;
+        public float MaxHealth = 300;
+
+
+        public DamageBlocker Blocker { get; set; } = null;
 
         [SerializeField]
-        private UnityEvent<float> OnHealthChanged = new();
+        public UnityEvent<Damage> OnHitEvent = new();
 
         public float Health { 
             get => network_health.Value; 
             set { 
                 if (IsServer)
                 {
+                    if (network_health.Value > value)
+                    {
+                        if (regenerationCoroutine != null)
+                        {
+                            StopCoroutine(regenerationCoroutine);
+                        }
+
+                        regenerationCoroutine = StartCoroutine(Regeneration());
+                    }
+
                     network_health.Value = value;
                 }
             } 
@@ -77,6 +93,9 @@ namespace CharacterSystem.Objects
         private NetworkVariable<Vector3> network_position = new NetworkVariable<Vector3>(Vector3.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);    
         private NetworkVariable<Vector2> network_movementVector = new NetworkVariable<Vector2>(Vector2.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
+        private Coroutine regenerationCoroutine;
+
+
         protected void SetMovementVector(Vector2 vector)
         {
             if (IsOwner)
@@ -87,7 +106,14 @@ namespace CharacterSystem.Objects
 
         public virtual void SendDamage(Damage damage)
         {
+
+            if (Blocker != null && Blocker.Block(ref damage))
+            {
+                return;
+            }
+
             Health -= damage.Value;
+            OnHitEvent.Invoke(damage);
 
             if (Health <= 0 && IsServer && IsSpawned)
             {
@@ -109,7 +135,10 @@ namespace CharacterSystem.Objects
                 OnHitEffect.Play();
             }
             
+            Stunlock = Mathf.Max(damage.Stunlock, Stunlock); 
+
             rigidbody.AddForce(VecrtorToTarget * damage.PushForce);
+
         }
 
         public override void OnNetworkSpawn()
@@ -118,9 +147,10 @@ namespace CharacterSystem.Objects
 
             if (IsServer)
             {
+                Health = MaxHealth;
+
                 StartCoroutine(StunlockReduceProcess());
 
-                network_health.OnValueChanged += (Old, New) => OnHealthChanged.Invoke(New);
                 network_position.Value = rigidbody.position;
             }
         }
@@ -136,12 +166,12 @@ namespace CharacterSystem.Objects
         protected virtual void Awake()
         {
             rigidbody = GetComponent<Rigidbody>();
+            animator = GetComponent<Animator>();
         }
         protected virtual void Start()
         {
             
         }
-
         protected virtual void Update()
         {
             
@@ -162,11 +192,11 @@ namespace CharacterSystem.Objects
 
         protected virtual void Dead()
         {
-
+            OnCharacterDead.Invoke(this);
         }
         protected virtual void Spawn()
         {
-
+            OnCharacterSpawn.Invoke(this);
         }
 
         private void CalculateMovement()
@@ -205,7 +235,7 @@ namespace CharacterSystem.Objects
                 }
                 else
                 {
-                    rigidbody.position = Vector3.Lerp(rigidbody.position, network_position.Value, 0.08f);
+                    rigidbody.position = Vector3.Lerp(rigidbody.position, network_position.Value, 0.06f);
                 }
             }
         }
@@ -232,6 +262,28 @@ namespace CharacterSystem.Objects
 
             }
         }
+        private IEnumerator DisolveCorpse()
+        {
+            yield return new WaitForSeconds(5f);
+
+            if (gameObject != null)
+            {
+                Destroy(gameObject);
+            }
+        }
+        private IEnumerator Regeneration()
+        {
+            yield return new WaitForSeconds(7f);
+
+            while (Health < MaxHealth)
+            {
+                Health = Mathf.Clamp(Health + 10, 0, MaxHealth);
+
+                yield return new WaitForSeconds(1f);
+            }
+
+            regenerationCoroutine = null;
+        }
 
         protected void SwitchOffRigidbodyConstraints()
         {
@@ -249,6 +301,8 @@ namespace CharacterSystem.Objects
             StopAllCoroutines();
             
             Dead();
+
+            StartCoroutine(DisolveCorpse());
 
             gameObject.layer = LayerMask.NameToLayer("Untouchable");
         }

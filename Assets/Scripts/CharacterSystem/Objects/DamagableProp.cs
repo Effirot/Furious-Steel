@@ -23,7 +23,7 @@ namespace CharacterSystem.Objects
         public VisualEffect OnHitEffect { get; private set; }
 
         [SerializeField]
-        private UnityEvent<float> OnGetDamage = new ();
+        private UnityEvent<Damage> OnHitEvent = new ();
 
         [SerializeField]
         private UnityEvent<float> OnLossHealth = new ();
@@ -42,6 +42,7 @@ namespace CharacterSystem.Objects
 
         public virtual void SendDamage(Damage damage)
         {
+
             if (!Undestroyable) 
             {
                 Health -= damage.Value;
@@ -69,6 +70,8 @@ namespace CharacterSystem.Objects
 
                 OnHitEffect.Play();
             }
+            
+            OnHitEvent.Invoke(damage);
         }
 
         private void Destroy()
