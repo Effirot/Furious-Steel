@@ -1,113 +1,129 @@
 using System.Collections;
 using System.Collections.Generic;
+using CharacterSystem.Objects;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.TextCore.Text;
 using static UnityEngine.InputSystem.InputAction;
 
-public abstract class AttackOrigin : NetworkBehaviour
+namespace CharacterSystem.Attacks
 {
-    [SerializeField]
-    private InputActionReference inputAction;
+    public abstract class AttackOrigin : NetworkBehaviour
+    {
+        [SerializeField]
+        private InputActionReference inputAction;
 
-    [SerializeField]
-    private NetworkVariable<bool> network_isPerforming = new NetworkVariable<bool>(true, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+        [SerializeField]
+        private NetworkVariable<bool> network_isPerforming = new NetworkVariable<bool>(true, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
-    [SerializeField]
-    public NetworkCharacter Reciever = null;
+        [SerializeField]
+        public NetworkCharacter Reciever = null;
 
 
-    public bool IsAttacking => attackProcess != null;
-    public bool IsPerforming 
-    { 
-        get => network_isPerforming.Value; 
-        set 
-        {
-            if (IsServer)
+        public bool IsAttacking => attackProcess != null;
+        public bool IsPerforming 
+        { 
+            get => network_isPerforming.Value; 
+            set 
             {
-                network_isPerforming.Value = value;
-            }
-        } 
-    }
-    public bool IsPressed 
-    {
-        get => network_isPressed.Value;
-        set => network_isPressed.Value = value;
-    }
-
-    private Coroutine attackProcess = null;
-
-    private NetworkVariable<bool> network_isPressed = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-
-    
-    public void StartAttack()
-    {
-        if (attackProcess == null && IsPerforming)
-        {
-            attackProcess = StartCoroutine(AttackProcessRoutine());
+                if (IsServer)
+                {
+                    network_isPerforming.Value = value;
+                }
+            } 
         }
-    }
-    public void EndAttack()
-    {
-        if (attackProcess != null)
+        public bool IsPressed 
         {
-            StopCoroutine(attackProcess);
+            get => network_isPressed.Value;
+            set => network_isPressed.Value = value;
         }
 
-        attackProcess = null;
-    }
+        private Coroutine attackProcess = null;
 
-    public override void OnNetworkSpawn()
-    {
-        base.OnNetworkSpawn();
+        private NetworkVariable<bool> network_isPressed = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
-        network_isPressed.OnValueChanged += OnPressStateChanged;
-        network_isPerforming.OnValueChanged += OnPerformStateChanged;
         
-        if (inputAction != null && IsOwner)
+        public void StartAttack()
         {
-            inputAction.action.Enable();
+            ResearchReciever();
 
-            inputAction.action.performed += SetPressState_event;
-            inputAction.action.canceled += SetPressState_event;
+            if (attackProcess == null && IsPerforming)
+            {
+                attackProcess = StartCoroutine(AttackProcessRoutine());
+            }
         }
-    }
-    public override void OnNetworkDespawn()
-    {
-        base.OnNetworkDespawn();
-
-        EndAttack();
-    }
-
-    protected virtual void OnPressStateChanged(bool OldValue, bool NewValue)
-    {
-        if (NewValue && IsPerforming)
+        public void EndAttack()
         {
-            StartAttack();
+            if (attackProcess != null)
+            {
+                StopCoroutine(attackProcess);
+            }
+
+            attackProcess = null;
         }
-    }
-    protected virtual void OnPerformStateChanged(bool OldValue, bool NewValue)
-    {
-        if (!NewValue)
+
+        public override void OnNetworkSpawn()
         {
+            base.OnNetworkSpawn();
+            
+            network_isPressed.OnValueChanged += OnPressStateChanged;
+            network_isPerforming.OnValueChanged += OnPerformStateChanged;
+            
+            if (inputAction != null && IsOwner)
+            {
+                inputAction.action.Enable();
+
+                inputAction.action.performed += SetPressState_event;
+                inputAction.action.canceled += SetPressState_event;
+            }
+        }
+        public override void OnNetworkDespawn()
+        {
+            base.OnNetworkDespawn();
+
             EndAttack();
         }
-        else
+
+        protected virtual void Awake()
         {
-            if (IsPressed)
+            ResearchReciever();
+        }
+        protected virtual void OnPressStateChanged(bool OldValue, bool NewValue)
+        {
+            if (NewValue && IsPerforming)
             {
                 StartAttack();
-            }   
+            }
+        }
+        protected virtual void OnPerformStateChanged(bool OldValue, bool NewValue)
+        {
+            if (!NewValue)
+            {
+                EndAttack();
+            }
+            else
+            {
+                if (IsPressed)
+                {
+                    StartAttack();
+                }   
+            }
+        }
+
+        private void ResearchReciever()
+        {
+            if (Reciever == null)
+            {
+                Reciever = GetComponentInParent<NetworkCharacter>();
+            }
+        }
+
+        protected abstract IEnumerator AttackProcessRoutine(); 
+
+        private void SetPressState_event(CallbackContext callback)
+        {
+            IsPressed = !callback.canceled;
         }
     }
-
-
-    protected abstract IEnumerator AttackProcessRoutine(); 
-
-    private void SetPressState_event(CallbackContext callback)
-    {
-        IsPressed = !callback.canceled;
-    }
 }
-

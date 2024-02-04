@@ -4,43 +4,46 @@ using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine.Events;
 
-public class ChargableColliderCastAttackOrigin : ColliderCastAttackOrigin
+namespace CharacterSystem.Attacks
 {
-    [SerializeField]
-    public UnityEvent<float> OnChargeChanged = new();
-    
-    private float charge = 0;
-
-    protected override IEnumerator AttackProcessRoutine()
+    public class ChargableColliderCastAttackOrigin : ColliderCastAttackOrigin
     {
-        OnStartAttackEvent.Invoke();
+        [SerializeField]
+        public UnityEvent<float> OnChargeChanged = new();
+        
+        private float charge = 0;
 
-        while (IsPressed)
+        protected override IEnumerator AttackProcessRoutine()
         {
+            OnStartAttackEvent.Invoke();
+
             while (IsPressed)
             {
-                yield return new WaitForSeconds(0.01f);
-
-                if(BeforeAttackDelay > charge)
+                while (IsPressed)
                 {
-                    charge = Mathf.Clamp(charge + 0.01f, 0, BeforeAttackDelay);
-                    
-                    OnChargeChanged.Invoke(charge);
+                    yield return new WaitForSeconds(0.01f);
+
+                    if(BeforeAttackDelay > charge)
+                    {
+                        charge = Mathf.Clamp(charge + 0.01f, 0, BeforeAttackDelay);
+                        
+                        OnChargeChanged.Invoke(charge);
+                    }
                 }
+
+                Execute(charge / BeforeAttackDelay);
+                OnAttackEvent.Invoke();
+
+                charge = 0;
+
+                OnChargeChanged.Invoke(charge);
+
+                yield return new WaitForSeconds(AfterAttackDelay);
+                OnEndAttackEvent.Invoke();
+
             }
-
-            Execute(charge / BeforeAttackDelay);
-            OnAttackEvent.Invoke();
-
-            charge = 0;
-
-            OnChargeChanged.Invoke(charge);
-
-            yield return new WaitForSeconds(AfterAttackDelay);
-            OnEndAttackEvent.Invoke();
-
+            
+            EndAttack();
         }
-        
-        EndAttack();
     }
 }
