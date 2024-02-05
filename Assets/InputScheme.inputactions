@@ -16,7 +16,7 @@
                 },
                 {
                     "name": "Attack",
-                    "type": "Value",
+                    "type": "PassThrough",
                     "id": "f1a44021-8a51-45f5-81b4-98b6cfac0be9",
                     "expectedControlType": "Button",
                     "processors": "",
@@ -25,8 +25,17 @@
                 },
                 {
                     "name": "Block",
-                    "type": "Value",
+                    "type": "PassThrough",
                     "id": "8bc25b8a-f379-4e49-910a-b48fa35f8e80",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Ultimate",
+                    "type": "PassThrough",
+                    "id": "24424ad8-40b6-4233-9b73-cea3b1565ced",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -179,17 +188,6 @@
                 },
                 {
                     "name": "",
-                    "id": "886e731e-7071-4ae4-95c0-e61739dad6fd",
-                    "path": "<Touchscreen>/touch0/tap",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Touch",
-                    "action": "Attack",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "fc914cc7-42b2-4f47-b043-90e8aea5fb7a",
                     "path": "<Gamepad>/leftTrigger",
                     "interactions": "",
@@ -207,6 +205,28 @@
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "Block",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "031900ed-2f3b-49ca-8a77-74e4d925718a",
+                    "path": "<Gamepad>/buttonEast",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Ultimate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ecc2a653-d4be-4491-9acd-1b210b02d701",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Ultimate",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
