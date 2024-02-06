@@ -41,6 +41,11 @@ namespace CharacterSystem.Attacks
         private CinemachineImpulseSource impulseSource;
 
         [Space]
+        [Header("Animations")]
+        [SerializeField]
+        private string PlayAnimationName;
+        
+        [Space]
         [Header("Events")]
         [SerializeField]
         public UnityEvent OnStartAttackEvent = new();
@@ -53,6 +58,7 @@ namespace CharacterSystem.Attacks
 
         [SerializeField]
         public UnityEvent OnEndAttackEvent = new();
+
 
 
         protected override IEnumerator AttackProcessRoutine()
@@ -123,7 +129,15 @@ namespace CharacterSystem.Attacks
         {
             if (Player.IsStunned) return;
 
-            Player?.rigidbody?.AddForce(Player.transform.rotation * RecieverPushDirection * 200);
+            if (PlayAnimationName.Length > 0)
+            {
+                Player.animator.Play(PlayAnimationName);
+            }
+
+            if (Player.rigidbody != null)
+            {
+                Player.rigidbody.velocity = Player.transform.rotation * RecieverPushDirection * 5;
+            }
 
             foreach (var cast in casters)
             {

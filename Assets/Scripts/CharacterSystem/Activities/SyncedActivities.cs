@@ -64,7 +64,7 @@ public abstract class SyncedActivities : NetworkBehaviour
 
     private void OnInputPressStateChanged_Event(CallbackContext callback)
     {
-        IsPressed = callback.performed;
+        IsPressed = callback.ReadValueAsButton();
     }
     private void InvokeStateChangedFunction_Event(bool Old, bool New)
     {

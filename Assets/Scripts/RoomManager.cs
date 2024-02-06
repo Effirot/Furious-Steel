@@ -5,6 +5,7 @@ using CharacterSystem.Objects;
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Events;
 using static RoomManager.SpawnArguments;
 
 [DisallowMultipleComponent]
@@ -68,6 +69,9 @@ public class RoomManager : NetworkBehaviour
     
     [SerializeField]
     private NetworkPrefabsList weapons;
+
+    [SerializeField]
+    public UnityEvent OnOwnerCharacterDead = new ();
 
     private Dictionary<ulong, ClientInfo> clients = new Dictionary<ulong, ClientInfo>();
 

@@ -27,10 +27,11 @@ namespace CharacterSystem.Objects
 
         new public Rigidbody rigidbody { get; private set; }
 
+        [field : SerializeField]
         public Animator animator { get; private set; }
 
         [field : SerializeField]
-        public virtual float Speed { get; set; } = 5;
+        public virtual float Speed { get; set; } = 7;
 
         [field : SerializeField]
         public virtual bool IsMoving { get; set; } = true;
@@ -53,9 +54,11 @@ namespace CharacterSystem.Objects
         [SerializeField]
         public UnityEvent<Damage> OnHitEvent = new();
 
-        public float Health { 
+        public float Health 
+        { 
             get => network_health.Value; 
-            set { 
+            set 
+            { 
                 if (IsServer)
                 {
                     if (network_health.Value > value)
@@ -68,7 +71,7 @@ namespace CharacterSystem.Objects
                         regenerationCoroutine = StartCoroutine(Regeneration());
                     }
 
-                    network_health.Value = value;
+                    network_health.Value = Mathf.Clamp(value, 0, MaxHealth);
                 }
             } 
         }
@@ -77,13 +80,20 @@ namespace CharacterSystem.Objects
         
         public bool IsStunned => Stunlock > 0;
         
-        public float Stunlock {
+        public float Stunlock 
+        {
             get => network_stunlock.Value;
             set 
             {
                 if (IsServer && !StunlockProtection)
                 {
                     network_stunlock.Value = value;
+
+                    animator.SetBool("Stunned", value > 0);
+                    if (value > 0)
+                    {
+                        SetAngle_ClientRpc(transform.rotation.eulerAngles.y);
+                    }
                 }
             }
         }
@@ -95,6 +105,20 @@ namespace CharacterSystem.Objects
 
         private Coroutine regenerationCoroutine;
 
+        private float speed_Multipliyer = 0;
+
+        public void Kill()
+        {
+            if (IsServer)
+            {
+                Dead_ClientRpc();
+
+                foreach (var item in GetComponentsInChildren<NetworkObject>())
+                {
+                    item.Despawn(true);
+                }
+            }
+        }
 
         protected void SetMovementVector(Vector2 vector)
         {
@@ -106,7 +130,6 @@ namespace CharacterSystem.Objects
 
         public virtual void SendDamage(Damage damage)
         {
-
             if (Blocker != null && Blocker.Block(ref damage))
             {
                 return;
@@ -138,7 +161,6 @@ namespace CharacterSystem.Objects
             Stunlock = Mathf.Max(damage.Stunlock, Stunlock); 
 
             rigidbody.AddForce(VecrtorToTarget * damage.PushForce);
-
         }
 
         public override void OnNetworkSpawn()
@@ -152,6 +174,8 @@ namespace CharacterSystem.Objects
                 StartCoroutine(StunlockReduceProcess());
 
                 network_position.Value = rigidbody.position;
+
+                SetAngle_ClientRpc(transform.rotation.eulerAngles.y);
             }
         }
         public override void OnNetworkDespawn()
@@ -166,7 +190,6 @@ namespace CharacterSystem.Objects
         protected virtual void Awake()
         {
             rigidbody = GetComponent<Rigidbody>();
-            animator = GetComponent<Animator>();
         }
         protected virtual void Start()
         {
@@ -188,6 +211,8 @@ namespace CharacterSystem.Objects
         protected virtual void LateUpdate()
         {
             InterpolateToServerPosition();
+
+            animator.SetFloat("Walk_Speed", speed_Multipliyer * Speed);
         }
 
         protected virtual void Dead()
@@ -203,14 +228,16 @@ namespace CharacterSystem.Objects
         {
             if (IsMoving)
             {
-                rigidbody.velocity = Vector3.Lerp(
-                    rigidbody.velocity, 
-                    new Vector3(
-                        MovementVector.x * Speed, 
-                        rigidbody.velocity.y, 
-                        MovementVector.y * Speed), 
-                    0.2f
+                speed_Multipliyer = Mathf.Lerp(speed_Multipliyer, MovementVector.magnitude, 0.12f);
+
+                rigidbody.Move(
+                    transform.position + new Vector3(MovementVector.x, 0, MovementVector.y) * (Speed / 100) * speed_Multipliyer,
+                    transform.rotation
                 );
+            }
+            else
+            {
+                speed_Multipliyer = Mathf.Lerp(speed_Multipliyer, 0, 0.1f);
             }
         }
         private void RotateCharacter()
@@ -221,7 +248,7 @@ namespace CharacterSystem.Objects
 
                 if (lookVector.magnitude > 0.1f)
                 {
-                    rigidbody.rotation = Quaternion.Lerp(rigidbody.rotation, Quaternion.LookRotation(lookVector), 0.4f);
+                    rigidbody.rotation = Quaternion.Lerp(rigidbody.rotation, Quaternion.LookRotation(lookVector), 0.2f);
                 }
             }
         }
@@ -306,5 +333,12 @@ namespace CharacterSystem.Objects
 
             gameObject.layer = LayerMask.NameToLayer("Untouchable");
         }
+
+        [ClientRpc]
+        private void SetAngle_ClientRpc(float angle)
+        {
+            transform.eulerAngles = new Vector3(0, angle, 0);
+        }
+
     }
 }

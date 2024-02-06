@@ -39,6 +39,13 @@ namespace CharacterSystem.Objects
         }
         public float Stunlock { get => 0; set { return; } }
 
+        public void Kill()
+        {
+            if (IsServer)
+            {
+                NetworkObject.Despawn();
+            }
+        }
 
         public virtual void SendDamage(Damage damage)
         {

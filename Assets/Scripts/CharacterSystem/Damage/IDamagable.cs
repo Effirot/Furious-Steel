@@ -16,6 +16,8 @@ namespace CharacterSystem.DamageMath
         VisualEffect OnHitEffect { get; }
 
         void SendDamage(Damage damage);
+
+        void Kill();
     }
 
     [Serializable]
