@@ -66,7 +66,7 @@ namespace CharacterSystem.Blocking
                 if (damage.Sender != null)
                 {
                     backDamage.Sender = Player;
-                    damage.Sender.SendDamage(backDamage);
+                    damage.Sender.Hit(backDamage);
                 }
                 damage *= 1f - DamageReducing;
 
@@ -84,14 +84,14 @@ namespace CharacterSystem.Blocking
 
             if (StunBeforeBlockTime)
             {
-                Player.Stunlock = BeforeBlockTime;
+                Player.stunlock = BeforeBlockTime;
             }
             OnBeforeBlockingEvent.Invoke();
             yield return new WaitForSeconds(BeforeBlockTime);
             
             if (StunAtBlockProcessTime)
             {
-                Player.Stunlock = BlockProcessTime;
+                Player.stunlock = BlockProcessTime;
             }
             IsBlockInProcess = true;
             OnBlockingEvent.Invoke();
@@ -100,7 +100,7 @@ namespace CharacterSystem.Blocking
 
             if (StunAfterBlockTime)
             {
-                Player.Stunlock = AfterBlockTime;
+                Player.stunlock = AfterBlockTime;
             }
             OnAfterBlockingEvent.Invoke();
             yield return new WaitForSeconds(AfterBlockTime);
@@ -126,7 +126,7 @@ namespace CharacterSystem.Blocking
                 
                 BlockProcessRoutine = null;
 
-                Player.Stunlock = 0;
+                Player.stunlock = 0;
             }
 
             IsBlockInProcess = false;

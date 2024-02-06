@@ -30,7 +30,7 @@ namespace CharacterSystem.Objects.AI
 
         public void PushForward(float force)
         {
-            rigidbody.AddForce(transform.forward * force);
+            GetComponent<Rigidbody>().AddForce(transform.forward * force);
         }
 
         protected override void AITick()

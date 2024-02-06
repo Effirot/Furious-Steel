@@ -77,7 +77,7 @@ namespace CharacterSystem.Objects.AI
         {
             while (true)
             {
-                if (Stunlock <= 0)
+                if (stunlock <= 0)
                 {
                     AITick();
 

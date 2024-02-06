@@ -11,6 +11,6 @@ public class HealPowerUp : PowerUp
 
     public override void Activate(NetworkCharacter character)
     {
-        character.Health += HealingValue;
+        character.health += HealingValue;
     }
 }

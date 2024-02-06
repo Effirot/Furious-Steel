@@ -29,7 +29,7 @@ public class CharacterUI : MonoBehaviour
 
                 HealthSlider.gameObject.SetActive(true);
                 HealthSlider.maxValue = value.MaxHealth;
-                HealthSlider.value = value.Health;
+                HealthSlider.value = value.health;
                 value.OnHitEvent.AddListener(HealthChanged);
 
                 controllers?.SetActive(value.IsOwner && value is PlayerNetworkCharacter);
@@ -76,7 +76,7 @@ public class CharacterUI : MonoBehaviour
 
     private void HealthChanged(Damage damage)
     {
-        HealthSlider.value = observingCharacter.Health;
+        HealthSlider.value = observingCharacter.health;
     }
 
     

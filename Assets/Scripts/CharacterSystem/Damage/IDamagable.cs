@@ -9,13 +9,14 @@ namespace CharacterSystem.DamageMath
     {
         Transform transform { get; }
 
-        float Health { get; set; }
+        float health { get; set; }
 
-        float Stunlock { get; set; }
+        float stunlock { get; set; }
 
         VisualEffect OnHitEffect { get; }
 
-        void SendDamage(Damage damage);
+        void Hit(Damage damage);
+        void Heal(float value);
 
         void Kill();
     }

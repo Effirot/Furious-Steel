@@ -65,7 +65,7 @@ namespace CharacterSystem.Attacks
         {
             if (DisableMovingBeforeAttack)
             {
-                Player.Stunlock = BeforeAttackDelay;
+                Player.stunlock = BeforeAttackDelay;
             }
 
             OnStartAttackEvent.Invoke();
@@ -76,7 +76,7 @@ namespace CharacterSystem.Attacks
 
             if (DisableMovingAfterAttack)
             {
-                Player.Stunlock = AfterAttackDelay;
+                Player.stunlock = AfterAttackDelay;
             }
 
             yield return new WaitForSeconds(AfterAttackDelay);
@@ -127,17 +127,14 @@ namespace CharacterSystem.Attacks
 
         protected void Execute(float Multiplayer = 1)
         {
-            if (Player.IsStunned) return;
+            if (Player.isStunned) return;
 
             if (PlayAnimationName.Length > 0)
             {
                 Player.animator.Play(PlayAnimationName);
             }
 
-            if (Player.rigidbody != null)
-            {
-                Player.rigidbody.velocity = Player.transform.rotation * RecieverPushDirection * 5;
-            }
+            Player.Push(Player.transform.rotation * RecieverPushDirection * Multiplayer);           
 
             foreach (var cast in casters)
             {
@@ -157,7 +154,7 @@ namespace CharacterSystem.Attacks
 
                     if (collider.gameObject.TryGetComponent<IDamagable>(out var damagable))
                     {
-                        damagable.SendDamage(damage);
+                        damagable.Hit(damage);
                     }
 
                     OnHitEvent.Invoke(damage);

@@ -70,7 +70,7 @@ public abstract class SyncedActivities : NetworkBehaviour
     {
         ResearchPlayer();
 
-        if (!Player.IsStunned)
+        if (!Player.isStunned)
         {
             OnStateChanged(New);
         }

@@ -28,7 +28,7 @@ namespace CharacterSystem.Objects
         [SerializeField]
         private UnityEvent<float> OnLossHealth = new ();
 
-        public float Health { 
+        public float health { 
             get => network_Health.Value; 
             set { 
                 if (IsServer)
@@ -37,24 +37,16 @@ namespace CharacterSystem.Objects
                 }
             }
         }
-        public float Stunlock { get => 0; set { return; } }
+        public float stunlock { get => 0; set { return; } }
 
-        public void Kill()
-        {
-            if (IsServer)
-            {
-                NetworkObject.Despawn();
-            }
-        }
-
-        public virtual void SendDamage(Damage damage)
+        public virtual void Hit(Damage damage)
         {
 
             if (!Undestroyable) 
             {
-                Health -= damage.Value;
+                health -= damage.Value;
 
-                if (Health <= 0 && IsServer)
+                if (health <= 0 && IsServer)
                 {
                     NetworkObject.Despawn(false);
                 }
@@ -80,6 +72,18 @@ namespace CharacterSystem.Objects
             
             OnHitEvent.Invoke(damage);
         }
+        public virtual void Heal(float value)
+        { 
+
+        }
+        public void Kill()
+        {
+            if (IsServer)
+            {
+                NetworkObject.Despawn();
+            }
+        }
+
 
         private void Destroy()
         {
@@ -88,6 +92,8 @@ namespace CharacterSystem.Objects
                 NetworkObject.Despawn();
             }
         }
+
+
     }
 }
 
