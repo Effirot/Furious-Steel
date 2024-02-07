@@ -33,7 +33,6 @@ public class CharacterUI : MonoBehaviour
                 value.OnHitEvent.AddListener(HealthChanged);
 
                 controllers?.SetActive(value.IsOwner && value is PlayerNetworkCharacter);
-                
             }
             else 
             {
@@ -67,11 +66,20 @@ public class CharacterUI : MonoBehaviour
 
         controllers = null; 
 #endif
+
+        PlayerNetworkCharacter.OnOwnerPlayerCharacterSpawn += ObserveCharacter;
     }
 
     private void OnDestroy()
     {
         Singleton = null;
+
+        PlayerNetworkCharacter.OnOwnerPlayerCharacterSpawn -= ObserveCharacter;
+    }
+
+    private void ObserveCharacter(PlayerNetworkCharacter character)
+    {
+        observingCharacter = character;
     }
 
     private void HealthChanged(Damage damage)

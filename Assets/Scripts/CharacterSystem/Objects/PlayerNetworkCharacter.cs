@@ -9,8 +9,15 @@ namespace CharacterSystem.Objects
 {
     public class PlayerNetworkCharacter : NetworkCharacter
     {
-        public static event OnCharacterStateChangedDelegate OnPlayerCharacterDead = delegate { };
-        public static event OnCharacterStateChangedDelegate OnPlayerCharacterSpawn = delegate { };
+        public delegate void OnPlayerCharacterStateChangedDelegate (PlayerNetworkCharacter character);
+
+        public static event OnPlayerCharacterStateChangedDelegate OnPlayerCharacterDead = delegate { };
+        public static event OnPlayerCharacterStateChangedDelegate OnPlayerCharacterSpawn = delegate { };
+
+        public static event OnPlayerCharacterStateChangedDelegate OnOwnerPlayerCharacterDead = delegate { };
+        public static event OnPlayerCharacterStateChangedDelegate OnOwnerPlayerCharacterSpawn = delegate { };
+
+        public static PlayerNetworkCharacter Owner { get; private set; }
 
         [SerializeField]
         private InputActionReference moveInput;
@@ -21,13 +28,26 @@ namespace CharacterSystem.Objects
 
             if (IsOwner)
             {
+                Owner = this;
+
                 var action = moveInput.action;
                 action.Enable();
 
                 action.performed += OnMove;
                 action.canceled += OnMove;
+            }
+        }
+        public override void OnNetworkDespawn()
+        {
+            base.OnNetworkDespawn();
 
-                ObservCharacter();
+            if (IsOwner)
+            {
+                Owner = null;
+
+                var action = moveInput.action;
+                action.performed -= OnMove;
+                action.canceled -= OnMove;
             }
         }
 
@@ -36,18 +56,22 @@ namespace CharacterSystem.Objects
             base.Dead();
 
             OnPlayerCharacterDead.Invoke(this);
-        }
 
+            if (IsOwner)
+            {
+                OnOwnerPlayerCharacterDead.Invoke(this);
+            }
+        }
         protected override void Spawn()
         {
             base.Spawn();
 
             OnPlayerCharacterSpawn.Invoke(this);
-        }
 
-        private void ObservCharacter()
-        {
-            CharacterUI.Singleton.observingCharacter = this;
+            if (IsOwner)
+            {
+                OnOwnerPlayerCharacterSpawn.Invoke(this);
+            }
         }
 
         private void OnMove(CallbackContext input)

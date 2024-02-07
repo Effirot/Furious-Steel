@@ -60,7 +60,6 @@ namespace CharacterSystem.Attacks
         public UnityEvent OnEndAttackEvent = new();
 
 
-
         protected override IEnumerator AttackProcessRoutine()
         {
             if (DisableMovingBeforeAttack)

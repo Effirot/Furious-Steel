@@ -5,6 +5,9 @@ using UnityEngine;
 
 public class Spawner : NetworkBehaviour
 {
+    [SerializeField]
+    private bool SpawnOnStartup = true;
+    
     [SerializeField, Range(0, 120)]
     private float spawnInterval = 10f;
 
@@ -19,6 +22,11 @@ public class Spawner : NetworkBehaviour
 
         if (IsServer)
         {
+            if (SpawnOnStartup)
+            {
+                Spawn();
+            }
+
             StartCoroutine(SpawnProcess());
         }
     }
@@ -45,7 +53,7 @@ public class Spawner : NetworkBehaviour
     {
         while (true)
         {
-            if (instance != null || !instance.IsSpawned)
+            if (instance == null)
             {
                 yield return new WaitForSeconds(spawnInterval);
 

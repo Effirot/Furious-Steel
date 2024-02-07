@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using CharacterSystem.Objects;
 using Unity.Netcode;
+using UnityEditor;
 using UnityEngine;
 
 public class PowerUpHolder : SyncedActivities
@@ -9,7 +10,7 @@ public class PowerUpHolder : SyncedActivities
     [SerializeField]
     private NetworkCharacter Character;
     
-    public PowerUp powerUp => Id == -1 ? null : PowerUp.AllPowerUps[Id];
+    public PowerUp powerUp => Id < 0 || Id >= PowerUp.AllPowerUps.Length ? null : PowerUp.AllPowerUps[Id];
 
     public int Id => network_powerUpId.Value;
 
@@ -46,4 +47,19 @@ public class PowerUpHolder : SyncedActivities
             }
         }
     }
+
+#if UNITY_EDITOR
+
+    [CustomEditor(typeof(PowerUpHolder), true)]
+    public class PowerUpHolder_Editor : Editor
+    {
+        public override void OnInspectorGUI()
+        {
+            base.OnInspectorGUI();
+
+            
+        }
+    }
+
+#endif
 }

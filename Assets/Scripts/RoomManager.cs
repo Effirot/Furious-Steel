@@ -39,10 +39,21 @@ public class RoomManager : NetworkBehaviour
         }
     }
 
+    public struct PlayerStatistics : INetworkSerializable
+    {
+        public int Killstreak;
+        public float DeliveredDamage;
+        public float PowerUpsPicked;
+
+
+        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+        {
+
+        }
+    }
+
     protected class ClientInfo 
     {
-        protected internal ClientInfo() { }
-
         public NetworkClient networkClient;
 
         public PlayerNetworkCharacter networkCharacter;
@@ -55,6 +66,7 @@ public class RoomManager : NetworkBehaviour
 
         public SpawnArguments spawnArguments;
 
+        public PlayerStatistics statistics;
     }
 
     public delegate void SendChatMessageDelegate (FixedString128Bytes senderName, FixedString512Bytes text);
@@ -62,16 +74,16 @@ public class RoomManager : NetworkBehaviour
     public static RoomManager Singleton { get; private set; }
 
     public static event SendChatMessageDelegate OnWriteToChat = delegate { };
+    public static event SendChatMessageDelegate OnServerException = delegate { };
 
+    [SerializeField, Range(3, 64)]
+    private int PlayerLimit = 12;
 
     [SerializeField]
     private NetworkPrefabsList characters;
     
     [SerializeField]
     private NetworkPrefabsList weapons;
-
-    [SerializeField]
-    public UnityEvent OnOwnerCharacterDead = new ();
 
     private Dictionary<ulong, ClientInfo> clients = new Dictionary<ulong, ClientInfo>();
 
@@ -166,10 +178,14 @@ public class RoomManager : NetworkBehaviour
         clients.Remove(ID);
     }
 
+
     [ServerRpc (RequireOwnership = false)]
     private void Spawn_ServerRpc(SpawnArguments args, ServerRpcParams Param = default)
     {
         var senderId = Param.Receive.SenderClientId;
+
+        if (PlayerLimit <= clients.Count)
+            return;
 
         if (IsPlayersCharacterAlreadySpawned())
             return;
@@ -200,14 +216,18 @@ public class RoomManager : NetworkBehaviour
         characterGameObject.GetComponent<NetworkObject>().SpawnWithOwnership(senderId, true);
         weaponGameObject.GetComponent<NetworkObject>().SpawnWithOwnership(senderId, true);
         weaponGameObject.transform.SetParent(characterGameObject.transform, false);
-        // weaponGameObject.transform.localPosition = Vector3.zero;
-        // weaponGameObject.transform.localRotation = Quaternion.identity;
 
         bool IsPlayersCharacterAlreadySpawned()
         {
             return clients[senderId].networkCharacter != null;
         }
     }
+
+    [ClientRpc]
+    private void ServerException_ClientRpc(FixedString512Bytes message, ClientRpcParams rpcParams = default)
+    {
+        OnServerException.Invoke("[SERVER]", message);
+    } 
 
     [ServerRpc (RequireOwnership = false)]
     private void SendChatMessage_ServerRpc(FixedString512Bytes text, ServerRpcParams Param = default)

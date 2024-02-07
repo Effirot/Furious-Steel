@@ -130,10 +130,10 @@ namespace CharacterSystem.Objects
             {
                 Dead_ClientRpc();
 
-                foreach (var item in GetComponentsInChildren<NetworkObject>())
+                foreach (var item in GetComponentsInChildren<NetworkObject>()) 
                 {
                     item.Despawn(true);
-                }
+                } 
             }
         }
         public virtual void Hit(Damage damage)
@@ -199,6 +199,7 @@ namespace CharacterSystem.Objects
                 network_position.Value = transform.position;
 
                 SetAngle_ClientRpc(transform.rotation.eulerAngles.y);
+                Spawn_ClientRpc();
             }
         }
         public override void OnNetworkDespawn()
