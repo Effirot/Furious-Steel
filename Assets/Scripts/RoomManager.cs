@@ -57,6 +57,7 @@ public class RoomManager : NetworkBehaviour
         public NetworkClient networkClient;
 
         public PlayerNetworkCharacter networkCharacter;
+        public NetworkObject networkCharacterWeapon;
 
         public DateTime EnterTime;
         public DateTime DeathTime;
@@ -122,11 +123,6 @@ public class RoomManager : NetworkBehaviour
             NetworkManager.OnClientDisconnectCallback += OnClientDisconnected_Event;
         }
 
-        // if (IsHost)
-        // {
-        //     OnClientConnected_Event(NetworkManager.LocalClientId);
-        // }
-
         StartCoroutine(LateSpawn());
 
         IEnumerator LateSpawn()
@@ -179,6 +175,59 @@ public class RoomManager : NetworkBehaviour
     }
 
 
+
+    private void SpawnCharacter(SpawnArguments args, ServerRpcParams Param)
+    {
+        var senderId = Param.Receive.SenderClientId;
+        
+        if (clients[senderId].networkCharacter != null)
+            return;
+
+
+        var spawnPoint = SpawnPoint.GetSpawnPoint().transform;
+
+        args.CharacterIndex = Mathf.Clamp(args.CharacterIndex, 0, characters.PrefabList.Count - 1);
+
+        // Spawn character
+        var character = characters.PrefabList[args.CharacterIndex].Prefab;
+        var characterGameObject = Instantiate(character, spawnPoint.position, spawnPoint.rotation);
+    
+        clients[senderId].networkCharacter = characterGameObject.GetComponent<PlayerNetworkCharacter>();
+
+        clients[senderId].networkCharacter.NetworkObject.SpawnWithOwnership(senderId);
+    }
+    private void SetWeapon(SpawnArguments args, ServerRpcParams Param)
+    {
+        var senderId = Param.Receive.SenderClientId;
+        
+        if (clients[senderId].networkCharacter == null)
+            return;
+
+        if (clients[senderId].networkCharacterWeapon != null)
+        {
+            clients[senderId].networkCharacterWeapon.Despawn();
+            clients[senderId].networkCharacterWeapon = null;
+        }
+
+
+        args.WeaponIndex = Mathf.Clamp(args.WeaponIndex, 0, weapons.PrefabList.Count - 1);
+
+        // Spawn weapon
+        var weapon = weapons.PrefabList[args.WeaponIndex].Prefab;
+        var weaponGameObject = Instantiate(weapon, Vector3.zero, Quaternion.identity);
+
+        if (clients[senderId].networkCharacter == null)
+        {
+            throw new InvalidOperationException();
+        } 
+
+        clients[senderId].spawnArguments = args;
+        clients[senderId].networkCharacterWeapon = weaponGameObject.GetComponent<NetworkObject>();
+
+        clients[senderId].networkCharacterWeapon.SpawnWithOwnership(senderId, true);
+        weaponGameObject.transform.SetParent(clients[senderId].networkCharacter.transform, false);
+    }
+
     [ServerRpc (RequireOwnership = false)]
     private void Spawn_ServerRpc(SpawnArguments args, ServerRpcParams Param = default)
     {
@@ -187,40 +236,8 @@ public class RoomManager : NetworkBehaviour
         if (PlayerLimit <= clients.Count)
             return;
 
-        if (IsPlayersCharacterAlreadySpawned())
-            return;
-
-        var spawnPoint = SpawnPoint.GetSpawnPoint().transform;
-
-        args.CharacterIndex = Mathf.Clamp(args.CharacterIndex, 0, characters.PrefabList.Count - 1);
-        args.WeaponIndex = Mathf.Clamp(args.WeaponIndex, 0, weapons.PrefabList.Count - 1);
-
-        // Spawn character
-        var character = characters.PrefabList[args.CharacterIndex].Prefab;
-        var characterGameObject = Instantiate(character, spawnPoint.position, spawnPoint.rotation);
-
-        // Spawn weapon
-        var weapon = weapons.PrefabList[args.WeaponIndex].Prefab;
-        var weaponGameObject = Instantiate(weapon);
-
-        clients[senderId].networkCharacter = characterGameObject.GetComponent<PlayerNetworkCharacter>();
-        if (clients[senderId].networkCharacter == null)
-        {
-            throw new InvalidOperationException();
-        } 
-
-        clients[senderId].spawnArguments = args;
-
-
-        // Spawn
-        characterGameObject.GetComponent<NetworkObject>().SpawnWithOwnership(senderId, true);
-        weaponGameObject.GetComponent<NetworkObject>().SpawnWithOwnership(senderId, true);
-        weaponGameObject.transform.SetParent(characterGameObject.transform, false);
-
-        bool IsPlayersCharacterAlreadySpawned()
-        {
-            return clients[senderId].networkCharacter != null;
-        }
+        SpawnCharacter(args, Param);
+        SetWeapon(args, Param);
     }
 
     [ClientRpc]

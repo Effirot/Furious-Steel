@@ -29,5 +29,6 @@ public abstract class PowerUp
 
     public abstract GameObject prefab  { get; }
 
-    public abstract void Activate(NetworkCharacter character);
+    public abstract void Activate(PowerUpHolder character);
+    public abstract void OnPick(PowerUpHolder character);
 }

@@ -46,7 +46,9 @@ public class Spawner : NetworkBehaviour
         var prefabObject = Instantiate(prefab, transform.position, Quaternion.identity);
 
         instance = prefabObject.GetComponent<NetworkObject>();
-        instance.Spawn();
+        instance.Spawn(); 
+
+        instance.TrySetParent(transform);
     }
 
     private IEnumerator SpawnProcess()

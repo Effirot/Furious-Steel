@@ -227,14 +227,15 @@ namespace CharacterSystem.Objects
         protected virtual void FixedUpdate()
         {
             CharacterMove(CalculateMovement() + CalculatePhysicsSimulation()); 
-    
-            RotateCharacter();
+
+            if (!isStunned)
+            {
+                RotateCharacter();
+            }
         }
         protected virtual void LateUpdate()
         {
             InterpolateToServerPosition();
-
-            animator.SetFloat("Walk_Speed", speed_Multipliyer * Speed);
         }
 
         protected virtual void Dead()
@@ -273,10 +274,15 @@ namespace CharacterSystem.Objects
             var gravity = Physics.gravity * Time.fixedDeltaTime;
 
             return velocity / 3 + gravity;
-        }   
+        }
         private void CharacterMove(Vector3 vector)
         {
             characterController.Move(vector);
+
+            if (!isStunned)
+            {
+                animator.SetFloat("Walk_Speed", speed_Multipliyer * Speed);
+            }
         }
         private void RotateCharacter()
         {

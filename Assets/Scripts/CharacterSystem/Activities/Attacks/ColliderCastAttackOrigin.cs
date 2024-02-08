@@ -139,21 +139,20 @@ namespace CharacterSystem.Attacks
             {
                 foreach (var collider in cast.CastCollider(transform))
                 {
+                    if (collider.isTrigger)
+                        continue;
+
                     var damage = cast.damage;
                     damage *= Multiplayer;
                     damage.Sender = Player;
 
-
                     var VecrtorToTarget = collider.transform.position - transform.position;
-
-                    if (impulseSource != null)
-                    {
-                        impulseSource.GenerateImpulse(VecrtorToTarget * damage.Value * impulseForce);
-                    }
 
                     if (collider.gameObject.TryGetComponent<IDamagable>(out var damagable))
                     {
                         damagable.Hit(damage);
+
+                        impulseSource?.GenerateImpulse(VecrtorToTarget * damage.Value * impulseForce);
                     }
 
                     OnHitEvent.Invoke(damage);

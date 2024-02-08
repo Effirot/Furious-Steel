@@ -7,10 +7,14 @@ public class HealPowerUp : PowerUp
 {
     public override GameObject prefab => throw new System.NotImplementedException();
 
-    public const float HealingValue = 1000;
-
-    public override void Activate(NetworkCharacter character)
+    public override void Activate(PowerUpHolder holder)
     {
-        character.health += HealingValue;
+        holder.Character.health += holder.Character.MaxHealth / 4;
     }
+
+    public override void OnPick(PowerUpHolder holder)
+    {
+
+    }
+
 }
