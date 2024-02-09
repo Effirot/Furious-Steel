@@ -40,6 +40,17 @@ public abstract class SyncedActivities : NetworkBehaviour
 
         ResearchPlayer();
 
+        Subscribe();
+    }
+    public override void OnNetworkDespawn()  
+    {
+        base.OnNetworkDespawn();
+
+        Unsubscribe();
+    }
+
+    private void Subscribe()
+    {
         if (IsOwner)
         {
             inputAction.action.Enable();
@@ -50,16 +61,17 @@ public abstract class SyncedActivities : NetworkBehaviour
 
         network_isPressed.OnValueChanged += InvokeStateChangedFunction_Event;
     }
-    public override void OnNetworkDespawn()  
+    private void Unsubscribe()
     {
-        base.OnNetworkDespawn();
-
         if (IsOwner)
         {
+            inputAction.action.Enable();
             inputAction.action.started -= OnInputPressStateChanged_Event;
             inputAction.action.performed -= OnInputPressStateChanged_Event;
             inputAction.action.canceled -= OnInputPressStateChanged_Event;
         }
+
+        network_isPressed.OnValueChanged -= InvokeStateChangedFunction_Event;
     }
 
     private void OnInputPressStateChanged_Event(CallbackContext callback)

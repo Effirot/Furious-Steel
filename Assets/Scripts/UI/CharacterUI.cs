@@ -17,7 +17,7 @@ public class CharacterUI : MonoBehaviour
         {
             if (_observingCharacter != null)
             {
-                virtualCamera.Follow = null;
+                virtualCamera.Follow = transform;
                 _observingCharacter.OnHitEvent.RemoveListener(HealthChanged);
             }
 
@@ -40,6 +40,15 @@ public class CharacterUI : MonoBehaviour
                 
                 controllers?.SetActive(false);
             }
+
+
+            StopAllCoroutines();
+
+            if (!value.IsOwner)
+            {
+                StartCoroutine(ObserveRandomCharacter());
+            }
+            
         }
     }
 
@@ -67,17 +76,26 @@ public class CharacterUI : MonoBehaviour
         controllers = null; 
 #endif
 
-        PlayerNetworkCharacter.OnOwnerPlayerCharacterSpawn += ObserveCharacter;
+        PlayerNetworkCharacter.OnPlayerCharacterSpawn += ObserveRandomCharacterCharacter_Event;
+        PlayerNetworkCharacter.OnOwnerPlayerCharacterSpawn += ObserveCharacter_Event;
     }
 
     private void OnDestroy()
     {
         Singleton = null;
 
-        PlayerNetworkCharacter.OnOwnerPlayerCharacterSpawn -= ObserveCharacter;
+        PlayerNetworkCharacter.OnPlayerCharacterSpawn -= ObserveRandomCharacterCharacter_Event;
+        PlayerNetworkCharacter.OnOwnerPlayerCharacterSpawn -= ObserveCharacter_Event;
     }
 
-    private void ObserveCharacter(PlayerNetworkCharacter character)
+    private void ObserveRandomCharacterCharacter_Event(PlayerNetworkCharacter character)
+    {
+        if (observingCharacter == null)
+        {
+            observingCharacter = character;
+        }
+    }
+    private void ObserveCharacter_Event(PlayerNetworkCharacter character)
     {
         observingCharacter = character;
     }
@@ -87,5 +105,10 @@ public class CharacterUI : MonoBehaviour
         HealthSlider.value = observingCharacter.health;
     }
 
-    
+    private IEnumerator ObserveRandomCharacter()
+    {
+        yield return new WaitForSecondsRealtime(5);
+
+        observingCharacter = PlayerNetworkCharacter.Players[Random.Range(0, PlayerNetworkCharacter.Players.Count - 1)];
+    }
 }

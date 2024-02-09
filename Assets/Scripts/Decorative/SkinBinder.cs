@@ -23,12 +23,10 @@ public sealed class SkinBinder : NetworkBehaviour
     {
         base.OnNetworkObjectParentChanged(parentNetworkObject);
 
-        try {
-        SkinOrigin.SetParent(parentNetworkObject.transform.Find(TargetParentPath), false);
+        if (parentNetworkObject != null)
+        {
+            SkinOrigin.SetParent(parentNetworkObject.transform.Find(TargetParentPath), false);
         }
-        catch (System.Exception e) {
-                    Debug.Log(e);
-                }
     }
 
     public override void OnNetworkDespawn()

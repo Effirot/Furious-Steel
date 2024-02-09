@@ -31,6 +31,11 @@ namespace CharacterSystem.Blocking
         private float AfterBlockTime = 0.5f;
 
         [Space]
+        [Header("Animation")]
+        [SerializeField]
+        private string animationName = "";
+
+        [Space]
         [Header("Damage")]
         [SerializeField]
         private Damage backDamage;
@@ -67,6 +72,7 @@ namespace CharacterSystem.Blocking
                 {
                     backDamage.Sender = Player;
                     damage.Sender.Hit(backDamage);
+                    damage.Sender.Push((transform.position - damage.Sender.transform.position) * backDamage.PushForce);
                 }
                 damage *= 1f - DamageReducing;
 
@@ -80,6 +86,8 @@ namespace CharacterSystem.Blocking
 
         private IEnumerator BlockProcess()
         {
+            Player.animator.Play(animationName);
+
             Player.Blocker = this;
 
             if (StunBeforeBlockTime)

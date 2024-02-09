@@ -54,11 +54,6 @@ namespace CharacterSystem.Objects
             
             var VecrtorToTarget = transform.position - damage.Sender.transform.position;
             VecrtorToTarget.Normalize();
-
-            if (TryGetComponent<Rigidbody>(out var rigidbody))
-            {
-                rigidbody.AddForce(VecrtorToTarget * damage.PushForce);
-            }
             
             if (OnHitEffect != null)
             {
@@ -74,7 +69,14 @@ namespace CharacterSystem.Objects
         }
         public virtual void Heal(float value)
         { 
-
+            
+        }
+        public void Push(Vector3 direction)
+        {
+            if (TryGetComponent<Rigidbody>(out var rigidbody))
+            {
+                rigidbody.AddForce(direction);
+            }
         }
         public void Kill()
         {
@@ -92,6 +94,7 @@ namespace CharacterSystem.Objects
                 NetworkObject.Despawn();
             }
         }
+
 
 
     }

@@ -8,6 +8,7 @@ namespace CharacterSystem.DamageMath
     public interface IDamagable 
     {
         Transform transform { get; }
+        GameObject gameObject { get; }
 
         float health { get; set; }
 
@@ -17,6 +18,7 @@ namespace CharacterSystem.DamageMath
 
         void Hit(Damage damage);
         void Heal(float value);
+        void Push(Vector3 direction);
 
         void Kill();
     }

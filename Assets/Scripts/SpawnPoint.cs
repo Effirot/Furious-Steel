@@ -18,26 +18,37 @@ public class SpawnPoint : MonoBehaviour
         }
         else
         {
-            return spawnPoints[Random.Range(0, spawnPoints.Count() - 1)];
+            var point = spawnPoints[Random.Range(0, spawnPoints.Count() - 1)];
+            
+            return point;
         }
     }
+
 
     [SerializeField, Range(0.1f, 50f)]
     private float SafeZoneRange = 3;
 
-    public bool IsSafe => !Physics.OverlapSphere(transform.position, SafeZoneRange, LayerMask.GetMask("Character")).Any();
+    public bool IsSafe => !intruders.Any();
+    public Collider[] intruders => Physics.OverlapSphere(transform.position, SafeZoneRange, LayerMask.GetMask("Character"));
 
+    public void PushAll ()
+    {
+        // foreach(var item in intruders)
+        // {
+        //     item.
+        // }
+    }
 
-    private void Awake()
+    private void Awake ()
     {
         spawnPoints.Add(this);
     }
-    private void OnDestroy()
+    private void OnDestroy ()
     {
         spawnPoints.Remove(this);
     }
 
-    private void OnDrawGizmos()
+    private void OnDrawGizmos ()
     {
         Gizmos.color = IsSafe ? Color.green : Color.red;
 

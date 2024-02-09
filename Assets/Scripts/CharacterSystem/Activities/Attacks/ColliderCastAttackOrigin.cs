@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CharacterSystem.DamageMath;
 using Cinemachine;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.VFX;
@@ -126,6 +127,12 @@ namespace CharacterSystem.Attacks
 
         protected void Execute(float Multiplayer = 1)
         {
+            ExecuteInternal_ClientRpc(Multiplayer);
+        }
+
+        [ClientRpc]
+        private void ExecuteInternal_ClientRpc(float Multiplayer)
+        {
             if (Player.isStunned) return;
 
             if (PlayAnimationName.Length > 0)
@@ -133,7 +140,7 @@ namespace CharacterSystem.Attacks
                 Player.animator.Play(PlayAnimationName);
             }
 
-            Player.Push(Player.transform.rotation * RecieverPushDirection * Multiplayer);           
+            Player.Push(Player.transform.rotation * RecieverPushDirection * Multiplayer * 100);           
 
             foreach (var cast in casters)
             {
@@ -151,6 +158,7 @@ namespace CharacterSystem.Attacks
                     if (collider.gameObject.TryGetComponent<IDamagable>(out var damagable))
                     {
                         damagable.Hit(damage);
+                        damagable.Push(VecrtorToTarget * damage.PushForce);
 
                         impulseSource?.GenerateImpulse(VecrtorToTarget * damage.Value * impulseForce);
                     }

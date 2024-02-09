@@ -230,6 +230,7 @@ GameObject:
   - component: {fileID: 2682705565289463711}
   - component: {fileID: 4043005819161963949}
   - component: {fileID: 553983600808035742}
+  - component: {fileID: 5633976333175869961}
   m_Layer: 6
   m_Name: SwordWeapon
   m_TagString: Weapon
@@ -294,6 +295,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SkinOrigin: {fileID: 2399946078457330118}
   TargetParentPath: Armor/Armor_Armature/SpineCenter/Spine.001/Spine.002/Shoulder.L/Hand.001.L/Hand.002.L/Palm.L
+--- !u!114 &5633976333175869961
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1517727645108543378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91b59a25b78b63442bfa85d494b70054, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animatorController: {fileID: 22100000, guid: 605c65f113a1046479f7cb5db80a548d, type: 2}
 --- !u!1 &1735389488738035293
 GameObject:
   m_ObjectHideFlags: 0
@@ -883,6 +897,7 @@ MonoBehaviour:
   BlockProcessTime: 0.3
   StunAfterBlockTime: 0
   AfterBlockTime: 0.7
+  animationName: Torso.Block
   backDamage:
     Value: 20
     Stunlock: 3

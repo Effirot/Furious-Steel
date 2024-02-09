@@ -42,6 +42,9 @@ namespace CharacterSystem.Objects
 
         [field : SerializeField]
         public VisualEffect OnHitEffect { get; private set; } = null;
+
+        [field : SerializeField]
+        public VisualEffect OnHealEffect { get; private set; } = null;
         
         [field : SerializeField]
         public VisualEffect StulockEffect { get; private set; } = null;
@@ -126,14 +129,20 @@ namespace CharacterSystem.Objects
 
         public void Kill()
         {
-            if (IsServer && IsSpawned)
+            if (IsServer)
             {
                 Dead_ClientRpc();
 
+    
                 foreach (var item in GetComponentsInChildren<NetworkObject>()) 
                 {
-                    item.Despawn(true);
+                    if (item.IsSpawned)
+                    {
+                        item.Despawn(false);
+                    }
                 } 
+    
+                StartCoroutine(DisolveCorpse());
             }
         }
         public virtual void Hit(Damage damage)
@@ -165,17 +174,20 @@ namespace CharacterSystem.Objects
             }
             
             stunlock = Mathf.Max(damage.Stunlock, stunlock); 
-            
-            Push(VecrtorToTarget * damage.PushForce / 100);
         }
         public virtual void Heal(float value)
         {
             health += value;
+
+            if (OnHealEffect != null)
+            {
+                OnHealEffect.Play();
+            }
         }
         
         public void Push(Vector3 direction)
         {
-            velocity = direction;
+            velocity = direction / 150;
         }
 
         protected void SetMovementVector(Vector2 vector)
@@ -184,7 +196,7 @@ namespace CharacterSystem.Objects
             {
                 network_movementVector.Value = vector.normalized;
             }
-        }      
+        }
 
         public override void OnNetworkSpawn()
         {
@@ -199,6 +211,7 @@ namespace CharacterSystem.Objects
                 network_position.Value = transform.position;
 
                 SetAngle_ClientRpc(transform.rotation.eulerAngles.y);
+                SetPosition_ClientRpc(transform.position);
                 Spawn_ClientRpc();
             }
         }
@@ -273,15 +286,18 @@ namespace CharacterSystem.Objects
 
             var gravity = Physics.gravity * Time.fixedDeltaTime;
 
-            return velocity / 3 + gravity;
+            return velocity / 2 + gravity;
         }
         private void CharacterMove(Vector3 vector)
         {
-            characterController.Move(vector);
-
-            if (!isStunned)
+            if (IsSpawned)
             {
-                animator.SetFloat("Walk_Speed", speed_Multipliyer * Speed);
+                characterController.Move(vector);
+
+                if (!isStunned)
+                {
+                    animator.SetFloat("Walk_Speed", speed_Multipliyer * Speed);
+                }
             }
         }
         private void RotateCharacter()
@@ -368,8 +384,6 @@ namespace CharacterSystem.Objects
             
             Dead();
 
-            StartCoroutine(DisolveCorpse());
-
             gameObject.layer = LayerMask.NameToLayer("Untouchable");
         }
 
@@ -377,6 +391,11 @@ namespace CharacterSystem.Objects
         private void SetAngle_ClientRpc(float angle)
         {
             transform.eulerAngles = new Vector3(0, angle, 0);
+        }
+        [ClientRpc]
+        private void SetPosition_ClientRpc(Vector3 position)
+        {
+            transform.position = position;
         }
 
     }
