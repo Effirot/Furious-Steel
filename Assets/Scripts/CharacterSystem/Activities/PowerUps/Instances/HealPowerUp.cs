@@ -5,11 +5,9 @@ using UnityEngine;
 
 public class HealPowerUp : PowerUp
 {
-    public override GameObject prefab => throw new System.NotImplementedException();
-
     public override void Activate(PowerUpHolder holder)
     {
-        holder.Character.Heal (holder.Character.MaxHealth / 4);
+        holder.Character.Heal (holder.Character.maxHealth / 4);
     }
 
     public override void OnPick(PowerUpHolder holder)

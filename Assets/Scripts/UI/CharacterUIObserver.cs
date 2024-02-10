@@ -6,9 +6,9 @@ using Cinemachine;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CharacterUI : MonoBehaviour
+public class CharacterUIObserver : MonoBehaviour
 {
-    public static CharacterUI Singleton { get; private set; }
+    public static CharacterUIObserver Singleton { get; private set; }
 
     public NetworkCharacter observingCharacter
     {
@@ -19,41 +19,69 @@ public class CharacterUI : MonoBehaviour
             {
                 virtualCamera.Follow = transform;
                 _observingCharacter.OnHitEvent.RemoveListener(HealthChanged);
+
+                for (int i = 0; i < drawers.Length; i++)
+                {
+                    if (i < holders.Length)
+                    {
+                        drawers[i].gameObject.SetActive(false);
+                        holders[i].OnPowerUpChanged -= drawers[i].Draw;
+                    } 
+                }
             }
 
             _observingCharacter = value;
 
             if (value != null)
             {
+                // Camera drawer
                 virtualCamera.Follow = value.transform;
-
-                HealthSlider.gameObject.SetActive(true);
-                HealthSlider.maxValue = value.MaxHealth;
-                HealthSlider.value = value.health;
-                value.OnHitEvent.AddListener(HealthChanged);
-
+                
+                HealthSlider.gameObject.SetActive(value.IsOwner);
+                
+                if (value.IsOwner) {
+                    // Health drawer
+                    HealthSlider.maxValue = value.maxHealth;
+                    HealthSlider.value = value.health;
+                    value.OnHitEvent.AddListener(HealthChanged);
+                    
+                    // PowerUp drawer
+                    holders = value.GetComponentsInChildren<PowerUpHolder>();
+                    for (int i = 0; i < drawers.Length; i++)
+                    {
+                        if (i < holders.Length)
+                        {
+                            drawers[i].gameObject.SetActive(true);
+                            drawers[i].Draw(holders[i].powerUp);  
+                            holders[i].OnPowerUpChanged += drawers[i].Draw;
+                        }   
+                        else
+                        {
+                            drawers[i].gameObject.SetActive(false);
+                        }
+                    }
+                }
+                
                 controllers?.SetActive(value.IsOwner && value is PlayerNetworkCharacter);
             }
-            else 
+            else
             {
                 HealthSlider.gameObject.SetActive(false);
                 
                 controllers?.SetActive(false);
             }
 
-
             StopAllCoroutines();
 
-            if (!value.IsOwner)
+            if (value == null || !value.IsOwner)
             {
                 StartCoroutine(ObserveRandomCharacter());
             }
-            
         }
     }
 
     [SerializeField]
-    private NetworkCharacter _observingCharacter;
+    private NetworkCharacter _observingCharacter = null;
 
     [SerializeField]
     private GameObject controllers;
@@ -64,7 +92,10 @@ public class CharacterUI : MonoBehaviour
     [SerializeField]
     private CinemachineVirtualCamera virtualCamera; 
 
+    [SerializeField]
+    private PowerUpDrawer[] drawers;
 
+    private PowerUpHolder[] holders;
 
     private void Awake()
     {
@@ -77,6 +108,7 @@ public class CharacterUI : MonoBehaviour
 #endif
 
         PlayerNetworkCharacter.OnPlayerCharacterSpawn += ObserveRandomCharacterCharacter_Event;
+        PlayerNetworkCharacter.OnOwnerPlayerCharacterDead += ResetObserver_Event;
         PlayerNetworkCharacter.OnOwnerPlayerCharacterSpawn += ObserveCharacter_Event;
     }
 
@@ -85,6 +117,7 @@ public class CharacterUI : MonoBehaviour
         Singleton = null;
 
         PlayerNetworkCharacter.OnPlayerCharacterSpawn -= ObserveRandomCharacterCharacter_Event;
+        PlayerNetworkCharacter.OnOwnerPlayerCharacterDead -= ResetObserver_Event;
         PlayerNetworkCharacter.OnOwnerPlayerCharacterSpawn -= ObserveCharacter_Event;
     }
 
@@ -98,6 +131,10 @@ public class CharacterUI : MonoBehaviour
     private void ObserveCharacter_Event(PlayerNetworkCharacter character)
     {
         observingCharacter = character;
+    }
+    private void ResetObserver_Event(PlayerNetworkCharacter character)
+    {
+        observingCharacter = null;
     }
 
     private void HealthChanged(Damage damage)

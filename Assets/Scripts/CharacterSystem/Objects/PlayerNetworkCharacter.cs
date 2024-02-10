@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Interactions;
 using static UnityEngine.InputSystem.InputAction;
 
 namespace CharacterSystem.Objects
@@ -21,8 +22,21 @@ namespace CharacterSystem.Objects
 
         public static List<PlayerNetworkCharacter> Players = new();
 
+        [Header("Player")]
         [SerializeField]
         private InputActionReference moveInput;
+
+        [Header("Dodge")]
+        [SerializeField]
+        [Range(0, 400)]
+        private float DodgePushForce = 130;
+
+        [SerializeField]
+        [Range(0, 400)]
+        private float DodgeRechargeTime = 0.7f;
+
+        
+        private Coroutine dodgeRechargeRoutine = null;
 
         public override void OnNetworkSpawn()
         {
@@ -42,6 +56,8 @@ namespace CharacterSystem.Objects
             
                 OnOwnerPlayerCharacterSpawn.Invoke(this);
             }
+
+
         }
         public override void OnNetworkDespawn()
         {
@@ -57,6 +73,24 @@ namespace CharacterSystem.Objects
                 action.performed -= OnMove;
                 action.canceled -= OnMove;
             }
+        }
+
+        protected override void Dodge(Vector2 direction)
+        {
+            if (IsServer && dodgeRechargeRoutine == null)
+            {
+                var V3direction = new Vector3(direction.x, 0, direction.y);
+
+                Push(V3direction * DodgePushForce);   
+
+                SetAngle(Quaternion.LookRotation(V3direction).eulerAngles.y);
+
+                dodgeRechargeRoutine = StartCoroutine(DodgeRechargeRoutine());
+            }
+        }
+        protected override void OnMoveVectorChanged(Vector2 oldMovementVector, Vector2 newMovementVector)
+        {
+
         }
 
         protected override void Dead()
@@ -75,13 +109,23 @@ namespace CharacterSystem.Objects
             base.Spawn();
 
             OnPlayerCharacterSpawn.Invoke(this);
+        }
 
+        private IEnumerator DodgeRechargeRoutine()
+        {
+            yield return new WaitForSeconds(DodgeRechargeTime);
 
+            dodgeRechargeRoutine = null;
         }
 
         private void OnMove(CallbackContext input)
         {
             SetMovementVector(input.ReadValue<Vector2>());
+
+            if (input.interaction is MultiTapInteraction)
+            {
+                Dodge(input.ReadValue<Vector2>());
+            }
         }
     }
 }

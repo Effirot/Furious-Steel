@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using CharacterSystem.Objects;
 using Unity.Netcode;
 using UnityEngine;
+using System;
+
+
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -17,14 +20,40 @@ public class PowerUpHolder : SyncedActivities
 
     public int Id => network_powerUpId.Value;
 
+    public event Action<PowerUp> OnPowerUpChanged = delegate { };
+
     private NetworkVariable<int> network_powerUpId = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Owner, NetworkVariableWritePermission.Server);
+
+    
+    public override void OnNetworkSpawn()
+    {
+        base.OnNetworkSpawn();
+
+        network_powerUpId.OnValueChanged += (Old, New) => OnPowerUpChanged.Invoke(powerUp);
+    }
+    public override void OnNetworkDespawn()
+    {
+        base.OnNetworkDespawn();
+
+        if (IsServer && powerUp != null)
+        {
+            Vector3 position = transform.position;
+            if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, LayerMask.GetMask("Ground")))
+            {
+                position = hit.point + Vector3.up * 2;
+            }
+
+            var powerupGameObject = Instantiate(powerUp.prefab, position, Quaternion.identity);
+        
+            powerupGameObject.GetComponent<NetworkObject>().Spawn();
+        }
+    }
 
     protected override void OnStateChanged(bool IsPressed)
     {
         if (powerUp != null)
         {
             powerUp.Activate(this);
-
         }
         if (IsServer)
         {

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using CharacterSystem.Blocking;
 using CharacterSystem.DamageMath;
 using JetBrains.Annotations;
@@ -50,7 +51,7 @@ namespace CharacterSystem.Objects
         public VisualEffect StulockEffect { get; private set; } = null;
 
         [SerializeField]
-        public float MaxHealth = 300;
+        public float maxHealth = 300;
 
         [SerializeField]
         public UnityEvent<Damage> OnHitEvent = new();
@@ -76,7 +77,7 @@ namespace CharacterSystem.Objects
                         regenerationCoroutine = StartCoroutine(Regeneration());
                     }
 
-                    network_health.Value = Mathf.Clamp(value, 0, MaxHealth);
+                    network_health.Value = Mathf.Clamp(value, 0, maxHealth);
                 }
             } 
         }
@@ -91,13 +92,10 @@ namespace CharacterSystem.Objects
                 {
                     network_stunlock.Value = value;
 
-                    animator.SetBool("Stunned", value > 0);
-
                     if (value > 0)
                     {
                         speed_Multipliyer = 0;
 
-                        animator.SetFloat("Walk_Speed", 0);
                         SetAngle_ClientRpc(transform.rotation.eulerAngles.y);
                     }
                 }
@@ -115,8 +113,10 @@ namespace CharacterSystem.Objects
             }
         }
 
+        public bool isGrounded { get; private set; } = false;
+
         private NetworkVariable<float> network_stunlock = new NetworkVariable<float>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-        private NetworkVariable<float> network_health = new NetworkVariable<float>(100, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+        private NetworkVariable<float> network_health = new NetworkVariable<float>(100, NetworkVariableReadPermission.Owner, NetworkVariableWritePermission.Server);
         
         private NetworkVariable<Vector3> network_position = new NetworkVariable<Vector3>(Vector3.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);    
         private NetworkVariable<Vector2> network_movementVector = new NetworkVariable<Vector2>(Vector2.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
@@ -125,6 +125,8 @@ namespace CharacterSystem.Objects
         private Coroutine regenerationCoroutine;
 
         private float speed_Multipliyer = 0;
+
+        private bool ground_checker => !Physics.OverlapSphere(transform.position, characterController.radius, LayerMask.GetMask("Ground")).Any();
 
 
         public void Kill()
@@ -190,11 +192,13 @@ namespace CharacterSystem.Objects
             velocity = direction / 150;
         }
 
-        protected void SetMovementVector(Vector2 vector)
+        protected virtual void SetMovementVector(Vector2 vector)
         {
             if (IsOwner)
             {
-                network_movementVector.Value = vector.normalized;
+                vector.Normalize();
+
+                network_movementVector.Value = vector;
             }
         }
 
@@ -204,7 +208,7 @@ namespace CharacterSystem.Objects
 
             if (IsServer)
             {
-                health = MaxHealth;
+                health = maxHealth;
 
                 StartCoroutine(StunlockReduceProcess());
 
@@ -214,6 +218,8 @@ namespace CharacterSystem.Objects
                 SetPosition_ClientRpc(transform.position);
                 Spawn_ClientRpc();
             }
+
+            network_movementVector.OnValueChanged += OnMoveVectorChanged;
         }
         public override void OnNetworkDespawn()
         {
@@ -241,6 +247,9 @@ namespace CharacterSystem.Objects
         {
             CharacterMove(CalculateMovement() + CalculatePhysicsSimulation()); 
 
+            isGrounded = ground_checker;
+            CalculateAnimations();
+
             if (!isStunned)
             {
                 RotateCharacter();
@@ -249,6 +258,11 @@ namespace CharacterSystem.Objects
         protected virtual void LateUpdate()
         {
             InterpolateToServerPosition();
+        }
+
+        protected virtual void OnMoveVectorChanged(Vector2 oldMovementVector, Vector2 newMovementVector)
+        {
+
         }
 
         protected virtual void Dead()
@@ -260,22 +274,45 @@ namespace CharacterSystem.Objects
             OnCharacterSpawn.Invoke(this);
         }
 
+        protected virtual void Dodge(Vector2 direction)
+        {
+            var walkVector = new Vector3(direction.x, 0, direction.y);
+            Push(walkVector * 130);   
+
+            SetAngle(Quaternion.Euler(walkVector).y);
+        }
+        protected void SetAngle(float angle)
+        {
+            SetAngle_ClientRpc(angle);
+        }
+        protected void SetPosition(Vector3 position)
+        {
+            SetPosition_ClientRpc(position);
+        }
+
         private Vector3 CalculateMovement()
         {
             var characterMovement = Vector3.zero;
 
-            if (IsMoving)
+            if (isStunned)
             {
-                speed_Multipliyer = Mathf.Lerp(speed_Multipliyer, movementVector.magnitude, 0.12f);
-
-                if (IsServer)
-                {
-                    characterMovement = isStunned ? Vector3.zero : new Vector3(movementVector.x, 0, movementVector.y) * (Speed / 100) * speed_Multipliyer;
-                }
+                speed_Multipliyer = 0;
             }
             else
             {
-                speed_Multipliyer = Mathf.Lerp(speed_Multipliyer, 0, 0.8f);
+                if (IsMoving)
+                {
+                    speed_Multipliyer = Mathf.Lerp(speed_Multipliyer, movementVector.magnitude, 0.12f);
+
+                    if (IsServer)
+                    {
+                        characterMovement = isStunned ? Vector3.zero : new Vector3(movementVector.x, 0, movementVector.y) * (Speed / 100) * speed_Multipliyer;
+                    }
+                }
+                else
+                {
+                    speed_Multipliyer = Mathf.Lerp(speed_Multipliyer, 0, 0.8f);
+                }
             }
 
             return characterMovement;
@@ -293,11 +330,6 @@ namespace CharacterSystem.Objects
             if (IsSpawned)
             {
                 characterController.Move(vector);
-
-                if (!isStunned)
-                {
-                    animator.SetFloat("Walk_Speed", speed_Multipliyer * Speed);
-                }
             }
         }
         private void RotateCharacter()
@@ -322,9 +354,15 @@ namespace CharacterSystem.Objects
                 }
                 else
                 {
-                    characterController.Move(Vector3.Lerp(Vector3.zero, network_position.Value - transform.position, 7f * Time.deltaTime));
+                    characterController.Move(Vector3.Lerp(Vector3.zero, network_position.Value - transform.position, 9f * Time.deltaTime));
                 }
             }
+        }
+        private void CalculateAnimations()
+        {
+            animator.SetBool("Stunned", isStunned);
+            animator.SetFloat("Walk_Speed", speed_Multipliyer * Speed);
+            animator.SetBool("IsGrounded", isGrounded);
         }
 
         private IEnumerator StunlockReduceProcess()
@@ -362,9 +400,9 @@ namespace CharacterSystem.Objects
         {
             yield return new WaitForSeconds(7f);
 
-            while (health < MaxHealth)
+            while (health < maxHealth)
             {
-                health = Mathf.Clamp(health + 10, 0, MaxHealth);
+                health = Mathf.Clamp(health + 10, 0, maxHealth);
 
                 yield return new WaitForSeconds(1f);
             }
@@ -397,6 +435,5 @@ namespace CharacterSystem.Objects
         {
             transform.position = position;
         }
-
     }
 }

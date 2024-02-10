@@ -10,8 +10,6 @@ public class ExplodePowerUp : PowerUp
 {
     private static VisualEffectAsset visualEffect = Resources.Load<VisualEffectAsset>("Effects/Explode");
     
-    public override GameObject prefab => throw new System.NotImplementedException();
-
     public override void Activate(PowerUpHolder holder)
     {
         if (holder.IsServer)
@@ -30,6 +28,7 @@ public class ExplodePowerUp : PowerUp
                         PushForce = 400,
                         Sender = holder.Character
                     });
+                    damagable.Push(Vector3.up * 400);
                 }
             }
         }

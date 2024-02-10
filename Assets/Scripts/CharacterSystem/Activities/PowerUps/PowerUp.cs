@@ -27,7 +27,7 @@ public abstract class PowerUp
 
     protected PowerUp() { }
 
-    public abstract GameObject prefab  { get; }
+    public virtual GameObject prefab => Resources.Load<GameObject>($"PowerUps/{this.GetType().Name}");
 
     public abstract void Activate(PowerUpHolder character);
     public abstract void OnPick(PowerUpHolder character);

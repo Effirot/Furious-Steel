@@ -5,6 +5,14 @@ using UnityEngine;
 
 public class DeathMenu : MonoBehaviour
 {
+    public void Respawn()
+    {
+        if (RoomManager.Singleton != null)
+        {
+            RoomManager.Singleton.SpawnWithRandomArgs();
+        }
+    }
+
     private void Awake()
     {
         PlayerNetworkCharacter.OnOwnerPlayerCharacterDead += OnOwnerPlayerCharacterDead_Event;
@@ -17,9 +25,9 @@ public class DeathMenu : MonoBehaviour
 
     private void OnOwnerPlayerCharacterDead_Event(PlayerNetworkCharacter character)
     {
-        foreach (GameObject child in transform)
+        foreach (Transform child in transform)
         {
-            child.SetActive(true);
+            child.gameObject.SetActive(true);
         }
     }
 }
