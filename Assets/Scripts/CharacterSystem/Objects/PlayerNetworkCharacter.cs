@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
+using JetBrains.Annotations;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -66,7 +67,7 @@ namespace CharacterSystem.Objects
                 OnOwnerPlayerCharacterSpawn.Invoke(this);
             }
 
-
+            SetColor();
         }
         public override void OnNetworkDespawn()
         {
@@ -81,14 +82,6 @@ namespace CharacterSystem.Objects
                 var action = moveInput.action;
                 action.performed -= OnMove;
                 action.canceled -= OnMove;
-            }
-        }
-
-        public void SetSpawnArguments(RoomManager.SpawnArguments arguments)
-        {
-            if (IsServer)
-            {
-                SetColor_ClientRpc(arguments.GetColor(), arguments.GetColor());
             }
         }
 
@@ -134,8 +127,19 @@ namespace CharacterSystem.Objects
                 lastTapTime = Time.time;
             }
         }
-        
-        
+
+
+    #error FIX IT PEACE OF SHIT    
+        private void SetColor()
+        {
+            var playerData = RoomManager.Singleton.FindClientData(OwnerClientId);
+            
+            foreach(var paintable in GetComponentsInChildren<IPaintable>())
+            {
+                paintable.SetColor(playerData.spawnArguments.GetColor());
+                paintable.SetSecondColor(playerData.spawnArguments.GetSecondColor());
+            }
+        }
         private void Dash_Internal(Vector2 direction)
         {           
             if (dodgeRechargeRoutine == null)
@@ -172,16 +176,6 @@ namespace CharacterSystem.Objects
 
             Dash_ClientRpc(direction);
             Dash_Internal(direction);
-        }
- 
-        [ClientRpc]
-        private void SetColor_ClientRpc(Color color, Color secondColor)
-        {
-            foreach(var paintable in GetComponentsInChildren<IPaintable>())
-            {
-                paintable.SetColor(color);
-                paintable.SetSecondColor(secondColor);
-            }
         }
     }
 }

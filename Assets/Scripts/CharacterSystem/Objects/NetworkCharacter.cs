@@ -251,6 +251,8 @@ namespace CharacterSystem.Objects
                 Spawn_ClientRpc();
             }
 
+            transform.position = network_position.Value;
+
         }
         public override void OnNetworkDespawn()
         {

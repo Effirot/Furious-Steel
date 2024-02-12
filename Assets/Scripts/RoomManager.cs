@@ -34,7 +34,6 @@ public class RoomManager : NetworkBehaviour
             Green,
             Blue,
             Black,
-            Gray,
             White,
             Orange,
             Purple,
@@ -76,24 +75,39 @@ public class RoomManager : NetworkBehaviour
         {
             return ColorScheme switch
             {
-                CharacterColorScheme.Red => Color.red * Intensity(10),
-                CharacterColorScheme.Green => Color.green * Intensity(10),
-                CharacterColorScheme.Blue => Color.blue * Intensity(10),
+                CharacterColorScheme.Red => Color.red,
+                CharacterColorScheme.Green => Color.green,
+                CharacterColorScheme.Blue => Color.blue,
                 CharacterColorScheme.Black => Color.black,
-                CharacterColorScheme.White => Color.white * Intensity(9),
-                CharacterColorScheme.Orange => new Color(1, 1, 0) * Intensity(10),
-                CharacterColorScheme.Purple => new Color(1, 0, 1)  * Intensity(4),
-                CharacterColorScheme.Pink => new Color(1, 0.5f, 1)  * Intensity(6),
-                CharacterColorScheme.Cyan => Color.cyan * Intensity(13),
+                CharacterColorScheme.White => Color.white,
+                CharacterColorScheme.Orange => new Color(1, 1, 0),
+                CharacterColorScheme.Purple => new Color(1, 0, 1) ,
+                CharacterColorScheme.Pink => new Color(1, 0.5f, 1) ,
+                CharacterColorScheme.Cyan => Color.cyan,
 
-                CharacterColorScheme.Celestial => new Color(1f, 0.65f, 0.36f) * Intensity(11),
+                CharacterColorScheme.Celestial => Color.white,
 
-                _ => Color.red * Intensity(13)
+                _ => Color.red
             };
         }
         public Color GetSecondColor()
         {
-            return GetColor();
+            return ColorScheme switch
+            {
+                CharacterColorScheme.Red => Color.yellow,
+                CharacterColorScheme.Green => Color.yellow,
+                CharacterColorScheme.Blue => Color.cyan,
+                CharacterColorScheme.Black => Color.black,
+                CharacterColorScheme.White => Color.black,
+                CharacterColorScheme.Orange => Color.white,
+                CharacterColorScheme.Purple => Color.blue,
+                CharacterColorScheme.Pink => Color.red,
+                CharacterColorScheme.Cyan => Color.white,
+
+                CharacterColorScheme.Celestial => new Color(1f, 0.75f, 0.56f),
+
+                _ => Color.red
+            };
         }
         private float Intensity(float value)
         {   
@@ -180,6 +194,8 @@ public class RoomManager : NetworkBehaviour
     public static event SendChatMessageDelegate OnWriteToChat = delegate { };
     public static event SendChatMessageDelegate OnServerException = delegate { };
 
+    public static event Action<ulong> OnCharacterAuthorized = delegate { }; 
+
     [SerializeField, Range(1, 64)]
     private int CharactersLimit = 12;
 
@@ -210,6 +226,19 @@ public class RoomManager : NetworkBehaviour
             CharacterIndex = UnityEngine.Random.Range(0, characters.PrefabList.Count),
             WeaponIndex = UnityEngine.Random.Range(0, weapons.PrefabList.Count)
         };
+    }
+
+    public PublicClientInfo FindClientData(ulong ClientID)
+    {
+        foreach (var item in RoomManager.Singleton.playerData)
+        {
+            if (item.ID == ClientID)
+            {
+                return item;
+            }
+        }
+        
+        throw new KeyNotFoundException("Player is not authorized");
     }
 
     public void Authorize(AuthorizeArguments authorizeInfo)
@@ -258,7 +287,6 @@ public class RoomManager : NetworkBehaviour
             NetworkManager.OnClientDisconnectCallback -= OnClientDisconnected_Event;
         }
     }
-
 
     private void Awake()
     {
@@ -346,30 +374,6 @@ public class RoomManager : NetworkBehaviour
         client.networkCharacterWeapon.SpawnWithOwnership(senderId, true);
         weaponGameObject.transform.SetParent(client.networkCharacter.transform, false);
     }
-    private void SetCharacterArgs (SpawnArguments args, ServerRpcParams Param)
-    {
-        var senderId = Param.Receive.SenderClientId;
-        var client = privateClientsData[senderId];
-
-        for (int i = 0; i < playerData.Count; i++)
-        {
-            if (playerData[i].ID == senderId)
-            {
-                var data = playerData[i];
-                data.spawnArguments = args;
-                playerData[i] = data;
-                
-                break;
-            }
-        }
-
-        if (client.networkCharacter != null)
-        {
-            client.networkCharacter.SetSpawnArguments(args);
-        }
-
-        
-    }
 
     private bool IsPlayerAuthorized (ulong ID)
     {
@@ -389,14 +393,13 @@ public class RoomManager : NetworkBehaviour
 
         SpawnCharacter(args, Param);
         SetWeapon(args, Param);
-        SetCharacterArgs(args, Param);
     }
 
     [ServerRpc (RequireOwnership = false)]
     private void Authorize_ServerRpc(AuthorizeArguments authorizeInfo, ServerRpcParams Param = default)
     {
         var senderId = Param.Receive.SenderClientId;
-                
+        
         if (IsPlayerAuthorized(senderId))
             return;
 
@@ -435,6 +438,8 @@ public class RoomManager : NetworkBehaviour
         playerData.Add(publicInfo);
 
         Debug.Log($"Player {publicInfo.Name} is succesfully authorized");
+
+        OnCharacterAuthorized.Invoke(senderId);
     }
 
 

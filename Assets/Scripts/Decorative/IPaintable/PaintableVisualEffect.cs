@@ -10,11 +10,17 @@ public class PaintableVisualEffect : MonoBehaviour, IPaintable
 
     public void SetColor(Color color)
     {
-        paintTargetVisualEffect.SetVector4("Color", color);
+        if (paintTargetVisualEffect.HasVector4("Color"))
+        {
+            paintTargetVisualEffect.SetVector4("Color", color * 10);
+        }
     }
 
     public void SetSecondColor(Color color)
     {
-        paintTargetVisualEffect.SetVector4("SecondColor", color);
+        if (paintTargetVisualEffect.HasVector4("SecondColor"))
+        {
+            paintTargetVisualEffect.SetVector4("SecondColor", color * 8);
+        }
     }
 }

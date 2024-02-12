@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine.Events;
+using Unity.Burst.Intrinsics;
 
 namespace CharacterSystem.Attacks
 {
@@ -17,11 +18,18 @@ namespace CharacterSystem.Attacks
         {
             OnStartAttackEvent.Invoke();
 
-            while (IsPressed)
+            while (IsPressed && IsPerforming)
             {
-                while (IsPressed)
+                currentAttackStatement = AttackTimingStatement.BeforeAttack;
+                OnStartAttackEvent.Invoke();
+                while (IsPressed && IsPerforming)
                 {
                     yield return new WaitForSeconds(0.01f);
+
+                    if (DisableMovingBeforeAttack)
+                    {
+                        Player.stunlock = 0.2f;
+                    }
 
                     if(BeforeAttackDelay > charge)
                     {
@@ -31,15 +39,21 @@ namespace CharacterSystem.Attacks
                     }
                 }
 
+                currentAttackStatement = AttackTimingStatement.Attack;
                 Execute(charge / BeforeAttackDelay);
                 OnAttackEvent.Invoke();
 
-                charge = 0;
+                if (DisableMovingAfterAttack)
+                {
+                    Player.stunlock = AfterAttackDelay;
+                }
 
-                OnChargeChanged.Invoke(charge);
-
+                currentAttackStatement = AttackTimingStatement.AfterAttack;
                 yield return new WaitForSeconds(AfterAttackDelay);
                 OnEndAttackEvent.Invoke();
+
+                EndAttack();
+                currentAttackStatement = AttackTimingStatement.Waiting;
 
             }
             

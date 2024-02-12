@@ -22,13 +22,13 @@ namespace CharacterSystem.Attacks
         public float BeforeAttackDelay;
 
         [SerializeField]
-        private bool DisableMovingBeforeAttack = true;
+        public bool DisableMovingBeforeAttack = true;
 
         [SerializeField, Range(0, 10)]
         public float AfterAttackDelay;
 
         [SerializeField]
-        private bool DisableMovingAfterAttack = true;
+        public bool DisableMovingAfterAttack = true;
 
         [SerializeField, SerializeReference, SubclassSelector]
         protected Caster[] casters;
