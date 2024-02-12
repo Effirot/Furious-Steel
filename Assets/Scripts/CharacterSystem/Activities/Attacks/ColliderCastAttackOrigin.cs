@@ -63,6 +63,7 @@ namespace CharacterSystem.Attacks
 
         protected override IEnumerator AttackProcessRoutine()
         {
+            currentAttackStatement = AttackTimingStatement.BeforeAttack;
             if (DisableMovingBeforeAttack)
             {
                 Player.stunlock = BeforeAttackDelay;
@@ -71,6 +72,7 @@ namespace CharacterSystem.Attacks
             OnStartAttackEvent.Invoke();
             yield return new WaitForSeconds(BeforeAttackDelay);
 
+            currentAttackStatement = AttackTimingStatement.Attack;
             Execute();
             OnAttackEvent.Invoke();
 
@@ -79,10 +81,12 @@ namespace CharacterSystem.Attacks
                 Player.stunlock = AfterAttackDelay;
             }
 
+            currentAttackStatement = AttackTimingStatement.AfterAttack;
             yield return new WaitForSeconds(AfterAttackDelay);
             OnEndAttackEvent.Invoke();
 
             EndAttack();
+            currentAttackStatement = AttackTimingStatement.Waiting;
         }
 
         private void OnDrawGizmosSelected()
@@ -128,10 +132,11 @@ namespace CharacterSystem.Attacks
         protected void Execute(float Multiplayer = 1)
         {
             ExecuteInternal_ClientRpc(Multiplayer);
+
+            Execute_Internal(Multiplayer);
         }
 
-        [ClientRpc]
-        private void ExecuteInternal_ClientRpc(float Multiplayer)
+        private void Execute_Internal(float Multiplayer)
         {
             if (Player.isStunned) return;
 
@@ -166,6 +171,12 @@ namespace CharacterSystem.Attacks
                     OnHitEvent.Invoke(damage);
                 }
             }
+        }
+
+        [ClientRpc]
+        private void ExecuteInternal_ClientRpc(float Multiplayer)
+        {
+            Execute_Internal(Multiplayer);
         }
 
 

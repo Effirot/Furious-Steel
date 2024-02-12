@@ -4,15 +4,25 @@ using CharacterSystem.Objects;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.TextCore.Text;
 using static UnityEngine.InputSystem.InputAction;
 
 namespace CharacterSystem.Attacks
 {
     public abstract class AttackOrigin : SyncedActivities
     {
+        public enum AttackTimingStatement
+        {
+            Waiting,
+            BeforeAttack,
+            Attack,
+            AfterAttack,
+        }
+
         [SerializeField]
         private NetworkVariable<bool> network_isPerforming = new NetworkVariable<bool>(true, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+
+        [SerializeField]
+        private bool IsInterruptable = false;
 
         public bool IsAttacking => attackProcess != null;
         public bool IsPerforming 
@@ -27,10 +37,11 @@ namespace CharacterSystem.Attacks
             } 
         }
 
+        public AttackTimingStatement currentAttackStatement { get; protected set; }
+
         private Coroutine attackProcess = null;
 
-        private NetworkVariable<bool> network_isPressed = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-       
+
         public void StartAttack()
         {
             if (attackProcess == null && IsPerforming)
@@ -77,12 +88,21 @@ namespace CharacterSystem.Attacks
         }
         protected override void OnStateChanged(bool value)
         {
-            if (value && IsPerforming)
+            if (IsPerforming)
             {
-                StartAttack();
+                if (value)
+                {
+                    StartAttack();
+                }
+                else
+                {
+                    if (IsInterruptable && currentAttackStatement == AttackTimingStatement.BeforeAttack)
+                    {
+                        EndAttack();
+                    }
+                }
             }
         }
-
 
         protected abstract IEnumerator AttackProcessRoutine(); 
     }

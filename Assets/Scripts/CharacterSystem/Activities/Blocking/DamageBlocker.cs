@@ -60,10 +60,8 @@ namespace CharacterSystem.Blocking
         private Coroutine BlockProcessRoutine = null;
 
 
-
         public virtual bool Block(ref Damage damage)
         {
-
             if (IsBlockInProcess)
             {
                 OnSuccesfulBlockingEvent.Invoke();
@@ -72,7 +70,7 @@ namespace CharacterSystem.Blocking
                 {
                     backDamage.Sender = Player;
                     damage.Sender.Hit(backDamage);
-                    damage.Sender.Push((transform.position - damage.Sender.transform.position) * backDamage.PushForce);
+                    damage.Sender.Push((damage.Sender.transform.position - transform.position) * backDamage.PushForce);
                 }
                 damage *= 1f - DamageReducing;
 

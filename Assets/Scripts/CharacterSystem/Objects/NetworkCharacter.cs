@@ -32,6 +32,9 @@ namespace CharacterSystem.Objects
         public const float VelocityReducingMultipliyer = 0.85f;
 
 
+        [SerializeField]
+        public float maxHealth = 300;
+
         [field : SerializeField]
         public virtual float Speed { get; set; } = 7;
 
@@ -41,20 +44,31 @@ namespace CharacterSystem.Objects
         [field : SerializeField]
         public virtual bool StunlockProtection { get; set; } = false;
 
+
+        [field : Space]
+        [field : Header("Effects")]
         [field : SerializeField]
         public VisualEffect OnHitEffect { get; private set; } = null;
+
+        [field : SerializeField]
+        public AudioSource OnHitSound { get; private set; } = null;
 
         [field : SerializeField]
         public VisualEffect OnHealEffect { get; private set; } = null;
         
         [field : SerializeField]
+        public AudioSource OnHealSound { get; private set; } = null;
+
+        [field : SerializeField]
         public VisualEffect StulockEffect { get; private set; } = null;
 
-        [SerializeField]
-        public float maxHealth = 300;
 
-        [SerializeField]
-        public UnityEvent<Damage> OnHitEvent = new();
+        public event Action<float> OnHealthChanged = delegate { };
+        
+        public event Action<float> OnStunlockChanged = delegate { };
+
+        public event Action<bool> IsGrounded = delegate { };
+
 
         public DamageBlocker Blocker { get; set; }
         public Animator animator { get; private set; }
@@ -101,7 +115,7 @@ namespace CharacterSystem.Objects
                 }
             }
         }
-        public Vector3 velocity
+        public Vector3 velocity 
         {
             get => network_velocity.Value;
             set
@@ -126,7 +140,8 @@ namespace CharacterSystem.Objects
 
         private float speed_Multipliyer = 0;
 
-        private bool ground_checker => !Physics.OverlapSphere(transform.position, characterController.radius, LayerMask.GetMask("Ground")).Any();
+        private bool ground_checker => true;
+        // private bool ground_checker => !Physics.OverlapSphere(transform.position, characterController.radius, LayerMask.GetMask("Ground")).Any();
 
 
         public void Kill()
@@ -134,15 +149,19 @@ namespace CharacterSystem.Objects
             if (IsServer)
             {
                 Dead_ClientRpc();
-
     
                 foreach (var item in GetComponentsInChildren<NetworkObject>()) 
                 {
-                    if (item.IsSpawned)
+                    if (item != NetworkObject && item.IsSpawned)
                     {
-                        item.Despawn(false);
+                        item.Despawn(true);
                     }
-                } 
+                }
+
+                if (NetworkObject.IsSpawned)
+                {
+                    NetworkObject.Despawn(false);
+                }
     
                 StartCoroutine(DisolveCorpse());
             }
@@ -155,7 +174,6 @@ namespace CharacterSystem.Objects
             }
 
             health -= damage.Value;
-            OnHitEvent.Invoke(damage);
 
             if (health <= 0)
             {
@@ -174,6 +192,12 @@ namespace CharacterSystem.Objects
 
                 OnHitEffect.Play();
             }
+
+            if (OnHitSound != null)
+            {
+                OnHitSound.Play();
+            }
+
             
             stunlock = Mathf.Max(damage.Stunlock, stunlock); 
         }
@@ -185,11 +209,19 @@ namespace CharacterSystem.Objects
             {
                 OnHealEffect.Play();
             }
+
+            if (OnHealSound != null)
+            {
+                OnHealSound.Play();
+            }
         }
         
         public void Push(Vector3 direction)
         {
-            velocity = direction / 150;
+            if (velocity.magnitude < direction.magnitude)
+            {
+                velocity = direction / 200;
+            }
         }
 
         protected virtual void SetMovementVector(Vector2 vector)
@@ -219,7 +251,6 @@ namespace CharacterSystem.Objects
                 Spawn_ClientRpc();
             }
 
-            network_movementVector.OnValueChanged += OnMoveVectorChanged;
         }
         public override void OnNetworkDespawn()
         {
@@ -233,21 +264,22 @@ namespace CharacterSystem.Objects
             characterController = GetComponent<CharacterController>();
             animator = GetComponentInChildren<Animator>();
 
-            network_position.Value = transform.position;
+            network_health.OnValueChanged += (Old, New) => OnHealthChanged.Invoke(New);
+            network_stunlock.OnValueChanged += (Old, New) => OnStunlockChanged.Invoke(New);
+
         }
-        protected virtual void Start()
-        {
-            
-        }
-        protected virtual void Update()
-        {
-            
-        }
+        
         protected virtual void FixedUpdate()
         {
             CharacterMove(CalculateMovement() + CalculatePhysicsSimulation()); 
+            
+            var newGroundedValue = ground_checker;
+            if (newGroundedValue != isGrounded)
+            {
+                IsGrounded.Invoke(newGroundedValue);
+            }
+            isGrounded = newGroundedValue;
 
-            isGrounded = ground_checker;
             CalculateAnimations();
 
             if (!isStunned)
@@ -260,9 +292,11 @@ namespace CharacterSystem.Objects
             InterpolateToServerPosition();
         }
 
-        protected virtual void OnMoveVectorChanged(Vector2 oldMovementVector, Vector2 newMovementVector)
+        protected virtual void OnDrawGizmosSelected()
         {
-
+            Gizmos.DrawWireSphere(network_position.Value, 0.1f);
+            Gizmos.DrawRay(network_position.Value, network_velocity.Value);
+            Gizmos.DrawRay(network_position.Value, network_movementVector.Value);
         }
 
         protected virtual void Dead()
@@ -274,13 +308,6 @@ namespace CharacterSystem.Objects
             OnCharacterSpawn.Invoke(this);
         }
 
-        protected virtual void Dodge(Vector2 direction)
-        {
-            var walkVector = new Vector3(direction.x, 0, direction.y);
-            Push(walkVector * 130);   
-
-            SetAngle(Quaternion.Euler(walkVector).y);
-        }
         protected void SetAngle(float angle)
         {
             SetAngle_ClientRpc(angle);
@@ -321,7 +348,9 @@ namespace CharacterSystem.Objects
         {
             velocity *= VelocityReducingMultipliyer;
 
-            var gravity = Physics.gravity * Time.fixedDeltaTime;
+            var gravity = Physics.gravity + (Vector3.up * characterController.velocity.y);
+            gravity /= 1.6f;
+            gravity *= Time.fixedDeltaTime;
 
             return velocity / 2 + gravity;
         }
@@ -417,9 +446,7 @@ namespace CharacterSystem.Objects
         }
         [ClientRpc]
         private void Dead_ClientRpc()
-        {
-            StopAllCoroutines();
-            
+        {            
             Dead();
 
             gameObject.layer = LayerMask.NameToLayer("Untouchable");

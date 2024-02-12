@@ -50,7 +50,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 4172186589
+  GlobalObjectIdHash: 646616531
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -70,6 +70,7 @@ GameObject:
   - component: {fileID: 5353385318595943586}
   - component: {fileID: 902035188893488238}
   - component: {fileID: 3630943932380031078}
+  - component: {fileID: 6219674801414713859}
   m_Layer: 6
   m_Name: SwordSlash2
   m_TagString: Weapon
@@ -86,7 +87,7 @@ Transform:
   m_GameObject: {fileID: 2720063402213980406}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: 0.99904823, w: 0.04361951}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 1.7, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -194,6 +195,7 @@ MonoBehaviour:
   Player: {fileID: 0}
   network_isPerforming:
     m_InternalValue: 0
+  IsInterruptable: 1
   RecieverPushDirection: {x: 0, y: 0, z: 0.3}
   BeforeAttackDelay: 0.7
   DisableMovingBeforeAttack: 1
@@ -201,6 +203,7 @@ MonoBehaviour:
   DisableMovingAfterAttack: 0
   casters:
   - rid: 3599542788000317513
+  - rid: 3599542942034034757
   - rid: 3599542788000317515
   impulseForce: 0.007
   impulseSource: {fileID: 897015580173702940}
@@ -287,8 +290,8 @@ MonoBehaviour:
           Value: 40
           Stunlock: 0.7
           PushForce: 100
-        position: {x: 0, y: 0, z: 2.92}
-        size: {x: 1, y: 0.58, z: 1}
+        position: {x: 0, y: 0, z: 2.38}
+        size: {x: 1, y: 0.58, z: 1.57}
         angle: {x: 0, y: 0, z: 0}
     - rid: 3599542788000317515
       type: {class: ColliderCastAttackOrigin/BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
@@ -300,6 +303,29 @@ MonoBehaviour:
         position: {x: -1.35, y: 0, z: 2}
         size: {x: 1, y: 0.3, z: 1.7}
         angle: {x: 0, y: -45, z: 0}
+    - rid: 3599542942034034757
+      type: {class: ColliderCastAttackOrigin/BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        damage:
+          Value: 0
+          Stunlock: 0
+          PushForce: 0
+        position: {x: 1.35, y: 0, z: 2}
+        size: {x: 1, y: 0.3, z: 1.7}
+        angle: {x: 0, y: 45, z: 0}
+--- !u!114 &6219674801414713859
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2720063402213980406}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef2ba1cca0108d547917f92585a7fb92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  paintTargetVisualEffect: {fileID: 5353385318595943586}
 --- !u!1 &3064985464026961555
 GameObject:
   m_ObjectHideFlags: 0
@@ -569,6 +595,7 @@ MonoBehaviour:
   BlockProcessTime: 0.5
   StunAfterBlockTime: 0
   AfterBlockTime: 2
+  animationName: 
   backDamage:
     Value: 50
     Stunlock: 7
@@ -799,6 +826,7 @@ GameObject:
   - component: {fileID: 287073946921080577}
   - component: {fileID: 6775620443892978559}
   - component: {fileID: 5123818859701553638}
+  - component: {fileID: 4354838021817215915}
   m_Layer: 6
   m_Name: SwordSlash3
   m_TagString: Weapon
@@ -815,7 +843,7 @@ Transform:
   m_GameObject: {fileID: 8184080802150522136}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 1.7, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -926,6 +954,7 @@ MonoBehaviour:
   Player: {fileID: 0}
   network_isPerforming:
     m_InternalValue: 0
+  IsInterruptable: 1
   RecieverPushDirection: {x: 0, y: 0, z: 1.5}
   BeforeAttackDelay: 0.8
   DisableMovingBeforeAttack: 1
@@ -1030,6 +1059,19 @@ MonoBehaviour:
           PushForce: 500
         position: {x: 0, y: 0, z: 4}
         radius: 0.76
+--- !u!114 &4354838021817215915
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8184080802150522136}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef2ba1cca0108d547917f92585a7fb92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  paintTargetVisualEffect: {fileID: 287073946921080577}
 --- !u!1 &8459401213791337542
 GameObject:
   m_ObjectHideFlags: 0
@@ -1042,6 +1084,7 @@ GameObject:
   - component: {fileID: 1499435788742178420}
   - component: {fileID: 8277813643076193178}
   - component: {fileID: 8958848625286676275}
+  - component: {fileID: 9034964140313423435}
   m_Layer: 6
   m_Name: SwordSlash1
   m_TagString: Weapon
@@ -1058,7 +1101,7 @@ Transform:
   m_GameObject: {fileID: 8459401213791337542}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0.46174854, w: 0.88701093}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 1.7, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1163,6 +1206,7 @@ MonoBehaviour:
   Player: {fileID: 0}
   network_isPerforming:
     m_InternalValue: 1
+  IsInterruptable: 1
   RecieverPushDirection: {x: 0, y: 0, z: 0.3}
   BeforeAttackDelay: 0.7
   DisableMovingBeforeAttack: 1
@@ -1268,4 +1312,17 @@ MonoBehaviour:
           PushForce: 100
         position: {x: -1.35, y: 0, z: 2}
         size: {x: 1, y: 0.3, z: 1.7}
-        angle: {x: 0, y: 45, z: 0}
+        angle: {x: 34.3, y: 23.07, z: 0}
+--- !u!114 &9034964140313423435
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8459401213791337542}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef2ba1cca0108d547917f92585a7fb92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  paintTargetVisualEffect: {fileID: 1499435788742178420}

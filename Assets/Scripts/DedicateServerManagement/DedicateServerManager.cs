@@ -1,4 +1,4 @@
-#if UNITY_SERVER 
+#if UNITY_SERVER && !UNITY_EDITOR
 
 using System;
 using System.Collections;
@@ -6,49 +6,28 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 using System.Text.RegularExpressions;
+using UnityEngine.SceneManagement;
 
 public class DedicateServerManager : MonoBehaviour
 {
 
+    private static void StartServerOnLoad_Event(Scene scene, LoadSceneMode mode)
+    {
+        NetworkManager.Singleton.StartServer();
+        Debug.Log("Server was Started");
+
+        SceneManager.sceneLoaded -= StartServerOnLoad_Event;
+    }
+
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void OnStartDedicateServer()
     {
-        string[] Args = System.Environment.GetCommandLineArgs ();
+        Debug.Log("LoadingScene " + System.Environment.GetCommandLineArgs()[1]);
+        
+        SceneManager.sceneLoaded += StartServerOnLoad_Event;
+        SceneManager.LoadScene(System.Environment.GetCommandLineArgs()[1]);
 
-        Debug.Log(string.Join(", ", Args));
-
-        // foreach (Group item in Regex.Matches(Args, @"\s*-*([\w|\s]*)"))
-        foreach (var item in Args)
-        {
-            ExecuteArgument(item);
-        }
-
-        NetworkManager.Singleton.StartServer();
-
-        Debug.Log("Server was Started");
     }
-
-    private static void ExecuteArgument(string argument)
-    {
-        Debug.Log("Completing " + argument);
-
-        var splitArgs = Regex.Split(argument, @"/s+");
-
-        try
-        {
-            switch (splitArgs[0].ToLower())
-            {
-                case "--load-scene":
-                    Debug.Log("Loading scene: " + splitArgs[1]);
-                break;
-            }
-        }
-        catch (Exception e)
-        {
-            Debug.LogError(e);
-        }
-    }
-
 
     public void ExecuteCommand(string command)
     {

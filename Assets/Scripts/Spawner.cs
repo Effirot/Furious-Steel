@@ -49,6 +49,8 @@ public class Spawner : NetworkBehaviour
         instance.Spawn(); 
 
         instance.TrySetParent(transform);
+    
+        Debug.Log($"Object was spawned: {instance.name}");
     }
 
     private IEnumerator SpawnProcess()

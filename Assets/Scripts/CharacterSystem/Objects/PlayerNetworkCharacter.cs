@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Interactions;
+using UnityEngine.VFX;
 using static UnityEngine.InputSystem.InputAction;
 
 namespace CharacterSystem.Objects
@@ -33,10 +35,17 @@ namespace CharacterSystem.Objects
 
         [SerializeField]
         [Range(0, 400)]
-        private float DodgeRechargeTime = 0.7f;
+        private float DodgeRechargeTime = 2f;
 
-        
+        [SerializeField]
+        private VisualEffect DodgeEffect;
+
+        [SerializeField]
+        private AudioSource DodgeSound;
+
+
         private Coroutine dodgeRechargeRoutine = null;
+        private float lastTapTime = 0;
 
         public override void OnNetworkSpawn()
         {
@@ -75,22 +84,12 @@ namespace CharacterSystem.Objects
             }
         }
 
-        protected override void Dodge(Vector2 direction)
+        public void SetSpawnArguments(RoomManager.SpawnArguments arguments)
         {
-            if (IsServer && dodgeRechargeRoutine == null)
+            if (IsServer)
             {
-                var V3direction = new Vector3(direction.x, 0, direction.y);
-
-                Push(V3direction * DodgePushForce);   
-
-                SetAngle(Quaternion.LookRotation(V3direction).eulerAngles.y);
-
-                dodgeRechargeRoutine = StartCoroutine(DodgeRechargeRoutine());
+                SetColor_ClientRpc(arguments.GetColor(), arguments.GetColor());
             }
-        }
-        protected override void OnMoveVectorChanged(Vector2 oldMovementVector, Vector2 newMovementVector)
-        {
-
         }
 
         protected override void Dead()
@@ -120,11 +119,68 @@ namespace CharacterSystem.Objects
 
         private void OnMove(CallbackContext input)
         {
-            SetMovementVector(input.ReadValue<Vector2>());
+            var value = input.ReadValue<Vector2>();
+            SetMovementVector(value);
 
-            if (input.interaction is MultiTapInteraction)
+            var multiTapDelayTime = InputSystem.settings.multiTapDelayTime;
+
+            if (input.action.WasPressedThisFrame())
             {
-                Dodge(input.ReadValue<Vector2>());
+                if ((Time.time - lastTapTime) < multiTapDelayTime)
+                {
+                    Dash_ServerRpc(value);
+                }
+    
+                lastTapTime = Time.time;
+            }
+        }
+        
+        
+        private void Dash_Internal(Vector2 direction)
+        {           
+            if (dodgeRechargeRoutine == null)
+            {
+                var V3direction = new Vector3(direction.x, 0, direction.y);
+
+                Push(V3direction * DodgePushForce);   
+                dodgeRechargeRoutine = StartCoroutine(DodgeRechargeRoutine());
+
+                DodgeEffect.SetVector3("Direction", V3direction);
+                DodgeEffect.Play();
+
+                DodgeSound.Play();
+            }
+        }
+
+        [ClientRpc]
+        private void Dash_ClientRpc(Vector2 direction)
+        {      
+            if (!IsServer)
+            {
+                Dash_Internal(direction);
+            }    
+        }
+        [ServerRpc]
+        private void Dash_ServerRpc(Vector2 direction)
+        {
+            direction.Normalize();
+
+            if (IsServer && !isStunned)
+            {
+                SetAngle(Quaternion.LookRotation(new Vector3(direction.x, 0, direction.y)).eulerAngles.y);
+            }
+
+            Dash_ClientRpc(direction);
+            Dash_Internal(direction);
+        }
+ 
+        [ClientRpc]
+        private void SetColor_ClientRpc(Color color, Color secondColor)
+        {
+            foreach(var paintable in GetComponentsInChildren<IPaintable>())
+            {
+                paintable.SetColor(color);
+                paintable.SetSecondColor(secondColor);
             }
         }
     }

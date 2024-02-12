@@ -27,7 +27,6 @@ public abstract class SyncedActivities : NetworkBehaviour
             }
         }
     }
-
     
 
     private NetworkVariable<bool> network_isPressed = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
@@ -82,10 +81,7 @@ public abstract class SyncedActivities : NetworkBehaviour
     {
         ResearchPlayer();
 
-        if (!Player.isStunned)
-        {
-            OnStateChanged(New);
-        }
+        OnStateChanged(New);
     }
     private void ResearchPlayer()
     {

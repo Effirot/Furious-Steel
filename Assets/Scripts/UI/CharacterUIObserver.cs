@@ -18,7 +18,6 @@ public class CharacterUIObserver : MonoBehaviour
             if (_observingCharacter != null)
             {
                 virtualCamera.Follow = transform;
-                _observingCharacter.OnHitEvent.RemoveListener(HealthChanged);
 
                 for (int i = 0; i < drawers.Length; i++)
                 {
@@ -42,8 +41,7 @@ public class CharacterUIObserver : MonoBehaviour
                 if (value.IsOwner) {
                     // Health drawer
                     HealthSlider.maxValue = value.maxHealth;
-                    HealthSlider.value = value.health;
-                    value.OnHitEvent.AddListener(HealthChanged);
+                    HealthSlider.value = 0;
                     
                     // PowerUp drawer
                     holders = value.GetComponentsInChildren<PowerUpHolder>();
@@ -95,11 +93,12 @@ public class CharacterUIObserver : MonoBehaviour
     [SerializeField]
     private PowerUpDrawer[] drawers;
 
-    private PowerUpHolder[] holders;
+    private PowerUpHolder[] holders = new PowerUpHolder[0]; 
 
     private void Awake()
     {
         Singleton = this;
+        observingCharacter = null;
     
 #if !UNITY_ANDROID 
         Destroy(controllers);
@@ -107,9 +106,18 @@ public class CharacterUIObserver : MonoBehaviour
         controllers = null; 
 #endif
 
+
         PlayerNetworkCharacter.OnPlayerCharacterSpawn += ObserveRandomCharacterCharacter_Event;
         PlayerNetworkCharacter.OnOwnerPlayerCharacterDead += ResetObserver_Event;
         PlayerNetworkCharacter.OnOwnerPlayerCharacterSpawn += ObserveCharacter_Event;
+    }
+
+    private void LateUpdate()
+    {
+        if (observingCharacter != null)
+        {
+            HealthSlider.value = Mathf.Lerp(HealthSlider.value, observingCharacter.health, 7 * Time.deltaTime);
+        }
     }
 
     private void OnDestroy()
@@ -137,15 +145,22 @@ public class CharacterUIObserver : MonoBehaviour
         observingCharacter = null;
     }
 
-    private void HealthChanged(Damage damage)
+    private void HealthChanged_Event(float damage)
     {
-        HealthSlider.value = observingCharacter.health;
+        HealthSlider.value = damage;
     }
 
     private IEnumerator ObserveRandomCharacter()
     {
         yield return new WaitForSecondsRealtime(5);
 
-        observingCharacter = PlayerNetworkCharacter.Players[Random.Range(0, PlayerNetworkCharacter.Players.Count - 1)];
+        if (PlayerNetworkCharacter.Players.Count == 0)
+        {
+            observingCharacter = null;
+        }
+        else
+        {
+            observingCharacter = PlayerNetworkCharacter.Players[Random.Range(0, PlayerNetworkCharacter.Players.Count - 1)];
+        }
     }
 }

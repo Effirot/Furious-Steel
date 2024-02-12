@@ -5,8 +5,6 @@ using Unity.Netcode;
 using UnityEngine;
 using System;
 
-
-
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -24,7 +22,7 @@ public class PowerUpHolder : SyncedActivities
 
     private NetworkVariable<int> network_powerUpId = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Owner, NetworkVariableWritePermission.Server);
 
-    
+
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
@@ -51,13 +49,30 @@ public class PowerUpHolder : SyncedActivities
 
     protected override void OnStateChanged(bool IsPressed)
     {
-        if (powerUp != null)
-        {
-            powerUp.Activate(this);
-        }
         if (IsServer)
         {
+            if (powerUp != null)
+            {
+                Activate_ClientRpc(Id);
+                Activate_Internal(Id);
+            }
             network_powerUpId.Value = -1;
+        }
+    }
+
+    [ClientRpc]
+    private void Activate_ClientRpc(int Id)
+    {
+        Activate_Internal(Id);
+    }
+
+    private void Activate_Internal(int Id)
+    {
+        if (Id >= 0 && Id < PowerUp.AllPowerUps.Length) 
+        { 
+            var powerUp = PowerUp.AllPowerUps[Id];
+            
+            powerUp.Activate(this);
         }
     }
 
