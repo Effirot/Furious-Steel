@@ -48,6 +48,11 @@ namespace CharacterSystem.Objects
         private Coroutine dodgeRechargeRoutine = null;
         private float lastTapTime = 0;
 
+        public void RefreshColor()
+        {
+            RefreshColor_ClientRpc();
+        }
+
         public override void OnNetworkSpawn()
         {
             Players.Add(this);
@@ -67,7 +72,7 @@ namespace CharacterSystem.Objects
                 OnOwnerPlayerCharacterSpawn.Invoke(this);
             }
 
-            SetColor();
+            RefreshColor_Internal();
         }
         public override void OnNetworkDespawn()
         {
@@ -128,18 +133,6 @@ namespace CharacterSystem.Objects
             }
         }
 
-
-    #error FIX IT PEACE OF SHIT    
-        private void SetColor()
-        {
-            var playerData = RoomManager.Singleton.FindClientData(OwnerClientId);
-            
-            foreach(var paintable in GetComponentsInChildren<IPaintable>())
-            {
-                paintable.SetColor(playerData.spawnArguments.GetColor());
-                paintable.SetSecondColor(playerData.spawnArguments.GetSecondColor());
-            }
-        }
         private void Dash_Internal(Vector2 direction)
         {           
             if (dodgeRechargeRoutine == null)
@@ -176,6 +169,22 @@ namespace CharacterSystem.Objects
 
             Dash_ClientRpc(direction);
             Dash_Internal(direction);
+        }
+
+        [ClientRpc]
+        private void RefreshColor_ClientRpc()
+        {
+            RefreshColor_Internal();
+        }
+        private void RefreshColor_Internal()
+        {
+            var playerData = RoomManager.Singleton.FindClientData(OwnerClientId);
+            
+            foreach(var paintable in GetComponentsInChildren<IPaintable>())
+            {
+                paintable.SetColor(playerData.spawnArguments.GetColor());
+                paintable.SetSecondColor(playerData.spawnArguments.GetSecondColor());
+            }
         }
     }
 }

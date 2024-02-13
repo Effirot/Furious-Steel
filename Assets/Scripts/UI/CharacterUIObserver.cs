@@ -15,20 +15,6 @@ public class CharacterUIObserver : MonoBehaviour
         get => _observingCharacter;
         set
         {
-            if (_observingCharacter != null)
-            {
-                virtualCamera.Follow = transform;
-
-                for (int i = 0; i < drawers.Length; i++)
-                {
-                    if (i < holders.Length)
-                    {
-                        drawers[i].gameObject.SetActive(false);
-                        holders[i].OnPowerUpChanged -= drawers[i].Draw;
-                    } 
-                }
-            }
-
             _observingCharacter = value;
 
             if (value != null)
@@ -36,36 +22,10 @@ public class CharacterUIObserver : MonoBehaviour
                 // Camera drawer
                 virtualCamera.Follow = value.transform;
                 
-                HealthSlider.gameObject.SetActive(value.IsOwner);
-                
-                if (value.IsOwner) {
-                    // Health drawer
-                    HealthSlider.maxValue = value.maxHealth;
-                    HealthSlider.value = 0;
-                    
-                    // PowerUp drawer
-                    holders = value.GetComponentsInChildren<PowerUpHolder>();
-                    for (int i = 0; i < drawers.Length; i++)
-                    {
-                        if (i < holders.Length)
-                        {
-                            drawers[i].gameObject.SetActive(true);
-                            drawers[i].Draw(holders[i].powerUp);  
-                            holders[i].OnPowerUpChanged += drawers[i].Draw;
-                        }   
-                        else
-                        {
-                            drawers[i].gameObject.SetActive(false);
-                        }
-                    }
-                }
-                
                 controllers?.SetActive(value.IsOwner && value is PlayerNetworkCharacter);
             }
             else
-            {
-                HealthSlider.gameObject.SetActive(false);
-                
+            {                
                 controllers?.SetActive(false);
             }
 
@@ -85,15 +45,7 @@ public class CharacterUIObserver : MonoBehaviour
     private GameObject controllers;
 
     [SerializeField]
-    private Slider HealthSlider;
-
-    [SerializeField]
     private CinemachineVirtualCamera virtualCamera; 
-
-    [SerializeField]
-    private PowerUpDrawer[] drawers;
-
-    private PowerUpHolder[] holders = new PowerUpHolder[0]; 
 
     private void Awake()
     {
@@ -110,14 +62,6 @@ public class CharacterUIObserver : MonoBehaviour
         PlayerNetworkCharacter.OnPlayerCharacterSpawn += ObserveRandomCharacterCharacter_Event;
         PlayerNetworkCharacter.OnOwnerPlayerCharacterDead += ResetObserver_Event;
         PlayerNetworkCharacter.OnOwnerPlayerCharacterSpawn += ObserveCharacter_Event;
-    }
-
-    private void LateUpdate()
-    {
-        if (observingCharacter != null)
-        {
-            HealthSlider.value = Mathf.Lerp(HealthSlider.value, observingCharacter.health, 7 * Time.deltaTime);
-        }
     }
 
     private void OnDestroy()
@@ -143,11 +87,6 @@ public class CharacterUIObserver : MonoBehaviour
     private void ResetObserver_Event(PlayerNetworkCharacter character)
     {
         observingCharacter = null;
-    }
-
-    private void HealthChanged_Event(float damage)
-    {
-        HealthSlider.value = damage;
     }
 
     private IEnumerator ObserveRandomCharacter()

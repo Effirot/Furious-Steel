@@ -9,6 +9,6 @@ public class SlowRotate : MonoBehaviour
 
     private void LateUpdate()
     {
-        transform.rotation = Quaternion.Euler(transform.eulerAngles + Angle * Time.deltaTime);
+        transform.eulerAngles = transform.eulerAngles + Angle * Time.deltaTime;
     }
 }

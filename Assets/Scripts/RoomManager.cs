@@ -240,6 +240,24 @@ public class RoomManager : NetworkBehaviour
         
         throw new KeyNotFoundException("Player is not authorized");
     }
+    public bool IsPlayerAuthorized (ulong ID)
+    {
+        return privateClientsData.ContainsKey(ID);
+    }
+    public int IndexOfPlayerData(Predicate<PublicClientInfo> alghoritm)
+    {
+        for (int i = 0; i < playerData.Count; i++)
+        {
+            var data = playerData[i];
+
+            if (alghoritm.Invoke(data))
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
 
     public void Authorize(AuthorizeArguments authorizeInfo)
     {
@@ -294,6 +312,10 @@ public class RoomManager : NetworkBehaviour
 
         playerData = new (new PublicClientInfo[0], NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     }
+    private void OnValidate()
+    {
+        Singleton = this;
+    }
 
     private void OnClientConnected_Event(ulong ID)
     {
@@ -323,13 +345,13 @@ public class RoomManager : NetworkBehaviour
         }
     }
 
-    private void SpawnCharacter (SpawnArguments args, ServerRpcParams Param)
+    private PlayerNetworkCharacter SpawnCharacter (SpawnArguments args, ServerRpcParams Param)
     {
         var senderId = Param.Receive.SenderClientId;
         var client = privateClientsData[senderId];
         
         if (client.networkCharacter != null && client.networkCharacter.IsSpawned)
-            return;
+            return null;
 
         var spawnPoint = SpawnPoint.GetSpawnPoint().transform;
 
@@ -340,8 +362,9 @@ public class RoomManager : NetworkBehaviour
         var characterGameObject = Instantiate(character, spawnPoint.position, spawnPoint.rotation);
     
         client.networkCharacter = characterGameObject.GetComponent<PlayerNetworkCharacter>();
-
         client.networkCharacter.NetworkObject.SpawnWithOwnership(senderId);
+
+        return client.networkCharacter;
     }
     private void SetWeapon (SpawnArguments args, ServerRpcParams Param)
     {
@@ -375,10 +398,6 @@ public class RoomManager : NetworkBehaviour
         weaponGameObject.transform.SetParent(client.networkCharacter.transform, false);
     }
 
-    private bool IsPlayerAuthorized (ulong ID)
-    {
-        return privateClientsData.ContainsKey(ID);
-    }
 
 
 
@@ -390,9 +409,18 @@ public class RoomManager : NetworkBehaviour
 
         if (CharactersLimit <= privateClientsData.Count)
             return;
-
-        SpawnCharacter(args, Param);
+        
+        
+            
+        var player = SpawnCharacter(args, Param);
         SetWeapon(args, Param);
+
+        if (player != null)
+        {
+            player.RefreshColor();
+        }
+
+
     }
 
     [ServerRpc (RequireOwnership = false)]
