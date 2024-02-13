@@ -9,6 +9,12 @@ using UnityEngine.Events;
 using UnityEngine.Rendering;
 using static RoomManager.SpawnArguments;
 
+
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 [DisallowMultipleComponent]
 public class RoomManager : NetworkBehaviour
 {
@@ -184,10 +190,10 @@ public class RoomManager : NetworkBehaviour
         public PublicClientInfo publicInfo;
     }
 
-
     public delegate void SendChatMessageDelegate (FixedString128Bytes senderName, FixedString512Bytes text);
 
     public static RoomManager Singleton { get; private set; }
+    public static ulong ServerClientID { get; private set; } 
 
     public static int AuthorizeTimeout = 5; 
 
@@ -230,7 +236,7 @@ public class RoomManager : NetworkBehaviour
 
     public PublicClientInfo FindClientData(ulong ClientID)
     {
-        foreach (var item in RoomManager.Singleton.playerData)
+        foreach (var item in playerData)
         {
             if (item.ID == ClientID)
             {
@@ -399,28 +405,36 @@ public class RoomManager : NetworkBehaviour
     }
 
 
+    [ClientRpc]
+    private void SetServerClientID_ClientRpc(ulong ID, ClientRpcParams clientRpcParams)
+    {
+        ServerClientID = ID;
+    } 
 
 
     [ServerRpc (RequireOwnership = false)]
     private void Spawn_ServerRpc(SpawnArguments args, ServerRpcParams Param = default)
     {
-        if (!IsPlayerAuthorized(Param.Receive.SenderClientId))
+        var DataIndex = IndexOfPlayerData(a => a.ID == Param.Receive.SenderClientId);
+        if (DataIndex == -1)
             return;
 
         if (CharactersLimit <= privateClientsData.Count)
             return;
         
-        
-            
+        var data = playerData[DataIndex];
+        data.spawnArguments = args;
+        playerData[DataIndex] = data;
+
         var player = SpawnCharacter(args, Param);
         SetWeapon(args, Param);
+
+
 
         if (player != null)
         {
             player.RefreshColor();
         }
-
-
     }
 
     [ServerRpc (RequireOwnership = false)]
@@ -465,7 +479,15 @@ public class RoomManager : NetworkBehaviour
         });
         playerData.Add(publicInfo);
 
-        Debug.Log($"Player {publicInfo.Name} is succesfully authorized");
+        SetServerClientID_ClientRpc(senderId, new ClientRpcParams()
+        {
+            Send = new ()
+            {
+                TargetClientIds = new ulong[] { senderId }
+            }
+        });
+
+        Debug.Log($"Player {publicInfo.Name} is succesfully authorized with ID:{senderId}");
 
         OnCharacterAuthorized.Invoke(senderId);
     }
@@ -488,4 +510,29 @@ public class RoomManager : NetworkBehaviour
     {
         OnWriteToChat.Invoke(senderName, text);
     }
+
+#if UNITY_EDITOR
+
+    [CustomEditor(typeof(RoomManager))]
+    public class RoomManager_Editor : Editor
+    {
+        public new RoomManager target => base.target as RoomManager;
+
+        public override void OnInspectorGUI()
+        {
+            base.OnInspectorGUI();
+
+            foreach (var player in target.playerData)
+            {
+                EditorGUILayout.BeginHorizontal();
+
+                EditorGUILayout.LabelField(player.ID.ToString());
+                EditorGUILayout.LabelField(player.Name.Value);
+
+                EditorGUILayout.EndHorizontal();
+
+            }
+        }
+    }
+#endif
 }

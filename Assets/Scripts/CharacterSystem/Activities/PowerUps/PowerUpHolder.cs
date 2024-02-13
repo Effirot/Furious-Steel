@@ -20,7 +20,7 @@ public class PowerUpHolder : SyncedActivities
 
     public event Action<PowerUp> OnPowerUpChanged = delegate { };
 
-    private NetworkVariable<int> network_powerUpId = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Owner, NetworkVariableWritePermission.Server);
+    private NetworkVariable<int> network_powerUpId = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
 
     public override void OnNetworkSpawn()

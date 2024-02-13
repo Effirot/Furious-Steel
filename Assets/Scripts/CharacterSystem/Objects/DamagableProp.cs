@@ -39,12 +39,12 @@ namespace CharacterSystem.Objects
         }
         public float stunlock { get => 0; set { return; } }
 
-        public virtual void Hit(Damage damage)
+        public virtual bool Hit(Damage damage)
         {
 
             if (!Undestroyable) 
             {
-                health -= damage.Value;
+                health -= damage.value;
 
                 if (health <= 0 && IsServer)
                 {
@@ -52,30 +52,32 @@ namespace CharacterSystem.Objects
                 }
             }
             
-            var VecrtorToTarget = transform.position - damage.Sender.transform.position;
+            var VecrtorToTarget = transform.position - damage.sender.transform.position;
             VecrtorToTarget.Normalize();
             
             if (OnHitEffect != null)
             {
                 if (OnHitEffect.HasVector3("Direction"))
                 {
-                    OnHitEffect.SetVector3("Direction", VecrtorToTarget * damage.Value);
+                    OnHitEffect.SetVector3("Direction", VecrtorToTarget * damage.value);
                 }
 
                 OnHitEffect.Play();
             }
             
             OnHitEvent.Invoke(damage);
+
+            return true;
         }
-        public virtual void Heal(float value)
+        public virtual bool Heal(Damage damage)
         { 
-            
+            return true;
         }
         public void Push(Vector3 direction)
         {
             if (TryGetComponent<Rigidbody>(out var rigidbody))
             {
-                rigidbody.AddForce(direction);
+                rigidbody.AddForce(direction * 150);
             }
         }
         public void Kill()

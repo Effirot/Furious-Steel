@@ -31,7 +31,7 @@ namespace CharacterSystem.Objects
         public const float ServerPositionInterpolationTime = 0.07f;
         public const float VelocityReducingMultipliyer = 0.85f;
 
-
+        [Header("Movement")]
         [SerializeField]
         public float maxHealth = 300;
 
@@ -39,10 +39,84 @@ namespace CharacterSystem.Objects
         public virtual float Speed { get; set; } = 7;
 
         [field : SerializeField]
-        public virtual bool IsMoving { get; set; } = true;
-
-        [field : SerializeField]
         public virtual bool StunlockProtection { get; set; } = false;
+
+        public bool AllowMove 
+        { 
+            get => _AllowMove; 
+            set 
+            {
+                _AllowMove = value;
+            } 
+        }
+        public bool AllowRotate 
+        { 
+            get => _AllowRotate; 
+            set 
+            {
+                if (!value)
+                {                    
+                    SetAngle(transform.eulerAngles.y);
+                }
+                _AllowRotate = value;
+            } 
+        }
+        public bool AllowGravity 
+        { 
+            get => _AllowGravity; 
+            set 
+            {
+                _AllowGravity = value;
+            } 
+        }
+        public bool KnockbackProtection 
+        { 
+            get => _KnockbackProtection; 
+            set 
+            {
+                _KnockbackProtection = value;
+            } 
+        }
+        public bool AllowDash 
+        { 
+            get => _AllowDash; 
+            set 
+            {
+                _AllowDash = value;
+            } 
+        }
+        public bool AllowAttacking 
+        { 
+            get => _AllowAttacking; 
+            set 
+            {
+                _AllowAttacking = value;
+            } 
+        }
+        public bool Invincible 
+        { 
+            get => _Invincible; 
+            set 
+            {
+                _Invincible = value;
+            } 
+        }
+
+
+        [SerializeField]
+        public bool _AllowMove = true;
+        [SerializeField]
+        public bool _AllowRotate = true;
+        [SerializeField]
+        public bool _AllowGravity = true;
+        [SerializeField]
+        public bool _KnockbackProtection = false;
+        [SerializeField]
+        public bool _AllowDash = true;
+        [SerializeField]
+        public bool _AllowAttacking = true;
+        [SerializeField]
+        public bool _Invincible = false;
 
 
         [field : Space]
@@ -166,28 +240,26 @@ namespace CharacterSystem.Objects
                 StartCoroutine(DisolveCorpse());
             }
         }
-        public virtual void Hit(Damage damage)
+        public virtual bool Hit(Damage damage)
         {
-            if (Blocker != null && Blocker.Block(ref damage))
-            {
-                return;
-            }
+            if (Invincible) 
+                return false;
 
-            health -= damage.Value;
+            var isBlocked = Blocker != null && Blocker.Block(ref damage);
+            
+
+            health -= damage.value;
 
             if (health <= 0)
             {
                 Kill();
             }
-
-            var VecrtorToTarget = transform.position - damage.Sender.transform.position;
-            VecrtorToTarget.Normalize();
             
             if (OnHitEffect != null)
             {
                 if (OnHitEffect.HasVector3("Direction"))
                 {
-                    OnHitEffect.SetVector3("Direction", VecrtorToTarget * damage.PushForce);
+                    OnHitEffect.SetVector3("Direction", damage.pushDirection);
                 }
 
                 OnHitEffect.Play();
@@ -199,11 +271,13 @@ namespace CharacterSystem.Objects
             }
 
             
-            stunlock = Mathf.Max(damage.Stunlock, stunlock); 
+            stunlock = Mathf.Max(damage.stunlock, stunlock); 
+
+            return isBlocked;
         }
-        public virtual void Heal(float value)
+        public virtual bool Heal(Damage damage)
         {
-            health += value;
+            health += damage.value;
 
             if (OnHealEffect != null)
             {
@@ -214,13 +288,14 @@ namespace CharacterSystem.Objects
             {
                 OnHealSound.Play();
             }
+
+            return true;
         }
-        
         public void Push(Vector3 direction)
         {
-            if (velocity.magnitude < direction.magnitude)
+            if (velocity.magnitude < direction.magnitude && !_KnockbackProtection)
             {
-                velocity = direction / 200;
+                velocity = direction;
             }
         }
 
@@ -329,13 +404,13 @@ namespace CharacterSystem.Objects
             }
             else
             {
-                if (IsMoving)
+                if (AllowMove)
                 {
-                    speed_Multipliyer = Mathf.Lerp(speed_Multipliyer, movementVector.magnitude, 0.12f);
+                    speed_Multipliyer = Mathf.Lerp(speed_Multipliyer, movementVector.magnitude * (Speed / 100), 0.12f);
 
                     if (IsServer)
                     {
-                        characterMovement = isStunned ? Vector3.zero : new Vector3(movementVector.x, 0, movementVector.y) * (Speed / 100) * speed_Multipliyer;
+                        characterMovement = isStunned ? Vector3.zero : new Vector3(movementVector.x, 0, movementVector.y) * speed_Multipliyer;
                     }
                 }
                 else
@@ -350,9 +425,14 @@ namespace CharacterSystem.Objects
         {
             velocity *= VelocityReducingMultipliyer;
 
-            var gravity = Physics.gravity + (Vector3.up * characterController.velocity.y);
-            gravity /= 1.6f;
-            gravity *= Time.fixedDeltaTime;
+            Vector3 gravity = Vector3.zero; 
+            
+            if (AllowGravity)
+            {
+                gravity = Physics.gravity + (Vector3.up * characterController.velocity.y);
+                gravity /= 1.6f;
+                gravity *= Time.fixedDeltaTime;
+            }
 
             return velocity / 2 + gravity;
         }
@@ -365,7 +445,7 @@ namespace CharacterSystem.Objects
         }
         private void RotateCharacter()
         {
-            if (IsMoving)
+            if (AllowRotate)
             {
                 var lookVector = new Vector3 (movementVector.x, 0, movementVector.y);
 

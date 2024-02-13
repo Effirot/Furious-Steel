@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using CharacterSystem.Objects;
@@ -25,15 +26,27 @@ public class CharacterMiniUI : MonoBehaviour
     
     private void Awake()
     {
+        if (networkCharacter.IsOwner)
+        {
+            transform.localScale = Vector3.one * 1.3f;
+        }
+
         if (NicknameField != null && networkCharacter is PlayerNetworkCharacter)
         {
             var player = (PlayerNetworkCharacter)networkCharacter;
-            
-            NicknameField.text = RoomManager.Singleton.FindClientData(player.OwnerClientId).Name.ToString();
+                            
+            NicknameField.text = player.ClientData.Name.ToString();
         }
 
         if (HealthField != null)
         {
+            if (networkCharacter is PlayerNetworkCharacter)
+            {
+                var player = (PlayerNetworkCharacter)networkCharacter;
+
+                HealthField.fillRect.GetComponent<Graphic>().color = player.ClientData.spawnArguments.GetColor();
+            }
+
             SetHealthSliderValue_Event(networkCharacter.health);
             networkCharacter.OnHealthChanged += SetHealthSliderValue_Event;
         }

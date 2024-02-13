@@ -19,17 +19,16 @@ public class ExplodePowerUp : PowerUp
                 if (collider.gameObject == holder.gameObject)
                     continue;
 
-                if (collider.TryGetComponent<IDamagable>(out var damagable))
+                var VectorToTarget = holder.transform.position - collider.transform.position;
+                VectorToTarget.Normalize();
+
+                Damage.Deliver(collider.gameObject, new Damage()
                 {
-                    damagable.Hit(new Damage()
-                    {
-                        Value = 60,
-                        Stunlock = 1,
-                        PushForce = 400,
-                        Sender = holder.Character
-                    });
-                    damagable.Push(Vector3.up * 400);
-                }
+                    value = 60,
+                    stunlock = 1,
+                    pushDirection = Vector3.up * 2 + VectorToTarget,
+                    sender = holder.gameObject
+                });
             }
         }
 

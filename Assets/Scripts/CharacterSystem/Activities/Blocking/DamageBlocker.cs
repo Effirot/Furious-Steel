@@ -66,15 +66,16 @@ namespace CharacterSystem.Blocking
             {
                 OnSuccesfulBlockingEvent.Invoke();
 
-                if (damage.Sender != null)
+                if (damage.sender != null)
                 {
-                    backDamage.Sender = Player;
-                    damage.Sender.Hit(backDamage);
-                    damage.Sender.Push((damage.Sender.transform.position - transform.position) * backDamage.PushForce);
+                    backDamage.sender = Invoker.gameObject;
+                    backDamage.pushDirection = damage.sender.transform.position - transform.position;
+                    
+                    Damage.Deliver(damage.sender, backDamage);
                 }
                 damage *= 1f - DamageReducing;
 
-                return damage.Value == 0;
+                return damage.value == 0;
             }
 
             StopBlockProcess();
@@ -84,20 +85,20 @@ namespace CharacterSystem.Blocking
 
         private IEnumerator BlockProcess()
         {
-            Player.animator.Play(animationName);
+            Invoker.animator.Play(animationName);
 
-            Player.Blocker = this;
+            Invoker.Blocker = this;
 
             if (StunBeforeBlockTime)
             {
-                Player.stunlock = BeforeBlockTime;
+                Invoker.stunlock = BeforeBlockTime;
             }
             OnBeforeBlockingEvent.Invoke();
             yield return new WaitForSeconds(BeforeBlockTime);
             
             if (StunAtBlockProcessTime)
             {
-                Player.stunlock = BlockProcessTime;
+                Invoker.stunlock = BlockProcessTime;
             }
             IsBlockInProcess = true;
             OnBlockingEvent.Invoke();
@@ -106,7 +107,7 @@ namespace CharacterSystem.Blocking
 
             if (StunAfterBlockTime)
             {
-                Player.stunlock = AfterBlockTime;
+                Invoker.stunlock = AfterBlockTime;
             }
             OnAfterBlockingEvent.Invoke();
             yield return new WaitForSeconds(AfterBlockTime);
@@ -132,7 +133,7 @@ namespace CharacterSystem.Blocking
                 
                 BlockProcessRoutine = null;
 
-                Player.stunlock = 0;
+                Invoker.stunlock = 0;
             }
 
             IsBlockInProcess = false;

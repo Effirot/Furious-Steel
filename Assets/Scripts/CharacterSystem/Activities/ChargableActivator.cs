@@ -25,7 +25,7 @@ public class ChargableActivator : SyncedActivities
 
     public void AddValue(Damage value)
     {
-        AddValue(value.Value);
+        AddValue(value.value);
     }
 
     protected override void OnStateChanged(bool IsPressed)

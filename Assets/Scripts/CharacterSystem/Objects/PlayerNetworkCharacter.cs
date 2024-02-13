@@ -31,8 +31,8 @@ namespace CharacterSystem.Objects
 
         [Header("Dodge")]
         [SerializeField]
-        [Range(0, 400)]
-        private float DodgePushForce = 130;
+        [Range(0, 10)]
+        private float DodgePushForce = 2;
 
         [SerializeField]
         [Range(0, 400)]
@@ -44,6 +44,10 @@ namespace CharacterSystem.Objects
         [SerializeField]
         private AudioSource DodgeSound;
 
+        public ulong ServerClientID => network_serverClientId.Value;
+        public RoomManager.PublicClientInfo ClientData => RoomManager.Singleton.FindClientData(ServerClientID);
+
+        private NetworkVariable<ulong> network_serverClientId = new (0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
         private Coroutine dodgeRechargeRoutine = null;
         private float lastTapTime = 0;
@@ -70,6 +74,11 @@ namespace CharacterSystem.Objects
                 action.canceled += OnMove;
             
                 OnOwnerPlayerCharacterSpawn.Invoke(this);
+            }
+
+            if (IsServer)
+            {
+                network_serverClientId.Value = OwnerClientId;
             }
 
             RefreshColor_Internal();
@@ -133,21 +142,6 @@ namespace CharacterSystem.Objects
             }
         }
 
-        private void Dash_Internal(Vector2 direction)
-        {           
-            if (dodgeRechargeRoutine == null)
-            {
-                var V3direction = new Vector3(direction.x, 0, direction.y);
-
-                Push(V3direction * DodgePushForce);   
-                dodgeRechargeRoutine = StartCoroutine(DodgeRechargeRoutine());
-
-                DodgeEffect.SetVector3("Direction", V3direction);
-                DodgeEffect.Play();
-
-                DodgeSound.Play();
-            }
-        }
 
         [ClientRpc]
         private void Dash_ClientRpc(Vector2 direction)
@@ -170,6 +164,21 @@ namespace CharacterSystem.Objects
             Dash_ClientRpc(direction);
             Dash_Internal(direction);
         }
+        private void Dash_Internal(Vector2 direction)
+        {           
+            if (dodgeRechargeRoutine == null && AllowDash)
+            {
+                var V3direction = new Vector3(direction.x, 0, direction.y);
+
+                Push(V3direction * DodgePushForce);   
+                dodgeRechargeRoutine = StartCoroutine(DodgeRechargeRoutine());
+
+                DodgeEffect.SetVector3("Direction", V3direction);
+                DodgeEffect.Play();
+
+                DodgeSound.Play();
+            }
+        }
 
         [ClientRpc]
         private void RefreshColor_ClientRpc()
@@ -177,13 +186,11 @@ namespace CharacterSystem.Objects
             RefreshColor_Internal();
         }
         private void RefreshColor_Internal()
-        {
-            var playerData = RoomManager.Singleton.FindClientData(OwnerClientId);
-            
+        {            
             foreach(var paintable in GetComponentsInChildren<IPaintable>())
             {
-                paintable.SetColor(playerData.spawnArguments.GetColor());
-                paintable.SetSecondColor(playerData.spawnArguments.GetSecondColor());
+                paintable.SetColor(ClientData.spawnArguments.GetColor());
+                paintable.SetSecondColor(ClientData.spawnArguments.GetSecondColor());
             }
         }
     }

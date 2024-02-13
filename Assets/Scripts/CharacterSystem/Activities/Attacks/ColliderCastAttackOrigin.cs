@@ -11,7 +11,7 @@ using UnityEngine.VFX;
 
 namespace CharacterSystem.Attacks
 {
-    public class ColliderCastAttackOrigin : AttackOrigin
+    public class ColliderCastAttackOrigin : DamageSource
     {
         [SerializeField]
         private Vector3 RecieverPushDirection = Vector3.forward * 5;
@@ -30,8 +30,6 @@ namespace CharacterSystem.Attacks
         [SerializeField]
         public bool DisableMovingAfterAttack = true;
 
-        [SerializeField, SerializeReference, SubclassSelector]
-        protected Caster[] casters;
 
         [Space]
         [Header("Impulse")]
@@ -54,31 +52,40 @@ namespace CharacterSystem.Attacks
         [SerializeField]
         public UnityEvent OnAttackEvent = new();
 
-        [SerializeField]
-        public UnityEvent<Damage> OnHitEvent = new();
 
         [SerializeField]
         public UnityEvent OnEndAttackEvent = new();
 
+
+        public override void OnNetworkSpawn()
+        {
+            base.OnNetworkSpawn();
+            
+            OnHitEvent.AddListener((damage) => impulseSource?.GenerateImpulse(impulseForce));
+        }
 
         protected override IEnumerator AttackProcessRoutine()
         {
             currentAttackStatement = AttackTimingStatement.BeforeAttack;
             if (DisableMovingBeforeAttack)
             {
-                Player.stunlock = BeforeAttackDelay;
+                Invoker.stunlock = BeforeAttackDelay;
             }
 
             OnStartAttackEvent.Invoke();
             yield return new WaitForSeconds(BeforeAttackDelay);
 
             currentAttackStatement = AttackTimingStatement.Attack;
+
+            
+            PlayAnimation();
+            Invoker.Push(Invoker.transform.rotation * RecieverPushDirection);       
             Execute();
             OnAttackEvent.Invoke();
 
             if (DisableMovingAfterAttack)
             {
-                Player.stunlock = AfterAttackDelay;
+                Invoker.stunlock = AfterAttackDelay;
             }
 
             currentAttackStatement = AttackTimingStatement.AfterAttack;
@@ -89,11 +96,19 @@ namespace CharacterSystem.Attacks
             currentAttackStatement = AttackTimingStatement.Waiting;
         }
 
+        private void PlayAnimation()
+        {
+            if (PlayAnimationName.Length > 0)
+            {
+                Invoker.animator.Play(PlayAnimationName);
+            }
+        }
+
         private void OnDrawGizmosSelected()
         {
-            if (Player != null)
+            if (Invoker != null)
             {
-                DrawArrow(Player.transform.position, RecieverPushDirection, Color.cyan);
+                DrawArrow(Invoker.transform.position, RecieverPushDirection, Color.cyan);
             }
 
             if (casters != null)
@@ -128,127 +143,5 @@ namespace CharacterSystem.Attacks
             Gizmos.DrawRay(pos + direction, left * arrowHeadLength);
         }
     
-
-        protected void Execute(float Multiplayer = 1)
-        {
-            ExecuteInternal_ClientRpc(Multiplayer);
-
-            Execute_Internal(Multiplayer);
-        }
-
-        private void Execute_Internal(float Multiplayer)
-        {
-            if (Player.isStunned) return;
-
-            if (PlayAnimationName.Length > 0)
-            {
-                Player.animator.Play(PlayAnimationName);
-            }
-
-            Player.Push(Player.transform.rotation * RecieverPushDirection * Multiplayer * 100);           
-
-            foreach (var cast in casters)
-            {
-                foreach (var collider in cast.CastCollider(transform))
-                {
-                    if (collider.isTrigger)
-                        continue;
-
-                    var damage = cast.damage;
-                    damage *= Multiplayer;
-                    damage.Sender = Player;
-
-                    var VecrtorToTarget = collider.transform.position - transform.position;
-
-                    if (collider.gameObject.TryGetComponent<IDamagable>(out var damagable))
-                    {
-                        damagable.Hit(damage);
-                        damagable.Push(VecrtorToTarget * damage.PushForce);
-
-                        impulseSource?.GenerateImpulse(VecrtorToTarget * damage.Value * impulseForce);
-                    }
-
-                    OnHitEvent.Invoke(damage);
-                }
-            }
-        }
-
-        [ClientRpc]
-        private void ExecuteInternal_ClientRpc(float Multiplayer)
-        {
-            Execute_Internal(Multiplayer);
-        }
-
-
-        [Serializable]
-        public abstract class Caster 
-        {
-            public Damage damage;
-
-            public abstract Collider[] CastCollider(Transform transform);
-            public abstract void CastColliderGizmos(Transform transform);
-        }
-
-        [Serializable]
-        public class BoxCaster : Caster
-        {
-            public Vector3 position = Vector3.zero;
-            public Vector3 size = Vector3.one;
-            public Vector3 angle = Vector3.zero;
-
-            public override Collider[] CastCollider(Transform transform)
-            {
-                return Physics.OverlapBox(transform.position + (transform.rotation * position), size, Quaternion.Euler(angle + transform.eulerAngles));
-            }
-
-            public override void CastColliderGizmos(Transform transform)
-            {
-                Gizmos.matrix = Matrix4x4.TRS(transform.position + (transform.rotation * position), Quaternion.Euler(transform.eulerAngles + angle), Vector3.one);
-
-                Gizmos.DrawWireCube(Vector3.zero, size * 2);
-            }
-        }
-        [Serializable]
-        public class SphereCaster : Caster
-        {
-            public Vector3 position;
-            public float radius = 1;
-
-            public override Collider[] CastCollider(Transform transform)
-            {
-                return Physics.OverlapSphere(transform.position + (transform.rotation * position), radius);
-            }
-
-            public override void CastColliderGizmos(Transform transform)
-            {
-                Gizmos.matrix = Matrix4x4.TRS(transform.position + (transform.rotation * position), transform.rotation, Vector3.one);
-
-                Gizmos.DrawWireSphere(Vector3.zero, radius);
-            }
-        }
-        [Serializable]
-        public class RaycastCaster : Caster
-        {
-            public Vector3 origin;
-            public Vector3 direction;
-            public float maxDistance;
-
-            public override Collider[] CastCollider(Transform transform)
-            {
-                if (Physics.Raycast((transform.rotation * origin) + transform.position, transform.rotation * direction, out var hit, maxDistance))
-                {
-                    return new Collider[] { hit.collider };
-                }
-                else
-                {
-                    return new Collider[0];
-                }
-            }
-
-            public override void CastColliderGizmos(Transform transform)
-            {
-                Gizmos.DrawRay((transform.rotation * origin) + transform.position, (transform.rotation * direction.normalized) * maxDistance);
-            }
-        }
     }
 }

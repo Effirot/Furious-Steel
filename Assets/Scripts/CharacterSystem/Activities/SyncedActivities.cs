@@ -14,7 +14,7 @@ public abstract class SyncedActivities : NetworkBehaviour
     private InputActionReference inputAction;
 
     [HideInInspector]
-    public NetworkCharacter Player = null;
+    public NetworkCharacter Invoker = null;
     
     public bool IsPressed 
     {
@@ -85,9 +85,9 @@ public abstract class SyncedActivities : NetworkBehaviour
     }
     private void ResearchPlayer()
     {
-        if (Player == null)
+        if (Invoker == null)
         {
-            Player = GetComponentInParent<NetworkCharacter>();
+            Invoker = GetComponentInParent<NetworkCharacter>();
         }
     }
 }

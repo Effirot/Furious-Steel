@@ -28,7 +28,7 @@ namespace CharacterSystem.Attacks
 
                     if (DisableMovingBeforeAttack)
                     {
-                        Player.stunlock = 0.2f;
+                        Invoker.stunlock = 0.2f;
                     }
 
                     if(BeforeAttackDelay > charge)
@@ -45,7 +45,7 @@ namespace CharacterSystem.Attacks
 
                 if (DisableMovingAfterAttack)
                 {
-                    Player.stunlock = AfterAttackDelay;
+                    Invoker.stunlock = AfterAttackDelay;
                 }
 
                 currentAttackStatement = AttackTimingStatement.AfterAttack;
