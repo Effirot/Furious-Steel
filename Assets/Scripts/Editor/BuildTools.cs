@@ -8,6 +8,8 @@ using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using Unity.EditorCoroutines.Editor;
 using UnityEngine.SceneManagement;
+using System.Linq;
+using System.IO;
 
 public class BuildTools : EditorWindow
 {
@@ -74,25 +76,24 @@ public class BuildTools : EditorWindow
     {
         GUILayout.Label("Platforms to Build", EditorStyles.boldLabel);
 
-        BuildServer = EditorGUILayout.Toggle(BuildServer, "Build Server additive");
-
-        // display the build targets
-        int numEnabled = 0;
+        BuildServer = EditorGUILayout.Toggle("Build Server additive", BuildServer);
+        
+        EditorGUILayout.Space();
+        
+        int activeBuildTargetsCount = 0;
         foreach(var target in AvailableTargets)
         {
             TargetsToBuild[target] = EditorGUILayout.Toggle(target.ToString(), TargetsToBuild[target]);
 
             if (TargetsToBuild[target])
             {
-                numEnabled++;
+                activeBuildTargetsCount++;
             }
         }
 
-        if (numEnabled > 0)
-        {
-            // attempt to build?
-            string prompt = numEnabled == 1 ? "Build 1 Platform" : $"Build {numEnabled} Platforms";
-            if (GUILayout.Button(prompt))
+        if (activeBuildTargetsCount > 0)
+        {            
+            if (GUILayout.Button(activeBuildTargetsCount == 1 ? "Build 1 Platform" : $"Build {activeBuildTargetsCount} Platforms"))
             {
                 StartBuild();
             }
@@ -101,19 +102,33 @@ public class BuildTools : EditorWindow
 
     private void StartBuild()
     {
-        string path = EditorUtility.SaveFolderPanel("Choose Location of Built Game", "", "");
-       
+        
+        var targets = TargetsToBuild.Where(KeyValue => KeyValue.Value).ToArray();
+        foreach(var target in targets)
+        {
+            PerformBuild(target.Key, "Build", StandaloneBuildSubtarget.Player);
+
+            // if (BuildServer)
+            // {
+            //     if (target.Key == BuildTarget.StandaloneWindows || 
+            //         target.Key == BuildTarget.StandaloneWindows64 ||
+            //         target.Key == BuildTarget.StandaloneLinux64)
+            //     {
+            //         Directory.CreateDirectory(path + $"\\{target.Key}_Server");
+            //         PerformBuild(target.Key, path + $"\\{target.Key}_Server", StandaloneBuildSubtarget.Server);
+            //     }
+            // }
+        }
+
+        // System.Diagnostics.Process.Start("explorer.exe", path);
     }
 
-    void PerformBuild(BuildTarget target, string path, StandaloneBuildSubtarget standaloneBuildSubtarget, BuildOptions options = BuildOptions.None)
-    {
-
-        #error FIX THIS YOU LIZZY FAT ASS
-        
+    private void PerformBuild(BuildTarget target, string directory, StandaloneBuildSubtarget standaloneBuildSubtarget, BuildOptions options = BuildOptions.None)
+    {        
         BuildPlayerOptions buildPlayerOptions = new()
         {
             scenes = GetAllScenesNames(),
-            locationPathName = path,
+            locationPathName = directory,
             target = target,
             subtarget = (int) standaloneBuildSubtarget,  
             options = options,
@@ -122,62 +137,13 @@ public class BuildTools : EditorWindow
         BuildPipeline.BuildPlayer(buildPlayerOptions);
     }
 
-    bool BuildIndividualTarget(BuildTarget target)
-    {
-        BuildPlayerOptions options = new BuildPlayerOptions();
-
-        // get the list of scenes
-        List<string> scenes = new List<string>();
-        foreach (var scene in EditorBuildSettings.scenes)
-            scenes.Add(scene.path);
-
-        // configure the build
-        options.scenes = scenes.ToArray();
-        options.target = target;
-        options.targetGroup = GetTargetGroupForTarget(target);
-
-        // set the location path name
-        if (target == BuildTarget.Android)
-        {
-            string apkName = PlayerSettings.productName + ".apk";
-            options.locationPathName = System.IO.Path.Combine("Builds", target.ToString(), apkName);
-        }else if (target == BuildTarget.StandaloneWindows64)
-        {
-            options.locationPathName = System.IO.Path.Combine("Builds", target.ToString(), PlayerSettings.productName+".exe");
-        }else if (target == BuildTarget.StandaloneLinux64)
-        {
-            options.locationPathName = System.IO.Path.Combine("Builds", target.ToString(), PlayerSettings.productName+".x86_64");
-        }
-        else
-            options.locationPathName = System.IO.Path.Combine("Builds", target.ToString(), PlayerSettings.productName);
-
-        if (BuildPipeline.BuildCanBeAppended(target, options.locationPathName) == CanAppendBuild.Yes)
-            options.options = BuildOptions.AcceptExternalModificationsToPlayer;
-        else
-            options.options = BuildOptions.None;
-
-        // start the build
-        BuildReport report = BuildPipeline.BuildPlayer(options);
-
-        // was the build successful?
-        if (report.summary.result == BuildResult.Succeeded)
-        {
-            Debug.Log($"Build for {target.ToString()} completed in {report.summary.totalTime.Seconds} seconds");
-            return true;
-        }
-
-        Debug.LogError($"Build for {target.ToString()} failed");
-        
-        return false;
-    }
-
     private string[] GetAllScenesNames()
     {
         var result = new string[SceneManager.sceneCount];
 
         for (int i = 0; i < SceneManager.sceneCount; i++)
         {
-            result[i] = SceneManager.GetSceneAt(i).name;
+            result[i] = SceneManager.GetSceneAt(i).path;
         }
 
         return result;

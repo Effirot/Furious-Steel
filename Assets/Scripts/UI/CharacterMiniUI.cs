@@ -24,20 +24,53 @@ public class CharacterMiniUI : MonoBehaviour
     private PowerUpHolder[] holders; 
 
     
-    private void Awake()
+    private void Start()
     {
+        StartCoroutine(WaitUntillSpawn());
+    }
+    private void OnDestroy()
+    {
+        UnsubscribeToHolders();
+        UnsubscribeToHealthBar();
+    }
+    private void LateUpdate()
+    {
+        transform.rotation = Camera.main.transform.rotation;
+    }
+
+    private void SetHealthSliderValue_Event(float value)
+    {
+        HealthField.maxValue = networkCharacter.maxHealth;
+        HealthField.value = value;
+    }
+
+    private IEnumerator WaitUntillSpawn()
+    {
+        yield return new WaitUntil(() => networkCharacter.IsSpawned);
+
         if (networkCharacter.IsOwner)
         {
             transform.localScale = Vector3.one * 1.3f;
         }
 
+        SetNickname();
+
+        SubscribeToHealthBar();
+        SubscribeToHolders();
+    }
+
+    private void SetNickname()
+    {
         if (NicknameField != null && networkCharacter is PlayerNetworkCharacter)
         {
             var player = (PlayerNetworkCharacter)networkCharacter;
                             
             NicknameField.text = player.ClientData.Name.ToString();
         }
+    }
 
+    private void SubscribeToHealthBar()
+    {
         if (HealthField != null)
         {
             if (networkCharacter is PlayerNetworkCharacter)
@@ -50,27 +83,13 @@ public class CharacterMiniUI : MonoBehaviour
             SetHealthSliderValue_Event(networkCharacter.health);
             networkCharacter.OnHealthChanged += SetHealthSliderValue_Event;
         }
-
-        SubscribeToHolders();
     }
-    private void OnDestroy()
+    private void UnsubscribeToHealthBar()
     {
-        UnsubscribeToHolders();
-
         if (HealthField != null)
         {
             networkCharacter.OnHealthChanged -= SetHealthSliderValue_Event;
         }
-    }
-    private void LateUpdate()
-    {
-        transform.rotation = Camera.main.transform.rotation;
-    }
-
-    private void SetHealthSliderValue_Event(float value)
-    {
-        HealthField.maxValue = networkCharacter.maxHealth;
-        HealthField.value = value;
     }
 
     private void SubscribeToHolders()

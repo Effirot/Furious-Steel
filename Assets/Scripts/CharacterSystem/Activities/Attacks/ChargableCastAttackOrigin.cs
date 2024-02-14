@@ -17,6 +17,7 @@ namespace CharacterSystem.Attacks
         protected override IEnumerator AttackProcessRoutine()
         {
             OnStartAttackEvent.Invoke();
+            characterPermissionsBuffer = Invoker.permissions;
 
             while (IsPressed && IsPerforming)
             {
@@ -26,10 +27,7 @@ namespace CharacterSystem.Attacks
                 {
                     yield return new WaitForSeconds(0.01f);
 
-                    if (DisableMovingBeforeAttack)
-                    {
-                        Invoker.stunlock = 0.2f;
-                    }
+                    Invoker.permissions = beforeAttackPermissions;
 
                     if(BeforeAttackDelay > charge)
                     {
@@ -40,13 +38,14 @@ namespace CharacterSystem.Attacks
                 }
 
                 currentAttackStatement = AttackTimingStatement.Attack;
+
+                    
+                PlayAnimation();
+                Invoker.Push(Invoker.transform.rotation * RecieverPushDirection);  
                 Execute(charge / BeforeAttackDelay);
                 OnAttackEvent.Invoke();
 
-                if (DisableMovingAfterAttack)
-                {
-                    Invoker.stunlock = AfterAttackDelay;
-                }
+                Invoker.permissions = afterAttackPermissions;
 
                 currentAttackStatement = AttackTimingStatement.AfterAttack;
                 yield return new WaitForSeconds(AfterAttackDelay);
@@ -54,9 +53,10 @@ namespace CharacterSystem.Attacks
 
                 EndAttack();
                 currentAttackStatement = AttackTimingStatement.Waiting;
-
             }
             
+            Invoker.permissions = characterPermissionsBuffer;
+
             EndAttack();
         }
     }

@@ -47,7 +47,7 @@ namespace CharacterSystem.DamageMath
         [SerializeField, Range(0, 10)]
         public float stunlock;
 
-        [SerializeField, Range(0, 1200)]
+        [SerializeField]
         public Vector3 pushDirection;
 
         [NonSerialized]

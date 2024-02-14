@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
-using JetBrains.Annotations;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -166,7 +165,7 @@ namespace CharacterSystem.Objects
         }
         private void Dash_Internal(Vector2 direction)
         {           
-            if (dodgeRechargeRoutine == null && AllowDash)
+            if (dodgeRechargeRoutine == null && permissions.HasFlag(CharacterPermission.AllowDash))
             {
                 var V3direction = new Vector3(direction.x, 0, direction.y);
 

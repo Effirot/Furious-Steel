@@ -14,12 +14,30 @@ using UnityEngine.VFX;
 
 namespace CharacterSystem.Objects
 {
+    [Flags]
+    public enum CharacterPermission 
+    {
+        Default             = AllowMove | AllowRotate | AllowDash | AllowGravity | AllowAttacking,
+
+        AllowMove           = 0b_0000_0001,
+        AllowRotate         = 0b_0000_0010,
+        AllowGravity        = 0b_0000_0100,
+        AllowDash           = 0b_0000_1000,
+        AllowAttacking      = 0b_0001_0000,
+
+        StunProtection      = 0b_0010_0000,
+        Invincible          = 0b_0100_0000,
+        KnockbackProtection = 0b_1000_0000,
+    }
+
     [DisallowMultipleComponent]
     [RequireComponent(typeof(CharacterController))]
     public class NetworkCharacter : 
         NetworkBehaviour,
         IDamagable
     {
+
+
         public delegate void OnCharacterStateChangedDelegate (NetworkCharacter character);
         public delegate void OnCharacterSendDamageDelegate (NetworkCharacter character, Damage damage);
         
@@ -36,87 +54,10 @@ namespace CharacterSystem.Objects
         public float maxHealth = 300;
 
         [field : SerializeField]
-        public virtual float Speed { get; set; } = 7;
+        public virtual float Speed { get; set; } = 11;
 
         [field : SerializeField]
-        public virtual bool StunlockProtection { get; set; } = false;
-
-        public bool AllowMove 
-        { 
-            get => _AllowMove; 
-            set 
-            {
-                _AllowMove = value;
-            } 
-        }
-        public bool AllowRotate 
-        { 
-            get => _AllowRotate; 
-            set 
-            {
-                if (!value)
-                {                    
-                    SetAngle(transform.eulerAngles.y);
-                }
-                _AllowRotate = value;
-            } 
-        }
-        public bool AllowGravity 
-        { 
-            get => _AllowGravity; 
-            set 
-            {
-                _AllowGravity = value;
-            } 
-        }
-        public bool KnockbackProtection 
-        { 
-            get => _KnockbackProtection; 
-            set 
-            {
-                _KnockbackProtection = value;
-            } 
-        }
-        public bool AllowDash 
-        { 
-            get => _AllowDash; 
-            set 
-            {
-                _AllowDash = value;
-            } 
-        }
-        public bool AllowAttacking 
-        { 
-            get => _AllowAttacking; 
-            set 
-            {
-                _AllowAttacking = value;
-            } 
-        }
-        public bool Invincible 
-        { 
-            get => _Invincible; 
-            set 
-            {
-                _Invincible = value;
-            } 
-        }
-
-
-        [SerializeField]
-        public bool _AllowMove = true;
-        [SerializeField]
-        public bool _AllowRotate = true;
-        [SerializeField]
-        public bool _AllowGravity = true;
-        [SerializeField]
-        public bool _KnockbackProtection = false;
-        [SerializeField]
-        public bool _AllowDash = true;
-        [SerializeField]
-        public bool _AllowAttacking = true;
-        [SerializeField]
-        public bool _Invincible = false;
+        public float Mass { get; set; } = 1.2f;
 
 
         [field : Space]
@@ -148,6 +89,23 @@ namespace CharacterSystem.Objects
         public Animator animator { get; private set; }
         public CharacterController characterController { get; private set; }
 
+        public CharacterPermission permissions
+        {
+            get => network_permissions.Value;
+            set
+            {
+                if (IsServer)
+                {
+                    if (!network_permissions.Value.HasFlag(CharacterPermission.AllowRotate))
+                    {   
+                        SetAngle(transform.eulerAngles.y);
+                    }
+
+                    network_permissions.Value = value;
+                }
+            }
+        }
+
         public float health 
         { 
             get => network_health.Value; 
@@ -176,7 +134,7 @@ namespace CharacterSystem.Objects
             get => network_stunlock.Value;
             set 
             {
-                if (IsServer && !StunlockProtection)
+                if (IsServer && !permissions.HasFlag(CharacterPermission.StunProtection))
                 {
                     network_stunlock.Value = value;
 
@@ -205,6 +163,8 @@ namespace CharacterSystem.Objects
 
         private NetworkVariable<float> network_stunlock = new NetworkVariable<float>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
         private NetworkVariable<float> network_health = new NetworkVariable<float>(100, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+        
+        private NetworkVariable<CharacterPermission> network_permissions = new (CharacterPermission.Default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
         
         private NetworkVariable<Vector3> network_position = new NetworkVariable<Vector3>(Vector3.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);    
         private NetworkVariable<Vector2> network_movementVector = new NetworkVariable<Vector2>(Vector2.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
@@ -242,7 +202,7 @@ namespace CharacterSystem.Objects
         }
         public virtual bool Hit(Damage damage)
         {
-            if (Invincible) 
+            if (permissions.HasFlag(CharacterPermission.Invincible)) 
                 return false;
 
             var isBlocked = Blocker != null && Blocker.Block(ref damage);
@@ -293,7 +253,7 @@ namespace CharacterSystem.Objects
         }
         public void Push(Vector3 direction)
         {
-            if (velocity.magnitude < direction.magnitude && !_KnockbackProtection)
+            if (velocity.magnitude < direction.magnitude && !permissions.HasFlag(CharacterPermission.KnockbackProtection))
             {
                 velocity = direction;
             }
@@ -404,7 +364,7 @@ namespace CharacterSystem.Objects
             }
             else
             {
-                if (AllowMove)
+                if (permissions.HasFlag(CharacterPermission.AllowMove))
                 {
                     speed_Multipliyer = Mathf.Lerp(speed_Multipliyer, movementVector.magnitude * (Speed / 100), 0.12f);
 
@@ -424,17 +384,18 @@ namespace CharacterSystem.Objects
         private Vector3 CalculatePhysicsSimulation()
         {
             velocity *= VelocityReducingMultipliyer;
+            velocity /= Mass;
 
             Vector3 gravity = Vector3.zero; 
             
-            if (AllowGravity)
+            if (permissions.HasFlag(CharacterPermission.AllowGravity))
             {
                 gravity = Physics.gravity + (Vector3.up * characterController.velocity.y);
                 gravity /= 1.6f;
                 gravity *= Time.fixedDeltaTime;
             }
 
-            return velocity / 2 + gravity;
+            return velocity + gravity;
         }
         private void CharacterMove(Vector3 vector)
         {
@@ -445,7 +406,7 @@ namespace CharacterSystem.Objects
         }
         private void RotateCharacter()
         {
-            if (AllowRotate)
+            if (permissions.HasFlag(CharacterPermission.AllowRotate))
             {
                 var lookVector = new Vector3 (movementVector.x, 0, movementVector.y);
 
@@ -472,7 +433,7 @@ namespace CharacterSystem.Objects
         private void CalculateAnimations()
         {
             animator.SetBool("Stunned", isStunned);
-            animator.SetFloat("Walk_Speed", speed_Multipliyer * Speed);
+            animator.SetFloat("Walk_Speed", speed_Multipliyer);
             animator.SetBool("IsGrounded", isGrounded);
         }
 

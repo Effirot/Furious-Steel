@@ -173,7 +173,7 @@ GameObject:
   - component: {fileID: 3630943932380031078}
   - component: {fileID: 6219674801414713859}
   m_Layer: 6
-  m_Name: SwordSlash2
+  m_Name: MaceSlash2
   m_TagString: Weapon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -187,13 +187,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2720063402213980406}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: 0.99904823, w: 0.04361951}
+  m_LocalRotation: {x: 0, y: 0, z: 1, w: 0}
   m_LocalPosition: {x: 0, y: 1.7, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2682705565289463711}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 175}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 180}
 --- !u!2083052967 &5353385318595943586
 VisualEffect:
   m_ObjectHideFlags: 0
@@ -299,19 +299,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: 2243838571553120747, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
-  Player: {fileID: 0}
-  network_isPerforming:
-    m_InternalValue: 0
-  IsInterruptable: 1
-  RecieverPushDirection: {x: 0, y: 0, z: 0.3}
-  BeforeAttackDelay: 0.7
-  DisableMovingBeforeAttack: 1
-  AfterAttackDelay: 1.06
-  DisableMovingAfterAttack: 0
+  Invoker: {fileID: 0}
   casters:
   - rid: 3599542788000317513
   - rid: 3599542942034034757
   - rid: 3599542788000317515
+  network_isPerforming:
+    m_InternalValue: 0
+  IsInterruptable: 1
+  OnHitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  SpeedReducing: 6
+  RecieverPushDirection: {x: 0, y: 0, z: 0.3}
+  BeforeAttackDelay: 0.7
+  beforeAttackPermissions: 21
+  AfterAttackDelay: 1.06
+  afterAttackPermissions: 12
   impulseForce: 0.007
   impulseSource: {fileID: 897015580173702940}
   PlayAnimationName: 
@@ -357,9 +361,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  OnHitEvent:
-    m_PersistentCalls:
-      m_Calls: []
   OnEndAttackEvent:
     m_PersistentCalls:
       m_Calls:
@@ -394,19 +395,21 @@ MonoBehaviour:
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          Value: 40
-          Stunlock: 0.7
-          PushForce: 100
+          value: 50
+          type: 0
+          stunlock: 2
+          pushDirection: {x: 0, y: 0, z: 2}
         position: {x: 0, y: 0, z: 2.38}
-        size: {x: 1, y: 0.58, z: 1.57}
+        size: {x: 1, y: 0.63, z: 1.57}
         angle: {x: 0, y: 0, z: 0}
     - rid: 3599542788000317515
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          Value: 30
-          Stunlock: 0.5
-          PushForce: 100
+          value: 50
+          type: 0
+          stunlock: 2
+          pushDirection: {x: -1, y: 0, z: 2}
         position: {x: -1.35, y: 0, z: 2}
         size: {x: 1, y: 0.3, z: 1.7}
         angle: {x: 0, y: -45, z: 0}
@@ -414,9 +417,10 @@ MonoBehaviour:
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          Value: 0
-          Stunlock: 0
-          PushForce: 0
+          value: 50
+          type: 0
+          stunlock: 2
+          pushDirection: {x: 1, y: 0, z: 2}
         position: {x: 1.35, y: 0, z: 2}
         size: {x: 1, y: 0.3, z: 1.7}
         angle: {x: 0, y: 45, z: 0}
@@ -695,7 +699,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: 4628471853980608337, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
-  Player: {fileID: 0}
+  Invoker: {fileID: 0}
   StunBeforeBlockTime: 1
   BeforeBlockTime: 0.19
   StunAtBlockProcessTime: 1
@@ -704,9 +708,10 @@ MonoBehaviour:
   AfterBlockTime: 2
   animationName: 
   backDamage:
-    Value: 50
-    Stunlock: 7
-    PushForce: 100
+    value: 0
+    type: 0
+    stunlock: 0
+    pushDirection: {x: 0, y: 0, z: 0}
   DamageReducing: 1
   OnBeforeBlockingEvent:
     m_PersistentCalls:
@@ -935,7 +940,7 @@ GameObject:
   - component: {fileID: 5123818859701553638}
   - component: {fileID: 4354838021817215915}
   m_Layer: 6
-  m_Name: SwordSlash3
+  m_Name: MaceSlash3
   m_TagString: Weapon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1061,18 +1066,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: 2243838571553120747, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
-  Player: {fileID: 0}
-  network_isPerforming:
-    m_InternalValue: 0
-  IsInterruptable: 1
-  RecieverPushDirection: {x: 0, y: 0, z: 1.5}
-  BeforeAttackDelay: 0.8
-  DisableMovingBeforeAttack: 1
-  AfterAttackDelay: 1.2
-  DisableMovingAfterAttack: 0
+  Invoker: {fileID: 0}
   casters:
   - rid: 3599542788000317517
   - rid: 3599542788000317518
+  network_isPerforming:
+    m_InternalValue: 0
+  IsInterruptable: 1
+  OnHitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  SpeedReducing: 6
+  RecieverPushDirection: {x: 0, y: 0, z: 0.8}
+  BeforeAttackDelay: 0.8
+  beforeAttackPermissions: 21
+  AfterAttackDelay: 1.2
+  afterAttackPermissions: 12
   impulseForce: 0.007
   impulseSource: {fileID: 897015580173702940}
   PlayAnimationName: 
@@ -1118,9 +1127,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  OnHitEvent:
-    m_PersistentCalls:
-      m_Calls: []
   OnEndAttackEvent:
     m_PersistentCalls:
       m_Calls:
@@ -1155,18 +1161,20 @@ MonoBehaviour:
       type: {class: SphereCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          Value: 40
-          Stunlock: 1
-          PushForce: 200
+          value: 30
+          type: 0
+          stunlock: 3
+          pushDirection: {x: 0, y: 4, z: 2}
         position: {x: 0, y: 0, z: 3}
         radius: 2.02
     - rid: 3599542788000317518
       type: {class: SphereCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          Value: 80
-          Stunlock: 2
-          PushForce: 500
+          value: 70
+          type: 0
+          stunlock: 7
+          pushDirection: {x: 0, y: 7, z: 0}
         position: {x: 0, y: 0, z: 4}
         radius: 0.76
 --- !u!114 &4354838021817215915
@@ -1196,7 +1204,7 @@ GameObject:
   - component: {fileID: 8958848625286676275}
   - component: {fileID: 9034964140313423435}
   m_Layer: 6
-  m_Name: SwordSlash1
+  m_Name: MaceSlash1
   m_TagString: Weapon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1316,18 +1324,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: 2243838571553120747, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
-  Player: {fileID: 0}
-  network_isPerforming:
-    m_InternalValue: 1
-  IsInterruptable: 1
-  RecieverPushDirection: {x: 0, y: 0, z: 0.3}
-  BeforeAttackDelay: 0.7
-  DisableMovingBeforeAttack: 1
-  AfterAttackDelay: 1.06
-  DisableMovingAfterAttack: 0
+  Invoker: {fileID: 0}
   casters:
   - rid: 3599542788000317514
   - rid: 3599542788000317516
+  network_isPerforming:
+    m_InternalValue: 1
+  IsInterruptable: 1
+  OnHitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  SpeedReducing: 6
+  RecieverPushDirection: {x: 0, y: 0, z: 0.3}
+  BeforeAttackDelay: 0.7
+  beforeAttackPermissions: 21
+  AfterAttackDelay: 1.06
+  afterAttackPermissions: 12
   impulseForce: 0.007
   impulseSource: {fileID: 897015580173702940}
   PlayAnimationName: 
@@ -1373,9 +1385,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  OnHitEvent:
-    m_PersistentCalls:
-      m_Calls: []
   OnEndAttackEvent:
     m_PersistentCalls:
       m_Calls:
@@ -1410,9 +1419,10 @@ MonoBehaviour:
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          Value: 40
-          Stunlock: 0.7
-          PushForce: 100
+          value: 40
+          type: 0
+          stunlock: 2
+          pushDirection: {x: 0, y: 1, z: 2}
         position: {x: 0, y: 0, z: 2.92}
         size: {x: 1, y: 0.58, z: 1}
         angle: {x: 0, y: 0, z: 0}
@@ -1420,9 +1430,10 @@ MonoBehaviour:
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          Value: 30
-          Stunlock: 0.5
-          PushForce: 100
+          value: 40
+          type: 0
+          stunlock: 2
+          pushDirection: {x: 0, y: 1, z: 2}
         position: {x: -1.35, y: 0, z: 2}
         size: {x: 1, y: 0.3, z: 1.7}
         angle: {x: 34.3, y: 23.07, z: 0}

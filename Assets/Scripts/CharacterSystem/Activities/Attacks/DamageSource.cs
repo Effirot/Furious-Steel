@@ -56,7 +56,7 @@ namespace CharacterSystem.Attacks
 
         public void StartAttack()
         {
-            if (!IsAttacking && IsPerforming)
+            if (Invoker.permissions.HasFlag(CharacterPermission.AllowAttacking) && !IsAttacking && IsPerforming)
             {
                 Invoker.Speed -= SpeedReducing;
 

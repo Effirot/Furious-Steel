@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using CharacterSystem.DamageMath;
+using CharacterSystem.Objects;
 using Cinemachine;
 using Unity.Netcode;
 using UnityEngine;
@@ -14,7 +15,7 @@ namespace CharacterSystem.Attacks
     public class ColliderCastAttackOrigin : DamageSource
     {
         [SerializeField]
-        private Vector3 RecieverPushDirection = Vector3.forward * 5;
+        protected Vector3 RecieverPushDirection = Vector3.forward * 5;
 
         [Space]
         [Header("Attack")]
@@ -22,13 +23,13 @@ namespace CharacterSystem.Attacks
         public float BeforeAttackDelay;
 
         [SerializeField]
-        public bool DisableMovingBeforeAttack = true;
+        public CharacterPermission beforeAttackPermissions = CharacterPermission.Default;
 
         [SerializeField, Range(0, 10)]
         public float AfterAttackDelay;
 
         [SerializeField]
-        public bool DisableMovingAfterAttack = true;
+        public CharacterPermission afterAttackPermissions = CharacterPermission.Default;
 
 
         [Space]
@@ -57,6 +58,8 @@ namespace CharacterSystem.Attacks
         public UnityEvent OnEndAttackEvent = new();
 
 
+        protected CharacterPermission characterPermissionsBuffer;
+
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
@@ -67,10 +70,8 @@ namespace CharacterSystem.Attacks
         protected override IEnumerator AttackProcessRoutine()
         {
             currentAttackStatement = AttackTimingStatement.BeforeAttack;
-            if (DisableMovingBeforeAttack)
-            {
-                Invoker.stunlock = BeforeAttackDelay;
-            }
+            
+            Invoker.permissions = beforeAttackPermissions;
 
             OnStartAttackEvent.Invoke();
             yield return new WaitForSeconds(BeforeAttackDelay);
@@ -79,24 +80,22 @@ namespace CharacterSystem.Attacks
 
             
             PlayAnimation();
-            Invoker.Push(Invoker.transform.rotation * RecieverPushDirection);       
+            Invoker.Push(Invoker.transform.rotation * RecieverPushDirection);   
             Execute();
             OnAttackEvent.Invoke();
 
-            if (DisableMovingAfterAttack)
-            {
-                Invoker.stunlock = AfterAttackDelay;
-            }
+            Invoker.permissions = afterAttackPermissions;         
 
             currentAttackStatement = AttackTimingStatement.AfterAttack;
             yield return new WaitForSeconds(AfterAttackDelay);
             OnEndAttackEvent.Invoke();
 
-            EndAttack();
+            Invoker.permissions = CharacterPermission.Default;
             currentAttackStatement = AttackTimingStatement.Waiting;
+            EndAttack();
         }
 
-        private void PlayAnimation()
+        protected void PlayAnimation()
         {
             if (PlayAnimationName.Length > 0)
             {

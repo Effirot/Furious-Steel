@@ -193,7 +193,6 @@ public class RoomManager : NetworkBehaviour
     public delegate void SendChatMessageDelegate (FixedString128Bytes senderName, FixedString512Bytes text);
 
     public static RoomManager Singleton { get; private set; }
-    public static ulong ServerClientID { get; private set; } 
 
     public static int AuthorizeTimeout = 5; 
 
@@ -405,12 +404,6 @@ public class RoomManager : NetworkBehaviour
     }
 
 
-    [ClientRpc]
-    private void SetServerClientID_ClientRpc(ulong ID, ClientRpcParams clientRpcParams)
-    {
-        ServerClientID = ID;
-    } 
-
 
     [ServerRpc (RequireOwnership = false)]
     private void Spawn_ServerRpc(SpawnArguments args, ServerRpcParams Param = default)
@@ -478,14 +471,6 @@ public class RoomManager : NetworkBehaviour
             publicInfo = publicInfo
         });
         playerData.Add(publicInfo);
-
-        SetServerClientID_ClientRpc(senderId, new ClientRpcParams()
-        {
-            Send = new ()
-            {
-                TargetClientIds = new ulong[] { senderId }
-            }
-        });
 
         Debug.Log($"Player {publicInfo.Name} is succesfully authorized with ID:{senderId}");
 

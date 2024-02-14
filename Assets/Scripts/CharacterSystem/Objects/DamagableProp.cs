@@ -77,7 +77,7 @@ namespace CharacterSystem.Objects
         {
             if (TryGetComponent<Rigidbody>(out var rigidbody))
             {
-                rigidbody.AddForce(direction * 150);
+                rigidbody.AddForce(direction * 300);
             }
         }
         public void Kill()

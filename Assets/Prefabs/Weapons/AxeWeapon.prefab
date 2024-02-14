@@ -28,13 +28,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 733128074332865202}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 1.78, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2682705565289463711}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
 --- !u!2083052967 &2671491295424534077
 VisualEffect:
   m_ObjectHideFlags: 0
@@ -55,6 +55,9 @@ VisualEffect:
       m_Array:
       - m_Value: 2.81
         m_Name: Radius
+        m_Overridden: 1
+      - m_Value: 0.8
+        m_Name: Lifetime
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
@@ -153,17 +156,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: 2243838571553120747, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
-  Player: {fileID: 0}
+  Invoker: {fileID: 0}
+  casters:
+  - rid: 3599542970816659525
   network_isPerforming:
     m_InternalValue: 1
   IsInterruptable: 0
-  RecieverPushDirection: {x: 0, y: 0, z: 2}
+  OnHitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  SpeedReducing: 3.5
+  RecieverPushDirection: {x: 0, y: 0, z: 1}
   BeforeAttackDelay: 2
-  DisableMovingBeforeAttack: 0
+  beforeAttackPermissions: 23
   AfterAttackDelay: 0.51
-  DisableMovingAfterAttack: 1
-  casters:
-  - rid: 3599542970816659525
+  afterAttackPermissions: 4
   impulseForce: 0.01
   impulseSource: {fileID: 897015580173702940}
   PlayAnimationName: Torso.Attack1
@@ -221,9 +228,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  OnHitEvent:
-    m_PersistentCalls:
-      m_Calls: []
   OnEndAttackEvent:
     m_PersistentCalls:
       m_Calls:
@@ -261,9 +265,10 @@ MonoBehaviour:
       type: {class: SphereCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          Value: 80
-          Stunlock: 3
-          PushForce: 250
+          value: 65
+          type: 0
+          stunlock: 2
+          pushDirection: {x: 0, y: 0, z: 2}
         position: {x: 0, y: 0, z: 1.41}
         radius: 1
 --- !u!1 &1517727645108543378
@@ -384,13 +389,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1735389488738035293}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0.07928639, y: 0.079286374, z: 0.7026476, w: 0.7026476}
   m_LocalPosition: {x: 0, y: 1.78, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2682705565289463711}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -12.876, y: 0, z: 90}
 --- !u!2083052967 &535129801098038292
 VisualEffect:
   m_ObjectHideFlags: 0
@@ -414,6 +419,9 @@ VisualEffect:
         m_Overridden: 1
       - m_Value: 1.84
         m_Name: Size
+        m_Overridden: 1
+      - m_Value: 0.8
+        m_Name: Lifetime
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
@@ -512,17 +520,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: 2243838571553120747, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
-  Player: {fileID: 0}
+  Invoker: {fileID: 0}
+  casters:
+  - rid: 3599542970816659526
   network_isPerforming:
     m_InternalValue: 1
   IsInterruptable: 0
-  RecieverPushDirection: {x: 0, y: 0, z: 2}
-  BeforeAttackDelay: 2
-  DisableMovingBeforeAttack: 0
+  OnHitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  SpeedReducing: 3.5
+  RecieverPushDirection: {x: 0, y: 0, z: 1}
+  BeforeAttackDelay: 3
+  beforeAttackPermissions: 23
   AfterAttackDelay: 0.51
-  DisableMovingAfterAttack: 1
-  casters:
-  - rid: 3599542970816659526
+  afterAttackPermissions: 4
   impulseForce: 0.01
   impulseSource: {fileID: 897015580173702940}
   PlayAnimationName: Torso.Attack1
@@ -580,9 +592,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  OnHitEvent:
-    m_PersistentCalls:
-      m_Calls: []
   OnEndAttackEvent:
     m_PersistentCalls:
       m_Calls:
@@ -620,9 +629,10 @@ MonoBehaviour:
       type: {class: SphereCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          Value: 80
-          Stunlock: 3
-          PushForce: 250
+          value: 65
+          type: 0
+          stunlock: 3
+          pushDirection: {x: 0, y: 6, z: 0}
         position: {x: 0, y: 0, z: 1.41}
         radius: 1
 --- !u!1 &4723289115519241682
@@ -680,6 +690,9 @@ VisualEffect:
       m_Array:
       - m_Value: 2.81
         m_Name: Radius
+        m_Overridden: 1
+      - m_Value: 0.36
+        m_Name: Lifetime
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
@@ -775,17 +788,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: 2243838571553120747, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
-  Player: {fileID: 0}
+  Invoker: {fileID: 0}
+  casters:
+  - rid: 3599542970816659527
   network_isPerforming:
     m_InternalValue: 1
   IsInterruptable: 0
-  RecieverPushDirection: {x: 0, y: 0, z: 2}
+  OnHitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  SpeedReducing: 3.5
+  RecieverPushDirection: {x: 0, y: 0, z: 1}
   BeforeAttackDelay: 2
-  DisableMovingBeforeAttack: 0
+  beforeAttackPermissions: 23
   AfterAttackDelay: 0.51
-  DisableMovingAfterAttack: 1
-  casters:
-  - rid: 3599542970816659527
+  afterAttackPermissions: 4
   impulseForce: 0.01
   impulseSource: {fileID: 897015580173702940}
   PlayAnimationName: Torso.Attack1
@@ -843,9 +860,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  OnHitEvent:
-    m_PersistentCalls:
-      m_Calls: []
   OnEndAttackEvent:
     m_PersistentCalls:
       m_Calls:
@@ -883,9 +897,10 @@ MonoBehaviour:
       type: {class: SphereCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          Value: 80
-          Stunlock: 3
-          PushForce: 250
+          value: 65
+          type: 0
+          stunlock: 2
+          pushDirection: {x: 2, y: 0, z: 0}
         position: {x: 0, y: 0, z: 1.41}
         radius: 1
 --- !u!1 &4748355354840485092
@@ -1021,7 +1036,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: 4628471853980608337, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
-  Player: {fileID: 0}
+  Invoker: {fileID: 0}
   StunBeforeBlockTime: 1
   BeforeBlockTime: 0
   StunAtBlockProcessTime: 1
@@ -1030,9 +1045,10 @@ MonoBehaviour:
   AfterBlockTime: 0.54
   animationName: Torso.Block
   backDamage:
-    Value: 10
-    Stunlock: 5
-    PushForce: 150
+    value: 0
+    type: 0
+    stunlock: 0
+    pushDirection: {x: 0, y: 0, z: 0}
   DamageReducing: 0.6
   OnBeforeBlockingEvent:
     m_PersistentCalls:

@@ -150,11 +150,11 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   SpeedReducing: 3
-  RecieverPushDirection: {x: 0, y: 0, z: 1}
+  RecieverPushDirection: {x: 0, y: 0, z: 0.3}
   BeforeAttackDelay: 0.2
-  DisableMovingBeforeAttack: 1
+  beforeAttackPermissions: 4
   AfterAttackDelay: 0.45
-  DisableMovingAfterAttack: 1
+  afterAttackPermissions: 55
   impulseForce: 0.01
   impulseSource: {fileID: 897015580173702940}
   PlayAnimationName: Torso.Attack2
@@ -222,10 +222,10 @@ MonoBehaviour:
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          value: 0
+          value: 30
           type: 0
-          stunlock: 0
-          pushDirection: {x: 0, y: 0, z: 0}
+          stunlock: 0.2
+          pushDirection: {x: 0, y: 0, z: 50}
         position: {x: 0, y: 0, z: 1.54}
         size: {x: 1.37, y: 0.84, z: 0.9}
         angle: {x: 0, y: 0, z: 0}
@@ -242,6 +242,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   paintTargetVisualEffect: {fileID: 2671491295424534077}
+  intensity: 25.3
+  intensitySecondary: 26.3
 --- !u!1 &1517727645108543378
 GameObject:
   m_ObjectHideFlags: 0
@@ -501,11 +503,11 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   SpeedReducing: 3
-  RecieverPushDirection: {x: 0, y: 0, z: 3}
+  RecieverPushDirection: {x: 0, y: 0, z: 1}
   BeforeAttackDelay: 0.2
-  DisableMovingBeforeAttack: 1
+  beforeAttackPermissions: 4
   AfterAttackDelay: 0.6
-  DisableMovingAfterAttack: 1
+  afterAttackPermissions: 53
   impulseForce: 0.01
   impulseSource: {fileID: 897015580173702940}
   PlayAnimationName: Torso.Attack3
@@ -573,10 +575,10 @@ MonoBehaviour:
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          value: 0
+          value: 40
           type: 0
-          stunlock: 0
-          pushDirection: {x: 0, y: 0, z: 0}
+          stunlock: 1
+          pushDirection: {x: 0, y: 0, z: 2}
         position: {x: 0, y: 0, z: 1.54}
         size: {x: 1.37, y: 0.84, z: 0.9}
         angle: {x: 0, y: 0, z: 0}
@@ -584,10 +586,10 @@ MonoBehaviour:
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          value: 0
+          value: 45
           type: 0
-          stunlock: 0
-          pushDirection: {x: 0, y: 0, z: 0}
+          stunlock: 2
+          pushDirection: {x: 0, y: 0, z: 1}
         position: {x: 0, y: 0, z: 2.53}
         size: {x: 0.71, y: 0.51, z: 0.65}
         angle: {x: 0, y: 0, z: 0}
@@ -604,6 +606,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   paintTargetVisualEffect: {fileID: 535129801098038292}
+  intensity: 25.3
+  intensitySecondary: 26.3
 --- !u!1 &4723289115519241682
 GameObject:
   m_ObjectHideFlags: 0
@@ -657,9 +661,12 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 2.81
+      - m_Value: 2.5
         m_Name: Radius
         m_Overridden: 1
+      - m_Value: 0.2
+        m_Name: Lifetime
+        m_Overridden: 0
     m_Vector2f:
       m_Array: []
     m_Vector3f:
@@ -751,11 +758,11 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   SpeedReducing: 3
-  RecieverPushDirection: {x: 0, y: 0, z: 1}
+  RecieverPushDirection: {x: 0, y: 0, z: 0.3}
   BeforeAttackDelay: 0.2
-  DisableMovingBeforeAttack: 1
+  beforeAttackPermissions: 4
   AfterAttackDelay: 0.45
-  DisableMovingAfterAttack: 1
+  afterAttackPermissions: 55
   impulseForce: 0.01
   impulseSource: {fileID: 897015580173702940}
   PlayAnimationName: Torso.Attack1
@@ -823,10 +830,10 @@ MonoBehaviour:
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          value: 0
+          value: 30
           type: 0
-          stunlock: 0
-          pushDirection: {x: 0, y: 0, z: 0}
+          stunlock: 0.2
+          pushDirection: {x: 0, y: 0, z: 50}
         position: {x: 0, y: 0, z: 1.54}
         size: {x: 1.37, y: 0.84, z: 0.9}
         angle: {x: 0, y: 0, z: 0}
@@ -843,6 +850,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   paintTargetVisualEffect: {fileID: 2650795021146847490}
+  intensity: 25.3
+  intensitySecondary: 26.3
 --- !u!1 &4748355354840485092
 GameObject:
   m_ObjectHideFlags: 0
@@ -1314,13 +1323,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7564251230086562257}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.03, y: 0.03, z: 0.03}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 2682705565289463711}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!33 &3879729996949294850
 MeshFilter:
   m_ObjectHideFlags: 0
