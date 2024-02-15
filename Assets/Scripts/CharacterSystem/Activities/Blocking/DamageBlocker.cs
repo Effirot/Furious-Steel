@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using CharacterSystem.DamageMath;
+using CharacterSystem.Objects;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Events;
@@ -62,7 +63,7 @@ namespace CharacterSystem.Blocking
 
         public virtual bool Block(ref Damage damage)
         {
-            if (IsBlockInProcess)
+            if (IsBlockInProcess && Invoker.permissions.HasFlag(CharacterPermission.AllowBlocking))
             {
                 OnSuccesfulBlockingEvent.Invoke();
 

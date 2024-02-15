@@ -72,6 +72,7 @@ namespace CharacterSystem.Attacks
                 StopCoroutine(attackProcess);
             }
 
+            Invoker.permissions = CharacterPermission.All;
             attackProcess = null;
         }
 

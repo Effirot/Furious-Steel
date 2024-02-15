@@ -17,17 +17,18 @@ namespace CharacterSystem.Objects
     [Flags]
     public enum CharacterPermission 
     {
-        Default             = AllowMove | AllowRotate | AllowDash | AllowGravity | AllowAttacking,
+        All                 = 0b_1111_1111_0000_0000,
+        None                = 0b_0000_0000_0000_0000,
 
-        AllowMove           = 0b_0000_0001,
-        AllowRotate         = 0b_0000_0010,
-        AllowGravity        = 0b_0000_0100,
-        AllowDash           = 0b_0000_1000,
-        AllowAttacking      = 0b_0001_0000,
-
-        StunProtection      = 0b_0010_0000,
-        Invincible          = 0b_0100_0000,
-        KnockbackProtection = 0b_1000_0000,
+        AllowMove           = 0b_0000_0001_0000_0000,
+        AllowRotate         = 0b_0000_0010_0000_0000,
+        AllowGravity        = 0b_0000_0100_0000_0000,
+        AllowDash           = 0b_0000_1000_0000_0000,
+        
+        AllowAttacking      = 0b_0001_0000_0000_0000,
+        AllowBlocking       = 0b_0010_0000_0000_0000,
+        AllowPowerUps       = 0b_0100_0000_0000_0000,
+        AllowUltimate       = 0b_1000_0000_0000_0000,
     }
 
     [DisallowMultipleComponent]
@@ -51,7 +52,7 @@ namespace CharacterSystem.Objects
 
         [Header("Movement")]
         [SerializeField]
-        public float maxHealth = 300;
+        public float maxHealth = 150;
 
         [field : SerializeField]
         public virtual float Speed { get; set; } = 11;
@@ -134,7 +135,7 @@ namespace CharacterSystem.Objects
             get => network_stunlock.Value;
             set 
             {
-                if (IsServer && !permissions.HasFlag(CharacterPermission.StunProtection))
+                if (IsServer && !permissions.HasFlag(CharacterPermission.All))
                 {
                     network_stunlock.Value = value;
 
@@ -142,7 +143,7 @@ namespace CharacterSystem.Objects
                     {
                         speed_Multipliyer = 0;
 
-                        SetAngle_ClientRpc(transform.rotation.eulerAngles.y);
+                        SetAngle(transform.rotation.eulerAngles.y);
                     }
                 }
             }
@@ -164,7 +165,7 @@ namespace CharacterSystem.Objects
         private NetworkVariable<float> network_stunlock = new NetworkVariable<float>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
         private NetworkVariable<float> network_health = new NetworkVariable<float>(100, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
         
-        private NetworkVariable<CharacterPermission> network_permissions = new (CharacterPermission.Default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+        private NetworkVariable<CharacterPermission> network_permissions = new (CharacterPermission.All, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
         
         private NetworkVariable<Vector3> network_position = new NetworkVariable<Vector3>(Vector3.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);    
         private NetworkVariable<Vector2> network_movementVector = new NetworkVariable<Vector2>(Vector2.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
@@ -202,9 +203,6 @@ namespace CharacterSystem.Objects
         }
         public virtual bool Hit(Damage damage)
         {
-            if (permissions.HasFlag(CharacterPermission.Invincible)) 
-                return false;
-
             var isBlocked = Blocker != null && Blocker.Block(ref damage);
             
 
@@ -253,7 +251,7 @@ namespace CharacterSystem.Objects
         }
         public void Push(Vector3 direction)
         {
-            if (velocity.magnitude < direction.magnitude && !permissions.HasFlag(CharacterPermission.KnockbackProtection))
+            if (velocity.magnitude < direction.magnitude)
             {
                 velocity = direction;
             }
@@ -281,7 +279,7 @@ namespace CharacterSystem.Objects
 
                 network_position.Value = transform.position;
 
-                SetAngle_ClientRpc(transform.rotation.eulerAngles.y);
+                SetAngle(transform.rotation.eulerAngles.y);
                 SetPosition_ClientRpc(transform.position);
                 Spawn_ClientRpc();
             }
@@ -366,11 +364,11 @@ namespace CharacterSystem.Objects
             {
                 if (permissions.HasFlag(CharacterPermission.AllowMove))
                 {
-                    speed_Multipliyer = Mathf.Lerp(speed_Multipliyer, movementVector.magnitude * (Speed / 100), 0.12f);
+                    speed_Multipliyer = Mathf.Lerp(speed_Multipliyer, movementVector.magnitude * Speed, 0.12f);
 
                     if (IsServer)
                     {
-                        characterMovement = isStunned ? Vector3.zero : new Vector3(movementVector.x, 0, movementVector.y) * speed_Multipliyer;
+                        characterMovement = isStunned ? Vector3.zero : new Vector3(movementVector.x, 0, movementVector.y) * (speed_Multipliyer / 100);
                     }
                 }
                 else

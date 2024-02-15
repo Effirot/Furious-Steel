@@ -23,13 +23,13 @@ namespace CharacterSystem.Attacks
         public float BeforeAttackDelay;
 
         [SerializeField]
-        public CharacterPermission beforeAttackPermissions = CharacterPermission.Default;
+        public CharacterPermission beforeAttackPermissions = CharacterPermission.All;
 
         [SerializeField, Range(0, 10)]
         public float AfterAttackDelay;
 
         [SerializeField]
-        public CharacterPermission afterAttackPermissions = CharacterPermission.Default;
+        public CharacterPermission afterAttackPermissions = CharacterPermission.All;
 
 
         [Space]
@@ -90,7 +90,7 @@ namespace CharacterSystem.Attacks
             yield return new WaitForSeconds(AfterAttackDelay);
             OnEndAttackEvent.Invoke();
 
-            Invoker.permissions = CharacterPermission.Default;
+            Invoker.permissions = CharacterPermission.All;
             currentAttackStatement = AttackTimingStatement.Waiting;
             EndAttack();
         }

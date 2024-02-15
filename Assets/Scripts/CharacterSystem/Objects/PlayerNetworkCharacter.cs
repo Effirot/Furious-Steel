@@ -34,6 +34,10 @@ namespace CharacterSystem.Objects
         private float DodgePushForce = 2;
 
         [SerializeField]
+        [Range(0, 10)]
+        private float DodgePushTime = 1;
+
+        [SerializeField]
         [Range(0, 400)]
         private float DodgeRechargeTime = 2f;
 
@@ -116,8 +120,26 @@ namespace CharacterSystem.Objects
             OnPlayerCharacterSpawn.Invoke(this);
         }
 
-        private IEnumerator DodgeRechargeRoutine()
+        private IEnumerator DodgeRoutine(Vector3 Direction)
         {
+            Direction.Normalize();
+            // Push(V3direction * DodgePushForce);  
+
+            permissions = CharacterPermission.None;
+            animator.SetBool("Dodge", true);
+
+            var timer = 0f;
+            while (timer < DodgePushTime)
+            {
+                timer += Time.fixedDeltaTime;
+                characterController.Move(Direction * DodgePushForce);
+
+                yield return new WaitForFixedUpdate();
+            } 
+
+            permissions = CharacterPermission.All;
+            animator.SetBool("Dodge", false);
+
             yield return new WaitForSeconds(DodgeRechargeTime);
 
             dodgeRechargeRoutine = null;
@@ -155,13 +177,13 @@ namespace CharacterSystem.Objects
         {
             direction.Normalize();
 
-            if (IsServer && !isStunned)
+            if (IsServer && !isStunned && dodgeRechargeRoutine == null)
             {
                 SetAngle(Quaternion.LookRotation(new Vector3(direction.x, 0, direction.y)).eulerAngles.y);
-            }
 
-            Dash_ClientRpc(direction);
-            Dash_Internal(direction);
+                Dash_ClientRpc(direction);
+                Dash_Internal(direction);
+            }
         }
         private void Dash_Internal(Vector2 direction)
         {           
@@ -169,8 +191,7 @@ namespace CharacterSystem.Objects
             {
                 var V3direction = new Vector3(direction.x, 0, direction.y);
 
-                Push(V3direction * DodgePushForce);   
-                dodgeRechargeRoutine = StartCoroutine(DodgeRechargeRoutine());
+                dodgeRechargeRoutine = StartCoroutine(DodgeRoutine(V3direction));
 
                 DodgeEffect.SetVector3("Direction", V3direction);
                 DodgeEffect.Play();

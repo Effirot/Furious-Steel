@@ -49,13 +49,11 @@ public class PowerUpHolder : SyncedActivities
 
     protected override void OnStateChanged(bool IsPressed)
     {
-        if (IsServer)
+        if (IsServer && powerUp != null && Invoker.permissions.HasFlag(CharacterPermission.AllowPowerUps))
         {
-            if (powerUp != null)
-            {
-                Activate_ClientRpc(Id);
-                Activate_Internal(Id);
-            }
+            Activate_ClientRpc(Id);
+            Activate_Internal(Id);
+            
             network_powerUpId.Value = -1;
         }
     }

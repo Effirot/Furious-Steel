@@ -59,7 +59,10 @@ VisualEffect:
     m_Vector2f:
       m_Array: []
     m_Vector3f:
-      m_Array: []
+      m_Array:
+      - m_Value: {x: 0, y: 0, z: 4}
+        m_Name: Velocity
+        m_Overridden: 1
     m_Vector4f:
       m_Array:
       - m_Value: {x: 757.30853, y: 0, z: 0, w: 1}
@@ -222,10 +225,10 @@ MonoBehaviour:
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          value: 30
+          value: 25
           type: 0
           stunlock: 0.2
-          pushDirection: {x: 0, y: 0, z: 50}
+          pushDirection: {x: 0, y: 0, z: 1}
         position: {x: 0, y: 0, z: 1.54}
         size: {x: 1.37, y: 0.84, z: 0.9}
         angle: {x: 0, y: 0, z: 0}
@@ -242,8 +245,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   paintTargetVisualEffect: {fileID: 2671491295424534077}
-  intensity: 25.3
-  intensitySecondary: 26.3
+  intensity: 35
+  intensitySecondary: 47.7
 --- !u!1 &1517727645108543378
 GameObject:
   m_ObjectHideFlags: 0
@@ -575,7 +578,7 @@ MonoBehaviour:
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          value: 40
+          value: 35
           type: 0
           stunlock: 1
           pushDirection: {x: 0, y: 0, z: 2}
@@ -586,7 +589,7 @@ MonoBehaviour:
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          value: 45
+          value: 35
           type: 0
           stunlock: 2
           pushDirection: {x: 0, y: 0, z: 1}
@@ -606,8 +609,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   paintTargetVisualEffect: {fileID: 535129801098038292}
-  intensity: 25.3
-  intensitySecondary: 26.3
+  intensity: 35
+  intensitySecondary: 47.7
 --- !u!1 &4723289115519241682
 GameObject:
   m_ObjectHideFlags: 0
@@ -670,7 +673,10 @@ VisualEffect:
     m_Vector2f:
       m_Array: []
     m_Vector3f:
-      m_Array: []
+      m_Array:
+      - m_Value: {x: 0, y: 0, z: 4}
+        m_Name: Velocity
+        m_Overridden: 1
     m_Vector4f:
       m_Array:
       - m_Value: {x: 757.30853, y: 0, z: 0, w: 1}
@@ -830,10 +836,10 @@ MonoBehaviour:
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          value: 30
+          value: 25
           type: 0
           stunlock: 0.2
-          pushDirection: {x: 0, y: 0, z: 50}
+          pushDirection: {x: 0, y: 0, z: 1}
         position: {x: 0, y: 0, z: 1.54}
         size: {x: 1.37, y: 0.84, z: 0.9}
         angle: {x: 0, y: 0, z: 0}
@@ -850,8 +856,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   paintTargetVisualEffect: {fileID: 2650795021146847490}
-  intensity: 25.3
-  intensitySecondary: 26.3
+  intensity: 35
+  intensitySecondary: 47.7
 --- !u!1 &4748355354840485092
 GameObject:
   m_ObjectHideFlags: 0
