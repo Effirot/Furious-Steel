@@ -4,18 +4,23 @@ using CharacterSystem.DamageMath;
 using CharacterSystem.Objects;
 using UnityEngine;
 
-public class HealPowerUp : PowerUp
+
+namespace CharacterSystem.PowerUps
 {
-    public override void Activate(PowerUpHolder holder)
+    public class HealPowerUp : PowerUp
     {
-        holder.Character.Heal (new Damage() 
+        public override void Activate(PowerUpHolder holder)
         {
-            value = holder.Character.maxHealth / 4
-        });
-    }
+            holder.Character.Heal (new Damage() 
+            {
+                value = holder.Character.maxHealth / 4
+            });
+        }
 
-    public override void OnPick(PowerUpHolder holder)
-    {
-    }
+        public override void OnPick(PowerUpHolder holder)
+        {
+            
+        }
 
+    }
 }

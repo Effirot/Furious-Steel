@@ -1,40 +1,52 @@
 using System.Collections;
 using System.Collections.Generic;
+using CharacterSystem.Attacks;
 using CharacterSystem.DamageMath;
 using CharacterSystem.Objects;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.InputSystem;
-using static UnityEngine.InputSystem.InputAction;
 
 // WinBlocker HAHAHAHA
 
 namespace CharacterSystem.Blocking
 {
-    public class DamageBlocker : SyncedActivities
+        
+    public interface IDamageBlocker : 
+        ISyncedActivitiesSource, 
+        IDamagable,
+        IDamageSource
+    {
+        DamageBlocker Blocker { set; }
+    }
+
+    public class DamageBlocker : SyncedActivities<IDamageBlocker>
     {
         [Space]
         [Header("Stun")]
         [SerializeField]
-        private bool StunBeforeBlockTime = true;
+        private CharacterPermission BeforeBlockCharacterPermissions = CharacterPermission.None;
         [SerializeField, Range(0f, 5f)]
         private float BeforeBlockTime = 0.5f;
         
         [SerializeField]
-        private bool StunAtBlockProcessTime = true;
+        private CharacterPermission BlockCharacterPermissions = CharacterPermission.None;
         [SerializeField, Range(0f, 5f)]
         private float BlockProcessTime = 0.5f;
+        [SerializeField]
+        private bool HoldMode = false;
 
         [SerializeField]
-        private bool StunAfterBlockTime = false;
+        private CharacterPermission AfterBlockCharacterPermissions = CharacterPermission.None;
         [SerializeField, Range(0f, 5f)]
         private float AfterBlockTime = 0.5f;
 
         [Space]
-        [Header("Animation")]
+        [SerializeField, Range(0f, 9f)]
+        private float SpeedReducing = 4;
+
         [SerializeField]
-        private string animationName = "";
+        private bool InterruptOnHit = true;
 
         [Space]
         [Header("Damage")]
@@ -63,68 +75,78 @@ namespace CharacterSystem.Blocking
 
         public virtual bool Block(ref Damage damage)
         {
+            if (damage.type == Damage.DamageType.Parrying || damage.type == Damage.DamageType.Unblockable) return false;
+
             if (IsBlockInProcess && Invoker.permissions.HasFlag(CharacterPermission.AllowBlocking))
             {
                 OnSuccesfulBlockingEvent.Invoke();
 
+                var reducingPercent = 1f - DamageReducing;
+
                 if (damage.sender != null)
                 {
-                    backDamage.sender = Invoker.gameObject;
-                    backDamage.pushDirection = damage.sender.transform.position - transform.position;
-                    
+                    backDamage.sender = Invoker;
+                    backDamage.pushDirection = -damage.pushDirection.normalized * DamageReducing * 2;
+                    backDamage.type = Damage.DamageType.Parrying;
+
                     Damage.Deliver(damage.sender, backDamage);
                 }
-                damage *= 1f - DamageReducing;
+                damage *= reducingPercent;
 
                 return damage.value == 0;
             }
 
-            StopBlockProcess();
+            if (InterruptOnHit)
+            {
+                StopBlockProcess();
+            }
 
             return false;
         } 
 
         private IEnumerator BlockProcess()
         {
-            Invoker.animator.Play(animationName);
-
-            Invoker.Blocker = this;
-
-            if (StunBeforeBlockTime)
-            {
-                Invoker.stunlock = BeforeBlockTime;
-            }
             OnBeforeBlockingEvent.Invoke();
-            yield return new WaitForSeconds(BeforeBlockTime);
-            
-            if (StunAtBlockProcessTime)
-            {
-                Invoker.stunlock = BlockProcessTime;
-            }
-            IsBlockInProcess = true;
-            OnBlockingEvent.Invoke();
-            yield return new WaitForSeconds(BlockProcessTime);
-            IsBlockInProcess = false;
 
-            if (StunAfterBlockTime)
+            yield return new WaitForSeconds(BeforeBlockTime);
+
+            IsBlockInProcess = true;
+            Invoker.permissions = BlockCharacterPermissions;
+            OnBlockingEvent.Invoke();
+
+            if (HoldMode)
             {
-                Invoker.stunlock = AfterBlockTime;
+                var yield = new WaitForFixedUpdate();    
+
+                while (IsPressed)
+                {
+                    yield return yield;    
+                }
             }
+            else
+            {
+                yield return new WaitForSeconds(BlockProcessTime);
+            }
+
+            IsBlockInProcess = false;
+            Invoker.permissions = AfterBlockCharacterPermissions;
             OnAfterBlockingEvent.Invoke();
+
             yield return new WaitForSeconds(AfterBlockTime);
 
-            BlockProcessRoutine = null;
+            StopBlockProcess();
         }
         private void StartBlockProcess()
         {
-            if (BlockProcessRoutine != null)
-            {
-                StopCoroutine(BlockProcessRoutine);
-             
-                BlockProcessRoutine = null;
-            }
+            StopBlockProcess();
+
+            Invoker.Blocker = this;
 
             BlockProcessRoutine = StartCoroutine(BlockProcess());
+
+            Invoker.animator.SetBool("Blocking", true);
+            Invoker.Speed -= SpeedReducing;
+            Invoker.permissions = BeforeBlockCharacterPermissions;
         }
         private void StopBlockProcess()
         {
@@ -134,7 +156,10 @@ namespace CharacterSystem.Blocking
                 
                 BlockProcessRoutine = null;
 
+                Invoker.animator.SetBool("Blocking", false);
                 Invoker.stunlock = 0;
+                Invoker.Speed += SpeedReducing;
+                Invoker.permissions = CharacterPermission.All;
             }
 
             IsBlockInProcess = false;

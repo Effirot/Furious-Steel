@@ -4,105 +4,127 @@ using CharacterSystem.Objects;
 using Unity.Netcode;
 using UnityEngine;
 using System;
+using CharacterSystem.Attacks;
+using CharacterSystem.DamageMath;
+using CharacterSystem.Blocking;
+
+
+
+
+
+
 
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
-public class PowerUpHolder : SyncedActivities
+
+namespace CharacterSystem.PowerUps
 {
-    [SerializeField]
-    public NetworkCharacter Character;
-    
-    public PowerUp powerUp => Id < 0 || Id >= PowerUp.AllPowerUps.Length ? null : PowerUp.AllPowerUps[Id];
-
-    public int Id => network_powerUpId.Value;
-
-    public event Action<PowerUp> OnPowerUpChanged = delegate { };
-
-    private NetworkVariable<int> network_powerUpId = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-
-
-    public override void OnNetworkSpawn()
+    public interface IPowerUpActivator : 
+        ISyncedActivitiesSource,
+        IDamageSource,
+        IDamagable,
+        IDamageBlocker
     {
-        base.OnNetworkSpawn();
 
-        network_powerUpId.OnValueChanged += (Old, New) => OnPowerUpChanged.Invoke(powerUp);
     }
-    public override void OnNetworkDespawn()
+
+    public class PowerUpHolder : SyncedActivities<IPowerUpActivator>
     {
-        base.OnNetworkDespawn();
-
-        if (IsServer && powerUp != null)
-        {
-            Vector3 position = transform.position;
-            if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, LayerMask.GetMask("Ground")))
-            {
-                position = hit.point + Vector3.up * 2;
-            }
-
-            var powerupGameObject = Instantiate(powerUp.prefab, position, Quaternion.identity);
+        [SerializeField]
+        public NetworkCharacter Character;
         
-            powerupGameObject.GetComponent<NetworkObject>().Spawn();
-        }
-    }
+        public PowerUp powerUp => Id < 0 || Id >= PowerUp.AllPowerUps.Length ? null : PowerUp.AllPowerUps[Id];
 
-    protected override void OnStateChanged(bool IsPressed)
-    {
-        if (IsServer && powerUp != null && Invoker.permissions.HasFlag(CharacterPermission.AllowPowerUps))
+        public int Id => network_powerUpId.Value;
+
+        public event Action<PowerUp> OnPowerUpChanged = delegate { };
+
+        private NetworkVariable<int> network_powerUpId = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+
+
+        public override void OnNetworkSpawn()
         {
-            Activate_ClientRpc(Id);
-            Activate_Internal(Id);
-            
-            network_powerUpId.Value = -1;
+            base.OnNetworkSpawn();
+
+            network_powerUpId.OnValueChanged += (Old, New) => OnPowerUpChanged.Invoke(powerUp);
         }
-    }
-
-    [ClientRpc]
-    private void Activate_ClientRpc(int Id)
-    {
-        Activate_Internal(Id);
-    }
-
-    private void Activate_Internal(int Id)
-    {
-        if (Id >= 0 && Id < PowerUp.AllPowerUps.Length) 
-        { 
-            var powerUp = PowerUp.AllPowerUps[Id];
-            
-            powerUp.Activate(this);
-        }
-    }
-
-    private void OnTriggerStay(Collider other)
-    {
-        if (IsServer && powerUp == null)
+        public override void OnNetworkDespawn()
         {
-            if (other.TryGetComponent<PowerUpContainer>(out var container))
+            base.OnNetworkDespawn();
+
+            if (IsServer && powerUp != null)
             {
-                network_powerUpId.Value = container.Id;
-                
-                container.NetworkObject.Despawn();
+                Vector3 position = transform.position;
+                if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, LayerMask.GetMask("Ground")))
+                {
+                    position = hit.point + Vector3.up * 2;
+                }
 
-                powerUp?.OnPick(this);
+                var powerupGameObject = Instantiate(powerUp.prefab, position, Quaternion.identity);
+            
+                powerupGameObject.GetComponent<NetworkObject>().Spawn();
             }
         }
-    }
+
+        protected override void OnStateChanged(bool IsPressed)
+        {
+            if (IsServer && powerUp != null && Invoker.permissions.HasFlag(CharacterPermission.AllowPowerUps))
+            {
+                Activate_ClientRpc(Id);
+                Activate_Internal(Id);
+                
+                network_powerUpId.Value = -1;
+            }
+        }
+
+        [ClientRpc]
+        private void Activate_ClientRpc(int Id)
+        {
+            Activate_Internal(Id);
+        }
+
+        private void Activate_Internal(int Id)
+        {
+            if (Id >= 0 && Id < PowerUp.AllPowerUps.Length) 
+            { 
+                var powerUp = PowerUp.AllPowerUps[Id];
+                
+                powerUp.Activate(this);
+            }
+        }
+
+        private void OnTriggerStay(Collider other)
+        {
+            if (IsServer && powerUp == null)
+            {
+                if (other.TryGetComponent<PowerUpContainer>(out var container))
+                {
+                    network_powerUpId.Value = container.Id;
+                    
+                    container.NetworkObject.Despawn();
+
+                    powerUp?.OnPick(this);
+                }
+            }
+        }
 
 #if UNITY_EDITOR
 
-    [CustomEditor(typeof(PowerUpHolder), true)]
-    public class PowerUpHolder_Editor : Editor
-    {
-        new private PowerUpHolder target => base.target as PowerUpHolder;
-
-        public override void OnInspectorGUI()
+        [CustomEditor(typeof(PowerUpHolder), true)]
+        public class PowerUpHolder_Editor : Editor
         {
-            base.OnInspectorGUI();
+            new private PowerUpHolder target => base.target as PowerUpHolder;
 
-            GUILayout.Label(target.powerUp?.GetType().Name ?? "None");
+            public override void OnInspectorGUI()
+            {
+                base.OnInspectorGUI();
+
+                GUILayout.Label(target.powerUp?.GetType().Name ?? "None");
+            }
         }
-    }
 
 #endif
+    }
 }

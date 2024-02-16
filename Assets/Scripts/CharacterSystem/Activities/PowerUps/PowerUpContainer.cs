@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using CharacterSystem.Objects;
 using Unity.Netcode;
 using UnityEngine;
+using CharacterSystem.PowerUps;
 
 #if UNITY_EDITOR
 using UnityEditor;

@@ -106,18 +106,17 @@ public class BuildTools : EditorWindow
         var targets = TargetsToBuild.Where(KeyValue => KeyValue.Value).ToArray();
         foreach(var target in targets)
         {
-            PerformBuild(target.Key, "Build", StandaloneBuildSubtarget.Player);
+            PerformBuild(target.Key, $"Build\\{target.Key.ToString()}", StandaloneBuildSubtarget.Player);
 
-            // if (BuildServer)
-            // {
-            //     if (target.Key == BuildTarget.StandaloneWindows || 
-            //         target.Key == BuildTarget.StandaloneWindows64 ||
-            //         target.Key == BuildTarget.StandaloneLinux64)
-            //     {
-            //         Directory.CreateDirectory(path + $"\\{target.Key}_Server");
-            //         PerformBuild(target.Key, path + $"\\{target.Key}_Server", StandaloneBuildSubtarget.Server);
-            //     }
-            // }
+            if (BuildServer)
+            {
+                if (target.Key == BuildTarget.StandaloneWindows || 
+                    target.Key == BuildTarget.StandaloneWindows64 ||
+                    target.Key == BuildTarget.StandaloneLinux64)
+                {
+                    PerformBuild(target.Key, $"Build\\{target.Key.ToString()}\\Server", StandaloneBuildSubtarget.Server);
+                }
+            }
         }
 
         // System.Diagnostics.Process.Start("explorer.exe", path);
@@ -125,25 +124,35 @@ public class BuildTools : EditorWindow
 
     private void PerformBuild(BuildTarget target, string directory, StandaloneBuildSubtarget standaloneBuildSubtarget, BuildOptions options = BuildOptions.None)
     {        
+        directory = Directory.GetCurrentDirectory() + "\\" + directory;
+
+        Directory.CreateDirectory(directory);
+
         BuildPlayerOptions buildPlayerOptions = new()
         {
             scenes = GetAllScenesNames(),
-            locationPathName = directory,
+            locationPathName = directory  + "\\" + Application.productName + ".exe",
             target = target,
             subtarget = (int) standaloneBuildSubtarget,  
             options = options,
         };
 
+        Debug.Log($"Start {target} building process...\nScenes: {string.Join(", ", buildPlayerOptions.scenes)}");
+
         BuildPipeline.BuildPlayer(buildPlayerOptions);
+
+        Debug.Log($"Build was succesfully complete and saved in {directory}\n Scenes: {string.Join(", ", buildPlayerOptions.scenes)}");
     }
 
     private string[] GetAllScenesNames()
     {
-        var result = new string[SceneManager.sceneCount];
+        var scenesParameters = EditorBuildSettings.scenes;
 
-        for (int i = 0; i < SceneManager.sceneCount; i++)
+        var result = new string[scenesParameters.Count()];
+        
+        for (int i = 0; i < scenesParameters.Count(); i++)
         {
-            result[i] = SceneManager.GetSceneAt(i).path;
+            result[i] = scenesParameters[i].path;
         }
 
         return result;

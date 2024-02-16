@@ -5,11 +5,8 @@ using UnityEngine.VFX;
 
 namespace CharacterSystem.DamageMath
 {
-    public interface IDamagable 
+    public interface IDamagable : IMonoBehaviourLink 
     {
-        Transform transform { get; }
-        GameObject gameObject { get; }
-
         float health { get; set; }
 
         float stunlock { get; set; }
@@ -21,5 +18,7 @@ namespace CharacterSystem.DamageMath
         void Push(Vector3 direction);
 
         void Kill();
+
+        public bool isStunned => stunlock > 0;
     }
 }

@@ -8,7 +8,7 @@ using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using static UnityEngine.InputSystem.InputAction;
 
-public class ChargableActivator : SyncedActivities
+public class ChargableActivator : SyncedActivities<ISyncedActivitiesSource>
 {
     [SerializeField, Range(0, 1000)]
     private float RequireValue;

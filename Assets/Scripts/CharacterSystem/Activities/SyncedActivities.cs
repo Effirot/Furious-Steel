@@ -1,12 +1,26 @@
 using System.Collections;
 using System.Collections.Generic;
+using CharacterSystem.DamageMath;
 using CharacterSystem.Objects;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static UnityEngine.InputSystem.InputAction;
 
-public abstract class SyncedActivities : NetworkBehaviour
+public interface ISyncedActivitiesSource : IMonoBehaviourLink
+{
+    NetworkObject NetworkObject { get; }
+
+    Animator animator { get; }
+
+    CharacterPermission permissions { get; set; }
+    
+    public bool IsServer => NetworkObject.NetworkManager.IsServer;
+    public bool IsOwner => NetworkObject.IsOwner;
+
+}
+
+public abstract class SyncedActivities<T> : NetworkBehaviour where T : ISyncedActivitiesSource
 {
     [Space]
     [Header("Input")]
@@ -14,7 +28,7 @@ public abstract class SyncedActivities : NetworkBehaviour
     private InputActionReference inputAction;
 
     [HideInInspector]
-    public NetworkCharacter Invoker = null;
+    public T Invoker = default;
     
     public bool IsPressed 
     {
@@ -37,7 +51,7 @@ public abstract class SyncedActivities : NetworkBehaviour
     {
         base.OnNetworkSpawn();
 
-        ResearchPlayer();
+        ResearchSource();
 
         Subscribe();
     }
@@ -79,15 +93,22 @@ public abstract class SyncedActivities : NetworkBehaviour
     }
     private void InvokeStateChangedFunction_Event(bool Old, bool New)
     {
-        ResearchPlayer();
+        ResearchSource();
 
         OnStateChanged(New);
     }
-    private void ResearchPlayer()
+    private void ResearchSource()
     {
         if (Invoker == null)
         {
-            Invoker = GetComponentInParent<NetworkCharacter>();
+            Invoker = GetComponentInParent<T>();
+
+            if (Invoker == null)
+            {
+                Debug.Log($"Unable to find activityes source {typeof(T).Name}");
+            }
         }
+
+        
     }
 }

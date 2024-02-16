@@ -1,5 +1,7 @@
 using System;
+using CharacterSystem.Attacks;
 using CharacterSystem.Objects;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.VFX;
 
@@ -10,9 +12,12 @@ namespace CharacterSystem.DamageMath
     {
         public enum DamageType : byte
         {
-            Physics,
-            Balistic,
-            Magical,
+            Physics = 1,
+            Balistic = 2,
+            Magical = 4,
+
+            Unblockable = 8,
+            Parrying = 16,
         }
 
         public static void Deliver(GameObject gameObject, Damage damage)
@@ -20,6 +25,10 @@ namespace CharacterSystem.DamageMath
             if (!gameObject.TryGetComponent<IDamagable>(out var target)) 
                 return;
 
+            Deliver(target, damage);
+        }
+        public static void Deliver(IDamagable target, Damage damage)
+        {
             bool isBlocked = false;
 
             if (damage.value > 0)
@@ -36,6 +45,8 @@ namespace CharacterSystem.DamageMath
                 target.Push(damage.pushDirection);
                 target.stunlock = Mathf.Max(target.stunlock, damage.stunlock);
             }
+
+            damage.sender?.OnDamageDelivered(damage);
         }
 
         [SerializeField, Range(-300, 300)]
@@ -51,10 +62,10 @@ namespace CharacterSystem.DamageMath
         public Vector3 pushDirection;
 
         [NonSerialized]
-        public GameObject sender;
+        public IDamageSource sender;
 
 
-        public Damage(float value, GameObject sender, float stunlock, Vector3 pushDirection, DamageType type)
+        public Damage(float value, IDamageSource sender, float stunlock, Vector3 pushDirection, DamageType type)
         {
             this.value = value;
             this.sender = sender;
@@ -65,7 +76,7 @@ namespace CharacterSystem.DamageMath
 
         public override string ToString()
         {
-            return $"Damage: {value}\n Sender: {sender.name}\n Stunlock: {stunlock}\n Push Force: {pushDirection}";
+            return $"Damage: {value}\n Sender: {sender.gameObject.name}\n Stunlock: {stunlock}\n Push Force: {pushDirection}";
         }
 
         public static Damage operator * (Damage damage, float multipliyer)

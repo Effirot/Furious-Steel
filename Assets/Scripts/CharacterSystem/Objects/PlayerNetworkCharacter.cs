@@ -1,5 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using CharacterSystem.Attacks;
+using CharacterSystem.Blocking;
+using CharacterSystem.DamageMath;
+using CharacterSystem.PowerUps;
 using Cinemachine;
 using Unity.Netcode;
 using UnityEngine;
@@ -10,7 +14,10 @@ using static UnityEngine.InputSystem.InputAction;
 
 namespace CharacterSystem.Objects
 {
-    public class PlayerNetworkCharacter : NetworkCharacter
+    public class PlayerNetworkCharacter : NetworkCharacter,
+        IDamageSource,
+        IDamageBlocker,
+        IPowerUpActivator
     {
         public delegate void OnPlayerCharacterStateChangedDelegate (PlayerNetworkCharacter character);
 
@@ -48,12 +55,27 @@ namespace CharacterSystem.Objects
         private AudioSource DodgeSound;
 
         public ulong ServerClientID => network_serverClientId.Value;
-        public RoomManager.PublicClientInfo ClientData => RoomManager.Singleton.FindClientData(ServerClientID);
+        public int ClientDataIndex => RoomManager.Singleton.IndexOfPlayerData(data => data.ID == ServerClientID);
+        public RoomManager.PublicClientData ClientData => RoomManager.Singleton.FindClientData(ServerClientID);
 
         private NetworkVariable<ulong> network_serverClientId = new (0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
-        private Coroutine dodgeRechargeRoutine = null;
+
+        private Coroutine dodgeRoutine = null;
         private float lastTapTime = 0;
+
+
+        public virtual void OnDamageDelivered(Damage damage)
+        {
+            if (IsServer)
+            {
+                var clientDataIndex = ClientDataIndex;
+
+                var data = RoomManager.Singleton.playersData[clientDataIndex];
+                data.statistics.DeliveredDamage += damage.value;
+                RoomManager.Singleton.playersData[clientDataIndex] = data;
+            }
+        }
 
         public void RefreshColor()
         {
@@ -142,7 +164,7 @@ namespace CharacterSystem.Objects
 
             yield return new WaitForSeconds(DodgeRechargeTime);
 
-            dodgeRechargeRoutine = null;
+            dodgeRoutine = null;
         }
 
         private void OnMove(CallbackContext input)
@@ -177,7 +199,7 @@ namespace CharacterSystem.Objects
         {
             direction.Normalize();
 
-            if (IsServer && !isStunned && dodgeRechargeRoutine == null)
+            if (IsServer && !isStunned && dodgeRoutine == null)
             {
                 SetAngle(Quaternion.LookRotation(new Vector3(direction.x, 0, direction.y)).eulerAngles.y);
 
@@ -187,16 +209,18 @@ namespace CharacterSystem.Objects
         }
         private void Dash_Internal(Vector2 direction)
         {           
-            if (dodgeRechargeRoutine == null && permissions.HasFlag(CharacterPermission.AllowDash))
+            if (dodgeRoutine == null && permissions.HasFlag(CharacterPermission.AllowDash))
             {
                 var V3direction = new Vector3(direction.x, 0, direction.y);
 
-                dodgeRechargeRoutine = StartCoroutine(DodgeRoutine(V3direction));
+                dodgeRoutine = StartCoroutine(DodgeRoutine(V3direction));
+                
+                if (IsClient) {
+                    DodgeEffect.SetVector3("Direction", V3direction);
+                    DodgeEffect.Play();
 
-                DodgeEffect.SetVector3("Direction", V3direction);
-                DodgeEffect.Play();
-
-                DodgeSound.Play();
+                    DodgeSound.Play();
+                }
             }
         }
 
@@ -207,10 +231,13 @@ namespace CharacterSystem.Objects
         }
         private void RefreshColor_Internal()
         {            
-            foreach(var paintable in GetComponentsInChildren<IPaintable>())
+            if (IsClient)
             {
-                paintable.SetColor(ClientData.spawnArguments.GetColor());
-                paintable.SetSecondColor(ClientData.spawnArguments.GetSecondColor());
+                foreach(var paintable in GetComponentsInChildren<IPaintable>())
+                {
+                    paintable.SetColor(ClientData.spawnArguments.GetColor());
+                    paintable.SetSecondColor(ClientData.spawnArguments.GetSecondColor());
+                }
             }
         }
     }

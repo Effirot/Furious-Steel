@@ -20,6 +20,8 @@ namespace CharacterSystem.Objects
         All                 = 0b_1111_1111_0000_0000,
         None                = 0b_0000_0000_0000_0000,
 
+        Untouchable         = 0b_0000_0000_1000_0000,
+
         AllowMove           = 0b_0000_0001_0000_0000,
         AllowRotate         = 0b_0000_0010_0000_0000,
         AllowGravity        = 0b_0000_0100_0000_0000,
@@ -280,9 +282,12 @@ namespace CharacterSystem.Objects
                 network_position.Value = transform.position;
 
                 SetAngle(transform.rotation.eulerAngles.y);
-                SetPosition_ClientRpc(transform.position);
+                SetPosition(transform.position);
+                
                 Spawn_ClientRpc();
             }
+
+            network_permissions.OnValueChanged += OnPermissionsChanged;
 
             transform.position = network_position.Value;
 
@@ -291,7 +296,18 @@ namespace CharacterSystem.Objects
         {
             base.OnNetworkDespawn();
 
+            network_permissions.OnValueChanged -= OnPermissionsChanged;
+            
             StopAllCoroutines();
+        }
+
+        public void SetAngle(float angle)
+        {
+            SetAngle_ClientRpc(angle);
+        }
+        public void SetPosition(Vector3 position)
+        {
+            SetPosition_ClientRpc(position);
         }
 
         protected virtual void Awake()
@@ -334,22 +350,24 @@ namespace CharacterSystem.Objects
             Gizmos.DrawRay(network_position.Value, network_movementVector.Value);
         }
 
+        protected virtual void OnPermissionsChanged(CharacterPermission Old, CharacterPermission New)
+        {
+            if (New.HasFlag(CharacterPermission.Untouchable))
+            {
+                gameObject.layer = LayerMask.NameToLayer("Untouchable");
+            }
+            else
+            {
+                gameObject.layer = LayerMask.NameToLayer("Character");
+            }
+        }
+
         protected virtual void Dead()
         {
-            OnCharacterDead.Invoke(this);
+
         }
         protected virtual void Spawn()
         {
-            OnCharacterSpawn.Invoke(this);
-        }
-
-        protected void SetAngle(float angle)
-        {
-            SetAngle_ClientRpc(angle);
-        }
-        protected void SetPosition(Vector3 position)
-        {
-            SetPosition_ClientRpc(position);
         }
 
         private Vector3 CalculateMovement()
@@ -483,11 +501,15 @@ namespace CharacterSystem.Objects
         [ClientRpc]
         private void Spawn_ClientRpc()
         {
+            OnCharacterSpawn.Invoke(this);
+
             Spawn();
         }
         [ClientRpc]
         private void Dead_ClientRpc()
         {            
+            OnCharacterDead.Invoke(this);
+
             Dead();
 
             gameObject.layer = LayerMask.NameToLayer("Untouchable");

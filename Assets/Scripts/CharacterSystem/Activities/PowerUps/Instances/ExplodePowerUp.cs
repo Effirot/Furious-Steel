@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using CharacterSystem.DamageMath;
 using CharacterSystem.Objects;
+using CharacterSystem.PowerUps;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.VFX;
@@ -27,7 +28,7 @@ public class ExplodePowerUp : PowerUp
                     value = 60,
                     stunlock = 1,
                     pushDirection = Vector3.up * 2 + VectorToTarget,
-                    sender = holder.gameObject
+                    sender = holder.Invoker
                 });
             }
         }

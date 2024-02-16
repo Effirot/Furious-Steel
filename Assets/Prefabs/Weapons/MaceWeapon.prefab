@@ -28,7 +28,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.03, y: 0.03, z: 0.03}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 2682705565289463711}
@@ -95,6 +95,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2682705565289463711}
   - component: {fileID: 4043005819161963949}
+  - component: {fileID: 9137112208162412568}
   - component: {fileID: 7367302898406761560}
   m_Layer: 6
   m_Name: MaceWeapon
@@ -145,6 +146,19 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
+--- !u!114 &9137112208162412568
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1517727645108543378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91b59a25b78b63442bfa85d494b70054, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animatorController: {fileID: 22100000, guid: d1584cc76caf65548ac9c5a313ffcfb5, type: 2}
 --- !u!114 &7367302898406761560
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -302,7 +316,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: 2243838571553120747, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
-  Invoker: {fileID: 0}
+  a:
+    rid: -2
   casters:
   - rid: 3599542788000317513
   - rid: 3599542942034034757
@@ -316,9 +331,9 @@ MonoBehaviour:
   SpeedReducing: 6
   RecieverPushDirection: {x: 0, y: 0, z: 0.3}
   BeforeAttackDelay: 0.7
-  beforeAttackPermissions: 21
+  beforeAttackPermissions: 1280
   AfterAttackDelay: 1.06
-  afterAttackPermissions: 12
+  afterAttackPermissions: 1024
   impulseForce: 0.007
   impulseSource: {fileID: 897015580173702940}
   PlayAnimationName: 
@@ -394,11 +409,13 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
     - rid: 3599542788000317513
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          value: 50
+          value: 40
           type: 0
           stunlock: 2
           pushDirection: {x: 0, y: 0, z: 2}
@@ -420,7 +437,7 @@ MonoBehaviour:
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          value: 50
+          value: 40
           type: 0
           stunlock: 2
           pushDirection: {x: 1, y: 0, z: 2}
@@ -704,18 +721,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: 4628471853980608337, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
-  Invoker: {fileID: 0}
-  StunBeforeBlockTime: 1
-  BeforeBlockTime: 0.19
-  StunAtBlockProcessTime: 1
-  BlockProcessTime: 0.5
-  StunAfterBlockTime: 0
+  BeforeBlockCharacterPermissions: 1792
+  BeforeBlockTime: 0.2
+  BlockCharacterPermissions: 1792
+  BlockProcessTime: 0.4
+  HoldMode: 1
+  AfterBlockCharacterPermissions: 1792
   AfterBlockTime: 2
-  animationName: 
+  SpeedReducing: 5
+  InterruptOnHit: 0
   backDamage:
-    value: 0
+    value: 20
     type: 0
-    stunlock: 0
+    stunlock: 3
     pushDirection: {x: 0, y: 0, z: 0}
   DamageReducing: 1
   OnBeforeBlockingEvent:
@@ -1071,7 +1089,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: 2243838571553120747, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
-  Invoker: {fileID: 0}
+  a:
+    rid: -2
   casters:
   - rid: 3599542788000317517
   - rid: 3599542788000317518
@@ -1084,9 +1103,9 @@ MonoBehaviour:
   SpeedReducing: 6
   RecieverPushDirection: {x: 0, y: 0, z: 0.8}
   BeforeAttackDelay: 0.8
-  beforeAttackPermissions: 21
+  beforeAttackPermissions: 1280
   AfterAttackDelay: 1.2
-  afterAttackPermissions: 12
+  afterAttackPermissions: 1024
   impulseForce: 0.007
   impulseSource: {fileID: 897015580173702940}
   PlayAnimationName: 
@@ -1162,11 +1181,13 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
     - rid: 3599542788000317517
       type: {class: SphereCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          value: 30
+          value: 20
           type: 0
           stunlock: 3
           pushDirection: {x: 0, y: 4, z: 2}
@@ -1176,7 +1197,7 @@ MonoBehaviour:
       type: {class: SphereCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          value: 70
+          value: 50
           type: 0
           stunlock: 7
           pushDirection: {x: 0, y: 7, z: 0}
@@ -1225,13 +1246,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8459401213791337542}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0.46174854, w: 0.88701093}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1.7, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2682705565289463711}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -55}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!2083052967 &1499435788742178420
 VisualEffect:
   m_ObjectHideFlags: 0
@@ -1334,10 +1355,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: 2243838571553120747, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
-  Invoker: {fileID: 0}
+  a:
+    rid: 3599543054804713543
   casters:
   - rid: 3599542788000317514
   - rid: 3599542788000317516
+  - rid: 2961813093362696271
   network_isPerforming:
     m_InternalValue: 1
   IsInterruptable: 1
@@ -1347,12 +1370,12 @@ MonoBehaviour:
   SpeedReducing: 6
   RecieverPushDirection: {x: 0, y: 0, z: 0.3}
   BeforeAttackDelay: 0.7
-  beforeAttackPermissions: 21
+  beforeAttackPermissions: 1280
   AfterAttackDelay: 1.06
-  afterAttackPermissions: 12
+  afterAttackPermissions: 1024
   impulseForce: 0.007
   impulseSource: {fileID: 897015580173702940}
-  PlayAnimationName: 
+  PlayAnimationName: Torso.Attack1
   OnStartAttackEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -1425,6 +1448,19 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 2961813093362696271
+      type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        damage:
+          value: 50
+          type: 0
+          stunlock: 2
+          pushDirection: {x: -1, y: 0, z: 2}
+        position: {x: -1.35, y: 0, z: 2}
+        size: {x: 1, y: 0.3, z: 1.7}
+        angle: {x: 0, y: 45, z: 0}
     - rid: 3599542788000317514
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
@@ -1432,9 +1468,9 @@ MonoBehaviour:
           value: 40
           type: 0
           stunlock: 2
-          pushDirection: {x: 0, y: 1, z: 2}
-        position: {x: 0, y: 0, z: 2.92}
-        size: {x: 1, y: 0.58, z: 1}
+          pushDirection: {x: 0, y: 0, z: 2}
+        position: {x: 0, y: 0, z: 2.38}
+        size: {x: 1, y: 0.63, z: 1.57}
         angle: {x: 0, y: 0, z: 0}
     - rid: 3599542788000317516
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
@@ -1443,10 +1479,68 @@ MonoBehaviour:
           value: 40
           type: 0
           stunlock: 2
-          pushDirection: {x: 0, y: 1, z: 2}
-        position: {x: -1.35, y: 0, z: 2}
+          pushDirection: {x: 1, y: 0, z: 2}
+        position: {x: 1.35, y: 0, z: 2}
         size: {x: 1, y: 0.3, z: 1.7}
-        angle: {x: 34.3, y: 23.07, z: 0}
+        angle: {x: 0, y: -45, z: 0}
+    - rid: 3599543054804713543
+      type: {class: QueuedCastMulticaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        Name: 
+        queue:
+        - rid: 3599543054804713544
+        - rid: 3599543054804713546
+        - rid: -2
+        - rid: -2
+        - rid: -2
+    - rid: 3599543054804713544
+      type: {class: SingleCastMulticaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        Name: 
+        casters: []
+        BeforeAttackDelay: 1
+        BeforeAttackPermissions: 65280
+        AfterAttackDelay: 1
+        AfterAttackPermissions: 65280
+        StartCastAnimationName: Torso.Attack1_Prepare
+        StartCastPushDirection: {x: 0, y: 0, z: 1}
+        OnStartCast:
+          m_PersistentCalls:
+            m_Calls: []
+        CastAnimationName: Torso.Attack1
+        CastPushDirection: {x: 0, y: 0, z: 0.5}
+        OnCast:
+          m_PersistentCalls:
+            m_Calls: []
+        EndCastAnimationName: Torso.Attack1_Ending
+        EndCastPushDirection: {x: 0, y: 0, z: 0}
+        OnEndCast:
+          m_PersistentCalls:
+            m_Calls: []
+    - rid: 3599543054804713546
+      type: {class: SingleCastMulticaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        Name: 
+        casters: []
+        BeforeAttackDelay: 1
+        BeforeAttackPermissions: 65280
+        AfterAttackDelay: 1
+        AfterAttackPermissions: 65280
+        StartCastAnimationName: Torso.Attack1_Prepare
+        StartCastPushDirection: {x: 0, y: 0, z: 1}
+        OnStartCast:
+          m_PersistentCalls:
+            m_Calls: []
+        CastAnimationName: Torso.Attack1
+        CastPushDirection: {x: 0, y: 0, z: 0.5}
+        OnCast:
+          m_PersistentCalls:
+            m_Calls: []
+        EndCastAnimationName: Torso.Attack1_Ending
+        EndCastPushDirection: {x: 0, y: 0, z: 0}
+        OnEndCast:
+          m_PersistentCalls:
+            m_Calls: []
 --- !u!114 &9034964140313423435
 MonoBehaviour:
   m_ObjectHideFlags: 0

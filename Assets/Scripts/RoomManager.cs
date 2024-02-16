@@ -91,7 +91,7 @@ public class RoomManager : NetworkBehaviour
                 CharacterColorScheme.Pink => new Color(1, 0.5f, 1) ,
                 CharacterColorScheme.Cyan => Color.cyan,
 
-                CharacterColorScheme.Celestial => Color.white,
+                CharacterColorScheme.Celestial => new Color(1, 1, 0.55f),
 
                 _ => Color.red
             };
@@ -123,9 +123,32 @@ public class RoomManager : NetworkBehaviour
 
     public struct PlayerStatistics : INetworkSerializable
     {
-        public int Killstreak;
+        public static PlayerStatistics Empty() => new() 
+        {
+            KillStreak = 0,
+            KillStreakTotal = 0,
+        
+            AssistsStreak = 0,
+            AssistsStreakTotal = 0,
+        
+            Deads = 0,
+
+            DeliveredDamage = 0,
+            PowerUpsPicked = 0,
+        };
+
+        public int KillStreak;
+        public int KillStreakTotal;
+        
+        public int AssistsStreak;
+        public int AssistsStreakTotal;
+        
+        public int Deads;
+
+
         public float DeliveredDamage;
         public float PowerUpsPicked;
+
 
         public override bool Equals(object obj)
         {
@@ -135,7 +158,11 @@ public class RoomManager : NetworkBehaviour
             var stats = (PlayerStatistics)obj;
 
             return 
-                stats.Killstreak == Killstreak &&
+                stats.KillStreak == KillStreak &&
+                stats.KillStreakTotal == KillStreakTotal &&
+                stats.AssistsStreak == AssistsStreak &&
+                stats.AssistsStreakTotal == AssistsStreakTotal &&
+                stats.Deads == Deads &&
                 stats.DeliveredDamage == DeliveredDamage &&
                 stats.PowerUpsPicked == PowerUpsPicked;
         }
@@ -150,7 +177,7 @@ public class RoomManager : NetworkBehaviour
         }
     }
     
-    public struct PublicClientInfo : INetworkSerializable, IEquatable<PublicClientInfo>
+    public struct PublicClientData : INetworkSerializable, IEquatable<PublicClientData>
     {
         public ulong ID;
 
@@ -159,7 +186,7 @@ public class RoomManager : NetworkBehaviour
         public SpawnArguments spawnArguments;
         public PlayerStatistics statistics;
 
-        public bool Equals(PublicClientInfo other)
+        public bool Equals(PublicClientData other)
         {
             return 
                 other.ID.Equals(ID) &&
@@ -186,8 +213,6 @@ public class RoomManager : NetworkBehaviour
         public DateTime EnterTime;
         public DateTime DeathTime;
         public DateTime RespawnTime;
-
-        public PublicClientInfo publicInfo;
     }
 
     public delegate void SendChatMessageDelegate (FixedString128Bytes senderName, FixedString512Bytes text);
@@ -212,7 +237,7 @@ public class RoomManager : NetworkBehaviour
     private NetworkPrefabsList weapons;
 
 
-    public NetworkList<PublicClientInfo> playerData;
+    public NetworkList<PublicClientData> playersData;
 
     [NonSerialized]
     public SpawnArguments spawnArgs;
@@ -233,9 +258,9 @@ public class RoomManager : NetworkBehaviour
         };
     }
 
-    public PublicClientInfo FindClientData(ulong ClientID)
+    public PublicClientData FindClientData(ulong ClientID)
     {
-        foreach (var item in playerData)
+        foreach (var item in playersData)
         {
             if (item.ID == ClientID)
             {
@@ -249,11 +274,11 @@ public class RoomManager : NetworkBehaviour
     {
         return privateClientsData.ContainsKey(ID);
     }
-    public int IndexOfPlayerData(Predicate<PublicClientInfo> alghoritm)
+    public int IndexOfPlayerData(Predicate<PublicClientData> alghoritm)
     {
-        for (int i = 0; i < playerData.Count; i++)
+        for (int i = 0; i < playersData.Count; i++)
         {
-            var data = playerData[i];
+            var data = playersData[i];
 
             if (alghoritm.Invoke(data))
             {
@@ -315,7 +340,7 @@ public class RoomManager : NetworkBehaviour
     {
         Singleton = this;
 
-        playerData = new (new PublicClientInfo[0], NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+        playersData = new (new PublicClientData[0], NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     }
     private void OnValidate()
     {
@@ -331,9 +356,11 @@ public class RoomManager : NetworkBehaviour
     {
         if (IsPlayerAuthorized(ID))
         {
-            Debug.Log($"{privateClientsData[ID].publicInfo.Name} is disconnected");
+            var publicDataIndex = IndexOfPlayerData(data => data.ID == ID);
 
-            playerData.Remove(privateClientsData[ID].publicInfo);
+            Debug.Log($"{playersData[publicDataIndex].Name} is disconnected");
+
+            playersData.RemoveAt(publicDataIndex);
             privateClientsData.Remove(ID);
         }
     }
@@ -408,6 +435,7 @@ public class RoomManager : NetworkBehaviour
     [ServerRpc (RequireOwnership = false)]
     private void Spawn_ServerRpc(SpawnArguments args, ServerRpcParams Param = default)
     {
+        
         var DataIndex = IndexOfPlayerData(a => a.ID == Param.Receive.SenderClientId);
         if (DataIndex == -1)
             return;
@@ -415,14 +443,12 @@ public class RoomManager : NetworkBehaviour
         if (CharactersLimit <= privateClientsData.Count)
             return;
         
-        var data = playerData[DataIndex];
+        var data = playersData[DataIndex];
         data.spawnArguments = args;
-        playerData[DataIndex] = data;
+        playersData[DataIndex] = data;
 
         var player = SpawnCharacter(args, Param);
         SetWeapon(args, Param);
-
-
 
         if (player != null)
         {
@@ -444,35 +470,27 @@ public class RoomManager : NetworkBehaviour
             characterAuthorizeTimeout.Remove(senderId);
         }
         
-        PublicClientInfo publicInfo = new()
-        {
-            ID = senderId,
-
-            Name = authorizeInfo.Name,
-
-            statistics = new()
-            {
-                Killstreak = 0,
-                DeliveredDamage = 0,
-                PowerUpsPicked = 0,
-            }
-        };
-
         privateClientsData.Add(senderId, new ()
         {
             networkClient = NetworkManager.Singleton.ConnectedClients[senderId],
 
             networkCharacter = null,
+            networkCharacterWeapon = null,
 
             EnterTime = DateTime.Now,
             DeathTime = DateTime.Now,
             RespawnTime = DateTime.Now,
-
-            publicInfo = publicInfo
         });
-        playerData.Add(publicInfo);
+        playersData.Add(new()
+        {
+            ID = senderId,
 
-        Debug.Log($"Player {publicInfo.Name} is succesfully authorized with ID:{senderId}");
+            Name = authorizeInfo.Name,
+
+            statistics = PlayerStatistics.Empty()
+        });
+
+        Debug.Log($"Player {authorizeInfo.Name} is succesfully authorized with ID:{senderId}");
 
         OnCharacterAuthorized.Invoke(senderId);
     }
@@ -507,7 +525,7 @@ public class RoomManager : NetworkBehaviour
         {
             base.OnInspectorGUI();
 
-            foreach (var player in target.playerData)
+            foreach (var player in target.playersData)
             {
                 EditorGUILayout.BeginHorizontal();
 
