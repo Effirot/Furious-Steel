@@ -203,7 +203,7 @@ public class RoomManager : NetworkBehaviour
             serializer.SerializeValue(ref statistics);
         }
     }
-    private class PrivateClientInfo 
+    private class PrivateClientInfo : IDisposable
     {
         public NetworkClient networkClient;
 
@@ -213,9 +213,14 @@ public class RoomManager : NetworkBehaviour
         public DateTime EnterTime;
         public DateTime DeathTime;
         public DateTime RespawnTime;
+
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+        }
     }
 
-    public delegate void SendChatMessageDelegate (FixedString128Bytes senderName, FixedString512Bytes text);
+    public delegate void SendChatMessageDelegate (PublicClientData publicClientData, FixedString512Bytes text);
 
     public static RoomManager Singleton { get; private set; }
 
@@ -225,6 +230,8 @@ public class RoomManager : NetworkBehaviour
     public static event SendChatMessageDelegate OnServerException = delegate { };
 
     public static event Action<ulong> OnCharacterAuthorized = delegate { }; 
+
+    public static readonly PublicClientData ServerData = new PublicClientData() { ID = 0, Name = "[SERVER]" };
 
     [SerializeField, Range(1, 64)]
     private int CharactersLimit = 12;
@@ -361,6 +368,12 @@ public class RoomManager : NetworkBehaviour
             Debug.Log($"{playersData[publicDataIndex].Name} is disconnected");
 
             playersData.RemoveAt(publicDataIndex);
+            
+            if (privateClientsData[ID].networkCharacter != null)
+            {
+                privateClientsData[ID].networkCharacter.Kill();
+            }
+            privateClientsData[ID].Dispose();
             privateClientsData.Remove(ID);
         }
     }
@@ -431,7 +444,6 @@ public class RoomManager : NetworkBehaviour
     }
 
 
-
     [ServerRpc (RequireOwnership = false)]
     private void Spawn_ServerRpc(SpawnArguments args, ServerRpcParams Param = default)
     {
@@ -499,19 +511,24 @@ public class RoomManager : NetworkBehaviour
     [ClientRpc]
     private void ServerException_ClientRpc(FixedString512Bytes message, ClientRpcParams rpcParams = default)
     {
-        OnServerException.Invoke("[SERVER]", message);
+        OnServerException.Invoke(ServerData, message);
     } 
 
     [ServerRpc (RequireOwnership = false)]
     private void SendChatMessage_ServerRpc(FixedString512Bytes text, ServerRpcParams Param = default)
     {
-        SendChatMessage_ClientRpc("UNKNOWN", text);
+        SendChatMessage_ClientRpc(Param.Receive.SenderClientId, text);
+           
+        Debug.Log($"Message: {FindClientData(Param.Receive.SenderClientId).Name} - {text}");
     }
 
     [ClientRpc]
-    private void SendChatMessage_ClientRpc(FixedString128Bytes senderName, FixedString512Bytes text)
+    private void SendChatMessage_ClientRpc(ulong clientID, FixedString512Bytes text)
     {
-        OnWriteToChat.Invoke(senderName, text);
+        var data = FindClientData(clientID);
+        OnWriteToChat.Invoke(data, text);
+
+        Debug.Log($"Message: {data.Name} - {text}");
     }
 
 #if UNITY_EDITOR
@@ -525,16 +542,20 @@ public class RoomManager : NetworkBehaviour
         {
             base.OnInspectorGUI();
 
-            foreach (var player in target.playersData)
+            if (target.playersData != null)
             {
-                EditorGUILayout.BeginHorizontal();
+                foreach (var player in target.playersData)
+                {
+                    EditorGUILayout.BeginHorizontal();
 
-                EditorGUILayout.LabelField(player.ID.ToString());
-                EditorGUILayout.LabelField(player.Name.Value);
+                    EditorGUILayout.LabelField(player.ID.ToString());
+                    EditorGUILayout.LabelField(player.Name.Value);
 
-                EditorGUILayout.EndHorizontal();
+                    EditorGUILayout.EndHorizontal();
 
+                }
             }
+
         }
     }
 #endif

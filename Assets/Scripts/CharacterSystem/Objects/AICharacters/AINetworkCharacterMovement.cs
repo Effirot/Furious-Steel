@@ -57,8 +57,10 @@ namespace CharacterSystem.Objects.AI
 
         protected abstract void AITick();
 
-        private void OnDrawGizmosSelected()
+        protected override void OnDrawGizmosSelected()
         {
+            base.OnDrawGizmosSelected();
+            
             if (path != null && path.corners.Length > 0)
             {
                 var point = path.corners[0];

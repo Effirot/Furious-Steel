@@ -15,7 +15,7 @@ public interface ISyncedActivitiesSource : IMonoBehaviourLink
 
     CharacterPermission permissions { get; set; }
     
-    public bool IsServer => NetworkObject.NetworkManager.IsServer;
+    public bool IsServer => NetworkManager.Singleton.IsServer;
     public bool IsOwner => NetworkObject.IsOwner;
 
 }
@@ -27,8 +27,19 @@ public abstract class SyncedActivities<T> : NetworkBehaviour where T : ISyncedAc
     [SerializeField]
     private InputActionReference inputAction;
 
-    [HideInInspector]
-    public T Invoker = default;
+    public T Invoker { 
+        get 
+        {
+            if (m_invoker == null)
+            {
+                return m_invoker = ResearchInvoker();
+            }
+
+            return m_invoker;
+        } 
+        private set => m_invoker = value;
+    }
+
     
     public bool IsPressed 
     {
@@ -42,16 +53,15 @@ public abstract class SyncedActivities<T> : NetworkBehaviour where T : ISyncedAc
         }
     }
     
-
     private NetworkVariable<bool> network_isPressed = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    
+    private T m_invoker;
 
     protected abstract void OnStateChanged(bool IsPressed);
 
-    public override void OnNetworkSpawn()  
+    public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
-
-        ResearchSource();
 
         Subscribe();
     }
@@ -64,7 +74,7 @@ public abstract class SyncedActivities<T> : NetworkBehaviour where T : ISyncedAc
 
     private void Subscribe()
     {
-        if (IsOwner)
+        if (IsOwner && inputAction != null)
         {
             inputAction.action.Enable();
             inputAction.action.started += OnInputPressStateChanged_Event;
@@ -76,7 +86,7 @@ public abstract class SyncedActivities<T> : NetworkBehaviour where T : ISyncedAc
     }
     private void Unsubscribe()
     {
-        if (IsOwner)
+        if (IsOwner && inputAction != null)
         {
             inputAction.action.Enable();
             inputAction.action.started -= OnInputPressStateChanged_Event;
@@ -93,22 +103,18 @@ public abstract class SyncedActivities<T> : NetworkBehaviour where T : ISyncedAc
     }
     private void InvokeStateChangedFunction_Event(bool Old, bool New)
     {
-        ResearchSource();
-
         OnStateChanged(New);
     }
-    private void ResearchSource()
-    {
-        if (Invoker == null)
-        {
-            Invoker = GetComponentInParent<T>();
 
-            if (Invoker == null)
-            {
-                Debug.Log($"Unable to find activityes source {typeof(T).Name}");
-            }
+    private T ResearchInvoker()
+    {
+        var result = GetComponentInParent<T>();
+
+        if (result == null)
+        {
+            Debug.LogWarning($"Unable to find activityes source {typeof(T).Name}");
         }
 
-        
+        return result;
     }
 }

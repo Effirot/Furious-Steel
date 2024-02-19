@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using CharacterSystem.Attacks;
@@ -26,7 +27,8 @@ namespace CharacterSystem.Objects
 
         public static event OnPlayerCharacterStateChangedDelegate OnOwnerPlayerCharacterDead = delegate { };
         public static event OnPlayerCharacterStateChangedDelegate OnOwnerPlayerCharacterSpawn = delegate { };
-
+        
+        
         public static PlayerNetworkCharacter Owner { get; private set; }
 
         public static List<PlayerNetworkCharacter> Players = new();
@@ -60,21 +62,38 @@ namespace CharacterSystem.Objects
 
         private NetworkVariable<ulong> network_serverClientId = new (0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
+        public event Action<DamageDeliveryReport> OnDamageDelivered;
 
         private Coroutine dodgeRoutine = null;
         private float lastTapTime = 0;
 
+        public override bool Hit(Damage damage)
+        {
+            if (health <= 0 && damage.sender is NetworkCharacter)
+            {
+                CharacterUIObserver.Singleton.observingCharacter = (NetworkCharacter) damage.sender;
+            }
 
-        public virtual void OnDamageDelivered(Damage damage)
+            return base.Hit(damage);
+        }
+
+        public virtual void DamageDelivered(DamageDeliveryReport report)
         {
             if (IsServer)
             {
-                var clientDataIndex = ClientDataIndex;
+                var data = RoomManager.Singleton.playersData[ClientDataIndex];
+                data.statistics.DeliveredDamage += report.damage.value;
 
-                var data = RoomManager.Singleton.playersData[clientDataIndex];
-                data.statistics.DeliveredDamage += damage.value;
-                RoomManager.Singleton.playersData[clientDataIndex] = data;
+                if (report.isLethal)
+                {
+                    data.statistics.KillStreak += 1;
+                    data.statistics.KillStreakTotal += 1;
+                }
+
+                RoomManager.Singleton.playersData[ClientDataIndex] = data;
             }
+
+            OnDamageDelivered?.Invoke(report);
         }
 
         public void RefreshColor()
@@ -84,6 +103,7 @@ namespace CharacterSystem.Objects
 
         public override void OnNetworkSpawn()
         {
+            RoomManager.Singleton.playersData.OnListChanged += OnOwnerPlayerDataChanged_event;
             Players.Add(this);
 
             base.OnNetworkSpawn();
@@ -110,6 +130,8 @@ namespace CharacterSystem.Objects
         }
         public override void OnNetworkDespawn()
         {
+            RoomManager.Singleton.playersData.OnListChanged -= OnOwnerPlayerDataChanged_event;
+
             Players.Remove(this);
 
             base.OnNetworkDespawn();
@@ -134,6 +156,15 @@ namespace CharacterSystem.Objects
             {
                 OnOwnerPlayerCharacterDead.Invoke(this);
             }
+
+            if (IsServer)
+            {
+                var data = RoomManager.Singleton.playersData[ClientDataIndex];
+                data.statistics.KillStreak = 0;
+                data.statistics.AssistsStreak = 0;
+
+                RoomManager.Singleton.playersData[ClientDataIndex] = data;
+            }
         }
         protected override void Spawn()
         {
@@ -142,12 +173,28 @@ namespace CharacterSystem.Objects
             OnPlayerCharacterSpawn.Invoke(this);
         }
 
+        protected virtual void OnOwnerPlayerDataChanged(NetworkListEvent<RoomManager.PublicClientData> changeEvent)
+        {
+            if (changeEvent.Value.spawnArguments.ColorScheme != changeEvent.PreviousValue.spawnArguments.ColorScheme)
+            {
+                RefreshColor_Internal();
+            }
+        }
+
+        private void OnOwnerPlayerDataChanged_event(NetworkListEvent<RoomManager.PublicClientData> changeEvent)
+        {
+            if (changeEvent.Value.ID == ServerClientID)
+            {
+                OnOwnerPlayerDataChanged(changeEvent);
+            }
+        }
+
         private IEnumerator DodgeRoutine(Vector3 Direction)
         {
             Direction.Normalize();
             // Push(V3direction * DodgePushForce);  
 
-            permissions = CharacterPermission.None;
+            permissions = CharacterPermission.Untouchable;
             animator.SetBool("Dodge", true);
 
             var timer = 0f;
@@ -184,7 +231,7 @@ namespace CharacterSystem.Objects
                 lastTapTime = Time.time;
             }
         }
-
+        
 
         [ClientRpc]
         private void Dash_ClientRpc(Vector2 direction)
@@ -199,7 +246,7 @@ namespace CharacterSystem.Objects
         {
             direction.Normalize();
 
-            if (IsServer && !isStunned && dodgeRoutine == null)
+            if (IsServer && !isStunned && dodgeRoutine == null && permissions.HasFlag(CharacterPermission.AllowDash))
             {
                 SetAngle(Quaternion.LookRotation(new Vector3(direction.x, 0, direction.y)).eulerAngles.y);
 

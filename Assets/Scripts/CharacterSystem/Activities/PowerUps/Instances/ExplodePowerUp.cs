@@ -25,9 +25,10 @@ public class ExplodePowerUp : PowerUp
 
                 Damage.Deliver(collider.gameObject, new Damage()
                 {
-                    value = 60,
+                    value = 50,
                     stunlock = 1,
-                    pushDirection = Vector3.up * 2 + VectorToTarget,
+                    pushDirection = (Vector3.up + VectorToTarget).normalized,
+                    type = Damage.Type.Unblockable,
                     sender = holder.Invoker
                 });
             }
@@ -45,16 +46,7 @@ public class ExplodePowerUp : PowerUp
             effect.visualEffectAsset = visualEffect;
             effect.Play();
 
-            holder.StartCoroutine(RemoveGameObject(effectObject));
-        }
-        IEnumerator RemoveGameObject(GameObject gameObject)
-        {
-            yield return new WaitForSeconds(5);
-
-            if (gameObject != null)
-            {
-                GameObject.Destroy(gameObject);
-            }
+            Object.Destroy(effectObject, 5);
         }
     }
 

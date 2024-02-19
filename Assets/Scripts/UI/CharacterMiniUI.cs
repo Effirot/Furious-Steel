@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using CharacterSystem.Objects;
 using CharacterSystem.PowerUps;
 using TMPro;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,6 +24,9 @@ public class CharacterMiniUI : MonoBehaviour
 
     [SerializeField]
     private PowerUpHolder[] holders; 
+    
+    [SerializeField]
+    private Slider UltimateField;
 
     
     private void Start()
@@ -58,6 +62,7 @@ public class CharacterMiniUI : MonoBehaviour
 
         SubscribeToHealthBar();
         SubscribeToHolders();
+        SubscribeToUltimate();
     }
 
     private void SetNickname()
@@ -67,6 +72,8 @@ public class CharacterMiniUI : MonoBehaviour
             var player = (PlayerNetworkCharacter)networkCharacter;
                             
             NicknameField.text = player.ClientData.Name.ToString();
+
+            RoomManager.Singleton.playersData.OnListChanged += OnOwnerPlayerDataChanged_event;
         }
     }
 
@@ -119,5 +126,34 @@ public class CharacterMiniUI : MonoBehaviour
                 holders[i].OnPowerUpChanged -= drawers[i].Draw;
             } 
         }
+    }
+    
+    private void SubscribeToUltimate()
+    {
+        var ultimate = networkCharacter.GetComponentInChildren<UltimateDamageSource>();
+
+        UltimateField.gameObject.SetActive(ultimate != null);
+        if (ultimate != null)
+        {
+            UltimateField.maxValue = ultimate.RequireDamage;
+            ultimate.OnValueChanged += OnUltimateValueChanged_event;
+        }
+    }
+
+    private void OnOwnerPlayerDataChanged_event(NetworkListEvent<RoomManager.PublicClientData> changeEvent)
+    {
+        var player = (PlayerNetworkCharacter)networkCharacter;
+
+        if (changeEvent.Value.ID == player.ServerClientID)
+        {
+            if (changeEvent.Value.spawnArguments.ColorScheme != changeEvent.PreviousValue.spawnArguments.ColorScheme)
+            {
+                HealthField.fillRect.GetComponent<Graphic>().color = player.ClientData.spawnArguments.GetColor();
+            }
+        }
+    }
+    private void OnUltimateValueChanged_event(float value)
+    {
+        UltimateField.value = value;
     }
 }

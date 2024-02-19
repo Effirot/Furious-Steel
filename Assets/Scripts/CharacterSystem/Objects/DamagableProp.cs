@@ -28,6 +28,9 @@ namespace CharacterSystem.Objects
         [SerializeField]
         private UnityEvent<float> OnLossHealth = new ();
 
+        [SerializeField]
+        private AudioClip onHitSound;
+
         public float health { 
             get => network_Health.Value; 
             set { 
@@ -65,6 +68,7 @@ namespace CharacterSystem.Objects
                 OnHitEffect.Play();
             }
             
+            AudioSource.PlayClipAtPoint(onHitSound, transform.position);
             OnHitEvent.Invoke(damage);
 
             return true;
@@ -88,7 +92,6 @@ namespace CharacterSystem.Objects
             }
         }
 
-
         private void Destroy()
         {
             if (NetworkObject.IsSpawned)
@@ -96,9 +99,6 @@ namespace CharacterSystem.Objects
                 NetworkObject.Despawn();
             }
         }
-
-
-
     }
 }
 

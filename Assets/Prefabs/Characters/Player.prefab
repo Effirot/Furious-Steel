@@ -126,7 +126,6 @@ GameObject:
   - component: {fileID: 7945737309752349265}
   - component: {fileID: 5804015679080351171}
   - component: {fileID: 7280063651460184589}
-  - component: {fileID: 7582562146521736679}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -213,6 +212,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 150
+  regenerationPerSecond: 5
   <Speed>k__BackingField: 11
   <Mass>k__BackingField: 1
   <OnHitEffect>k__BackingField: {fileID: 5661648555660338103}
@@ -238,30 +238,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63f831d618393c8489c860a4c9bff3ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inputAction: {fileID: -697749738134341483, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
-  Invoker: {fileID: 0}
+  inputAction: {fileID: -8254143158167318630, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Character: {fileID: 5804015679080351171}
---- !u!135 &7582562146521736679
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6610828187798962060}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 1.38
-  m_Center: {x: 0, y: 1.25, z: 0}
 --- !u!1 &7548537234594387752
 GameObject:
   m_ObjectHideFlags: 0

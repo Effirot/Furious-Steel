@@ -10,7 +10,7 @@ namespace CharacterSystem.DamageMath
     [Serializable]
     public struct Damage
     {
-        public enum DamageType : byte
+        public enum Type : byte
         {
             Physics = 1,
             Balistic = 2,
@@ -29,31 +29,46 @@ namespace CharacterSystem.DamageMath
         }
         public static void Deliver(IDamagable target, Damage damage)
         {
-            bool isBlocked = false;
+            var report = new DamageDeliveryReport();
+
+            report.target = target;
+
+            if (target == null)
+                return;
+
+            report.damage = damage;
+            report.isDelivered = true;
 
             if (damage.value > 0)
             {
-                isBlocked = target.Hit(damage);
+                report.isBlocked = target.Hit(damage);
+                report.isLethal = target.health <= 0;
             }
             else
             {
-                isBlocked = target.Heal(damage);
+                report.isBlocked = target.Heal(damage);
             }
 
-            if (!isBlocked)
+            if (!report.isBlocked)
             {
                 target.Push(damage.pushDirection);
                 target.stunlock = Mathf.Max(target.stunlock, damage.stunlock);
             }
 
-            damage.sender?.OnDamageDelivered(damage);
+            if (damage.sender != null)
+            {
+                using (report)
+                {
+                    damage.sender?.DamageDelivered(report);
+                }
+            }
         }
 
-        [SerializeField, Range(-300, 300)]
+        [SerializeField, Range(-100, 300)]
         public float value;
 
         [SerializeField]
-        public DamageType type;
+        public Type type;
 
         [SerializeField, Range(0, 10)]
         public float stunlock;
@@ -65,7 +80,7 @@ namespace CharacterSystem.DamageMath
         public IDamageSource sender;
 
 
-        public Damage(float value, IDamageSource sender, float stunlock, Vector3 pushDirection, DamageType type)
+        public Damage(float value, IDamageSource sender, float stunlock, Vector3 pushDirection, Type type)
         {
             this.value = value;
             this.sender = sender;
@@ -94,6 +109,22 @@ namespace CharacterSystem.DamageMath
             damage.pushDirection /= multipliyer;
 
             return damage;
+        }
+    }
+
+    public class DamageDeliveryReport : IDisposable
+    {
+        public Damage damage = new Damage();
+
+        public bool isDelivered = false;
+        public bool isBlocked = false;
+        public bool isLethal = false;
+
+        public IDamagable target = null;
+
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
         }
     }
 }

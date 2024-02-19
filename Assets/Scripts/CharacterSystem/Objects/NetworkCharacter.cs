@@ -39,8 +39,6 @@ namespace CharacterSystem.Objects
         NetworkBehaviour,
         IDamagable
     {
-
-
         public delegate void OnCharacterStateChangedDelegate (NetworkCharacter character);
         public delegate void OnCharacterSendDamageDelegate (NetworkCharacter character, Damage damage);
         
@@ -52,9 +50,12 @@ namespace CharacterSystem.Objects
         public const float ServerPositionInterpolationTime = 0.07f;
         public const float VelocityReducingMultipliyer = 0.85f;
 
-        [Header("Movement")]
+        [Header("Stats")]
         [SerializeField]
         public float maxHealth = 150;
+        
+        public float regenerationPerSecond = 5;
+        
 
         [field : SerializeField]
         public virtual float Speed { get; set; } = 11;
@@ -137,7 +138,7 @@ namespace CharacterSystem.Objects
             get => network_stunlock.Value;
             set 
             {
-                if (IsServer && !permissions.HasFlag(CharacterPermission.All))
+                if (IsServer)
                 {
                     network_stunlock.Value = value;
 
@@ -146,6 +147,10 @@ namespace CharacterSystem.Objects
                         speed_Multipliyer = 0;
 
                         SetAngle(transform.rotation.eulerAngles.y);
+                    }
+                    else
+                    {
+                        network_stunlock.Value = 0;
                     }
                 }
             }
@@ -162,6 +167,7 @@ namespace CharacterSystem.Objects
             }
         }
 
+        public bool isInWater { get; private set; } = false;
         public bool isGrounded { get; private set; } = false;
 
         private NetworkVariable<float> network_stunlock = new NetworkVariable<float>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
@@ -181,6 +187,8 @@ namespace CharacterSystem.Objects
         // private bool ground_checker => !Physics.OverlapSphere(transform.position, characterController.radius, LayerMask.GetMask("Ground")).Any();
 
 
+        private List<Collider> collision_buffer = new();
+
         public void Kill()
         {
             if (IsServer)
@@ -189,16 +197,14 @@ namespace CharacterSystem.Objects
     
                 foreach (var item in GetComponentsInChildren<NetworkObject>()) 
                 {
-                    if (item != NetworkObject && item.IsSpawned)
+                    if (item != this.NetworkObject && item.IsSpawned)
                     {
                         item.Despawn(true);
                     }
                 }
 
-                if (NetworkObject.IsSpawned)
-                {
-                    NetworkObject.Despawn(false);
-                }
+                this.NetworkObject.Despawn(false);
+                
     
                 StartCoroutine(DisolveCorpse());
             }
@@ -207,7 +213,6 @@ namespace CharacterSystem.Objects
         {
             var isBlocked = Blocker != null && Blocker.Block(ref damage);
             
-
             health -= damage.value;
 
             if (health <= 0)
@@ -277,8 +282,6 @@ namespace CharacterSystem.Objects
             {
                 health = maxHealth;
 
-                StartCoroutine(StunlockReduceProcess());
-
                 network_position.Value = transform.position;
 
                 SetAngle(transform.rotation.eulerAngles.y);
@@ -290,7 +293,6 @@ namespace CharacterSystem.Objects
             network_permissions.OnValueChanged += OnPermissionsChanged;
 
             transform.position = network_position.Value;
-
         }
         public override void OnNetworkDespawn()
         {
@@ -337,10 +339,34 @@ namespace CharacterSystem.Objects
             {
                 RotateCharacter();
             }
+
+            if (isStunned)
+            {
+                stunlock -= Time.fixedDeltaTime;
+
+                if (stunlock < 0)
+                {
+                    stunlock = 0;
+                }
+            }
         }
         protected virtual void LateUpdate()
         {
             InterpolateToServerPosition();
+        }
+        protected virtual void OnTriggerEnter(Collider collider)
+        {
+            if (collider.gameObject.layer == 4)
+            {
+                isInWater = true;
+            }
+        }
+        protected virtual void OnTriggerExit(Collider collider)
+        {
+            if (collider.gameObject.layer == 4)
+            {
+                isInWater = false;
+            }
         }
 
         protected virtual void OnDrawGizmosSelected()
@@ -382,7 +408,9 @@ namespace CharacterSystem.Objects
             {
                 if (permissions.HasFlag(CharacterPermission.AllowMove))
                 {
-                    speed_Multipliyer = Mathf.Lerp(speed_Multipliyer, movementVector.magnitude * Speed, 0.12f);
+                    var waterSpeedReducing = isInWater ? 1.5f : 1;
+
+                    speed_Multipliyer = Mathf.Lerp(speed_Multipliyer, (movementVector.magnitude * Speed) / waterSpeedReducing, 0.12f);
 
                     if (IsServer)
                     {
@@ -448,33 +476,11 @@ namespace CharacterSystem.Objects
         }
         private void CalculateAnimations()
         {
-            animator.SetBool("Stunned", isStunned);
             animator.SetFloat("Walk_Speed", speed_Multipliyer);
             animator.SetBool("IsGrounded", isGrounded);
+            animator.SetBool("IsStunned", isStunned);
         }
 
-        private IEnumerator StunlockReduceProcess()
-        {
-            while (true)
-            {
-                stunlock = Mathf.Clamp(stunlock - 0.1f, 0, float.MaxValue);
-
-                if (StulockEffect != null)
-                {
-                    if (isStunned)
-                    {
-                        StulockEffect.Play();
-                    }
-                    else
-                    {
-                        StulockEffect.Stop();
-                    }
-                }
-                
-                yield return new WaitForSeconds(0.1f);
-
-            }
-        }
         private IEnumerator DisolveCorpse()
         {
             yield return new WaitForSeconds(5f);
@@ -488,11 +494,12 @@ namespace CharacterSystem.Objects
         {
             yield return new WaitForSeconds(7f);
 
+            var waitForFixedUpdateRoutine = new WaitForFixedUpdate();
             while (health < maxHealth)
             {
-                health = Mathf.Clamp(health + 10, 0, maxHealth);
+                health = Mathf.Clamp(health + regenerationPerSecond * Time.fixedDeltaTime, 0, maxHealth);
 
-                yield return new WaitForSeconds(1f);
+                yield return waitForFixedUpdateRoutine;
             }
 
             regenerationCoroutine = null;

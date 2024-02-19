@@ -75,9 +75,10 @@ namespace CharacterSystem.Blocking
 
         public virtual bool Block(ref Damage damage)
         {
-            if (damage.type == Damage.DamageType.Parrying || damage.type == Damage.DamageType.Unblockable) return false;
+            if (damage.type == Damage.Type.Parrying || damage.type == Damage.Type.Unblockable) 
+                return false;
 
-            if (IsBlockInProcess && Invoker.permissions.HasFlag(CharacterPermission.AllowBlocking))
+            if (IsBlockInProcess)
             {
                 OnSuccesfulBlockingEvent.Invoke();
 
@@ -85,11 +86,12 @@ namespace CharacterSystem.Blocking
 
                 if (damage.sender != null)
                 {
-                    backDamage.sender = Invoker;
-                    backDamage.pushDirection = -damage.pushDirection.normalized * DamageReducing * 2;
-                    backDamage.type = Damage.DamageType.Parrying;
+                    var sendedBackDamage = backDamage; 
+                    sendedBackDamage.sender = Invoker;
+                    sendedBackDamage.pushDirection = -damage.pushDirection.normalized * DamageReducing * 2;
+                    sendedBackDamage.type = Damage.Type.Parrying;
 
-                    Damage.Deliver(damage.sender, backDamage);
+                    Damage.Deliver(damage.sender, sendedBackDamage);
                 }
                 damage *= reducingPercent;
 
@@ -138,6 +140,9 @@ namespace CharacterSystem.Blocking
         }
         private void StartBlockProcess()
         {
+            if (!Invoker.permissions.HasFlag(CharacterPermission.AllowBlocking))
+                return;
+
             StopBlockProcess();
 
             Invoker.Blocker = this;

@@ -20,7 +20,9 @@ namespace CharacterSystem.Attacks
 
         float Speed { get; set; }
 
-        void OnDamageDelivered(Damage damage);
+        event Action<DamageDeliveryReport> OnDamageDelivered;
+
+        void DamageDelivered(DamageDeliveryReport report);
     }
 
     public class DamageSource : SyncedActivities<IDamageSource>
@@ -42,6 +44,12 @@ namespace CharacterSystem.Attacks
         [SerializeField]
         private bool IsInterruptable = false;
 
+        [SerializeField]
+        private bool IsInterruptableWhenBlocked = false;
+
+        [SerializeField]
+        private UnityEvent<DamageDeliveryReport> OnDamageReport = new ();
+        
         private NetworkVariable<bool> network_isPerforming = new NetworkVariable<bool>(true, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
         public bool IsAttacking => attackProcess != null;
@@ -64,21 +72,25 @@ namespace CharacterSystem.Attacks
         private Coroutine attackProcess = null;
 
 
-        public void StartAttack()
+        public virtual void StartAttack()
         {
             if (Invoker.IsServer && 
                 !Invoker.isStunned && 
                 Invoker.permissions.HasFlag(CharacterPermission.AllowAttacking) &&
-                IsPerforming)
+                IsPerforming &&
+                !IsAttacking)
             {
                 StartAttack_ClientRpc();
 
-                StartAttack_Internal();
+                if (!IsHost)
+                {
+                    StartAttack_Internal();
+                }
             }            
         }
-        public void EndAttack()
+        public virtual void EndAttack()
         {
-            if (Invoker.IsServer)
+            if (IsServer && !IsAttacking)
             {
                 EndAttack_ClientRpc();
                 
@@ -135,14 +147,17 @@ namespace CharacterSystem.Attacks
 
         private void OnDrawGizmosSelected()
         {
-            multicaster.OnDrawGizmos(transform);
+            multicaster?.OnDrawGizmos(transform);
         }
 
         private void StartAttack_Internal()
         {
-            // Invoker.Speed -= SpeedReducing;
+            if (!IsAttacking)
+            {
+                Invoker.Speed -= SpeedReducing;
 
-            attackProcess = StartCoroutine(multicaster.AttackPipeline(this));
+                attackProcess = StartCoroutine(AttackSubprocess());
+            }
         }
         [ClientRpc]
         private void StartAttack_ClientRpc()
@@ -154,21 +169,42 @@ namespace CharacterSystem.Attacks
         {
             if (IsAttacking)
             {
-                // Invoker.Speed += SpeedReducing;
-
+                Invoker.Speed += SpeedReducing;
+                Invoker.permissions = CharacterPermission.All;
+            
                 StopCoroutine(attackProcess);
+                attackProcess = null;
             }
-
-            Invoker.permissions = CharacterPermission.All;
-            attackProcess = null;
         }
         [ClientRpc]
         private void EndAttack_ClientRpc()
         {
             EndAttack_Internal();
         }
-    }
+    
+        private IEnumerator AttackSubprocess()
+        {
+            yield return multicaster.AttackPipeline(this);
 
+            EndAttack_Internal();
+        }
+
+        internal void HandleDamageReport(DamageDeliveryReport report)
+        {
+            if (report.isDelivered)
+            {
+                OnDamageReport.Invoke(report);
+
+                if (report.isBlocked && IsInterruptableWhenBlocked)
+                {
+                    EndAttack();
+                }
+
+                Invoker.DamageDelivered(report);
+            }
+        }
+
+    }
 
     [Serializable]
     public abstract class Multicaster
@@ -176,7 +212,7 @@ namespace CharacterSystem.Attacks
         [Space]
         [SerializeField, TextArea(1, 1)]
         private string Name;
-
+        
         protected void Execute(IEnumerable<Caster> casters, IDamageSource source, float multipliyer)
         {
             var alreadyHitColliders = new List<Collider>();
@@ -185,6 +221,7 @@ namespace CharacterSystem.Attacks
             {
                 foreach (var collider in cast.CastCollider(source.transform))
                 {
+                    
                     if (collider.isTrigger)
                         continue;
 
@@ -192,7 +229,6 @@ namespace CharacterSystem.Attacks
                         continue;
 
                     alreadyHitColliders.Add(collider);
-
 
                     var damage = cast.damage;
                     damage.pushDirection = source.transform.rotation * cast.damage.pushDirection;
@@ -210,7 +246,6 @@ namespace CharacterSystem.Attacks
 
         public abstract void OnDrawGizmos(Transform transform);
     }
-
     [Serializable]
     public sealed class SingleCastMulticaster : Multicaster
     {
@@ -262,12 +297,12 @@ namespace CharacterSystem.Attacks
             OnStartCast.Invoke();
             invoker.permissions = BeforeAttackPermissions;
             invoker.Push(invoker.transform.rotation * StartCastPushDirection);
-            invoker.animator.Play(StartCastAnimationName);
+            invoker.animator.Play(StartCastAnimationName, -1, 1);
             yield return new WaitForSeconds(BeforeAttackDelay);
 
             OnCast.Invoke();
             invoker.Push(invoker.transform.rotation * CastPushDirection);
-            invoker.animator.Play(CastAnimationName);
+            invoker.animator.Play(CastAnimationName, -1, 1);
 
             Execute(casters, invoker, 1);
 
@@ -275,18 +310,17 @@ namespace CharacterSystem.Attacks
             OnEndCast.Invoke();
             invoker.permissions = AfterAttackPermissions;
             invoker.Push(invoker.transform.rotation * EndCastPushDirection);
-            invoker.animator.Play(EndCastAnimationName);
+            invoker.animator.Play(EndCastAnimationName, -1, 1);
         }
 
         public override void OnDrawGizmos(Transform transform)
         {
             foreach (var caster in casters)
             {
-                caster.CastColliderGizmos(transform);
+                caster?.CastColliderGizmos(transform);
             }
         }
     }
-
     [Serializable]
     public sealed class ChargableSingleCastMulticaster : Multicaster
     {
@@ -359,10 +393,17 @@ namespace CharacterSystem.Attacks
             OnStartCast.Invoke();
             invoker.permissions = BeforeAttackPermissions;
             invoker.Push(invoker.transform.rotation * StartCastPushDirection);
-            invoker.animator.Play(StartCastAnimationName);
+            invoker.animator.Play(StartCastAnimationName, -1, 0.5f);
             yield return new WaitForSeconds(BeforeAttackDelay);
 
+
+            if (!source.IsPressed)
+            {
+                yield break;
+            }
+
             var waitForFixedUpdateRoutine = new WaitForFixedUpdate();
+            invoker.animator.Play(ChargeAnimationName, -1, 0.5f);
             while (source.IsPressed)
             {   
                 yield return waitForFixedUpdateRoutine;
@@ -379,13 +420,14 @@ namespace CharacterSystem.Attacks
 
                 if (holdTime >= AttackChargeMaxTime)
                 {
+                    invoker.animator.Play(FullyChargeAnimationName, -1, 0.5f);
                     OnFullyCharge.Invoke();
                 }
             }
 
             OnCast.Invoke();
             invoker.Push(invoker.transform.rotation * CastPushDirection);
-            invoker.animator.Play(CastAnimationName);
+            invoker.animator.Play(CastAnimationName, -1, 0.5f);
 
             Execute(casters, invoker, multiplier);
 
@@ -393,18 +435,17 @@ namespace CharacterSystem.Attacks
             OnEndCast.Invoke();
             invoker.permissions = AfterAttackPermissions;
             invoker.Push(invoker.transform.rotation * EndCastPushDirection);
-            invoker.animator.Play(EndCastAnimationName);
+            invoker.animator.Play(EndCastAnimationName, -1, 0.5f);
         }
     
         public override void OnDrawGizmos(Transform transform)
         {
             foreach (var caster in casters)
             {
-                caster.CastColliderGizmos(transform);
+                caster?.CastColliderGizmos(transform);
             }
         }
     }
-
     [Serializable]
     public sealed class QueuedCastMulticaster : Multicaster
     {
@@ -423,11 +464,10 @@ namespace CharacterSystem.Attacks
         {
             foreach (var multicaster in queue)
             {
-                multicaster.OnDrawGizmos(transform);
+                multicaster?.OnDrawGizmos(transform);
             }
         }
     }
-
     [Serializable]
     public sealed class RepetitiveCastMulticaster : Multicaster
     {
@@ -478,6 +518,8 @@ namespace CharacterSystem.Attacks
             Gizmos.matrix = Matrix4x4.TRS(transform.position + (transform.rotation * position), Quaternion.Euler(transform.eulerAngles + angle), Vector3.one);
 
             Gizmos.DrawWireCube(Vector3.zero, size * 2);
+
+            Gizmos.DrawRay(Vector3.zero, damage.pushDirection);
         }
     }
     [Serializable]
@@ -496,6 +538,8 @@ namespace CharacterSystem.Attacks
             Gizmos.matrix = Matrix4x4.TRS(transform.position + (transform.rotation * position), transform.rotation, Vector3.one);
 
             Gizmos.DrawWireSphere(Vector3.zero, radius);
+
+            Gizmos.DrawRay(Vector3.zero, damage.pushDirection);
         }
     }
     [Serializable]
@@ -520,6 +564,8 @@ namespace CharacterSystem.Attacks
         public override void CastColliderGizmos(Transform transform)
         {
             Gizmos.DrawRay((transform.rotation * origin) + transform.position, (transform.rotation * direction.normalized) * maxDistance);
+            
+            Gizmos.DrawRay(Vector3.zero, damage.pushDirection);
         }
     }
 }
