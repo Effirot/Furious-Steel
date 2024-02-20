@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using CharacterSystem.DamageMath;
 using CharacterSystem.Objects;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
@@ -246,6 +247,7 @@ namespace CharacterSystem.Attacks
 
         public abstract void OnDrawGizmos(Transform transform);
     }
+    
     [Serializable]
     public sealed class SingleCastMulticaster : Multicaster
     {
@@ -489,6 +491,47 @@ namespace CharacterSystem.Attacks
         {
             multicaster.OnDrawGizmos(transform);
         }
+    }
+
+    [Serializable]
+    public sealed class WaitMulticaster : Multicaster
+    {
+        [SerializeField, Range(0, 10)]
+        private float WaitTime = 1;
+        
+        [SerializeField]
+        private CharacterPermission StartPermissions = CharacterPermission.All;
+        [SerializeField]
+        private CharacterPermission EndPermissions = CharacterPermission.All;
+
+        [SerializeField]
+        private string StartAnimationName = "";
+        [SerializeField]
+        private string EndAnimationName = "";
+
+        [SerializeField]
+        private UnityEvent OnStart = new();
+        [SerializeField]
+        private UnityEvent OnEnd = new();
+
+        public override IEnumerator AttackPipeline(DamageSource source)
+        {
+            OnStart.Invoke();
+            source.Invoker.animator.Play(StartAnimationName);
+            source.Invoker.permissions = StartPermissions;
+
+            yield return new WaitForSeconds(WaitTime);
+
+            OnEnd.Invoke();
+            source.Invoker.permissions = EndPermissions;
+            source.Invoker.animator.Play(EndAnimationName);
+        }
+
+        public override void OnDrawGizmos(Transform transform)
+        {
+            
+        }
+
     }
 
 

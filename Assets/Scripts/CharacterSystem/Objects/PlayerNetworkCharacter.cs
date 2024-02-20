@@ -156,15 +156,6 @@ namespace CharacterSystem.Objects
             {
                 OnOwnerPlayerCharacterDead.Invoke(this);
             }
-
-            if (IsServer)
-            {
-                var data = RoomManager.Singleton.playersData[ClientDataIndex];
-                data.statistics.KillStreak = 0;
-                data.statistics.AssistsStreak = 0;
-
-                RoomManager.Singleton.playersData[ClientDataIndex] = data;
-            }
         }
         protected override void Spawn()
         {

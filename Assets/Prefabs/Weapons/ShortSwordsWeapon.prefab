@@ -186,7 +186,7 @@ MonoBehaviour:
           stunlock: 0.5
           pushDirection: {x: 0, y: 0, z: 0.4}
         position: {x: 0, y: 0, z: 2.1}
-        size: {x: 1.41, y: 1, z: 1}
+        size: {x: 1.77, y: 1.26, z: 1.09}
         angle: {x: 0, y: 0, z: 0}
 --- !u!1 &1003795457742228459
 GameObject:
@@ -559,7 +559,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91b59a25b78b63442bfa85d494b70054, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animatorController: {fileID: 22100000, guid: 72f9ce8b09fc9a341b53d0f9e7746d46, type: 2}
+  animatorController: {fileID: 22100000, guid: 605c65f113a1046479f7cb5db80a548d, type: 2}
 --- !u!1 &1901328450275216932
 GameObject:
   m_ObjectHideFlags: 0
@@ -712,7 +712,7 @@ MonoBehaviour:
           stunlock: 0.5
           pushDirection: {x: 0, y: 0, z: 0.4}
         position: {x: 0, y: 0, z: 2.1}
-        size: {x: 1.41, y: 1, z: 1}
+        size: {x: 1.77, y: 1.26, z: 1.09}
         angle: {x: 0, y: 0, z: 0}
 --- !u!1 &3396118183375332136
 GameObject:
@@ -1417,7 +1417,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   SpeedReducing: 6
-  RequireDamage: 300
+  RequireDamage: 200
   OnUltimateReady:
     m_PersistentCalls:
       m_Calls: []
@@ -1430,7 +1430,7 @@ MonoBehaviour:
         Name: SwordSlashQueue
         multicaster:
           rid: 3599543103024005122
-        RepeatCount: 5
+        RepeatCount: 6
     - rid: 3599543103024005122
       type: {class: QueuedCastMulticaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
@@ -1504,7 +1504,7 @@ MonoBehaviour:
       data:
         damage:
           value: 15
-          type: 1
+          type: 8
           stunlock: 0.2
           pushDirection: {x: 0, y: 0, z: 0.1}
         position: {x: 0, y: 0, z: 2}
@@ -1576,7 +1576,7 @@ MonoBehaviour:
       data:
         damage:
           value: 15
-          type: 1
+          type: 8
           stunlock: 0.2
           pushDirection: {x: 0, y: 0, z: 0.1}
         position: {x: 0, y: 0, z: 2}

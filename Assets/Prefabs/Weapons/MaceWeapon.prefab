@@ -222,6 +222,10 @@ MonoBehaviour:
     rid: 2961813136297427036
   IsPerformingAsDefault: 0
   IsInterruptable: 1
+  IsInterruptableWhenBlocked: 0
+  OnDamageReport:
+    m_PersistentCalls:
+      m_Calls: []
   SpeedReducing: 6
   references:
     version: 2
@@ -585,12 +589,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inputAction: {fileID: 4628471853980608337, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   BeforeBlockCharacterPermissions: 1792
-  BeforeBlockTime: 0.2
+  BeforeBlockTime: 0
   BlockCharacterPermissions: 1792
-  BlockProcessTime: 0.4
-  HoldMode: 1
+  BlockProcessTime: 0.5
+  HoldMode: 0
   AfterBlockCharacterPermissions: 1792
-  AfterBlockTime: 2
+  AfterBlockTime: 0.4
   SpeedReducing: 5
   InterruptOnHit: 0
   backDamage:
@@ -1148,6 +1152,10 @@ MonoBehaviour:
     rid: 2961813136297427036
   IsPerformingAsDefault: 1
   IsInterruptable: 1
+  IsInterruptableWhenBlocked: 0
+  OnDamageReport:
+    m_PersistentCalls:
+      m_Calls: []
   SpeedReducing: 6
   references:
     version: 2

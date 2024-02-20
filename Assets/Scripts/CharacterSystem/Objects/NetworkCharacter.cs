@@ -191,7 +191,7 @@ namespace CharacterSystem.Objects
 
         public void Kill()
         {
-            if (IsServer)
+            if (IsServer && IsSpawned)
             {
                 Dead_ClientRpc();
     
@@ -205,12 +205,14 @@ namespace CharacterSystem.Objects
 
                 this.NetworkObject.Despawn(false);
                 
-    
-                StartCoroutine(DisolveCorpse());
+                Destroy(gameObject, 5);
             }
         }
         public virtual bool Hit(Damage damage)
         {
+            if (!IsSpawned)
+                return false;
+
             var isBlocked = Blocker != null && Blocker.Block(ref damage);
             
             health -= damage.value;
@@ -282,17 +284,17 @@ namespace CharacterSystem.Objects
             {
                 health = maxHealth;
 
-                network_position.Value = transform.position;
-
                 SetAngle(transform.rotation.eulerAngles.y);
                 SetPosition(transform.position);
                 
                 Spawn_ClientRpc();
             }
+            else
+            {
+                transform.position = network_position.Value;
+            }
 
             network_permissions.OnValueChanged += OnPermissionsChanged;
-
-            transform.position = network_position.Value;
         }
         public override void OnNetworkDespawn()
         {
@@ -309,6 +311,9 @@ namespace CharacterSystem.Objects
         }
         public void SetPosition(Vector3 position)
         {
+            network_position.Value = position;
+            transform.position = position;
+
             SetPosition_ClientRpc(position);
         }
 
@@ -462,7 +467,7 @@ namespace CharacterSystem.Objects
         }
         private void InterpolateToServerPosition()
         {
-            if (NetworkManager.Singleton.IsListening)
+            if (IsSpawned)
             {
                 if(IsServer)
                 {
@@ -470,7 +475,7 @@ namespace CharacterSystem.Objects
                 }
                 else
                 {
-                    characterController.Move(Vector3.Lerp(Vector3.zero, network_position.Value - transform.position, 9f * Time.deltaTime));
+                    characterController.Move(Vector3.Lerp(Vector3.zero, network_position.Value - transform.position, 12f * Time.deltaTime));
                 }
             }
         }
@@ -481,15 +486,6 @@ namespace CharacterSystem.Objects
             animator.SetBool("IsStunned", isStunned);
         }
 
-        private IEnumerator DisolveCorpse()
-        {
-            yield return new WaitForSeconds(5f);
-
-            if (gameObject != null)
-            {
-                Destroy(gameObject);
-            }
-        }
         private IEnumerator Regeneration()
         {
             yield return new WaitForSeconds(7f);

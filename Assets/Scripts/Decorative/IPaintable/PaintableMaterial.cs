@@ -5,17 +5,23 @@ using UnityEngine;
 public class PaintableMaterial : MonoBehaviour, IPaintable
 {
     [SerializeField] 
-    private Material paintTargetMaterial;
+    private SkinnedMeshRenderer paintTargetRenderer;
     [SerializeField] 
-    private Material secondPaintTargetMaterial;
+    private SkinnedMeshRenderer secondPaintTargetRenderer;
 
     public void SetColor(Color color)
     {
-        paintTargetMaterial.color = color;
+        if (paintTargetRenderer != null)
+        {
+            paintTargetRenderer.material.color = color;
+        }
     }
 
     public void SetSecondColor(Color color)
     {
-        secondPaintTargetMaterial.color = color;
+        if (secondPaintTargetRenderer != null)
+        {
+            secondPaintTargetRenderer.material.color = color;
+        }
     }
 }

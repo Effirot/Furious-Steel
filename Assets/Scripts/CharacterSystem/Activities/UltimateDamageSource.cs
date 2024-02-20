@@ -19,6 +19,18 @@ public class UltimateDamageSource : DamageSource
 
     public event Action<float> OnValueChanged = delegate { };
 
+    public float DeliveredDamage
+    {
+        get => network_delivereDamageValue.Value;
+        set 
+        {
+            if (IsServer)
+            {
+                network_delivereDamageValue.Value = value;
+            }
+        }
+    }
+
     private NetworkVariable<float> network_delivereDamageValue = new (0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
     public override void OnNetworkDespawn()

@@ -145,10 +145,8 @@ public class RoomManager : NetworkBehaviour
         
         public int Deads;
 
-
         public float DeliveredDamage;
         public float PowerUpsPicked;
-
 
         public override bool Equals(object obj)
         {
@@ -369,12 +367,23 @@ public class RoomManager : NetworkBehaviour
 
             playersData.RemoveAt(publicDataIndex);
             
-            if (privateClientsData[ID].networkCharacter != null)
+            try 
             {
-                privateClientsData[ID].networkCharacter.Kill();
+                if (privateClientsData[ID].networkCharacter != null)
+                {
+                    
+                    privateClientsData[ID].networkCharacter.Kill();
+                }
             }
-            privateClientsData[ID].Dispose();
-            privateClientsData.Remove(ID);
+            catch (Exception e)
+            {
+                Debug.LogWarning(e);
+            }
+            finally
+            {
+                privateClientsData[ID].Dispose();
+                privateClientsData.Remove(ID);
+            }
         }
     }
 
