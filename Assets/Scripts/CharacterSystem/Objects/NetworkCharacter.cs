@@ -338,7 +338,7 @@ namespace CharacterSystem.Objects
             }
             isGrounded = newGroundedValue;
 
-            CalculateAnimations();
+            SetAnimationStates();
 
             if (!isStunned)
             {
@@ -479,7 +479,7 @@ namespace CharacterSystem.Objects
                 }
             }
         }
-        private void CalculateAnimations()
+        private void SetAnimationStates()
         {
             animator.SetFloat("Walk_Speed", speed_Multipliyer);
             animator.SetBool("IsGrounded", isGrounded);

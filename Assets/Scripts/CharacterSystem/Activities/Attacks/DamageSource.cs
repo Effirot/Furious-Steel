@@ -3,11 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using CharacterSystem.DamageMath;
 using CharacterSystem.Objects;
+using JetBrains.Annotations;
 using Unity.Netcode;
 using Unity.VisualScripting;
+using UnityEditor.Timeline.Actions;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
+using UnityEngine.TextCore;
 using static UnityEngine.InputSystem.InputAction;
 
 namespace CharacterSystem.Attacks
@@ -37,7 +40,7 @@ namespace CharacterSystem.Attacks
         }
 
         [SerializeField, SerializeReference, SubclassSelector]
-        protected Multicaster multicaster;
+        protected AttackQueueElement queueElement;
 
         [SerializeField]
         private bool IsPerformingAsDefault = false;
@@ -148,7 +151,7 @@ namespace CharacterSystem.Attacks
 
         private void OnDrawGizmosSelected()
         {
-            multicaster?.OnDrawGizmos(transform);
+            queueElement?.OnDrawGizmos(transform);
         }
 
         private void StartAttack_Internal()
@@ -185,7 +188,7 @@ namespace CharacterSystem.Attacks
     
         private IEnumerator AttackSubprocess()
         {
-            yield return multicaster.AttackPipeline(this);
+            yield return queueElement.AttackPipeline(this);
 
             EndAttack_Internal();
         }
@@ -208,7 +211,7 @@ namespace CharacterSystem.Attacks
     }
 
     [Serializable]
-    public abstract class Multicaster
+    public abstract class AttackQueueElement
     {
         [Space]
         [SerializeField, TextArea(1, 1)]
@@ -246,10 +249,15 @@ namespace CharacterSystem.Attacks
         public abstract IEnumerator AttackPipeline(DamageSource source);
 
         public abstract void OnDrawGizmos(Transform transform);
+    
+        public void PlayAnimation(IDamageSource source, string Path)
+        {
+            source.animator.Play(Path, -1, 1);
+        }
     }
     
     [Serializable]
-    public sealed class SingleCastMulticaster : Multicaster
+    public sealed class Cast : AttackQueueElement, Charger.IChargeListener
     {
         [Header("Casters")]
         
@@ -257,62 +265,30 @@ namespace CharacterSystem.Attacks
         [SerializeField, SerializeReference, SubclassSelector]
         private Caster[] casters;
 
-        [Header("Timing")]
-
-        [Space]
-        [SerializeField, Range(0, 3)]
-        public float BeforeAttackDelay = 1;        
-        [SerializeField]
-        public CharacterPermission BeforeAttackPermissions = CharacterPermission.All;
-
-        [Space]
-        [SerializeField, Range(0, 3)]
-        public float AfterAttackDelay = 1;
-        [SerializeField]
-        public CharacterPermission AfterAttackPermissions = CharacterPermission.All;
-
         [Header("Events")]
         
         [Space]
-        [SerializeField]
-        private string StartCastAnimationName = "Torso.Attack1_Prepare";
-        [SerializeField]
-        private Vector3 StartCastPushDirection = Vector3.forward; 
-        public UnityEvent OnStartCast = new();
-        
         [SerializeField]
         private string CastAnimationName = "Torso.Attack1";
         [SerializeField]
         private Vector3 CastPushDirection = Vector3.forward / 2; 
         public UnityEvent OnCast = new();
         
-        [SerializeField]
-        private string EndCastAnimationName = "Torso.Attack1_Ending";
-        [SerializeField]
-        private Vector3 EndCastPushDirection = Vector3.zero; 
-        public UnityEvent OnEndCast = new();
-
         public override IEnumerator AttackPipeline(DamageSource source)
+        {
+            yield return ChargedAttackPipeline(source, 1);
+        }
+        public IEnumerator ChargedAttackPipeline(DamageSource source, float chargeValue)
         {
             var invoker = source.Invoker;
 
-            OnStartCast.Invoke();
-            invoker.permissions = BeforeAttackPermissions;
-            invoker.Push(invoker.transform.rotation * StartCastPushDirection);
-            invoker.animator.Play(StartCastAnimationName, -1, 1);
-            yield return new WaitForSeconds(BeforeAttackDelay);
-
             OnCast.Invoke();
             invoker.Push(invoker.transform.rotation * CastPushDirection);
-            invoker.animator.Play(CastAnimationName, -1, 1);
+            PlayAnimation(source.Invoker, CastAnimationName);
 
-            Execute(casters, invoker, 1);
+            Execute(casters, invoker, chargeValue);
 
-            yield return new WaitForSeconds(AfterAttackDelay);
-            OnEndCast.Invoke();
-            invoker.permissions = AfterAttackPermissions;
-            invoker.Push(invoker.transform.rotation * EndCastPushDirection);
-            invoker.animator.Play(EndCastAnimationName, -1, 1);
+            yield break;
         }
 
         public override void OnDrawGizmos(Transform transform)
@@ -324,157 +300,72 @@ namespace CharacterSystem.Attacks
         }
     }
     [Serializable]
-    public sealed class ChargableSingleCastMulticaster : Multicaster
+    public sealed class ProjectileShooter : AttackQueueElement
     {
-        [Header("Casters")]
-        
-        [Space]
-        [SerializeField, SerializeReference, SubclassSelector]
-        private Caster[] casters;
+        public GameObject projectilePrefab;
 
-        [Header("Timing")]
+        public override IEnumerator AttackPipeline(DamageSource source)
+        {
+            if (source.IsServer)
+            {
+                if (projectilePrefab == null)
+                {
+                    Debug.LogWarning("Projectile Prefab is null");
 
-        [Space]
-        [SerializeField, Range(0, 3)]
-        public float BeforeAttackDelay = 1;        
-        [SerializeField]
-        public CharacterPermission BeforeAttackPermissions = CharacterPermission.All;
+                    yield break;
+                }
 
-        [Space]
-        [SerializeField, Range(0, 5)]
-        public float AttackChargeMaxTime = 2;        
-        [SerializeField, Range(0, 3)]
-        public float AttackChargeMinMultipliyer = 0.25f;        
-        [SerializeField, Range(0, 3)]
-        public float AttackChargeMaxMultipliyer = 1.25f;        
-        [SerializeField]
-        public CharacterPermission AttackChargePermissions = CharacterPermission.All;
+                var projectileObject = GameObject.Instantiate(projectilePrefab, source.transform.position, Quaternion.identity);
+                projectileObject.SetActive(true);
 
-        [Space]
-        [SerializeField, Range(0, 3)]
-        public float AfterAttackDelay = 1;
-        [SerializeField]
-        public CharacterPermission AfterAttackPermissions = CharacterPermission.All;
-
-        [Header("Events")]
+                var projectile = projectileObject.GetComponent<Projectile>();
+                var projectileNetworkObject = projectileObject.GetComponent<NetworkObject>();
                 
-        [Space]
-        [SerializeField]
-        private string StartCastAnimationName = "Torso.Attack1_Prepare";
-        [SerializeField]
-        private Vector3 StartCastPushDirection = Vector3.forward; 
-        public UnityEvent OnStartCast = new();
-        
-        [SerializeField]
-        private string ChargeAnimationName = "Torso.Attack1_Prepare";
-        public UnityEvent<float> OnCharge = new();
-        
-        [SerializeField]
-        private string FullyChargeAnimationName = "Torso.Attack1_Prepare";
-        public UnityEvent OnFullyCharge = new();
-        
-        [SerializeField]
-        private string CastAnimationName = "Torso.Attack1";
-        [SerializeField]
-        private Vector3 CastPushDirection = Vector3.forward / 2; 
-        public UnityEvent OnCast = new();
-        
-        [SerializeField]
-        private string EndCastAnimationName = "Torso.Attack1_Ending";
-        [SerializeField]
-        private Vector3 EndCastPushDirection = Vector3.zero; 
-        public UnityEvent OnEndCast = new();
-
-        public override IEnumerator AttackPipeline(DamageSource source)
-        {
-            var invoker = source.Invoker;
-
-            float multiplier = 0;
-            float holdTime = 0;
-
-            OnStartCast.Invoke();
-            invoker.permissions = BeforeAttackPermissions;
-            invoker.Push(invoker.transform.rotation * StartCastPushDirection);
-            invoker.animator.Play(StartCastAnimationName, -1, 0.5f);
-            yield return new WaitForSeconds(BeforeAttackDelay);
-
-
-            if (!source.IsPressed)
-            {
-                yield break;
-            }
-
-            var waitForFixedUpdateRoutine = new WaitForFixedUpdate();
-            invoker.animator.Play(ChargeAnimationName, -1, 0.5f);
-            while (source.IsPressed)
-            {   
-                yield return waitForFixedUpdateRoutine;
-
-                if (holdTime >= AttackChargeMaxTime)
+                if (projectile == null)
                 {
-                    continue;
+                    Debug.LogWarning("Projectile Prefab does not contains a Projectile Component");
+
+                    yield break;
                 }
 
-                OnCharge.Invoke(holdTime);
-
-                holdTime += Time.fixedDeltaTime;
-                multiplier = Mathf.Lerp(AttackChargeMinMultipliyer, AttackChargeMaxMultipliyer, holdTime);
-
-                if (holdTime >= AttackChargeMaxTime)
-                {
-                    invoker.animator.Play(FullyChargeAnimationName, -1, 0.5f);
-                    OnFullyCharge.Invoke();
-                }
+                projectileNetworkObject.Spawn();
+                projectile.MoveDirection = source.transform.forward;
             }
-
-            OnCast.Invoke();
-            invoker.Push(invoker.transform.rotation * CastPushDirection);
-            invoker.animator.Play(CastAnimationName, -1, 0.5f);
-
-            Execute(casters, invoker, multiplier);
-
-            yield return new WaitForSeconds(AfterAttackDelay);
-            OnEndCast.Invoke();
-            invoker.permissions = AfterAttackPermissions;
-            invoker.Push(invoker.transform.rotation * EndCastPushDirection);
-            invoker.animator.Play(EndCastAnimationName, -1, 0.5f);
         }
+
+        public override void OnDrawGizmos(Transform transform)
+        {
+            
+        }
+    }
     
-        public override void OnDrawGizmos(Transform transform)
-        {
-            foreach (var caster in casters)
-            {
-                caster?.CastColliderGizmos(transform);
-            }
-        }
-    }
     [Serializable]
-    public sealed class QueuedCastMulticaster : Multicaster
+    public sealed class Queue : AttackQueueElement
     {
         [SerializeField, SerializeReference, SubclassSelector]
-        private Multicaster[] queue;
+        private AttackQueueElement[] queue;
 
         public override IEnumerator AttackPipeline(DamageSource source)
         {
-            foreach (var multicaster in queue)
+            foreach (var queueElement in queue)
             {
-                yield return multicaster.AttackPipeline(source);
+                yield return queueElement.AttackPipeline(source);
             }
         }
 
         public override void OnDrawGizmos(Transform transform)
         {
-            foreach (var multicaster in queue)
+            foreach (var queueElement in queue)
             {
-                multicaster?.OnDrawGizmos(transform);
+                queueElement?.OnDrawGizmos(transform);
             }
         }
     }
     [Serializable]
-    public sealed class RepetitiveCastMulticaster : Multicaster
+    public sealed class Repeat : AttackQueueElement
     {
         [SerializeField, SerializeReference, SubclassSelector]
-        private Multicaster multicaster;
+        private AttackQueueElement queueElement;
 
         [SerializeField, Range(1, 50)]
         private int RepeatCount = 5;
@@ -483,31 +374,26 @@ namespace CharacterSystem.Attacks
         {
             for (int i = 0; i < RepeatCount; i++)
             {
-                yield return multicaster.AttackPipeline(source);
+                yield return queueElement.AttackPipeline(source);
             }
         }
 
         public override void OnDrawGizmos(Transform transform)
         {
-            multicaster.OnDrawGizmos(transform);
+            queueElement.OnDrawGizmos(transform);
         }
     }
-
     [Serializable]
-    public sealed class WaitMulticaster : Multicaster
+    public sealed class Wait : AttackQueueElement
     {
         [SerializeField, Range(0, 10)]
         private float WaitTime = 1;
         
         [SerializeField]
-        private CharacterPermission StartPermissions = CharacterPermission.All;
-        [SerializeField]
-        private CharacterPermission EndPermissions = CharacterPermission.All;
+        private CharacterPermission Permissions = CharacterPermission.All;
 
         [SerializeField]
-        private string StartAnimationName = "";
-        [SerializeField]
-        private string EndAnimationName = "";
+        private string AnimationName = "";
 
         [SerializeField]
         private UnityEvent OnStart = new();
@@ -517,21 +403,93 @@ namespace CharacterSystem.Attacks
         public override IEnumerator AttackPipeline(DamageSource source)
         {
             OnStart.Invoke();
-            source.Invoker.animator.Play(StartAnimationName);
-            source.Invoker.permissions = StartPermissions;
+            PlayAnimation(source.Invoker, AnimationName);
+            source.Invoker.permissions = Permissions;
 
             yield return new WaitForSeconds(WaitTime);
 
             OnEnd.Invoke();
-            source.Invoker.permissions = EndPermissions;
-            source.Invoker.animator.Play(EndAnimationName);
         }
-
+        
         public override void OnDrawGizmos(Transform transform)
         {
             
         }
+    }
 
+    [Serializable]
+    public sealed class Charger : AttackQueueElement
+    {
+        public interface IChargeListener 
+        {
+            IEnumerator ChargedAttackPipeline(DamageSource source, float chargeValue);
+
+            void OnDrawGizmos(Transform transform);
+        }
+        
+        [SerializeField]
+        private CharacterPermission Permissions = CharacterPermission.All;
+
+        [SerializeField]
+        private string AnimationName = "";
+
+        [SerializeField, Range(0, 10)]
+        private float MaxChargingTime = 1;
+        [SerializeField]
+        private float MinChargeValue = 1.25f; 
+        [SerializeField]
+        private float MaxChargeValue = 1.25f; 
+
+        [SerializeField]
+        private UnityEvent OnStart = new ();
+        [SerializeField]
+        private UnityEvent OnEnd = new ();
+        [SerializeField]
+        private UnityEvent<float> OnCharge = new ();
+        [SerializeField]
+        private UnityEvent OnFullCharged = new ();
+
+        [SerializeField, SerializeReference, SubclassSelector]
+        private IChargeListener chargeListener; 
+
+        public override IEnumerator AttackPipeline (DamageSource source)
+        {
+            OnStart.Invoke();
+            PlayAnimation(source.Invoker, AnimationName);
+            source.Invoker.permissions = Permissions;
+
+            var waitForFixedUpdate = new WaitForFixedUpdate();
+            var waitedTime = 0f;
+
+            while (source.IsPressed)
+            {
+                if (waitedTime < MaxChargingTime)
+                {
+                    waitedTime += Time.fixedDeltaTime;
+
+                    OnCharge.Invoke(waitedTime);
+
+                    if (waitedTime >= MaxChargingTime)
+                    {
+                        OnFullCharged.Invoke();
+                    }
+                }
+
+                yield return waitForFixedUpdate;
+            }
+
+            if (chargeListener != null)
+            {
+                yield return chargeListener.ChargedAttackPipeline(source, Mathf.Lerp(MinChargeValue, MaxChargeValue, waitedTime / MaxChargingTime));
+            }
+
+            OnEnd.Invoke();
+        }
+        
+        public override void OnDrawGizmos(Transform transform)
+        {
+            chargeListener?.OnDrawGizmos(transform);
+        }
     }
 
 

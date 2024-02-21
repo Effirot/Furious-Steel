@@ -9,8 +9,6 @@ using UnityEngine.Events;
 using UnityEngine.Rendering;
 using static RoomManager.SpawnArguments;
 
-
-
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -120,7 +118,6 @@ public class RoomManager : NetworkBehaviour
             return value;
         } 
     }
-
     public struct PlayerStatistics : INetworkSerializable
     {
         public static PlayerStatistics Empty() => new() 
