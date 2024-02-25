@@ -1,16 +1,26 @@
 using CharacterSystem.DamageMath;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.VFX;
 
 public class Projectile : NetworkBehaviour, 
     IDamagable
 {
+    [field : SerializeField, Range (0.1f, 100)]
+    private float speed = 1;
+
+    [field : SerializeField, Range (0.1f, 10)]
+    private float lifetime = 3;
+
     [field : SerializeField]
     public VisualEffectAsset OnDestroyEffect { get; private set; }
     
     [field : SerializeField]
     public VisualEffect OnHitEffect { get; private set; }
+
+    [SerializeField]
+    private Damage damage;
     
     public Vector3 MoveDirection 
     {
@@ -29,33 +39,7 @@ public class Projectile : NetworkBehaviour,
 
     private NetworkVariable<Vector3> network_position = new NetworkVariable<Vector3> (Vector3.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     private NetworkVariable<Vector3> network_moveDirection = new NetworkVariable<Vector3> (Vector3.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-
-    private void FixedUpdate ()
-    {
-        if (IsServer)
-        {
-            transform.position += MoveDirection * Time.fixedDeltaTime;
-
-            network_position.Value = transform.position;
-        }
-        else
-        {
-            transform.position = Vector3.Lerp(transform.position, network_position.Value, 0.2f);
-        }
-    }
-    private void OnCollisionEnter (Collision collision)
-    {
-        if (IsServer)
-        {
-            Kill_ClientRpc();
-            
-            if (IsClient)
-            {
-                Kill();
-            }
-        }
-    }
-
+    
     public bool Hit (Damage damage)
     {
         if (IsServer)
@@ -76,12 +60,67 @@ public class Projectile : NetworkBehaviour,
 
     public void Kill ()
     {
+        base.OnDestroy();
+    }
+
+    public override void OnDestroy() => Kill();
+    public override void OnNetworkSpawn()
+    {
+        base.OnNetworkSpawn();
+
+        if (IsServer)
+        {
+            network_position.Value = transform.position;
+        }
+        else
+        {
+            transform.position = network_position.Value;
+        }
+
+        Destroy(gameObject, lifetime);
+    }
+
+    private void FixedUpdate ()
+    {
+        if (IsServer)
+        {
+            transform.position += MoveDirection * Time.fixedDeltaTime * speed;
+
+            network_position.Value = transform.position;
+        }
+        else
+        {
+            transform.position = Vector3.Lerp(transform.position, network_position.Value, 0.2f);
+        }
+
+        if (network_moveDirection.Value.magnitude > 0)
+        {
+            transform.rotation = Quaternion.LookRotation(network_moveDirection.Value);
+        }
+    }
+    private void OnTriggerEnter(UnityEngine.Collider other)
+    {
+        // Debug.Log(other.gameObject.name);
+
+        var damage = this.damage;
+        damage.pushDirection = transform.rotation * damage.pushDirection;
+
+        Damage.Deliver(other.gameObject, damage);
         
+        if (IsServer)
+        {
+            Kill_ClientRpc();
+            
+            if (IsClient)
+            {
+                Kill();
+            }
+        }
     }
 
     [ClientRpc]
     private void Kill_ClientRpc ()
     {
-        Kill();
+        Kill();     
     }
 }

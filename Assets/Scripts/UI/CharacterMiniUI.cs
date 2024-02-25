@@ -142,7 +142,7 @@ public class CharacterMiniUI : MonoBehaviour
 
     private void OnOwnerPlayerDataChanged_event(NetworkListEvent<RoomManager.PublicClientData> changeEvent)
     {
-        var player = (PlayerNetworkCharacter)networkCharacter;
+        var player = (PlayerNetworkCharacter) networkCharacter;
 
         if (changeEvent.Value.ID == player.ServerClientID)
         {

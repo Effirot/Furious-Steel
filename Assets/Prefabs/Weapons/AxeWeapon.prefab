@@ -133,8 +133,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: 2243838571553120747, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
-  multicaster:
-    rid: 3599543103024005199
+  queueElement:
+    rid: 2961813231421882468
   IsPerformingAsDefault: 1
   IsInterruptable: 1
   IsInterruptableWhenBlocked: 1
@@ -145,27 +145,22 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 3599543103024005199
-      type: {class: ChargableSingleCastMulticaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+    - rid: 2961813231421882468
+      type: {class: Queue, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Name: Slash1
-        casters:
-        - rid: 3599543103024005200
-        BeforeAttackDelay: 1
-        BeforeAttackPermissions: 1792
-        AttackChargeMaxTime: 2
-        AttackChargeMinMultipliyer: 0.25
-        AttackChargeMaxMultipliyer: 1
-        AttackChargePermissions: 34560
-        AfterAttackDelay: 1
-        AfterAttackPermissions: 1024
-        StartCastAnimationName: 
-        StartCastPushDirection: {x: 0, y: 0, z: 0}
-        OnStartCast:
-          m_PersistentCalls:
-            m_Calls: []
-        ChargeAnimationName: 
-        OnCharge:
+        Name: 
+        queue:
+        - rid: 2961813231421882469
+        - rid: 2961813231421882470
+        - rid: 2961813231421882473
+    - rid: 2961813231421882469
+      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        Name: 
+        WaitTime: 0.2
+        Permissions: 65280
+        AnimationName: 
+        OnStart:
           m_PersistentCalls:
             m_Calls:
             - m_Target: {fileID: 2736438912044213678}
@@ -180,12 +175,40 @@ MonoBehaviour:
                 m_StringArgument: 
                 m_BoolArgument: 0
               m_CallState: 2
-        FullyChargeAnimationName: 
-        OnFullyCharge:
+        OnEnd:
           m_PersistentCalls:
             m_Calls: []
+    - rid: 2961813231421882470
+      type: {class: Charger, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        Name: 
+        Permissions: 1792
+        AnimationName: 
+        MaxChargingTime: 2
+        MinChargeValue: 0.25
+        MaxChargeValue: 1
+        OnStart:
+          m_PersistentCalls:
+            m_Calls: []
+        OnEnd:
+          m_PersistentCalls:
+            m_Calls: []
+        OnCharge:
+          m_PersistentCalls:
+            m_Calls: []
+        OnFullCharged:
+          m_PersistentCalls:
+            m_Calls: []
+        chargeListener:
+          rid: 2961813231421882471
+    - rid: 2961813231421882471
+      type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        Name: 
+        casters:
+        - rid: 2961813231421882472
         CastAnimationName: Torso.Attack1
-        CastPushDirection: {x: 0, y: 0, z: 0}
+        CastPushDirection: {x: 0, y: 0, z: 0.2}
         OnCast:
           m_PersistentCalls:
             m_Calls:
@@ -203,13 +226,13 @@ MonoBehaviour:
               m_CallState: 2
             - m_Target: {fileID: 897015580173702940}
               m_TargetAssemblyTypeName: Cinemachine.CinemachineImpulseSource, Cinemachine
-              m_MethodName: GenerateImpulseWithForce
-              m_Mode: 4
+              m_MethodName: GenerateImpulse
+              m_Mode: 1
               m_Arguments:
                 m_ObjectArgument: {fileID: 0}
                 m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
                 m_IntArgument: 0
-                m_FloatArgument: 1
+                m_FloatArgument: 0
                 m_StringArgument: 
                 m_BoolArgument: 0
               m_CallState: 2
@@ -225,6 +248,28 @@ MonoBehaviour:
                 m_StringArgument: 
                 m_BoolArgument: 0
               m_CallState: 2
+    - rid: 2961813231421882472
+      type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        damage:
+          value: 60
+          type: 1
+          stunlock: 1.5
+          pushDirection: {x: 0, y: 0, z: 1.2}
+          RechargeUltimate: 1
+        position: {x: 0, y: 0, z: 1.76}
+        size: {x: 0.67, y: 1, z: 1}
+        angle: {x: 0, y: 0, z: 0}
+    - rid: 2961813231421882473
+      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        Name: 
+        WaitTime: 0.2
+        Permissions: 65280
+        AnimationName: 
+        OnStart:
+          m_PersistentCalls:
+            m_Calls:
             - m_Target: {fileID: 2736438912044213678}
               m_TargetAssemblyTypeName: UnityEngine.VFX.VisualEffect, UnityEngine
               m_MethodName: Stop
@@ -237,22 +282,9 @@ MonoBehaviour:
                 m_StringArgument: 
                 m_BoolArgument: 0
               m_CallState: 2
-        EndCastAnimationName: 
-        EndCastPushDirection: {x: 0, y: 0, z: 0}
-        OnEndCast:
+        OnEnd:
           m_PersistentCalls:
             m_Calls: []
-    - rid: 3599543103024005200
-      type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        damage:
-          value: 60
-          type: 1
-          stunlock: 2
-          pushDirection: {x: 0, y: 0, z: 1}
-        position: {x: 0, y: 0, z: 2.47}
-        size: {x: 1, y: 1.63, z: 1.37}
-        angle: {x: 0, y: 0, z: 0}
 --- !u!1 &2550411166488077007
 GameObject:
   m_ObjectHideFlags: 0
@@ -333,8 +365,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: -697749738134341483, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
-  multicaster:
-    rid: 3599543103024005207
+  queueElement:
+    rid: 2961813231421882474
   IsPerformingAsDefault: 1
   IsInterruptable: 0
   IsInterruptableWhenBlocked: 0
@@ -349,29 +381,32 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 3599543103024005207
-      type: {class: SingleCastMulticaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+    - rid: 2961813231421882474
+      type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Name: ThrowUp
+        Name: 
         casters:
-        - rid: 3599543103024005208
-        BeforeAttackDelay: 0
-        BeforeAttackPermissions: 1024
-        AfterAttackDelay: 0.5
-        AfterAttackPermissions: 1024
-        StartCastAnimationName: 
-        StartCastPushDirection: {x: 0, y: 0, z: 0}
-        OnStartCast:
-          m_PersistentCalls:
-            m_Calls: []
+        - rid: 2961813231421882475
         CastAnimationName: Torso.Attack1
-        CastPushDirection: {x: 0, y: 0, z: 0.5}
+        CastPushDirection: {x: 0, y: 0, z: 0.2}
         OnCast:
           m_PersistentCalls:
             m_Calls:
             - m_Target: {fileID: 1179357802605566943}
               m_TargetAssemblyTypeName: UnityEngine.VFX.VisualEffect, UnityEngine
               m_MethodName: Play
+              m_Mode: 1
+              m_Arguments:
+                m_ObjectArgument: {fileID: 0}
+                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+                m_IntArgument: 0
+                m_FloatArgument: 0
+                m_StringArgument: 
+                m_BoolArgument: 0
+              m_CallState: 2
+            - m_Target: {fileID: 897015580173702940}
+              m_TargetAssemblyTypeName: Cinemachine.CinemachineImpulseSource, Cinemachine
+              m_MethodName: GenerateImpulse
               m_Mode: 1
               m_Arguments:
                 m_ObjectArgument: {fileID: 0}
@@ -393,33 +428,17 @@ MonoBehaviour:
                 m_StringArgument: 
                 m_BoolArgument: 0
               m_CallState: 2
-            - m_Target: {fileID: 897015580173702940}
-              m_TargetAssemblyTypeName: Cinemachine.CinemachineImpulseSource, Cinemachine
-              m_MethodName: GenerateImpulseWithForce
-              m_Mode: 4
-              m_Arguments:
-                m_ObjectArgument: {fileID: 0}
-                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-                m_IntArgument: 0
-                m_FloatArgument: 1
-                m_StringArgument: 
-                m_BoolArgument: 0
-              m_CallState: 2
-        EndCastAnimationName: 
-        EndCastPushDirection: {x: 0, y: 0, z: 0}
-        OnEndCast:
-          m_PersistentCalls:
-            m_Calls: []
-    - rid: 3599543103024005208
+    - rid: 2961813231421882475
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
           value: 60
           type: 8
-          stunlock: 2
-          pushDirection: {x: 0, y: 0, z: 1.3}
-        position: {x: 0, y: -0.39, z: 2}
-        size: {x: 1.26, y: 1, z: 1.16}
+          stunlock: 1.5
+          pushDirection: {x: 0, y: 0, z: 1.2}
+          RechargeUltimate: 0
+        position: {x: 0, y: 0, z: 1.76}
+        size: {x: 0.67, y: 1, z: 1}
         angle: {x: 0, y: 0, z: 0}
 --- !u!1 &4723289115519241682
 GameObject:
@@ -711,6 +730,7 @@ MonoBehaviour:
     type: 2
     stunlock: 1
     pushDirection: {x: 0, y: 0, z: 0}
+    RechargeUltimate: 0
   DamageReducing: 0.7
   OnBeforeBlockingEvent:
     m_PersistentCalls:

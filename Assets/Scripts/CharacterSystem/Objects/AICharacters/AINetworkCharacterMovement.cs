@@ -50,7 +50,7 @@ namespace CharacterSystem.Objects.AI
                     var vector = nearestCorner - transform.position;
                     var input = new Vector2(vector.x, vector.z);
 
-                    SetMovementVector(input);
+                    movementVector = input;
                 }
             }
         }

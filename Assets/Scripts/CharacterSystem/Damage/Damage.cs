@@ -75,6 +75,9 @@ namespace CharacterSystem.DamageMath
         [SerializeField]
         public Vector3 pushDirection;
 
+        [SerializeField]
+        public bool RechargeUltimate;
+
         [NonSerialized]
         public IDamageSource sender;
 
@@ -86,6 +89,7 @@ namespace CharacterSystem.DamageMath
             this.stunlock = stunlock;
             this.pushDirection = pushDirection;
             this.type = type;
+            this.RechargeUltimate = true;
         }
 
         public override string ToString()

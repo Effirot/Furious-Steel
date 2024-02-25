@@ -2,10 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using CharacterSystem.Blocking;
 using CharacterSystem.DamageMath;
 using JetBrains.Annotations;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
@@ -35,8 +37,7 @@ namespace CharacterSystem.Objects
 
     [DisallowMultipleComponent]
     [RequireComponent(typeof(CharacterController))]
-    public class NetworkCharacter : 
-        NetworkBehaviour,
+    public class NetworkCharacter : NetworkBehaviour,
         IDamagable
     {
         public delegate void OnCharacterStateChangedDelegate (NetworkCharacter character);
@@ -131,7 +132,29 @@ namespace CharacterSystem.Objects
                 }
             } 
         }
-        public Vector2 movementVector => network_movementVector.Value.normalized;      
+        public Vector2 movementVector 
+        { 
+            get => network_movementVector.Value.normalized;
+            set
+            {
+                if (IsOwner)
+                {
+                    network_movementVector.Value = value;
+                }
+            }
+        }      
+        public Vector2 lookVector 
+        { 
+            get => network_lookVector.Value.normalized;
+            set 
+            {
+                if (IsOwner)
+                {
+                    network_lookVector.Value = value;
+                }
+            }
+        }
+        
         public bool isStunned => stunlock > 0 || !NetworkManager.Singleton.IsListening;
         public float stunlock 
         {
@@ -166,9 +189,10 @@ namespace CharacterSystem.Objects
                 }
             }
         }
+        
 
         public bool isInWater { get; private set; } = false;
-        public bool isGrounded { get; private set; } = false;
+        public bool isGrounded { get; private set; } = true;
 
         private NetworkVariable<float> network_stunlock = new NetworkVariable<float>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
         private NetworkVariable<float> network_health = new NetworkVariable<float>(100, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
@@ -177,13 +201,13 @@ namespace CharacterSystem.Objects
         
         private NetworkVariable<Vector3> network_position = new NetworkVariable<Vector3>(Vector3.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);    
         private NetworkVariable<Vector2> network_movementVector = new NetworkVariable<Vector2>(Vector2.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+        private NetworkVariable<Vector2> network_lookVector = new NetworkVariable<Vector2>(Vector2.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
         private NetworkVariable<Vector3> network_velocity = new NetworkVariable<Vector3>(Vector3.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);   
 
         private Coroutine regenerationCoroutine;
 
         private float speed_Multipliyer = 0;
 
-        private bool ground_checker => true;
         // private bool ground_checker => !Physics.OverlapSphere(transform.position, characterController.radius, LayerMask.GetMask("Ground")).Any();
 
 
@@ -266,16 +290,6 @@ namespace CharacterSystem.Objects
             }
         }
 
-        protected virtual void SetMovementVector(Vector2 vector)
-        {
-            if (IsOwner)
-            {
-                vector.Normalize();
-
-                network_movementVector.Value = vector;
-            }
-        }
-
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
@@ -331,7 +345,7 @@ namespace CharacterSystem.Objects
         {
             CharacterMove(CalculateMovement() + CalculatePhysicsSimulation()); 
             
-            var newGroundedValue = ground_checker;
+            var newGroundedValue = isGrounded;
             if (newGroundedValue != isGrounded)
             {
                 IsGrounded.Invoke(newGroundedValue);
@@ -339,11 +353,6 @@ namespace CharacterSystem.Objects
             isGrounded = newGroundedValue;
 
             SetAnimationStates();
-
-            if (!isStunned)
-            {
-                RotateCharacter();
-            }
 
             if (isStunned)
             {
@@ -353,6 +362,10 @@ namespace CharacterSystem.Objects
                 {
                     stunlock = 0;
                 }
+            }
+            else
+            {
+                RotateCharacter();
             }
         }
         protected virtual void LateUpdate()
@@ -377,8 +390,8 @@ namespace CharacterSystem.Objects
         protected virtual void OnDrawGizmosSelected()
         {
             Gizmos.DrawWireSphere(network_position.Value, 0.1f);
-            Gizmos.DrawRay(network_position.Value, network_velocity.Value);
-            Gizmos.DrawRay(network_position.Value, network_movementVector.Value);
+            Gizmos.DrawRay(network_position.Value, velocity);
+            Gizmos.DrawRay(network_position.Value, movementVector);
         }
 
         protected virtual void OnPermissionsChanged(CharacterPermission Old, CharacterPermission New)
@@ -457,11 +470,11 @@ namespace CharacterSystem.Objects
         {
             if (permissions.HasFlag(CharacterPermission.AllowRotate))
             {
-                var lookVector = new Vector3 (movementVector.x, 0, movementVector.y);
+                var LookVector = new Vector3 (lookVector.x, 0, lookVector.y);
 
-                if (lookVector.magnitude > 0.1f)
+                if (LookVector.magnitude > 0.1f)
                 {
-                    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(lookVector), RotateInterpolationTime);
+                    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(LookVector), RotateInterpolationTime);
                 }
             }
         }
@@ -475,7 +488,7 @@ namespace CharacterSystem.Objects
                 }
                 else
                 {
-                    characterController.Move(Vector3.Lerp(Vector3.zero, network_position.Value - transform.position, 12f * Time.deltaTime));
+                    characterController.Move(Vector3.Lerp(Vector3.zero, network_position.Value - transform.position, 15f * Time.deltaTime));
                 }
             }
         }

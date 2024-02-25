@@ -168,7 +168,13 @@ public class RoomManager : NetworkBehaviour
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
-
+            serializer.SerializeValue(ref KillStreak);
+            serializer.SerializeValue(ref KillStreakTotal);
+            serializer.SerializeValue(ref AssistsStreak);
+            serializer.SerializeValue(ref AssistsStreakTotal);
+            serializer.SerializeValue(ref Deads);
+            serializer.SerializeValue(ref DeliveredDamage);
+            serializer.SerializeValue(ref PowerUpsPicked);
         }
     }
     
@@ -189,7 +195,6 @@ public class RoomManager : NetworkBehaviour
                 other.statistics.Equals(statistics) &&
                 other.spawnArguments.Equals(spawnArguments);
         }
-
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
             serializer.SerializeValue(ref ID);
@@ -219,7 +224,7 @@ public class RoomManager : NetworkBehaviour
 
     public static RoomManager Singleton { get; private set; }
 
-    public static int AuthorizeTimeout = 5; 
+    public static int AuthorizeTimeout = 10; 
 
     public static event SendChatMessageDelegate OnWriteToChat = delegate { };
     public static event SendChatMessageDelegate OnServerException = delegate { };
@@ -233,8 +238,6 @@ public class RoomManager : NetworkBehaviour
 
     [SerializeField]
     private NetworkPrefabsList characters;
-    
-
     [SerializeField]
     private NetworkPrefabsList weapons;
 

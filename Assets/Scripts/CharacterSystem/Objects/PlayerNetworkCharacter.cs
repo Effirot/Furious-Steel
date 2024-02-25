@@ -10,6 +10,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Interactions;
+using UnityEngine.InputSystem.XInput;
 using UnityEngine.VFX;
 using static UnityEngine.InputSystem.InputAction;
 
@@ -36,6 +37,8 @@ namespace CharacterSystem.Objects
         [Header("Player")]
         [SerializeField]
         private InputActionReference moveInput;
+        [SerializeField]
+        private InputActionReference lookInput;
 
         [Header("Dodge")]
         [SerializeField]
@@ -59,6 +62,7 @@ namespace CharacterSystem.Objects
         public ulong ServerClientID => network_serverClientId.Value;
         public int ClientDataIndex => RoomManager.Singleton.IndexOfPlayerData(data => data.ID == ServerClientID);
         public RoomManager.PublicClientData ClientData => RoomManager.Singleton.FindClientData(ServerClientID);
+
 
         private NetworkVariable<ulong> network_serverClientId = new (0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
@@ -111,12 +115,22 @@ namespace CharacterSystem.Objects
             if (IsOwner)
             {
                 Owner = this;
+                
+                {
+                    var action = moveInput.action;
+                    action.Enable();
 
-                var action = moveInput.action;
-                action.Enable();
+                    action.performed += OnMove;
+                    action.canceled += OnMove;
+                }
 
-                action.performed += OnMove;
-                action.canceled += OnMove;
+                {
+                    var action = lookInput.action;
+                    action.Enable();
+
+                    action.performed += OnLook;
+                    action.canceled += OnLook;
+                }
             
                 OnOwnerPlayerCharacterSpawn.Invoke(this);
             }
@@ -139,10 +153,20 @@ namespace CharacterSystem.Objects
             if (IsOwner)
             {
                 Owner = null;
+                
+                {
+                    var action = moveInput.action;
+                    
+                    action.performed -= OnMove;
+                    action.canceled -= OnMove;
+                }
+                
+                {
+                    var action = lookInput.action;
 
-                var action = moveInput.action;
-                action.performed -= OnMove;
-                action.canceled -= OnMove;
+                    action.performed -= OnLook;
+                    action.canceled -= OnLook;
+                }
             }
         }
 
@@ -208,7 +232,7 @@ namespace CharacterSystem.Objects
         private void OnMove(CallbackContext input)
         {
             var value = input.ReadValue<Vector2>();
-            SetMovementVector(value);
+            movementVector = value;
 
             var multiTapDelayTime = InputSystem.settings.multiTapDelayTime;
 
@@ -220,6 +244,27 @@ namespace CharacterSystem.Objects
                 }
     
                 lastTapTime = Time.time;
+            }
+        }
+        private void OnLook(CallbackContext input)
+        {
+            var value = input.ReadValue<Vector2>();
+
+            if (input.control.device is Mouse)
+            {
+                var ray = Camera.main.ScreenPointToRay(value);
+
+                if (Physics.Raycast(ray, out var hit, Mathf.Infinity))
+                {
+                    var vector = hit.point - transform.position;
+                    
+                    lookVector = new Vector2(vector.x, vector.z);
+                }
+            }
+            
+            if (input.control.device is XInputController)
+            {
+                lookVector = value;
             }
         }
         

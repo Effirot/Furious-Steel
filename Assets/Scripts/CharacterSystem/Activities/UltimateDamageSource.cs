@@ -63,7 +63,7 @@ public class UltimateDamageSource : DamageSource
 
     private void OnDamageDelivered_Event(DamageDeliveryReport report)
     {
-        if (IsServer)
+        if (IsServer && report.damage.RechargeUltimate)
         {
             var newValue = Mathf.Clamp(network_delivereDamageValue.Value + report.damage.value, 0, RequireDamage);
             
