@@ -74,14 +74,9 @@ namespace CharacterSystem.Attacks
 
         private Coroutine attackProcess = null;
 
-
-        public virtual void StartAttack()
+        public void StartAttackForced()
         {
-            if (Invoker.IsServer && 
-                !Invoker.isStunned && 
-                Invoker.permissions.HasFlag(CharacterPermission.AllowAttacking) &&
-                IsPerforming &&
-                !IsAttacking)
+            if (Invoker.IsServer)
             {
                 StartAttack_ClientRpc();
 
@@ -89,6 +84,16 @@ namespace CharacterSystem.Attacks
                 {
                     StartAttack_Internal();
                 }
+            }
+        }
+        public virtual void StartAttack()
+        {
+            if (!Invoker.isStunned && 
+                Invoker.permissions.HasFlag(CharacterPermission.AllowAttacking) &&
+                IsPerforming &&
+                !IsAttacking)
+            {
+                StartAttackForced();
             }            
         }
         public virtual void EndAttack()

@@ -63,6 +63,7 @@ namespace CharacterSystem.Objects
         public int ClientDataIndex => RoomManager.Singleton.IndexOfPlayerData(data => data.ID == ServerClientID);
         public RoomManager.PublicClientData ClientData => RoomManager.Singleton.FindClientData(ServerClientID);
 
+        public DamageBlocker Blocker { get; set; }
 
         private NetworkVariable<ulong> network_serverClientId = new (0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
@@ -78,7 +79,7 @@ namespace CharacterSystem.Objects
                 CharacterUIObserver.Singleton.observingCharacter = (NetworkCharacter) damage.sender;
             }
 
-            return base.Hit(damage);
+            return (Blocker != null && Blocker.Block(ref damage)) || base.Hit(damage);
         }
 
         public virtual void DamageDelivered(DamageDeliveryReport report)

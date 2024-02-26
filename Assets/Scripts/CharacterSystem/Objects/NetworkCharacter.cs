@@ -89,8 +89,6 @@ namespace CharacterSystem.Objects
 
         public event Action<bool> IsGrounded = delegate { };
 
-
-        public DamageBlocker Blocker { get; set; }
         public Animator animator { get; private set; }
         public CharacterController characterController { get; private set; }
 
@@ -236,8 +234,6 @@ namespace CharacterSystem.Objects
         {
             if (!IsSpawned)
                 return false;
-
-            var isBlocked = Blocker != null && Blocker.Block(ref damage);
             
             health -= damage.value;
 
@@ -260,11 +256,10 @@ namespace CharacterSystem.Objects
             {
                 OnHitSound.Play();
             }
-
             
             stunlock = Mathf.Max(damage.stunlock, stunlock); 
 
-            return isBlocked;
+            return false;
         }
         public virtual bool Heal(Damage damage)
         {

@@ -43,6 +43,11 @@ namespace CharacterSystem.Blocking
 
         [Space]
         [SerializeField, Range(0f, 9f)]
+        private float PushForce = 0.5f;
+
+
+        [Space]
+        [SerializeField, Range(0f, 9f)]
         private float SpeedReducing = 4;
 
         [SerializeField]
@@ -86,9 +91,10 @@ namespace CharacterSystem.Blocking
 
                 if (damage.sender != null)
                 {
-                    var sendedBackDamage = backDamage; 
+                    var sendedBackDamage = backDamage;
+                    
                     sendedBackDamage.sender = Invoker;
-                    sendedBackDamage.pushDirection = -damage.pushDirection.normalized * DamageReducing * 2;
+                    sendedBackDamage.pushDirection = -damage.pushDirection.normalized * PushForce;
                     sendedBackDamage.type = Damage.Type.Parrying;
 
                     Damage.Deliver(damage.sender, sendedBackDamage);
