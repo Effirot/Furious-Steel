@@ -11,6 +11,8 @@ namespace CharacterSystem.DamageMath
 
         float stunlock { get; set; }
 
+        bool IsAlive { get; }
+        
         VisualEffect OnHitEffect { get; }
 
         bool Hit(Damage damage);

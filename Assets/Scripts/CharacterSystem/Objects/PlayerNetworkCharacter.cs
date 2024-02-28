@@ -61,7 +61,14 @@ namespace CharacterSystem.Objects
 
         public ulong ServerClientID => network_serverClientId.Value;
         public int ClientDataIndex => RoomManager.Singleton.IndexOfPlayerData(data => data.ID == ServerClientID);
-        public RoomManager.PublicClientData ClientData => RoomManager.Singleton.FindClientData(ServerClientID);
+        public RoomManager.PublicClientData ClientData 
+        { 
+            get => RoomManager.Singleton.FindClientData(ServerClientID);
+            set 
+            {            
+                RoomManager.Singleton.playersData[ClientDataIndex] = value;
+            }
+        }
 
         public DamageBlocker Blocker { get; set; }
 
@@ -86,7 +93,7 @@ namespace CharacterSystem.Objects
         {
             if (IsServer)
             {
-                var data = RoomManager.Singleton.playersData[ClientDataIndex];
+                var data = ClientData;
                 data.statistics.DeliveredDamage += report.damage.value;
 
                 if (report.isLethal)
@@ -95,7 +102,7 @@ namespace CharacterSystem.Objects
                     data.statistics.KillStreakTotal += 1;
                 }
 
-                RoomManager.Singleton.playersData[ClientDataIndex] = data;
+                ClientData = data;
             }
 
             OnDamageDelivered?.Invoke(report);
@@ -104,6 +111,21 @@ namespace CharacterSystem.Objects
         public void RefreshColor()
         {
             RefreshColor_ClientRpc();
+        }
+        
+        public override void Kill()
+        {
+            base.Kill();
+
+            if (IsServer)
+            {
+                var data = ClientData;
+
+                data.statistics.KillStreak = 0;
+                data.statistics.AssistsStreak = 0;
+
+                ClientData = data;
+            }
         }
 
         public override void OnNetworkSpawn()
@@ -124,7 +146,6 @@ namespace CharacterSystem.Objects
                     action.performed += OnMove;
                     action.canceled += OnMove;
                 }
-
                 {
                     var action = lookInput.action;
                     action.Enable();
@@ -188,6 +209,7 @@ namespace CharacterSystem.Objects
 
             OnPlayerCharacterSpawn.Invoke(this);
         }
+
 
         protected virtual void OnOwnerPlayerDataChanged(NetworkListEvent<RoomManager.PublicClientData> changeEvent)
         {

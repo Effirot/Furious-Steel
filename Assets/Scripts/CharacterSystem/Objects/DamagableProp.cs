@@ -31,6 +31,8 @@ namespace CharacterSystem.Objects
         [SerializeField]
         private AudioClip onHitSound;
 
+        public bool IsAlive => IsSpawned;
+
         public float health { 
             get => network_Health.Value; 
             set { 

@@ -19,6 +19,9 @@ public class AutoAim : NetworkBehaviour
     private Vector3 SearchSpherePoint;
 
     [SerializeField]
+    private Vector3 AdditivePosition;
+
+    [SerializeField]
     private Transform followPoint;
 
     private bool Researching = true;
@@ -55,7 +58,7 @@ public class AutoAim : NetworkBehaviour
 
         if (targetCollider != null)
         {
-            followPoint.position = targetCollider.transform.position;
+            followPoint.position = targetCollider.transform.position + (transform.rotation * AdditivePosition);
         }    
         else 
         {
@@ -75,7 +78,8 @@ public class AutoAim : NetworkBehaviour
 
         while (true)
         {
-            colliders = Physics.OverlapSphere(transform.position + (transform.rotation * SearchSpherePoint), SearchRadius).Where(collider => collider.gameObject.TryGetComponent<IDamagable>(out _));
+            colliders = Physics.OverlapSphere(transform.position + (transform.rotation * SearchSpherePoint), SearchRadius)
+                .Where(collider => collider.gameObject.TryGetComponent<IDamagable>(out _));
 
             yield return wait;
         }

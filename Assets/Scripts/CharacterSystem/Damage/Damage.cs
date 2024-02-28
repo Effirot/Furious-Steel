@@ -35,6 +35,7 @@ namespace CharacterSystem.DamageMath
 
             if (target == null)
                 return;
+
             report.damage = damage;
             report.isDelivered = true;
 

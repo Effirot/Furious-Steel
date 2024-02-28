@@ -4,15 +4,15 @@ using UnityEngine;
 using UnityEngine.AI;
 
 namespace CharacterSystem.Objects.AI
-{
-    public abstract class AINetworkCharacterMovement : NetworkCharacter
-    {
-        [SerializeField]
-        public bool FollowPath;
-        
+{   
+    [RequireComponent(typeof(AICompute))]
+    public class AINetworkCharacterMovement : NetworkCharacter
+    {       
+        public int PatchLayerIndex = 0;
+
         private NavMeshPath path;
 
-        protected abstract Vector3 targetPosition { get; }
+        private AICompute AICompute; 
 
 
         public override void OnNetworkSpawn()
@@ -25,18 +25,18 @@ namespace CharacterSystem.Objects.AI
             }
         }
 
-        protected override void Awake()
+        protected override void Awake() 
         {
             base.Awake();
 
             path = new NavMeshPath();
+            AICompute = GetComponent<AICompute>();
         }
-
         protected override void FixedUpdate()
         {
             base.FixedUpdate();
 
-            if (IsServer && FollowPath)
+            if (IsServer && AICompute.followPath)
             {
                 if (path.corners.Length > 1)
                 {
@@ -51,11 +51,20 @@ namespace CharacterSystem.Objects.AI
                     var input = new Vector2(vector.x, vector.z);
 
                     movementVector = input;
+                    
+                    if (AICompute.lookDirection.magnitude <= 0)
+                    {
+                        lookVector = input;
+                    }
                 }
+
+                if (AICompute.lookDirection.magnitude > 0)
+                {
+                    lookVector = AICompute.lookDirection;
+                }
+
             }
         }
-
-        protected abstract void AITick();
 
         protected override void OnDrawGizmosSelected()
         {
@@ -72,6 +81,8 @@ namespace CharacterSystem.Objects.AI
                     point = path.corners[i];
                 }
             }
+
+            Gizmos.DrawWireCube(AICompute.targetPosition, Vector3.one);
             
         }
 
@@ -81,11 +92,11 @@ namespace CharacterSystem.Objects.AI
             {
                 if (stunlock <= 0)
                 {
-                    AITick();
+                    AICompute.AITick();
 
-                    if (FollowPath && IsServer)
+                    if (AICompute.followPath && IsServer)
                     {
-                        NavMesh.CalculatePath(transform.position, targetPosition, 1, path);
+                        NavMesh.CalculatePath(transform.position, AICompute.targetPosition, PatchLayerIndex, path);
                     }
                 }
 

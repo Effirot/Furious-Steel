@@ -177,7 +177,7 @@ public class RoomManager : NetworkBehaviour
             serializer.SerializeValue(ref PowerUpsPicked);
         }
     }
-    
+
     public struct PublicClientData : INetworkSerializable, IEquatable<PublicClientData>
     {
         public ulong ID;
@@ -365,28 +365,20 @@ public class RoomManager : NetworkBehaviour
 
             Debug.Log($"{playersData[publicDataIndex].Name} is disconnected");
 
+            if (privateClientsData[ID].networkCharacter != null)
+            {
+                privateClientsData[ID].networkCharacter.Kill();
+            }
+
             playersData.RemoveAt(publicDataIndex);
             
-            try 
-            {
-                if (privateClientsData[ID].networkCharacter != null)
-                {
-                    
-                    privateClientsData[ID].networkCharacter.Kill();
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.LogWarning(e);
-            }
-            finally
+            if (privateClientsData.ContainsKey(ID))
             {
                 privateClientsData[ID].Dispose();
                 privateClientsData.Remove(ID);
             }
         }
     }
-
 
     private IEnumerator KickTimeOut(ulong ID)
     {
@@ -416,9 +408,10 @@ public class RoomManager : NetworkBehaviour
         var characterGameObject = Instantiate(character, spawnPoint.position, spawnPoint.rotation);
     
         client.networkCharacter = characterGameObject.GetComponent<PlayerNetworkCharacter>();
-        client.networkCharacter.NetworkObject.SpawnWithOwnership(senderId);
+        client.networkCharacter.NetworkObject.SpawnAsPlayerObject(senderId, true);
 
         return client.networkCharacter;
+        
     }
     private void SetWeapon (SpawnArguments args, ServerRpcParams Param)
     {
@@ -451,7 +444,6 @@ public class RoomManager : NetworkBehaviour
         client.networkCharacterWeapon.SpawnWithOwnership(senderId, true);
         weaponGameObject.transform.SetParent(client.networkCharacter.transform, false);
     }
-
 
     [ServerRpc (RequireOwnership = false)]
     private void Spawn_ServerRpc(SpawnArguments args, ServerRpcParams Param = default)

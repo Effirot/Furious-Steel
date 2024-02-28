@@ -47,7 +47,7 @@ namespace CharacterSystem.Objects
         public static event OnCharacterStateChangedDelegate OnCharacterSpawn = delegate { };
 
 
-        public const float RotateInterpolationTime = 0.2f;
+        public const float RotateInterpolationTime = 11f;
         public const float ServerPositionInterpolationTime = 0.07f;
         public const float VelocityReducingMultipliyer = 0.85f;
 
@@ -188,6 +188,7 @@ namespace CharacterSystem.Objects
             }
         }
         
+        public virtual bool IsAlive => IsSpawned;
 
         public bool isInWater { get; private set; } = false;
         public bool isGrounded { get; private set; } = true;
@@ -211,7 +212,7 @@ namespace CharacterSystem.Objects
 
         private List<Collider> collision_buffer = new();
 
-        public void Kill()
+        public virtual void Kill()
         {
             if (IsServer && IsSpawned)
             {
@@ -221,7 +222,8 @@ namespace CharacterSystem.Objects
                 {
                     if (item != this.NetworkObject && item.IsSpawned)
                     {
-                        item.Despawn(true);
+                        item.Despawn(false);
+
                     }
                 }
 
@@ -229,6 +231,7 @@ namespace CharacterSystem.Objects
                 
                 Destroy(gameObject, 5);
             }
+
         }
         public virtual bool Hit(Damage damage)
         {
@@ -289,18 +292,14 @@ namespace CharacterSystem.Objects
         {
             base.OnNetworkSpawn();
 
+            SetAngle(transform.rotation.eulerAngles.y);
+            SetPosition(transform.position);
+
             if (IsServer)
             {
                 health = maxHealth;
 
-                SetAngle(transform.rotation.eulerAngles.y);
-                SetPosition(transform.position);
-                
                 Spawn_ClientRpc();
-            }
-            else
-            {
-                transform.position = network_position.Value;
             }
 
             network_permissions.OnValueChanged += OnPermissionsChanged;
@@ -316,14 +315,23 @@ namespace CharacterSystem.Objects
 
         public void SetAngle(float angle)
         {
-            SetAngle_ClientRpc(angle);
+            if (IsServer)
+            {
+                transform.eulerAngles = new Vector3(0, angle, 0);
+
+                SetAngle_ClientRpc(angle);
+            }
+
         }
         public void SetPosition(Vector3 position)
         {
-            network_position.Value = position;
-            transform.position = position;
+            if (IsServer)
+            {
+                transform.position = position;
+                network_position.Value = position;
 
-            SetPosition_ClientRpc(position);
+                SetPosition_ClientRpc(position);
+            }
         }
 
         protected virtual void Awake()
@@ -333,7 +341,6 @@ namespace CharacterSystem.Objects
 
             network_health.OnValueChanged += (Old, New) => OnHealthChanged.Invoke(New);
             network_stunlock.OnValueChanged += (Old, New) => OnStunlockChanged.Invoke(New);
-
         }
         
         protected virtual void FixedUpdate()
@@ -358,15 +365,17 @@ namespace CharacterSystem.Objects
                     stunlock = 0;
                 }
             }
-            else
-            {
-                RotateCharacter();
-            }
         }
         protected virtual void LateUpdate()
         {
             InterpolateToServerPosition();
+
+            if (!isStunned)
+            {
+                RotateCharacter();
+            }
         }
+
         protected virtual void OnTriggerEnter(Collider collider)
         {
             if (collider.gameObject.layer == 4)
@@ -469,7 +478,7 @@ namespace CharacterSystem.Objects
 
                 if (LookVector.magnitude > 0.1f)
                 {
-                    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(LookVector), RotateInterpolationTime);
+                    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(LookVector), RotateInterpolationTime * Time.deltaTime);
                 }
             }
         }
@@ -483,15 +492,18 @@ namespace CharacterSystem.Objects
                 }
                 else
                 {
-                    characterController.Move(Vector3.Lerp(Vector3.zero, network_position.Value - transform.position, 15f * Time.deltaTime));
+                    characterController.Move(Vector3.Lerp(Vector3.zero, network_position.Value - transform.position, 17f * Time.deltaTime));
                 }
             }
         }
         private void SetAnimationStates()
         {
-            animator.SetFloat("Walk_Speed", speed_Multipliyer);
-            animator.SetBool("IsGrounded", isGrounded);
-            animator.SetBool("IsStunned", isStunned);
+            if (animator.gameObject.activeInHierarchy && animator != null)
+            {
+                animator.SetFloat("Walk_Speed", speed_Multipliyer);
+                animator.SetBool("IsGrounded", isGrounded);
+                animator.SetBool("IsStunned", isStunned);
+            }
         }
 
         private IEnumerator Regeneration()
@@ -532,7 +544,7 @@ namespace CharacterSystem.Objects
             transform.eulerAngles = new Vector3(0, angle, 0);
         }
         [ClientRpc]
-        private void SetPosition_ClientRpc(Vector3 position)
+        private void SetPosition_ClientRpc(Vector3 position, ClientRpcParams rpcParams = default)
         {
             transform.position = position;
         }
