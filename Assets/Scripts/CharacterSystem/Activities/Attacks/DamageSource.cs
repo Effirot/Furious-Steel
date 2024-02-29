@@ -263,7 +263,7 @@ namespace CharacterSystem.Attacks
         
         [Space]
         [SerializeField, SerializeReference, SubclassSelector]
-        private Caster[] casters;
+        public Caster[] casters;
 
         [Header("Events")]
         

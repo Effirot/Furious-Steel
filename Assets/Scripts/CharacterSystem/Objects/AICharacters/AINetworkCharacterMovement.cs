@@ -83,7 +83,6 @@ namespace CharacterSystem.Objects.AI
             }
 
             Gizmos.DrawWireCube(AICompute.targetPosition, Vector3.one);
-            
         }
 
         private IEnumerator AITickProcess()

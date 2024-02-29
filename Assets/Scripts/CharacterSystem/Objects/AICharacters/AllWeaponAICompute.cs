@@ -47,6 +47,21 @@ namespace CharacterSystem.Objects.AI
             }
         }
 
+        private DamageSource SelectRandomDamageSource()
+        {
+            var sources = from source in damageSources 
+                where source != null 
+                where source.IsPerforming
+                select source;
+             
+            if (!sources.Any())
+            {
+                return null;
+            }
+
+            
+        }
+
         private Transform ResearchTarget()
         {
             var characters = Physics.OverlapSphere(transform.position, SearchRadius, LayerMask.GetMask("Character"));
