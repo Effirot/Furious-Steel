@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using CharacterSystem.DamageMath;
 using CharacterSystem.Objects;
 using JetBrains.Annotations;
@@ -36,7 +37,7 @@ namespace CharacterSystem.Attacks
         }
 
         [SerializeField, SerializeReference, SubclassSelector]
-        protected AttackQueueElement queueElement;
+        public AttackQueueElement queueElement;
 
         [SerializeField]
         private bool IsPerformingAsDefault = false;
@@ -64,6 +65,9 @@ namespace CharacterSystem.Attacks
                 }
             } 
         }
+
+        public virtual bool IsActive => Invoker.permissions.HasFlag(CharacterPermission.AllowAttacking) && IsPerforming; 
+        
 
         public float SpeedReducing = 3;
 
@@ -217,7 +221,7 @@ namespace CharacterSystem.Attacks
         [SerializeField, TextArea(1, 1)]
         private string Name;
         
-        protected void Execute(IEnumerable<Caster> casters, IDamageSource source, float multipliyer)
+        protected void Execute(IEnumerable<Caster> casters, IDamageSource source)
         {
             var alreadyHitColliders = new List<Collider>();
 
@@ -237,7 +241,6 @@ namespace CharacterSystem.Attacks
                     var damage = cast.damage;
                     damage.pushDirection = source.transform.rotation * cast.damage.pushDirection;
                     damage.sender = source;
-                    damage *= multipliyer;
 
                     Damage.Deliver(collider.gameObject, damage);
                 }
@@ -252,7 +255,10 @@ namespace CharacterSystem.Attacks
     
         public void PlayAnimation(IDamageSource source, string Path)
         {
-            source.animator.Play(Path, -1, 0.1f);
+            if (source.animator != null && source.animator.gameObject.activeInHierarchy)
+            {
+                source.animator.Play(Path, -1, 0.1f);
+            }
         }
     }
     
@@ -276,17 +282,20 @@ namespace CharacterSystem.Attacks
         
         public override IEnumerator AttackPipeline(DamageSource source)
         {
-            yield return ChargedAttackPipeline(source, 1);
+            yield return ChargedAttackPipeline(source, 1, false, false);
         }
-        public IEnumerator ChargedAttackPipeline(DamageSource source, float chargeValue)
+        public IEnumerator ChargedAttackPipeline(DamageSource source, float chargeValue, bool flexibleCollider, bool flexibleDamage)
         {
             var invoker = source.Invoker;
+
+            var newCasters = CopyArray(flexibleCollider ? chargeValue : 1, flexibleDamage ? chargeValue : 1);
+
 
             OnCast.Invoke();
             invoker.Push(invoker.transform.rotation * CastPushDirection);
             PlayAnimation(source.Invoker, CastAnimationName);
 
-            Execute(casters, invoker, chargeValue);
+            Execute(newCasters, invoker);
 
             yield break;
         }
@@ -298,6 +307,21 @@ namespace CharacterSystem.Attacks
                 caster?.CastColliderGizmos(transform);
             }
         }
+
+        private Caster[] CopyArray(float MultiplySize, float MultiplyDamage)
+        {
+            var newArray = new Caster[casters.Count()];
+            
+            for (int i = 0; i < casters.Count(); i++)
+            {
+                var caster = newArray[i] = casters[i].Clone();
+
+                caster.damage *= MultiplyDamage;
+                caster *= MultiplySize;
+            }
+            
+            return newArray;
+        } 
     }
     [Serializable]
     public sealed class ProjectileShooter : AttackQueueElement
@@ -343,7 +367,7 @@ namespace CharacterSystem.Attacks
     public sealed class Queue : AttackQueueElement
     {
         [SerializeField, SerializeReference, SubclassSelector]
-        private AttackQueueElement[] queue;
+        public AttackQueueElement[] queue;
 
         public override IEnumerator AttackPipeline(DamageSource source)
         {
@@ -380,7 +404,26 @@ namespace CharacterSystem.Attacks
 
         public override void OnDrawGizmos(Transform transform)
         {
-            queueElement.OnDrawGizmos(transform);
+            queueElement?.OnDrawGizmos(transform);
+        }
+    }
+    [Serializable]
+    public sealed class HoldRepeat : AttackQueueElement
+    {
+        [SerializeField, SerializeReference, SubclassSelector]
+        private AttackQueueElement queueElement;
+
+        public override IEnumerator AttackPipeline(DamageSource source)
+        {
+            while (source.IsPressed)
+            {
+                yield return queueElement.AttackPipeline(source);
+            }
+        }
+
+        public override void OnDrawGizmos(Transform transform)
+        {
+            queueElement?.OnDrawGizmos(transform);
         }
     }
     [Serializable]
@@ -422,7 +465,7 @@ namespace CharacterSystem.Attacks
     {
         public interface IChargeListener 
         {
-            IEnumerator ChargedAttackPipeline(DamageSource source, float chargeValue);
+            IEnumerator ChargedAttackPipeline(DamageSource source, float chargeValue, bool flexibleCollider, bool flexibleDamage);
 
             void OnDrawGizmos(Transform transform);
         }
@@ -441,6 +484,11 @@ namespace CharacterSystem.Attacks
         private float MaxChargeValue = 1.25f; 
 
         [SerializeField]
+        private bool flexibleDamage = true;
+        [SerializeField]
+        private bool flexibleCollider = false;
+
+        [SerializeField]
         private UnityEvent OnStart = new ();
         [SerializeField]
         private UnityEvent OnEnd = new ();
@@ -450,7 +498,7 @@ namespace CharacterSystem.Attacks
         private UnityEvent OnFullCharged = new ();
 
         [SerializeField, SerializeReference, SubclassSelector]
-        private IChargeListener chargeListener; 
+        public IChargeListener chargeListener; 
 
         public override IEnumerator AttackPipeline (DamageSource source)
         {
@@ -480,7 +528,7 @@ namespace CharacterSystem.Attacks
 
             if (chargeListener != null)
             {
-                yield return chargeListener.ChargedAttackPipeline(source, Mathf.Lerp(MinChargeValue, MaxChargeValue, waitedTime / MaxChargingTime));
+                yield return chargeListener.ChargedAttackPipeline(source, Mathf.Lerp(MinChargeValue, MaxChargeValue, waitedTime / MaxChargingTime), flexibleCollider, flexibleDamage);
             }
 
             OnEnd.Invoke();
@@ -500,6 +548,20 @@ namespace CharacterSystem.Attacks
 
         public abstract Collider[] CastCollider(Transform transform);
         public abstract void CastColliderGizmos(Transform transform);
+
+        public abstract void MultiplySize(float multiplyer); 
+
+        public Caster Clone()
+        {
+            return this.MemberwiseClone() as Caster;
+        }
+
+        public static Caster operator * (Caster caster, float multiplyer)
+        {
+            caster.MultiplySize(multiplyer);
+
+            return caster;
+        } 
     }
 
     [Serializable]
@@ -522,6 +584,11 @@ namespace CharacterSystem.Attacks
 
             Gizmos.DrawRay(Vector3.zero, damage.pushDirection);
         }
+
+        public override void MultiplySize(float multiplyer)
+        {
+            size *= multiplyer;
+        }
     }
     [Serializable]
     public class SphereCaster : Caster
@@ -541,6 +608,11 @@ namespace CharacterSystem.Attacks
             Gizmos.DrawWireSphere(Vector3.zero, radius);
 
             Gizmos.DrawRay(Vector3.zero, damage.pushDirection);
+        }
+
+        public override void MultiplySize(float multiplyer)
+        {
+            radius *= multiplyer;
         }
     }
     [Serializable]
@@ -565,6 +637,11 @@ namespace CharacterSystem.Attacks
             Gizmos.DrawRay((transform.rotation * origin) + transform.position, (transform.rotation * direction.normalized) * maxDistance);
             
             Gizmos.DrawRay(Vector3.zero, damage.pushDirection);
+        }
+
+        public override void MultiplySize(float multiplyer)
+        {
+            maxDistance *= multiplyer;
         }
     }
     [Serializable]
@@ -599,6 +676,11 @@ namespace CharacterSystem.Attacks
                 
                 Gizmos.DrawRay(Vector3.zero, damage.pushDirection);
             }
+        }
+
+        public override void MultiplySize(float multiplyer)
+        {
+            maxDistance *= multiplyer;
         }
     }
 }

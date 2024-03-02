@@ -5,14 +5,14 @@ using UnityEngine.AI;
 
 namespace CharacterSystem.Objects.AI
 {   
-    [RequireComponent(typeof(AICompute))]
     public class AINetworkCharacterMovement : NetworkCharacter
     {       
         public int PatchLayerIndex = 0;
 
         private NavMeshPath path;
 
-        private AICompute AICompute; 
+        [SerializeField, SerializeReference, SubclassSelector]
+        private AICompute AICompute = new AllWeaponAICompute(); 
 
 
         public override void OnNetworkSpawn()
@@ -21,7 +21,13 @@ namespace CharacterSystem.Objects.AI
 
             if (IsServer)
             {
+                AICompute?.StartAI();
+
                 StartCoroutine(AITickProcess());
+            }
+            else 
+            {
+                AICompute = null;
             }
         }
 
@@ -29,14 +35,56 @@ namespace CharacterSystem.Objects.AI
         {
             base.Awake();
 
+            SetDataToAICompute();
+
             path = new NavMeshPath();
-            AICompute = GetComponent<AICompute>();
         }
         protected override void FixedUpdate()
         {
             base.FixedUpdate();
 
-            if (IsServer && AICompute.followPath)
+            FollowPath();
+        }
+        protected override void OnDrawGizmosSelected()
+        {
+            base.OnDrawGizmosSelected();
+            
+            if (path != null && path.corners.Length > 0)
+            {
+                var point = path.corners[0];
+
+                for (int i = 1; i < path.corners.Length; i++)
+                {
+                    Gizmos.DrawLine(point, path.corners[i]);
+
+                    point = path.corners[i];
+                }
+            }
+
+            if (Application.isPlaying && AICompute != null)
+            {
+                Gizmos.DrawWireCube(AICompute.targetPosition, Vector3.one);
+            }
+        }
+        protected override void OnValidate()
+        {
+            base.OnValidate();
+
+            SetDataToAICompute();
+        }
+
+        private void SetDataToAICompute()
+        {
+            if (AICompute != null)
+            {
+                AICompute.transform = transform;
+                AICompute.gameObject = gameObject;
+                AICompute.Character = this;
+            }
+        }
+        private void FollowPath()
+        {
+            if (IsServer && AICompute != null && AICompute.followPath)   
             {
                 if (path.corners.Length > 1)
                 {
@@ -62,27 +110,7 @@ namespace CharacterSystem.Objects.AI
                 {
                     lookVector = AICompute.lookDirection;
                 }
-
             }
-        }
-
-        protected override void OnDrawGizmosSelected()
-        {
-            base.OnDrawGizmosSelected();
-            
-            if (path != null && path.corners.Length > 0)
-            {
-                var point = path.corners[0];
-
-                for (int i = 1; i < path.corners.Length; i++)
-                {
-                    Gizmos.DrawLine(point, path.corners[i]);
-
-                    point = path.corners[i];
-                }
-            }
-
-            Gizmos.DrawWireCube(AICompute.targetPosition, Vector3.one);
         }
 
         private IEnumerator AITickProcess()

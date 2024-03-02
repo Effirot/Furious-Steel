@@ -30,7 +30,6 @@ public class Spawner : NetworkBehaviour
             StartCoroutine(SpawnProcess());
         }
     }
-    
     public override void OnNetworkDespawn()
     {
         base.OnNetworkDespawn();
@@ -44,8 +43,9 @@ public class Spawner : NetworkBehaviour
     private void Spawn()
     {
         var prefabObject = Instantiate(prefab, transform.position, Quaternion.identity);
+        prefabObject.SetActive(true);
 
-        instance = prefabObject.GetComponent<NetworkObject>();
+        instance = prefabObject.GetComponent<NetworkObject>(); 
         instance.Spawn(); 
 
         instance.TrySetParent(transform);

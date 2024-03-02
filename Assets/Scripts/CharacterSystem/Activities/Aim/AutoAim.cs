@@ -79,7 +79,7 @@ public class AutoAim : NetworkBehaviour
         while (true)
         {
             colliders = Physics.OverlapSphere(transform.position + (transform.rotation * SearchSpherePoint), SearchRadius)
-                .Where(collider => collider.gameObject.TryGetComponent<IDamagable>(out _));
+                .Where(collider => collider != null && collider.gameObject.TryGetComponent<IDamagable>(out _));
 
             yield return wait;
         }
