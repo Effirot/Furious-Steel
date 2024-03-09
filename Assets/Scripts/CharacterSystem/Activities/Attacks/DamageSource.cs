@@ -343,7 +343,6 @@ namespace CharacterSystem.Attacks
                 projectileObject.SetActive(true);
 
                 var projectile = projectileObject.GetComponent<Projectile>();
-                var projectileNetworkObject = projectileObject.GetComponent<NetworkObject>();
                 
                 if (projectile == null)
                 {
@@ -352,8 +351,8 @@ namespace CharacterSystem.Attacks
                     yield break;
                 }
 
-                projectileNetworkObject.Spawn();
-                projectile.MoveDirection = source.transform.forward;
+                projectile.NetworkObject.Spawn();
+                projectile.Initialize(source.transform.forward, source.Invoker);
             }
         }
 

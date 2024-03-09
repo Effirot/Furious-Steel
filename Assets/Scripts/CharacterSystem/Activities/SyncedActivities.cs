@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using static UnityEngine.InputSystem.InputAction;
 
-public interface ISyncedActivitiesSource : IMonoBehaviourLink
+public interface ISyncedActivitiesSource : IGameObjectLink
 {
     NetworkObject NetworkObject { get; }
 

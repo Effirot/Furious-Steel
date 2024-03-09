@@ -71,6 +71,8 @@ namespace CharacterSystem.Objects.AI
             base.OnValidate();
 
             SetDataToAICompute();
+
+            AICompute?.OnValidate();
         }
 
         private void SetDataToAICompute()

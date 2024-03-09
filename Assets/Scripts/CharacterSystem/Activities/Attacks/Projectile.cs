@@ -1,17 +1,23 @@
+using CharacterSystem.Attacks;
 using CharacterSystem.DamageMath;
 using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.VFX;
 
 public class Projectile : NetworkBehaviour, 
-    IDamagable
+    IDamagable,
+    ITeammate
 {
     [field : SerializeField, Range (0.1f, 100)]
     private float speed = 1;
 
     [field : SerializeField, Range (0.1f, 10)]
     private float lifetime = 3;
+
+    [field : SerializeField, Range (0.1f, 10)]
+    private float destroyTimeout = 3;
 
     [field : SerializeField]
     public VisualEffectAsset OnDestroyEffect { get; private set; }
@@ -34,14 +40,26 @@ public class Projectile : NetworkBehaviour,
         }
     }
 
-    public bool IsAlive => IsSpawned;
-
     public float health { get => 0; set { return; } }
     public float stunlock { get => 0; set { return; } }
+
+    public IDamageSource Summoner { get; private set; }
+
+    public UnityEvent onDespawnEvent = new UnityEvent();
+
+    public int TeamIndex => Summoner.TeamIndex;
+
 
     private NetworkVariable<Vector3> network_position = new NetworkVariable<Vector3> (Vector3.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     private NetworkVariable<Vector3> network_moveDirection = new NetworkVariable<Vector3> (Vector3.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     
+    public void Initialize (Vector3 direction, IDamageSource summoner)
+    {
+        Push (direction);
+
+        Summoner = summoner;
+    }
+
     public bool Hit (Damage damage)
     {
         if (IsServer)
@@ -62,14 +80,10 @@ public class Projectile : NetworkBehaviour,
 
     public void Kill ()
     {
-        OnDestroy();
+        NetworkObject.Despawn(false);
     }
 
-    public override void OnDestroy() 
-    {
-        base.OnDestroy();
-    }
-    public override void OnNetworkSpawn()
+    public override void OnNetworkSpawn ()
     {
         base.OnNetworkSpawn();
 
@@ -84,9 +98,19 @@ public class Projectile : NetworkBehaviour,
 
         Destroy(gameObject, lifetime);
     }
+    public override void OnNetworkDespawn ()
+    {
+        base.OnNetworkDespawn();
+
+        onDespawnEvent.Invoke();
+
+        Destroy(gameObject, destroyTimeout);
+    }
 
     private void FixedUpdate ()
     {
+        if (!IsSpawned) return;
+
         if (IsServer)
         {
             transform.position += MoveDirection * Time.fixedDeltaTime * speed;
@@ -103,29 +127,16 @@ public class Projectile : NetworkBehaviour,
             transform.rotation = Quaternion.LookRotation(network_moveDirection.Value);
         }
     }
-    private void OnTriggerEnter(UnityEngine.Collider other)
+    private void OnTriggerEnter (UnityEngine.Collider other)
     {
-        // Debug.Log(other.gameObject.name);
-
         var damage = this.damage;
         damage.pushDirection = transform.rotation * damage.pushDirection;
+        damage.sender = Summoner;
 
         Damage.Deliver(other.gameObject, damage);
-        
         if (IsServer)
         {
-            Kill_ClientRpc();
-            
-            if (IsClient)
-            {
-                Kill();
-            }
+            Kill();
         }
-    }
-
-    [ClientRpc]
-    private void Kill_ClientRpc ()
-    {
-        Kill();     
     }
 }

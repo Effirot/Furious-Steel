@@ -20,23 +20,7 @@ namespace CharacterSystem.Objects.AI
         [SerializeField]
         private bool AllowUsingUltimates = false;
 
-        public Transform WeaponOrigin
-        {
-            get => weaponOrigin;
-            set
-            {
-                damageSources.Clear();
-
-                if (value != null)
-                {
-                    damageSources.AddRange(value.GetComponentsInChildren<DamageSource>());
-                }
-
-                weaponOrigin = value;
-            }
-        }
-
-        private List<DamageSource> damageSources = new();
+        public List<DamageSource> damageSources = new();
         
         private Transform weaponOrigin = null;
         private Transform target = null;
@@ -47,11 +31,11 @@ namespace CharacterSystem.Objects.AI
         }
         public override void AITick()
         {
+            target = ResearchTarget();
+
             if (target == null)
             {
                 targetPosition = transform.position;
-
-                target = ResearchTarget();
             }
             else
             {
@@ -110,6 +94,7 @@ namespace CharacterSystem.Objects.AI
                 }
             }
         }
+        
 
         private Transform ResearchTarget()
         {

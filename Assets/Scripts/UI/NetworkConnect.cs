@@ -26,16 +26,13 @@ public class NetworkConnect : MonoBehaviour
         SceneManager.sceneLoaded -= StartHostOnLoad_Event;
     }
     
-    public void StartAutomaticConenction()
-    {
-        SetIP("94.181.44.39");
-        SetPort("7777");
-        Connect();
-    }
     public void Connect() 
     {
+        NetworkManager.Singleton.NetworkConfig.ConnectionData = Authorizer.localAuthorizeArgs.ConvertToBytes();
+        
         if (NetworkManager.Singleton.StartClient())
         {
+            
             OnSuccesfullyConnect.Invoke();
 
             NetworkManager.Singleton.OnClientDisconnectCallback += OnCharacterDisconnected_Event;

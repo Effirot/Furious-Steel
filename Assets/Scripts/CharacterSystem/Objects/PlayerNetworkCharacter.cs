@@ -146,6 +146,7 @@ namespace CharacterSystem.Objects
                     action.performed += OnMove;
                     action.canceled += OnMove;
                 }
+
                 {
                     var action = lookInput.action;
                     action.Enable();
@@ -162,6 +163,7 @@ namespace CharacterSystem.Objects
                 network_serverClientId.Value = OwnerClientId;
             }
 
+            UpdateName();
             RefreshColor_Internal();
         }
         public override void OnNetworkDespawn()
@@ -217,14 +219,21 @@ namespace CharacterSystem.Objects
             {
                 RefreshColor_Internal();
             }
+
+            UpdateName();
         }
 
         private void OnOwnerPlayerDataChanged_event(NetworkListEvent<RoomManager.PublicClientData> changeEvent)
         {
-            if (changeEvent.Value.ID == ServerClientID)
+            if (changeEvent.Value.ID == ServerClientID && changeEvent.Type != NetworkListEvent<RoomManager.PublicClientData>.EventType.Remove)
             {
                 OnOwnerPlayerDataChanged(changeEvent);
             }
+        }
+
+        private void UpdateName()
+        {
+            gameObject.name = name = $"Player({ClientData.Name.Value})";
         }
 
         private IEnumerator DodgeRoutine(Vector3 Direction)
@@ -263,7 +272,7 @@ namespace CharacterSystem.Objects
             {
                 if ((Time.time - lastTapTime) < multiTapDelayTime)
                 {
-                    Dash_ServerRpc(value);
+                    Dash(value);
                 }
     
                 lastTapTime = Time.time;
@@ -291,7 +300,13 @@ namespace CharacterSystem.Objects
             }
         }
         
-
+        public void Dash(Vector2 direction)
+        {
+            if (IsOwner)
+            {
+                Dash_ServerRpc(direction);
+            }
+        }
         [ClientRpc]
         private void Dash_ClientRpc(Vector2 direction)
         {      

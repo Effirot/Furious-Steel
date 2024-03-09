@@ -7,14 +7,14 @@ using static RoomManager.SpawnArguments;
 
 public sealed class SpawnArgumentsEditor : MonoBehaviour
 {
-    public void SetCharacter(int index)
+    public void SetCharacter(string Name)
     {
-        SpawnArguments.This.CharacterIndex = index;
+        SpawnArguments.This.CharacterName = Name;
     }
 
-    public void SetWeapon(int index)
+    public void SetWeapon(string Name)
     {
-        SpawnArguments.This.WeaponIndex = index;
+        SpawnArguments.This.WeaponName = Name;
     }
 
     public void SetColor(int index)

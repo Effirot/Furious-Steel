@@ -38,7 +38,7 @@ namespace CharacterSystem.DamageMath
 
             report.damage = damage;
             report.isDelivered = true;
-
+            
             if (damage.value > 0)
             {
                 report.isBlocked = target.Hit(damage);
@@ -62,9 +62,11 @@ namespace CharacterSystem.DamageMath
                     damage.sender?.DamageDelivered(report);
                 }
             }
+
+            Debug.Log($"Damage was succesfullty sended: {{{damage.ToString().Replace('\n', ' ')}}}");
         }
 
-        [SerializeField, Range(-100, 300)]
+        [SerializeField, Range(-50, 300)]
         public float value;
 
         [SerializeField]
@@ -95,7 +97,7 @@ namespace CharacterSystem.DamageMath
 
         public override string ToString()
         {
-            return $"Damage: {value}\n Sender: {sender.gameObject.name}\n Stunlock: {stunlock}\n Push Force: {pushDirection}";
+            return $"Sender: {sender.gameObject.name}\n Damage: {value}\n Type: {type}\n Stunlock: {stunlock}\n Push Force: {pushDirection}\n UltimateRecharged {RechargeUltimate}";
         }
 
         public static Damage operator * (Damage damage, float multipliyer)

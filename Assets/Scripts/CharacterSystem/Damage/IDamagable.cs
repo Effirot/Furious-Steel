@@ -5,13 +5,13 @@ using UnityEngine.VFX;
 
 namespace CharacterSystem.DamageMath
 {
-    public interface IDamagable : IMonoBehaviourLink 
+    public interface IDamagable : 
+        IGameObjectLink, 
+        ITeammate
     {
         float health { get; set; }
 
         float stunlock { get; set; }
-
-        bool IsAlive { get; }
         
         VisualEffect OnHitEffect { get; }
 

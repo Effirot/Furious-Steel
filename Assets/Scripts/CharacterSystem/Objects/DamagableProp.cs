@@ -44,6 +44,9 @@ namespace CharacterSystem.Objects
         }
         public float stunlock { get => 0; set { return; } }
 
+        public virtual int TeamIndex => 0;
+
+
         public virtual bool Hit(Damage damage)
         {
 

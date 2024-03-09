@@ -16,5 +16,7 @@ namespace CharacterSystem.Objects.AI
 
         public abstract void AITick();
         public abstract void StartAI();
+
+        public virtual void OnValidate() { }
     }
 }

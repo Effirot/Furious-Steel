@@ -9,6 +9,6 @@ public sealed class AuthorizeArgumentsEditor : MonoBehaviour
 {
     public void SetName(string Name)
     {
-        AuthorizeArguments.This.Name = Name;
+        Authorizer.localAuthorizeArgs.Name = Name;
     }
 }

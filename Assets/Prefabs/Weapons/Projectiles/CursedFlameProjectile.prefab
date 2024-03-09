@@ -70,8 +70,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 31.5
   lifetime: 1
+  destroyTimeout: 10
   <OnDestroyEffect>k__BackingField: {fileID: 0}
   <OnHitEffect>k__BackingField: {fileID: 0}
+  damage:
+    value: 30
+    type: 4
+    stunlock: 1
+    pushDirection: {x: 0, y: 0, z: 0.2}
+    RechargeUltimate: 0
+  onDespawnEvent:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!54 &-5641090124221028093
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -171,10 +181,10 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 2.17
+      - m_Value: 1.3
         m_Name: Size
         m_Overridden: 1
-      - m_Value: 0.44
+      - m_Value: 0.0001
         m_Name: Lifetime
         m_Overridden: 1
       - m_Value: 1.39
@@ -184,8 +194,11 @@ VisualEffect:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0, y: 0, z: 10.38}
+      - m_Value: {x: 0, y: 0, z: -26.2}
         m_Name: Direction
+        m_Overridden: 1
+      - m_Value: {x: 0, y: 500, z: 0}
+        m_Name: Gavity
         m_Overridden: 1
     m_Vector4f:
       m_Array: []
@@ -193,7 +206,7 @@ VisualEffect:
       m_Array: []
     m_Int:
       m_Array:
-      - m_Value: 64
+      - m_Value: 54
         m_Name: FlamesCount
         m_Overridden: 1
     m_Matrix4x4f:
