@@ -225,7 +225,9 @@ namespace CharacterSystem.Objects
 
         private void OnOwnerPlayerDataChanged_event(NetworkListEvent<RoomManager.PublicClientData> changeEvent)
         {
-            if (changeEvent.Value.ID == ServerClientID && changeEvent.Type != NetworkListEvent<RoomManager.PublicClientData>.EventType.Remove)
+            if (changeEvent.Value.ID == ServerClientID && 
+                (changeEvent.Type != NetworkListEvent<RoomManager.PublicClientData>.EventType.Remove || 
+                changeEvent.Type != NetworkListEvent<RoomManager.PublicClientData>.EventType.RemoveAt))
             {
                 OnOwnerPlayerDataChanged(changeEvent);
             }
@@ -233,7 +235,11 @@ namespace CharacterSystem.Objects
 
         private void UpdateName()
         {
-            gameObject.name = name = $"Player({ClientData.Name.Value})";
+            try 
+            {
+                gameObject.name = name = $"Player({ClientData.Name.Value})";
+            }
+            catch { }
         }
 
         private IEnumerator DodgeRoutine(Vector3 Direction)

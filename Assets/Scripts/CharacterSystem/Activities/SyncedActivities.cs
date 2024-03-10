@@ -39,7 +39,6 @@ public abstract class SyncedActivities<T> : NetworkBehaviour where T : ISyncedAc
         } 
         private set => m_invoker = value;
     }
-
     
     public bool IsPressed 
     {
@@ -59,20 +58,20 @@ public abstract class SyncedActivities<T> : NetworkBehaviour where T : ISyncedAc
 
     protected abstract void OnStateChanged(bool IsPressed);
 
-    public override void OnNetworkSpawn()
+    public override void OnNetworkSpawn ()
     {
         base.OnNetworkSpawn();
 
         Subscribe();
     }
-    public override void OnNetworkDespawn()  
+    public override void OnNetworkDespawn ()
     {
         base.OnNetworkDespawn();
 
         Unsubscribe();
     }
 
-    private void Subscribe()
+    private void Subscribe ()
     {
         if (IsOwner && inputAction != null)
         {
@@ -84,7 +83,7 @@ public abstract class SyncedActivities<T> : NetworkBehaviour where T : ISyncedAc
 
         network_isPressed.OnValueChanged += InvokeStateChangedFunction_Event;
     }
-    private void Unsubscribe()
+    private void Unsubscribe ()
     {
         if (IsOwner && inputAction != null)
         {
@@ -106,7 +105,7 @@ public abstract class SyncedActivities<T> : NetworkBehaviour where T : ISyncedAc
         OnStateChanged(New);
     }
 
-    private T ResearchInvoker()
+    private T ResearchInvoker ()
     {
         var result = GetComponentInParent<T>();
 

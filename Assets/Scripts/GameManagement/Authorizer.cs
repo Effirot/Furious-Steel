@@ -23,8 +23,6 @@ public sealed class Authorizer : NetworkBehaviour
             return true;
         }
 
-
-
         public FixedString64Bytes Name;
 
         public byte[] ConvertToBytes()
@@ -38,8 +36,6 @@ public sealed class Authorizer : NetworkBehaviour
     }
     public struct AuthorizedPlayerData
     {
-        public NetworkClient networkClient;
-
         public FixedString64Bytes Name;
 
         public DateTime AuthorizeTime;
@@ -49,13 +45,28 @@ public sealed class Authorizer : NetworkBehaviour
 
     public static bool AuthorizeOnConnect = true;
 
-    public static AuthorizeArguments localAuthorizeArgs = new AuthorizeArguments() {
-#if UNITY_EDITOR
-        Name = "DEVELOPMENT",
-#else
-        Name = "Unnamed",
-#endif
-    };
+    public static AuthorizeArguments localAuthorizeArgs {
+        get { 
+            AuthorizeArguments.TryParse(NetworkManager.Singleton.NetworkConfig.ConnectionData, out var authorizeArguments);
+
+            return authorizeArguments;
+        }
+        set {
+            NetworkManager.Singleton.NetworkConfig.ConnectionData = value.ConvertToBytes();
+        } 
+    }
+
+    [RuntimeInitializeOnLoadMethod]
+    private static void OnLoad()
+    {
+        localAuthorizeArgs = new AuthorizeArguments() {
+            #if UNITY_EDITOR
+                    Name = "DEVELOPMENT",
+            #else
+                    Name = "Unnamed",
+            #endif
+        };
+    }
     
 
     private Dictionary<ulong, AuthorizedPlayerData> authorizedPlayers = new();
@@ -70,8 +81,7 @@ public sealed class Authorizer : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        Singleton = this;
-        roomManager = GetComponent<RoomManager>();
+
 
         base.OnNetworkSpawn();
 
@@ -79,8 +89,6 @@ public sealed class Authorizer : NetworkBehaviour
         {
             NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected_Event;
             NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected_Event;
-
-            NetworkManager.Singleton.ConnectionApprovalCallback  += ConnectionAprovalCheck_Event;
         }
     }
     public override void OnNetworkDespawn()
@@ -92,6 +100,14 @@ public sealed class Authorizer : NetworkBehaviour
             NetworkManager.OnClientConnectedCallback -= OnClientConnected_Event;
             NetworkManager.OnClientDisconnectCallback -= OnClientDisconnected_Event;
         }
+    }
+
+    private void Start()
+    {
+        Singleton = this;
+        roomManager = GetComponent<RoomManager>();
+
+        NetworkManager.Singleton.ConnectionApprovalCallback += ConnectionAprovalCheck_Event;
     }
 
     private void OnClientConnected_Event(ulong ID)
@@ -120,14 +136,9 @@ public sealed class Authorizer : NetworkBehaviour
         if (response.Approved = AuthorizeArguments.TryParse(request.Payload, out var authorizeArguments))
         {
             roomManager.OnPlayerAuthorized(request.ClientNetworkId, authorizeArguments);
-
-            if (IsPlayerAuthorized(request.ClientNetworkId))
-                return;
             
             var authorizeData = new AuthorizedPlayerData()
             {
-                networkClient = NetworkManager.Singleton.ConnectedClients[request.ClientNetworkId],
-
                 Name = authorizeArguments.Name,
 
                 AuthorizeTime = DateTime.Now

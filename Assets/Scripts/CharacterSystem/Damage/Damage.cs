@@ -63,7 +63,7 @@ namespace CharacterSystem.DamageMath
                 }
             }
 
-            Debug.Log($"Damage was succesfullty sended: {{{damage.ToString().Replace('\n', ' ')}}}");
+            // Debug.Log($"Damage was succesfullty sended: {{{damage.ToString().Replace('\n', ' ')}}}");
         }
 
         [SerializeField, Range(-50, 300)]

@@ -27,9 +27,7 @@ public class NetworkConnect : MonoBehaviour
     }
     
     public void Connect() 
-    {
-        NetworkManager.Singleton.NetworkConfig.ConnectionData = Authorizer.localAuthorizeArgs.ConvertToBytes();
-        
+    {        
         if (NetworkManager.Singleton.StartClient())
         {
             

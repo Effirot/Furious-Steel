@@ -16,5 +16,5 @@ using static UnityEngine.InputSystem.InputAction;
 [DisallowMultipleComponent]
 public class StealthObject : MonoBehaviour
 {
-
+    public List<StealthGraphicHider> characterSteathers = new();
 }

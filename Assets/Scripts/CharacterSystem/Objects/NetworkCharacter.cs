@@ -203,8 +203,6 @@ namespace CharacterSystem.Objects
         }
         
         public bool isInWater { get; private set; } = false;
-        public bool isGrounded { get; private set; } = true;
-
 
         private NetworkVariable<Vector3> network_position = new NetworkVariable<Vector3>(Vector3.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);    
         private NetworkVariable<Vector2> network_movementVector = new NetworkVariable<Vector2>(Vector2.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
@@ -515,7 +513,7 @@ namespace CharacterSystem.Objects
             if (animator.gameObject.activeInHierarchy && animator != null)
             {
                 animator.SetFloat("Walk_Speed", speed_acceleration_multipliyer);
-                animator.SetBool("IsGrounded", isGrounded);
+                animator.SetBool("IsGrounded", characterController.isGrounded);
                 animator.SetBool("IsStunned", isStunned);
             }
         }

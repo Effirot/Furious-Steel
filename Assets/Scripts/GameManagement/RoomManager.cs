@@ -10,6 +10,9 @@ using UnityEngine.Rendering;
 using static RoomManager.SpawnArguments;
 using System.Net.Sockets;
 using static Authorizer;
+using Cysharp.Threading.Tasks;
+
+
 
 
 
@@ -345,13 +348,16 @@ public class RoomManager : NetworkBehaviour
         return null;
     }
 
-    public void OnPlayerAuthorized(ulong ID, Authorizer.AuthorizeArguments authorizedPlayerData)
+    public async void OnPlayerAuthorized(ulong ID, Authorizer.AuthorizeArguments authorizedPlayerData)
     {
         privatePlayersData.Add(ID, new ()
         {
             networkCharacter = null,
             networkCharacterWeapon = null,
         });
+
+        await UniTask.WaitUntil(() => NetworkManager.IsListening); 
+        
         playersData.Add(new()
         {
             ID = ID,
@@ -368,9 +374,7 @@ public class RoomManager : NetworkBehaviour
     public void OnAuthorizedPlayerDisconnected(ulong ID)
     {
         var publicDataIndex = IndexOfPlayerData(data => data.ID == ID);
-
-        Debug.Log($"{playersData[publicDataIndex].Name} is disconnected");
-
+        
         // if (privateClientsData[ID].networkCharacter != null)
         // {
         //     privateClientsData[ID].networkCharacter.Kill();
@@ -455,6 +459,7 @@ public class RoomManager : NetworkBehaviour
     private void Spawn_ServerRpc(SpawnArguments args, ServerRpcParams Param = default)
     {   
         var DataIndex = IndexOfPlayerData(a => a.ID == Param.Receive.SenderClientId);
+        // var DataIndex = (int) Param.Receive.SenderClientId;
         if (DataIndex == -1)
             return;
 
