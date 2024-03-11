@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using CharacterSystem.Objects;
 using CharacterSystem.PowerUps;
+using Cysharp.Threading.Tasks;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
@@ -29,29 +30,9 @@ public class CharacterMiniUI : MonoBehaviour
     private Slider UltimateField;
 
     
-    private void Start()
+    private async void Start()
     {
-        StartCoroutine(WaitUntillSpawn());
-    }
-    private void OnDestroy()
-    {
-        UnsubscribeToHolders();
-        UnsubscribeToHealthBar();
-    }
-    private void LateUpdate()
-    {
-        transform.rotation = Camera.main.transform.rotation;
-    }
-
-    private void SetHealthSliderValue_Event(float value)
-    {
-        HealthField.maxValue = networkCharacter.maxHealth;
-        HealthField.value = value;
-    }
-
-    private IEnumerator WaitUntillSpawn()
-    {
-        yield return new WaitUntil(() => networkCharacter.IsSpawned);
+        await UniTask.WaitUntil(() => networkCharacter.IsSpawned);
 
         if (networkCharacter.IsOwner)
         {
@@ -64,6 +45,24 @@ public class CharacterMiniUI : MonoBehaviour
         SubscribeToHolders();
         SubscribeToUltimate();
     }
+    private void OnDestroy()
+    {
+        UnsubscribeToHolders();
+        UnsubscribeToHealthBar();
+
+        RoomManager.Singleton.playersData.OnListChanged -= OnOwnerPlayerDataChanged_event;
+    }
+    private void LateUpdate()
+    {
+        transform.rotation = Camera.main.transform.rotation;
+    }
+
+    private void SetHealthSliderValue_Event(float value)
+    {
+        HealthField.maxValue = networkCharacter.maxHealth;
+        HealthField.value = value;
+    }
+
 
     private void SetNickname()
     {

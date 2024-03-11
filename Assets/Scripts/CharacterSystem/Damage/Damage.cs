@@ -36,6 +36,9 @@ namespace CharacterSystem.DamageMath
             if (target == null)
                 return;
 
+            if (damage.sender == null && ITeammate.IsAlly(target, damage.sender))
+                return;
+
             report.damage = damage;
             report.isDelivered = true;
             
@@ -62,8 +65,6 @@ namespace CharacterSystem.DamageMath
                     damage.sender?.DamageDelivered(report);
                 }
             }
-
-            // Debug.Log($"Damage was succesfullty sended: {{{damage.ToString().Replace('\n', ' ')}}}");
         }
 
         [SerializeField, Range(-50, 300)]

@@ -80,7 +80,10 @@ public class Projectile : NetworkBehaviour,
 
     public void Kill ()
     {
-        NetworkObject.Despawn(false);
+        if (IsSpawned)
+        {
+            NetworkObject.Despawn(false);
+        }
     }
 
     public override void OnNetworkSpawn ()
@@ -129,6 +132,8 @@ public class Projectile : NetworkBehaviour,
     }
     private void OnTriggerEnter (UnityEngine.Collider other)
     {
+        if (!IsSpawned) return;
+
         var damage = this.damage;
         damage.pushDirection = transform.rotation * damage.pushDirection;
         damage.sender = Summoner;

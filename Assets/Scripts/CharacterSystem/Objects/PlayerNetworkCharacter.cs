@@ -227,7 +227,9 @@ namespace CharacterSystem.Objects
         {
             if (changeEvent.Value.ID == ServerClientID && 
                 (changeEvent.Type != NetworkListEvent<RoomManager.PublicClientData>.EventType.Remove || 
-                changeEvent.Type != NetworkListEvent<RoomManager.PublicClientData>.EventType.RemoveAt))
+                changeEvent.Type != NetworkListEvent<RoomManager.PublicClientData>.EventType.RemoveAt ||
+                changeEvent.Type != NetworkListEvent<RoomManager.PublicClientData>.EventType.Clear) &&
+                IsSpawned)
             {
                 OnOwnerPlayerDataChanged(changeEvent);
             }
@@ -360,11 +362,17 @@ namespace CharacterSystem.Objects
         {            
             if (IsClient)
             {
-                foreach(var paintable in GetComponentsInChildren<IPaintable>())
-                {
-                    paintable.SetColor(ClientData.spawnArguments.GetColor());
-                    paintable.SetSecondColor(ClientData.spawnArguments.GetSecondColor());
+                try {
+                    var clientdata = ClientData;
+
+                    foreach(var paintable in GetComponentsInChildren<IPaintable>())
+                    {
+                        
+                        paintable.SetColor(ClientData.spawnArguments.GetColor());
+                        paintable.SetSecondColor(ClientData.spawnArguments.GetSecondColor());
+                    }
                 }
+                catch { }
             }
         }
     }

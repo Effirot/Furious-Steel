@@ -1,19 +1,35 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using CharacterSystem.Attacks;
+using CharacterSystem.Blocking;
+using CharacterSystem.DamageMath;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AI;
 
 namespace CharacterSystem.Objects.AI
 {   
-    public class AINetworkCharacterMovement : NetworkCharacter
+    public class AINetworkCharacterMovement : NetworkCharacter, 
+        IDamageSource,
+        IDamageBlocker
     {       
         public int PatchLayerIndex = 0;
 
         private NavMeshPath path;
 
         [SerializeField, SerializeReference, SubclassSelector]
-        private AICompute AICompute = new AllWeaponAICompute(); 
+        private AICompute AICompute = new AllWeaponAICompute();
 
+        public DamageBlocker Blocker { get; set; }
+
+        public event Action<DamageDeliveryReport> OnDamageDelivered;
+
+
+        public void DamageDelivered(DamageDeliveryReport report)
+        {
+            OnDamageDelivered.Invoke(report);
+        }
 
         public override void OnNetworkSpawn()
         {
@@ -23,14 +39,18 @@ namespace CharacterSystem.Objects.AI
             {
                 AICompute?.StartAI();
 
-                StartCoroutine(AITickProcess());
+                AITickProcess();
             }
             else 
             {
                 AICompute = null;
             }
         }
-
+        public override void OnNetworkDespawn()
+        {
+            ClearAICompute();
+        }
+        
         protected override void Awake() 
         {
             base.Awake();
@@ -86,9 +106,11 @@ namespace CharacterSystem.Objects.AI
         }
         private void FollowPath()
         {
-            if (IsServer && AICompute != null && AICompute.followPath)   
+            if (IsServer && AICompute != null)   
             {
-                if (path.corners.Length > 1)
+                Vector2 input = Vector2.zero; 
+
+                if (path.corners.Length > 1 && AICompute.followPath)
                 {
                     var nearestCorner = path.corners[1];
 
@@ -98,30 +120,28 @@ namespace CharacterSystem.Objects.AI
                     }
 
                     var vector = nearestCorner - transform.position;
-                    var input = new Vector2(vector.x, vector.z);
-
-                    movementVector = input;
-                    
-                    if (AICompute.lookDirection.magnitude <= 0)
-                    {
-                        lookVector = input;
-                    }
+                    input = new Vector2(vector.x, vector.z);
                 }
 
-                if (AICompute.lookDirection.magnitude > 0)
-                {
-                    lookVector = AICompute.lookDirection;
-                }
+                lookVector = AICompute.lookDirection.magnitude > 0 ? input : AICompute.lookDirection;
+
+                movementVector = input;
             }
         }
 
-        private IEnumerator AITickProcess()
+        private void ClearAICompute()
         {
-            while (true)
+            GC.SuppressFinalize(AICompute);
+            AICompute = null;
+        }
+
+        private async void AITickProcess()
+        {
+            while (IsSpawned)
             {
                 if (stunlock <= 0)
                 {
-                    AICompute.AITick();
+                    await AICompute.AITick();
 
                     if (AICompute.followPath && IsServer)
                     {
@@ -129,7 +149,7 @@ namespace CharacterSystem.Objects.AI
                     }
                 }
 
-                yield return new WaitForSecondsRealtime(0.2f);
+                await UniTask.Delay(100);
             }
         }
     }

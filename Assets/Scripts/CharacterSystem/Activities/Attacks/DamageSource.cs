@@ -81,7 +81,7 @@ namespace CharacterSystem.Attacks
             {
                 StartAttack_ClientRpc();
 
-                if (!IsHost)
+                if (!IsClient)
                 {
                     StartAttack_Internal();
                 }

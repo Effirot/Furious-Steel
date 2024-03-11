@@ -454,7 +454,7 @@ namespace CharacterSystem.Objects
 
             Vector3 gravity = Vector3.zero; 
             
-            if (permissions.HasFlag(CharacterPermission.AllowGravity) && IsServer)
+            if (permissions.HasFlag(CharacterPermission.AllowGravity))
             {
                 gravity = Physics.gravity + (Vector3.up * characterController.velocity.y);
                 gravity /= 1.6f;

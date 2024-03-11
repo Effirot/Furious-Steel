@@ -47,11 +47,16 @@ public class UltimateDamageSource : DamageSource
 
     public override void StartAttack()
     {
-        if (network_delivereDamageValue.Value >= RequireDamage && Invoker.permissions.HasFlag(CharacterPermission.AllowUltimate))
+        if (DeliveredDamage >= RequireDamage && 
+            Invoker.permissions.HasFlag(CharacterPermission.AllowUltimate) &&
+            Invoker.permissions.HasFlag(CharacterPermission.AllowAttacking) &&
+            !Invoker.isStunned && 
+            IsPerforming &&
+            !IsAttacking)
         {
-            network_delivereDamageValue.Value = 0;
+            DeliveredDamage = 0;
 
-            base.StartAttack();
+            base.StartAttackForced();
         }
     }
 
@@ -65,13 +70,13 @@ public class UltimateDamageSource : DamageSource
     {
         if (IsServer && report.damage.RechargeUltimate)
         {
-            var newValue = Mathf.Clamp(network_delivereDamageValue.Value + report.damage.value, 0, RequireDamage);
+            var newValue = Mathf.Clamp(DeliveredDamage + report.damage.value, 0, RequireDamage);
             
-            if (network_delivereDamageValue.Value != newValue)
+            if (DeliveredDamage != newValue)
             {
                 OnUltimateReady.Invoke();
 
-                network_delivereDamageValue.Value = Mathf.Clamp(network_delivereDamageValue.Value + report.damage.value, 0, RequireDamage);
+                DeliveredDamage = Mathf.Clamp(DeliveredDamage + report.damage.value, 0, RequireDamage);
             }
         }
     }

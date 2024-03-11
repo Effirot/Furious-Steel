@@ -39,8 +39,6 @@ public class Chat : MonoBehaviour
 
     private void Awake()
     {
-        DontDestroyOnLoad(gameObject);
-
         RoomManager.OnWriteToChat += OnWriteToChat;
     }
 
