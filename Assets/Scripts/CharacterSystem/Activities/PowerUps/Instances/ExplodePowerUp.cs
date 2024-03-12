@@ -26,8 +26,8 @@ public class ExplodePowerUp : PowerUp
                 Damage.Deliver(collider.gameObject, new Damage()
                 {
                     value = 50,
-                    stunlock = 1,
-                    pushDirection = (Vector3.up + VectorToTarget).normalized,
+                    stunlock = 0.8f,
+                    pushDirection = Vector3.up,
                     type = Damage.Type.Unblockable,
                     sender = holder.Invoker
                 });

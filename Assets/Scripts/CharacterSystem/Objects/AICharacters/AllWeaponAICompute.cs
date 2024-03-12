@@ -40,11 +40,16 @@ namespace CharacterSystem.Objects.AI
         }
         public override async Task AITick()
         {
-            target = ResearchTarget();
+            var newTarget = ResearchTarget();
+
+            if (newTarget != null)
+            {
+                target = newTarget;
+            }
 
             if (target == null)
             {
-                targetPosition = transform.position;
+                targetPosition = null;
                 lookDirection = Vector3.zero;
             }
             else
@@ -52,7 +57,7 @@ namespace CharacterSystem.Objects.AI
                 targetPosition = target.position;
                 lookDirection = LookToTarget();
 
-                if (selectedDamageSource?.IsActive ?? true)
+                if (selectedDamageSource == null || !selectedDamageSource.IsActive)
                 {
                     selectedDamageSource = SelectDamageSource();
                 }
@@ -64,8 +69,7 @@ namespace CharacterSystem.Objects.AI
                     var caster = casterValue.Item1;
                     var casterVector = casterValue.Item2;
 
-                    var isAttackAvailable = 
-                        !selectedDamageSource.IsAttacking && 
+                    var isAttackAvailable =
                         Array.Exists(caster.CastCollider(selectedDamageSource.transform), Collider => Collider.transform == target);
 
                     if (isAttackAvailable)
@@ -81,8 +85,15 @@ namespace CharacterSystem.Objects.AI
             followPath = false;
         
             await UniTask.WaitForSeconds(BeforeAttackDelay);
-            selectedDamageSource.StartAttack();
-            await UniTask.WaitUntil(() => selectedDamageSource.IsAttacking);
+
+            selectedDamageSource.IsPressed = true;
+            
+            await UniTask.WhenAny(UniTask.WaitUntil(
+                () => selectedDamageSource.IsAttacking), 
+                UniTask.Delay(1000));
+
+            selectedDamageSource.IsPressed = false;
+
             await UniTask.WaitForSeconds(AfterAttackDelay);
 
             selectedDamageSource = null;

@@ -8,12 +8,6 @@ using CharacterSystem.Attacks;
 using CharacterSystem.DamageMath;
 using CharacterSystem.Blocking;
 
-
-
-
-
-
-
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -24,8 +18,7 @@ namespace CharacterSystem.PowerUps
     public interface IPowerUpActivator : 
         ISyncedActivitiesSource,
         IDamageSource,
-        IDamagable,
-        IDamageBlocker
+        IDamagable
     {
 
     }
@@ -73,7 +66,11 @@ namespace CharacterSystem.PowerUps
             if (IsServer && powerUp != null && Invoker.permissions.HasFlag(CharacterPermission.AllowPowerUps))
             {
                 Activate_ClientRpc(Id);
-                Activate_Internal(Id);
+                
+                if (!IsClient)
+                {
+                    Activate_Internal(Id);
+                }
                 
                 network_powerUpId.Value = -1;
             }

@@ -15,9 +15,9 @@ public class ServerMenuDrawerUI : MonoBehaviour
     
     private void OnEnable()
     {
-        RefreshAll();
-
         RoomManager.Singleton.playersData.OnListChanged += OnPlayerListChanged_Event;
+
+        RefreshAll();
     }
     private void OnDisable()
     {

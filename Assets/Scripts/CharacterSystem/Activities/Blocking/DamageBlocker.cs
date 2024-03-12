@@ -11,7 +11,6 @@ using UnityEngine.Events;
 
 namespace CharacterSystem.Blocking
 {
-        
     public interface IDamageBlocker : 
         ISyncedActivitiesSource, 
         IDamagable,
@@ -85,7 +84,15 @@ namespace CharacterSystem.Blocking
 
             if (IsBlockInProcess)
             {
-                OnSuccesfulBlockingEvent.Invoke();
+                if (IsServer)
+                {
+                    ExecuteSuccesfullyBlockEvent_ClientRpc();
+
+                    if (!IsClient)
+                    {
+                        OnSuccesfulBlockingEvent.Invoke();
+                    }
+                }
 
                 var reducingPercent = 1f - DamageReducing;
 
@@ -184,5 +191,10 @@ namespace CharacterSystem.Blocking
             }
         }
 
+        [ClientRpc]
+        private void ExecuteSuccesfullyBlockEvent_ClientRpc()
+        {
+            OnSuccesfulBlockingEvent.Invoke();
+        }
     }
 }

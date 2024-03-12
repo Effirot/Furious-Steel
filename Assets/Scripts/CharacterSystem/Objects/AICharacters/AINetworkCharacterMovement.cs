@@ -5,6 +5,7 @@ using CharacterSystem.Attacks;
 using CharacterSystem.Blocking;
 using CharacterSystem.DamageMath;
 using Cysharp.Threading.Tasks;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -28,7 +29,7 @@ namespace CharacterSystem.Objects.AI
 
         public void DamageDelivered(DamageDeliveryReport report)
         {
-            OnDamageDelivered.Invoke(report);
+            OnDamageDelivered?.Invoke(report);
         }
 
         public override void OnNetworkSpawn()
@@ -68,6 +69,15 @@ namespace CharacterSystem.Objects.AI
         protected override void OnDrawGizmosSelected()
         {
             base.OnDrawGizmosSelected();
+
+            if (Application.isPlaying && AICompute != null && AICompute.targetPosition.HasValue)
+            {
+                Gizmos.DrawWireCube(AICompute.targetPosition.Value, Vector3.one);
+            }
+        }
+        protected override void OnDrawGizmos()
+        {            
+            base.OnDrawGizmos();
             
             if (path != null && path.corners.Length > 0)
             {
@@ -79,11 +89,6 @@ namespace CharacterSystem.Objects.AI
 
                     point = path.corners[i];
                 }
-            }
-
-            if (Application.isPlaying && AICompute != null)
-            {
-                Gizmos.DrawWireCube(AICompute.targetPosition, Vector3.one);
             }
         }
         protected override void OnValidate()
@@ -110,18 +115,30 @@ namespace CharacterSystem.Objects.AI
             {
                 Vector2 input = Vector2.zero; 
 
-                if (path.corners.Length > 1 && AICompute.followPath)
+                if (AICompute.followPath)
                 {
-                    var nearestCorner = path.corners[1];
-
-                    if (Vector3.Distance(transform.position, path.corners[1]) > 0.1f && path.corners.Length > 2)
+                    if (path.corners.Length > 1)
                     {
-                        nearestCorner = path.corners[2];
-                    }
+                        var nearestCorner = path.corners[1];
 
-                    var vector = nearestCorner - transform.position;
-                    input = new Vector2(vector.x, vector.z);
+                        if (Vector3.Distance(transform.position, path.corners[1]) > 0.1f && path.corners.Length > 2)
+                        {
+                            nearestCorner = path.corners[2];
+                        }
+
+                        var vector = nearestCorner - transform.position;
+                        input = new Vector2(vector.x, vector.z);
+                    }
+                    else
+                    {
+                        if (AICompute.targetPosition != null)
+                        {
+                            var vector = AICompute.targetPosition - transform.position;
+                            input = new Vector2(vector.Value.x, vector.Value.z);
+                        }
+                    }
                 }
+
 
                 lookVector = AICompute.lookDirection.magnitude > 0 ? input : AICompute.lookDirection;
 
@@ -143,9 +160,12 @@ namespace CharacterSystem.Objects.AI
                 {
                     await AICompute.AITick();
 
-                    if (AICompute.followPath && IsServer)
+                    if (AICompute != null &&
+                        AICompute.followPath && 
+                        AICompute.targetPosition.HasValue && 
+                        IsServer)
                     {
-                        NavMesh.CalculatePath(transform.position, AICompute.targetPosition, PatchLayerIndex, path);
+                        NavMesh.CalculatePath(transform.position, AICompute.targetPosition.Value, PatchLayerIndex, path);
                     }
                 }
 

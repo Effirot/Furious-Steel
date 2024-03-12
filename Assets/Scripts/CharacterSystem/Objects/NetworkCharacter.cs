@@ -140,7 +140,7 @@ namespace CharacterSystem.Objects
                         regenerationCoroutine = StartCoroutine(Regeneration());
                     }
 
-                    network_health.Value = Mathf.Clamp(value, 0, maxHealth);
+                    network_health.Value = Mathf.Clamp(value, 0, maxHealth);    
                 }
             } 
         }
@@ -228,11 +228,14 @@ namespace CharacterSystem.Objects
             if (IsServer && IsSpawned)
             {
                 Dead_ClientRpc();
-                Dead();
+                if (!IsClient)
+                {
+                    Dead();
+                }
     
                 foreach (var item in GetComponentsInChildren<NetworkObject>()) 
                 {
-                    if (item.IsSpawned)
+                    if (this.NetworkObject != item && item.IsSpawned)
                     {
                         item.Despawn(true);
                     }
@@ -242,8 +245,6 @@ namespace CharacterSystem.Objects
                 {
                     this.NetworkObject.Despawn(true);
                 }
-
-                // Destroy(gameObject, 5);
             }
         }
         public virtual bool Hit (Damage damage)
@@ -268,7 +269,7 @@ namespace CharacterSystem.Objects
                 OnHitEffect.Play();
             }
 
-            if (OnHitSound != null && !OnHitSound.isPlaying)
+            if (OnHitSound != null && !OnHitSound.isPlaying && !OnHitSound.gameObject.activeInHierarchy)
             {
                 OnHitSound.Play();
             }
@@ -396,6 +397,7 @@ namespace CharacterSystem.Objects
                 isInWater = false;
             }
         }
+        protected virtual void OnDrawGizmos () { }
         protected virtual void OnDrawGizmosSelected ()
         {
             Gizmos.DrawWireSphere(network_position.Value, 0.1f);
@@ -469,12 +471,11 @@ namespace CharacterSystem.Objects
             {
                 if(!IsServer)
                 {
-                    vector += Vector3.Lerp(Vector3.zero, network_position.Value - transform.position, 13f * Time.fixedDeltaTime);
+                    vector += Vector3.Lerp(Vector3.zero, network_position.Value - transform.position, 10f * Time.fixedDeltaTime);
                 }
 
                 if (Vector3.Distance(network_position.Value, transform.position) < 1f)
                 {
-
                     characterController.Move(vector);
                 }
                 else
@@ -523,7 +524,7 @@ namespace CharacterSystem.Objects
             yield return new WaitForSeconds(7f);
 
             var waitForFixedUpdateRoutine = new WaitForFixedUpdate();
-            while (health < maxHealth)
+            while (health < maxHealth && IsSpawned)
             {
                 health = Mathf.Clamp(health + regenerationPerSecond * Time.fixedDeltaTime, 0, maxHealth);
 
@@ -532,6 +533,7 @@ namespace CharacterSystem.Objects
 
             regenerationCoroutine = null;
         }
+
 
         [ClientRpc]
         private void Spawn_ClientRpc ()
@@ -549,6 +551,8 @@ namespace CharacterSystem.Objects
             {
                 var corpseObject = Instantiate(CorpsePrefab, transform.position, transform.rotation);
                 corpseObject.transform.localScale = transform.localScale;
+
+                Destroy(corpseObject, 10);
             }
 
             Dead();

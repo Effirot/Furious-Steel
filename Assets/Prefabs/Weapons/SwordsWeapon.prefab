@@ -88,7 +88,7 @@ MonoBehaviour:
   OnDamageReport:
     m_PersistentCalls:
       m_Calls: []
-  SpeedReducing: 1
+  SpeedReducing: 2.5
   references:
     version: 2
     RefIds:
@@ -175,7 +175,7 @@ MonoBehaviour:
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          value: 30
+          value: 25
           type: 1
           stunlock: 0
           pushDirection: {x: 0, y: 0, z: 0.2}
@@ -597,7 +597,7 @@ MonoBehaviour:
   OnDamageReport:
     m_PersistentCalls:
       m_Calls: []
-  SpeedReducing: 1
+  SpeedReducing: 2.5
   references:
     version: 2
     RefIds:
@@ -684,7 +684,7 @@ MonoBehaviour:
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          value: 30
+          value: 25
           type: 1
           stunlock: 0
           pushDirection: {x: 0, y: 0, z: 0.2}
@@ -786,7 +786,7 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 2.5
+      - m_Value: 2.71
         m_Name: Radius
         m_Overridden: 1
       - m_Value: 0.06
@@ -1179,7 +1179,7 @@ VisualEffect:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4917601940749953754}
   m_Enabled: 1
-  m_Asset: {fileID: 8926484042661614526, guid: bded3e7ddbec6a945bdf9d4f157b1ab0, type: 3}
+  m_Asset: {fileID: 8926484042661614526, guid: 96b4f5419910fc342b8942284beb15bf, type: 3}
   m_InitialEventName: 
   m_InitialEventNameOverriden: 1
   m_StartSeed: 0
@@ -1194,7 +1194,10 @@ VisualEffect:
     m_Vector3f:
       m_Array: []
     m_Vector4f:
-      m_Array: []
+      m_Array:
+      - m_Value: {x: 10.020885, y: 3.7999842, z: 1.4180485, w: 1}
+        m_Name: Color
+        m_Overridden: 1
     m_Uint:
       m_Array: []
     m_Int:
@@ -1686,7 +1689,7 @@ MonoBehaviour:
         Name: 
         queueElement:
           rid: 2961813231421882445
-        RepeatCount: 12
+        RepeatCount: 9
     - rid: 2961813231421882445
       type: {class: Queue, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:

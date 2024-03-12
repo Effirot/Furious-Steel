@@ -255,17 +255,21 @@ public class RoomManager : NetworkBehaviour
     private Dictionary<ulong, PrivateClientInfo> privatePlayersData = new ();
 
 
-    public PublicClientData FindClientData(ulong ClientID)
+    public bool TryFindClientData(ulong ClientID, out PublicClientData publicClientData)
     {
+        publicClientData = new();
+
         foreach (var item in playersData)
         {
             if (item.ID == ClientID)
             {
-                return item;
+                publicClientData = item;
+
+                return true;
             }
         }
-        
-        throw new KeyNotFoundException("Player is not authorized");
+
+        return false;
     }
 
     public int IndexOfPlayerData(Predicate<PublicClientData> alghoritm)
@@ -490,17 +494,22 @@ public class RoomManager : NetworkBehaviour
     private void SendChatMessage_ServerRpc(FixedString512Bytes text, ServerRpcParams Param = default)
     {
         SendChatMessage_ClientRpc(Param.Receive.SenderClientId, text);
-           
-        Debug.Log($"Message: {FindClientData(Param.Receive.SenderClientId).Name} - {text}");
+        
+        if (TryFindClientData(Param.Receive.SenderClientId, out var data))
+        {
+            Debug.Log($"Message: {data.Name} - {text}");
+        }
     }
 
     [ClientRpc]
     private void SendChatMessage_ClientRpc(ulong clientID, FixedString512Bytes text)
     {
-        var data = FindClientData(clientID);
-        OnWriteToChat.Invoke(data, text);
+        if (TryFindClientData(clientID, out var data))
+        {
+            OnWriteToChat.Invoke(data, text);
 
-        Debug.Log($"Message: {data.Name} - {text}");
+            Debug.Log($"Message: {data.Name} - {text}");
+        }
     }
 
 #if UNITY_EDITOR

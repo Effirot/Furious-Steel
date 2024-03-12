@@ -39,6 +39,8 @@ namespace CharacterSystem.Objects
         private InputActionReference moveInput;
         [SerializeField]
         private InputActionReference lookInput;
+        [SerializeField]
+        private InputActionReference dashInput;
 
         [Header("Dodge")]
         [SerializeField]
@@ -63,11 +65,9 @@ namespace CharacterSystem.Objects
         public int ClientDataIndex => RoomManager.Singleton.IndexOfPlayerData(data => data.ID == ServerClientID);
         public RoomManager.PublicClientData ClientData 
         { 
-            get => RoomManager.Singleton.FindClientData(ServerClientID);
-            set 
-            {            
-                RoomManager.Singleton.playersData[ClientDataIndex] = value;
-            }
+            get => RoomManager.Singleton.playersData[ClientDataIndex];
+            set => RoomManager.Singleton.playersData[ClientDataIndex] = value;
+            
         }
 
         public DamageBlocker Blocker { get; set; }
@@ -86,7 +86,14 @@ namespace CharacterSystem.Objects
                 CharacterUIObserver.Singleton.observingCharacter = (NetworkCharacter) damage.sender;
             }
 
-            return (Blocker != null && Blocker.Block(ref damage)) || base.Hit(damage);
+            var isBlocked = Blocker != null && Blocker.Block(ref damage);
+
+            if (isBlocked)
+            {
+                RechargeDodge();
+            }
+
+            return isBlocked || base.Hit(damage);
         }
 
         public virtual void DamageDelivered(DamageDeliveryReport report)
@@ -96,7 +103,7 @@ namespace CharacterSystem.Objects
                 var data = ClientData;
                 data.statistics.DeliveredDamage += report.damage.value;
 
-                if (report.isLethal)
+                if (report.target is PlayerNetworkCharacter && report.isLethal)
                 {
                     data.statistics.KillStreak += 1;
                     data.statistics.KillStreakTotal += 1;
@@ -154,6 +161,14 @@ namespace CharacterSystem.Objects
                     action.performed += OnLook;
                     action.canceled += OnLook;
                 }
+
+                {
+                    var action = dashInput.action;
+                    action.Enable();
+
+                    action.performed += OnDash;
+                    action.canceled += OnDash;
+                }
             
                 OnOwnerPlayerCharacterSpawn.Invoke(this);
             }
@@ -190,6 +205,13 @@ namespace CharacterSystem.Objects
 
                     action.performed -= OnLook;
                     action.canceled -= OnLook;
+                }
+
+                {
+                    var action = dashInput.action;
+
+                    action.performed -= OnDash;
+                    action.canceled -= OnDash;
                 }
             }
         }
@@ -266,25 +288,33 @@ namespace CharacterSystem.Objects
 
             yield return new WaitForSeconds(DodgeRechargeTime);
 
+            RechargeDodge();
+        }
+        private void RechargeDodge()
+        {
+            if (dodgeRoutine != null)
+            {
+                StopCoroutine(dodgeRoutine);
+            }
+
             dodgeRoutine = null;
         }
 
         private void OnMove(CallbackContext input)
         {
-            var value = input.ReadValue<Vector2>();
-            movementVector = value;
+            movementVector = input.ReadValue<Vector2>();
 
-            var multiTapDelayTime = InputSystem.settings.multiTapDelayTime;
+            // var multiTapDelayTime = InputSystem.settings.multiTapDelayTime;
 
-            if (input.action.WasPressedThisFrame())
-            {
-                if ((Time.time - lastTapTime) < multiTapDelayTime)
-                {
-                    Dash(value);
-                }
+            // if (input.action.WasPressedThisFrame())
+            // {
+            //     if ((Time.time - lastTapTime) < multiTapDelayTime)
+            //     {
+            //         Dash(value);
+            //     }
     
-                lastTapTime = Time.time;
-            }
+            //     lastTapTime = Time.time;
+            // }
         }
         private void OnLook(CallbackContext input)
         {
@@ -307,7 +337,14 @@ namespace CharacterSystem.Objects
                 lookVector = value;
             }
         }
-        
+        private void OnDash(CallbackContext input)
+        {
+            if (movementVector.magnitude > 0 && input.ReadValueAsButton())
+            {
+                Dash(movementVector);
+            }
+        }
+
         public void Dash(Vector2 direction)
         {
             if (IsOwner)
@@ -362,17 +399,14 @@ namespace CharacterSystem.Objects
         {            
             if (IsClient)
             {
-                try {
-                    var clientdata = ClientData;
+                var clientdata = ClientData;
 
-                    foreach(var paintable in GetComponentsInChildren<IPaintable>())
-                    {
-                        
-                        paintable.SetColor(ClientData.spawnArguments.GetColor());
-                        paintable.SetSecondColor(ClientData.spawnArguments.GetSecondColor());
-                    }
+                foreach(var paintable in GetComponentsInChildren<IPaintable>())
+                {
+                    
+                    paintable.SetColor(ClientData.spawnArguments.GetColor());
+                    paintable.SetSecondColor(ClientData.spawnArguments.GetSecondColor());
                 }
-                catch { }
             }
         }
     }

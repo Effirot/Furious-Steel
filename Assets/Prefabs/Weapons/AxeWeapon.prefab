@@ -187,6 +187,8 @@ MonoBehaviour:
         MaxChargingTime: 2
         MinChargeValue: 0.25
         MaxChargeValue: 1
+        flexibleDamage: 1
+        flexibleCollider: 0
         OnStart:
           m_PersistentCalls:
             m_Calls: []
@@ -314,9 +316,9 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1893270661348843219}
   - {fileID: 938288800769696972}
   - {fileID: 6056542105741424838}
-  - {fileID: 1893270661348843219}
   m_Father: {fileID: 2682705565289463711}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4599782399667057845
@@ -730,12 +732,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inputAction: {fileID: 4628471853980608337, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   BeforeBlockCharacterPermissions: 3840
-  BeforeBlockTime: 0
+  BeforeBlockTime: 0.1
   BlockCharacterPermissions: 1792
   BlockProcessTime: 0.57
-  HoldMode: 1
+  HoldMode: 0
   AfterBlockCharacterPermissions: 1792
-  AfterBlockTime: 0.54
+  AfterBlockTime: 0.2
   PushForce: 0.5
   SpeedReducing: 4
   InterruptOnHit: 1
@@ -745,7 +747,7 @@ MonoBehaviour:
     stunlock: 1
     pushDirection: {x: 0, y: 0, z: 0}
     RechargeUltimate: 0
-  DamageReducing: 0.7
+  DamageReducing: 1
   OnBeforeBlockingEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -782,6 +784,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 5322431394780339528}
+        m_TargetAssemblyTypeName: UltimateDamageSource, Assembly-CSharp
+        m_MethodName: set_DeliveredDamage
+        m_Mode: 4
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 150
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!2083052967 &5829019250904281513
 VisualEffect:
   m_ObjectHideFlags: 0
@@ -790,7 +804,7 @@ VisualEffect:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4917601940749953754}
   m_Enabled: 1
-  m_Asset: {fileID: 8926484042661614526, guid: bded3e7ddbec6a945bdf9d4f157b1ab0, type: 3}
+  m_Asset: {fileID: 8926484042661614526, guid: 96b4f5419910fc342b8942284beb15bf, type: 3}
   m_InitialEventName: 
   m_InitialEventNameOverriden: 1
   m_StartSeed: 0

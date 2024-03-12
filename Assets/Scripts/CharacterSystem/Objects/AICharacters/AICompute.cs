@@ -23,7 +23,7 @@ namespace CharacterSystem.Objects.AI
         public AINetworkCharacterMovement Character { get; internal set; }
 
         public bool followPath { get; protected set; } = true;
-        public Vector3 targetPosition { get; protected set; } = Vector3.zero;
+        public Vector3? targetPosition { get; protected set; } = Vector3.zero;
         public Vector3 lookDirection { get; protected set; } = Vector3.zero;
 
         public abstract Task AITick();

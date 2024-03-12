@@ -33,7 +33,10 @@ public sealed class SkinBinder : NetworkBehaviour
     {
         base.OnNetworkDespawn();
 
-        Destroy(SkinOrigin?.gameObject);
+        if (SkinOrigin != null)
+        {
+            Destroy(SkinOrigin.gameObject);
+        }
     }
 
 #if UNITY_EDITOR

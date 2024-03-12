@@ -45,7 +45,7 @@ public abstract class SyncedActivities<T> : NetworkBehaviour where T : ISyncedAc
         get => network_isPressed.Value;
         set
         {
-            if (IsOwner)
+            if (IsOwner && IsSpawned)
             {
                 network_isPressed.Value = value;
             }
