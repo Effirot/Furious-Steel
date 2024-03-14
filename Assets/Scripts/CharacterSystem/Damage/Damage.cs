@@ -29,16 +29,15 @@ namespace CharacterSystem.DamageMath
         }
         public static void Deliver(IDamagable target, Damage damage)
         {
-            var report = new DamageDeliveryReport();
-
-            report.target = target;
-
             if (target == null)
                 return;
 
-            if (damage.sender == null && ITeammate.IsAlly(target, damage.sender))
+            if (ITeammate.IsAlly(target, damage.sender))
                 return;
 
+            var report = new DamageDeliveryReport();
+
+            report.target = target;
             report.damage = damage;
             report.isDelivered = true;
             
@@ -47,7 +46,8 @@ namespace CharacterSystem.DamageMath
                 report.isBlocked = target.Hit(damage);
                 report.isLethal = target.health <= 0;
             }
-            else
+            
+            if (damage.value < 0)
             {
                 report.isBlocked = target.Heal(damage);
             }

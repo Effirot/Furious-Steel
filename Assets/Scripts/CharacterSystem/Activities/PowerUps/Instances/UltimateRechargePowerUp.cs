@@ -11,11 +11,12 @@ namespace CharacterSystem.PowerUps
     {
         public override void Activate(PowerUpHolder holder)
         {
-            var ultimate = holder.Character.GetComponentInChildren<UltimateDamageSource>();
-
-            if (ultimate != null)
+            if (holder.IsServer)
             {
-                ultimate.DeliveredDamage = ultimate.RequireDamage;
+                foreach (var ultimate in holder.Character.GetComponentsInChildren<UltimateDamageSource>())
+                {
+                    ultimate.DeliveredDamage = ultimate.RequireDamage;
+                }
             }
         }
 

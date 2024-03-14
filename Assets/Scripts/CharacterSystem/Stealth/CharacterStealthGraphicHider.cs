@@ -63,7 +63,7 @@ public class CharacterStealthGraphicHider : NetworkBehaviour
     private void LateUpdate()
     {
         var IsObservableInHideObject = stealthObjects.Exists(stealthObject => stealthObject.characterSteathers.Exists(item => item.networkCharacter == CharacterUIObserver.Singleton.observingCharacter));
-        transparency = Mathf.Lerp(transparency, IsHidden ? (IsObservableInHideObject ? 0.5f : 0) : 1, 10 * Time.deltaTime); 
+        transparency = Mathf.Lerp(transparency, IsHidden ? (IsObservableInHideObject ? 0.75f : 0) : 1, 20 * Time.deltaTime); 
 
         var hideStatus = !IsHidden || IsOwner || IsObservableInHideObject;
         foreach (var item in HiddableObjects)

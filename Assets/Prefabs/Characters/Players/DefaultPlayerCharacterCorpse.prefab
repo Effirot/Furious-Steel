@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 532828529431516181}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Finger5.L.000
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -41,7 +41,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2900178330973442302}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Finger5.R.000
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -73,7 +73,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2874482847462983811}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Finger3.R.000
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -105,7 +105,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8073051749826959233}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Finger1.R.002
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -136,7 +136,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4860949132737640478}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Spine.001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -168,7 +168,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2100368650257103931}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Finger1.L.000
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -200,7 +200,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5836501799211962747}
-  m_Layer: 0
+  - component: {fileID: 7829717569314450009}
+  - component: {fileID: 3328420822955860669}
+  m_Layer: 7
   m_Name: Head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -222,6 +224,54 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4248242542029025952}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!54 &7829717569314450009
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 750579631862035609}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!135 &3328420822955860669
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 750579631862035609}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.22884849
+  m_Center: {x: -0.0000000045631965, y: 0.20626071, z: -0.000000025356586}
 --- !u!1 &892770421331193559
 GameObject:
   m_ObjectHideFlags: 0
@@ -231,7 +281,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6902112805145854456}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Hip.L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -263,7 +313,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3786030937986341907}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Finger2.L.002
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -294,7 +344,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5495175532935930814}
-  m_Layer: 0
+  - component: {fileID: 4971146724446155756}
+  m_Layer: 7
   m_Name: DefaultPlayerCharacterCorpse
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -317,6 +368,23 @@ Transform:
   - {fileID: 3561654692606002133}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4971146724446155756
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1051950103688114299}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a26bf4e6ff7f5545ad5d006983b67e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Range: 10.23
+  Force: 5.3
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!1 &1276806946220101262
 GameObject:
   m_ObjectHideFlags: 0
@@ -326,7 +394,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3578453374787394376}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Finger1.L.001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -358,7 +426,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4349317108630895957}
-  m_Layer: 0
+  - component: {fileID: 6611956713278197538}
+  - component: {fileID: 1781239630341457153}
+  m_Layer: 7
   m_Name: Leg.001.L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -381,6 +451,56 @@ Transform:
   - {fileID: 7425092751232479397}
   m_Father: {fileID: 8109447343469358988}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!54 &6611956713278197538
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1316218955491084551}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!136 &1781239630341457153
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1316218955491084551}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.13315232
+  m_Height: 0.83151066
+  m_Direction: 1
+  m_Center: {x: 0.00000017602254, y: 0.43312037, z: -0.017398983}
 --- !u!1 &1385674391536478541
 GameObject:
   m_ObjectHideFlags: 0
@@ -390,7 +510,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3246540879096610821}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Finger5.R.001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -422,7 +542,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6455672743403279181}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Shoulder.R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -454,7 +574,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3064003232391379831}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Finger3.R.001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -486,7 +606,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3916694464566939274}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Finger2.R.002
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -517,7 +637,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3327013703903919842}
-  m_Layer: 0
+  - component: {fileID: 6884917824218582373}
+  - component: {fileID: 4194453405472129087}
+  - component: {fileID: 1485329406319818837}
+  m_Layer: 7
   m_Name: Leg.000.R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -540,6 +663,102 @@ Transform:
   - {fileID: 1319157671960564204}
   m_Father: {fileID: 9006710221817847710}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!136 &6884917824218582373
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3065740726504689127}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.13911805
+  m_Height: 0.7900001
+  m_Direction: 1
+  m_Center: {x: 0.00000049515637, y: 0.3099984, z: 0.029117964}
+--- !u!54 &4194453405472129087
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3065740726504689127}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!144 &1485329406319818837
+CharacterJoint:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3065740726504689127}
+  serializedVersion: 3
+  m_ConnectedBody: {fileID: 614274670337536205}
+  m_ConnectedArticulationBody: {fileID: 0}
+  m_Anchor: {x: 0, y: 0, z: 0}
+  m_Axis: {x: 1, y: 0, z: 0}
+  m_AutoConfigureConnectedAnchor: 1
+  m_ConnectedAnchor: {x: 0, y: 0, z: 0}
+  m_SwingAxis: {x: 0, y: 1, z: 0}
+  m_TwistLimitSpring:
+    spring: 0
+    damper: 0
+  m_LowTwistLimit:
+    limit: -20
+    bounciness: 0
+    contactDistance: 0
+  m_HighTwistLimit:
+    limit: 70
+    bounciness: 0
+    contactDistance: 0
+  m_SwingLimitSpring:
+    spring: 0
+    damper: 0
+  m_Swing1Limit:
+    limit: 40
+    bounciness: 0
+    contactDistance: 0
+  m_Swing2Limit:
+    limit: 40
+    bounciness: 0
+    contactDistance: 0
+  m_EnableProjection: 0
+  m_ProjectionDistance: 0.1
+  m_ProjectionAngle: 180
+  m_BreakForce: Infinity
+  m_BreakTorque: Infinity
+  m_EnableCollision: 0
+  m_EnablePreprocessing: 1
+  m_MassScale: 1
+  m_ConnectedMassScale: 1
 --- !u!1 &3078611270848603239
 GameObject:
   m_ObjectHideFlags: 0
@@ -549,7 +768,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8288079080268065198}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Palm.L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -586,7 +805,8 @@ GameObject:
   m_Component:
   - component: {fileID: 462365109264657719}
   - component: {fileID: 2755026180435789577}
-  m_Layer: 0
+  - component: {fileID: 1731136542218666165}
+  m_Layer: 7
   m_Name: Default_Armor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -653,7 +873,7 @@ SkinnedMeshRenderer:
   m_SortingOrder: 0
   serializedVersion: 2
   m_Quality: 0
-  m_UpdateWhenOffscreen: 0
+  m_UpdateWhenOffscreen: 1
   m_SkinnedMotionVectors: 1
   m_Mesh: {fileID: -2922843704907806975, guid: eb101eb5ba008aa4fad4497ac79afc31, type: 3}
   m_Bones:
@@ -717,6 +937,19 @@ SkinnedMeshRenderer:
     m_Center: {x: -0.17702192, y: 0.23753455, z: -0.21392244}
     m_Extent: {x: 0.94245905, y: 0.77460444, z: 1.3300683}
   m_DirtyAABB: 0
+--- !u!114 &1731136542218666165
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3183624411508078334}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0621bb2bcc038cd4a972e2888f2affec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  value: 0.1
 --- !u!1 &3638680192150097724
 GameObject:
   m_ObjectHideFlags: 0
@@ -728,7 +961,7 @@ GameObject:
   - component: {fileID: 8140388252316038449}
   - component: {fileID: 1339015600646847595}
   - component: {fileID: 7996615851033531084}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Hand.002.L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -761,7 +994,7 @@ Rigidbody:
   serializedVersion: 4
   m_Mass: 1
   m_Drag: 0
-  m_AngularDrag: 0.05
+  m_AngularDrag: 0
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -810,7 +1043,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1892546658451658560}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Finger5.L.002
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -841,7 +1074,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5593330077496592380}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Feet.000.R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -873,7 +1106,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5467048979029221168}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Finger3.L.002
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -904,7 +1137,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9129730844038443183}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Finger5.R.002
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -935,7 +1168,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2026020758137039636}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Shoulder.L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -967,7 +1200,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8392109927279391738}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Finger4.R.000
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -999,7 +1232,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6315026566874876059}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Feet.001.R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1030,7 +1263,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9006710221817847710}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Hip.R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1062,7 +1295,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7348136095657388656}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Finger3.L.000
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1094,7 +1327,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2592455588351232200}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Finger4.L.002
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1125,7 +1358,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3391158926290154747}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Armor_Armature
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1157,7 +1390,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3561552330090438990}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Finger3.L.001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1189,7 +1422,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 528136621975864567}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Finger1.R.001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1221,7 +1454,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8397717907066082460}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Finger4.L.001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1253,7 +1486,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1319157671960564204}
-  m_Layer: 0
+  - component: {fileID: 1852352674271892738}
+  - component: {fileID: 8885090262941035193}
+  m_Layer: 7
   m_Name: Leg.001.R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1276,6 +1511,56 @@ Transform:
   - {fileID: 5593330077496592380}
   m_Father: {fileID: 3327013703903919842}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!54 &1852352674271892738
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6334176757175715485}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!136 &8885090262941035193
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6334176757175715485}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.13315232
+  m_Height: 0.83151066
+  m_Direction: 1
+  m_Center: {x: 0.00000017602254, y: 0.43312037, z: -0.017398983}
 --- !u!1 &6370694287235146075
 GameObject:
   m_ObjectHideFlags: 0
@@ -1285,7 +1570,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3020329216146796559}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Finger4.R.001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1317,7 +1602,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3251605920957690792}
-  m_Layer: 0
+  - component: {fileID: 7091314649709281831}
+  - component: {fileID: 614274670337536205}
+  m_Layer: 7
   m_Name: SpineCenter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1341,6 +1628,54 @@ Transform:
   - {fileID: 4860949132737640478}
   m_Father: {fileID: 3391158926290154747}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &7091314649709281831
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6406799230017914767}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.5156736, y: 0.45194876, z: 0.6226323}
+  m_Center: {x: 4.087375e-24, y: 0.24498202, z: 0.1886852}
+--- !u!54 &614274670337536205
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6406799230017914767}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &6440607365252301018
 GameObject:
   m_ObjectHideFlags: 0
@@ -1350,7 +1685,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2824470979690994833}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Finger1.L.002
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1381,7 +1716,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3315107434592001787}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Finger2.R.000
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1413,7 +1748,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2481921141866189688}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Spine.002
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1447,7 +1782,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1394567676166896109}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Finger4.L.000
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1479,7 +1814,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4248242542029025952}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Neck
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1511,7 +1846,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1881946624306983049}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Palm.R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1547,7 +1882,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7248878727324372447}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Finger4.R.002
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1578,7 +1913,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8469708518052690441}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Feet.001.L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1609,7 +1944,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7425092751232479397}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Feet.000.L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1641,7 +1976,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1103592031800212842}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Spine.000
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1674,7 +2009,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7083909174660201660}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Finger5.L.001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1706,7 +2041,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8109447343469358988}
-  m_Layer: 0
+  - component: {fileID: 5386648356009679759}
+  - component: {fileID: 948284626707593497}
+  - component: {fileID: 1347707985947642562}
+  m_Layer: 7
   m_Name: Leg.000.L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1729,6 +2067,102 @@ Transform:
   - {fileID: 4349317108630895957}
   m_Father: {fileID: 6902112805145854456}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!136 &5386648356009679759
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7825791306093661608}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.13911805
+  m_Height: 0.7900001
+  m_Direction: 1
+  m_Center: {x: 0.00000049515637, y: 0.3099984, z: 0.029117964}
+--- !u!54 &948284626707593497
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7825791306093661608}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!144 &1347707985947642562
+CharacterJoint:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7825791306093661608}
+  serializedVersion: 3
+  m_ConnectedBody: {fileID: 614274670337536205}
+  m_ConnectedArticulationBody: {fileID: 0}
+  m_Anchor: {x: 0, y: 0, z: 0}
+  m_Axis: {x: 1, y: 0, z: 0}
+  m_AutoConfigureConnectedAnchor: 1
+  m_ConnectedAnchor: {x: 0, y: 0, z: 0}
+  m_SwingAxis: {x: 0, y: 1, z: 0}
+  m_TwistLimitSpring:
+    spring: 0
+    damper: 0
+  m_LowTwistLimit:
+    limit: -20
+    bounciness: 0
+    contactDistance: 0
+  m_HighTwistLimit:
+    limit: 70
+    bounciness: 0
+    contactDistance: 0
+  m_SwingLimitSpring:
+    spring: 0
+    damper: 0
+  m_Swing1Limit:
+    limit: 40
+    bounciness: 0
+    contactDistance: 0
+  m_Swing2Limit:
+    limit: 40
+    bounciness: 0
+    contactDistance: 0
+  m_EnableProjection: 0
+  m_ProjectionDistance: 0.1
+  m_ProjectionAngle: 180
+  m_BreakForce: Infinity
+  m_BreakTorque: Infinity
+  m_EnableCollision: 0
+  m_EnablePreprocessing: 1
+  m_MassScale: 1
+  m_ConnectedMassScale: 1
 --- !u!1 &7880663449629395068
 GameObject:
   m_ObjectHideFlags: 0
@@ -1738,7 +2172,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1100960139093907568}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Finger1.R.000
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1770,7 +2204,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2322106746873790002}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Finger2.R.001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1802,7 +2236,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3561654692606002133}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Armor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1837,7 +2271,7 @@ GameObject:
   - component: {fileID: 467509992040555877}
   - component: {fileID: 8575574021792821217}
   - component: {fileID: 1334602879676488124}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Hand.001.R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1870,7 +2304,7 @@ Rigidbody:
   serializedVersion: 4
   m_Mass: 1
   m_Drag: 0
-  m_AngularDrag: 0.05
+  m_AngularDrag: 0
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -1921,7 +2355,7 @@ GameObject:
   - component: {fileID: 4544111777686960808}
   - component: {fileID: 854180382536424988}
   - component: {fileID: 2414692383757189506}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Hand.001.L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1954,7 +2388,7 @@ Rigidbody:
   serializedVersion: 4
   m_Mass: 1
   m_Drag: 0
-  m_AngularDrag: 0.05
+  m_AngularDrag: 0
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -2003,7 +2437,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6672494424672723764}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Finger3.R.002
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2036,7 +2470,7 @@ GameObject:
   - component: {fileID: 2409400285629943630}
   - component: {fileID: 663440758026147635}
   - component: {fileID: 6661744958820263438}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Hand.002.R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2069,7 +2503,7 @@ Rigidbody:
   serializedVersion: 4
   m_Mass: 1
   m_Drag: 0
-  m_AngularDrag: 0.05
+  m_AngularDrag: 0
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -2118,7 +2552,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1221343708181698106}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Finger2.L.000
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2150,7 +2584,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2203742686092125282}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Finger2.L.001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
