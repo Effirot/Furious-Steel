@@ -42,6 +42,9 @@ namespace CharacterSystem.Objects
         [SerializeField]
         private InputActionReference dashInput;
 
+        [SerializeField]
+        private CinemachineImpulseSource OnHitImpulseSource;
+
         [Header("Dodge")]
         [SerializeField]
         [Range(0, 10)]
@@ -81,19 +84,31 @@ namespace CharacterSystem.Objects
 
         public override bool Hit(Damage damage)
         {
-            if (health <= 0 && damage.sender is NetworkCharacter)
-            {
-                CharacterUIObserver.Singleton.observingCharacter = (NetworkCharacter) damage.sender;
-            }
+
 
             var isBlocked = Blocker != null && Blocker.Block(ref damage);
+
+            if (damage.value != 0)
+            {
+                base.Hit(damage);
+
+                if (health <= 0 && damage.sender is NetworkCharacter && IsOwner)
+                {
+                    CharacterUIObserver.Singleton.observingCharacter = (NetworkCharacter) damage.sender;
+                }
+            }
 
             if (isBlocked)
             {
                 RechargeDodge();
             }
 
-            return isBlocked || base.Hit(damage);
+            if (IsOwner)
+            {
+                OnHitImpulseSource?.GenerateImpulse();
+            }
+
+            return isBlocked;
         }
 
         public virtual void DamageDelivered(DamageDeliveryReport report)

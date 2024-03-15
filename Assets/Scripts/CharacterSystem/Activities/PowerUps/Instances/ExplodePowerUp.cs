@@ -27,7 +27,7 @@ public class ExplodePowerUp : PowerUp
                 {
                     value = 50,
                     stunlock = 0.8f,
-                    pushDirection = Vector3.up,
+                    pushDirection = Vector3.up / 1.5f,
                     type = Damage.Type.Unblockable,
                     sender = holder.Invoker
                 });

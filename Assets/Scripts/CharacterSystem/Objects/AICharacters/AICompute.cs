@@ -20,7 +20,7 @@ namespace CharacterSystem.Objects.AI
         public Transform transform { get; internal set; }
         public GameObject gameObject { get; internal set; }
 
-        public AINetworkCharacterMovement Character { get; internal set; }
+        public AINetworkCharacter Character { get; internal set; }
 
         public bool followPath { get; protected set; } = true;
         public Vector3? targetPosition { get; protected set; } = Vector3.zero;

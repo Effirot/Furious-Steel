@@ -11,7 +11,7 @@ using UnityEngine.AI;
 
 namespace CharacterSystem.Objects.AI
 {   
-    public class AINetworkCharacterMovement : NetworkCharacter, 
+    public class AINetworkCharacter : NetworkCharacter, 
         IDamageSource,
         IDamageBlocker
     {       
@@ -148,7 +148,11 @@ namespace CharacterSystem.Objects.AI
 
         private void ClearAICompute()
         {
-            GC.SuppressFinalize(AICompute);
+            if (AICompute != null)
+            {
+                GC.SuppressFinalize(AICompute);
+            }
+            
             AICompute = null;
         }
 
@@ -166,6 +170,10 @@ namespace CharacterSystem.Objects.AI
                         IsServer)
                     {
                         NavMesh.CalculatePath(transform.position, AICompute.targetPosition.Value, PatchLayerIndex, path);
+                    }
+                    else
+                    {
+                        path.ClearCorners();
                     }
                 }
 
