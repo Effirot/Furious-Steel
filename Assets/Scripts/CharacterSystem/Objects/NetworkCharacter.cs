@@ -266,6 +266,8 @@ namespace CharacterSystem.Objects
                     OnHitEffect.SetVector3("Direction", damage.pushDirection);
                 }
 
+                animator.SetTrigger("OnHit");
+
                 OnHitEffect.Play();
             }
 

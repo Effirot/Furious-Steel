@@ -33,6 +33,15 @@
                     "initialStateCheck": true
                 },
                 {
+                    "name": "Ultimate",
+                    "type": "PassThrough",
+                    "id": "24424ad8-40b6-4233-9b73-cea3b1565ced",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
                     "name": "Block",
                     "type": "PassThrough",
                     "id": "8bc25b8a-f379-4e49-910a-b48fa35f8e80",
@@ -45,15 +54,6 @@
                     "name": "PowerUp",
                     "type": "PassThrough",
                     "id": "892f4cdf-0414-435c-9cd2-ddbdbc6f7bb0",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": true
-                },
-                {
-                    "name": "Ultimate",
-                    "type": "PassThrough",
-                    "id": "24424ad8-40b6-4233-9b73-cea3b1565ced",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -73,7 +73,7 @@
                 {
                     "name": "",
                     "id": "143bb1cd-cc10-4eca-a2f0-a3664166fe91",
-                    "path": "<Gamepad>/buttonSouth",
+                    "path": "<Gamepad>/rightTrigger",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Gamepad",
@@ -95,7 +95,7 @@
                 {
                     "name": "",
                     "id": "fc914cc7-42b2-4f47-b043-90e8aea5fb7a",
-                    "path": "<Gamepad>/buttonWest",
+                    "path": "<Gamepad>/leftShoulder",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
@@ -116,30 +116,8 @@
                 },
                 {
                     "name": "",
-                    "id": "031900ed-2f3b-49ca-8a77-74e4d925718a",
-                    "path": "<Gamepad>/buttonNorth",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Gamepad",
-                    "action": "Ultimate",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "ecc2a653-d4be-4491-9acd-1b210b02d701",
-                    "path": "<Keyboard>/q",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard&Mouse",
-                    "action": "Ultimate",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "3addc317-260e-4c62-862f-bbc558dbfb03",
-                    "path": "<Gamepad>/buttonEast",
+                    "path": "<Gamepad>/rightShoulder",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
@@ -331,6 +309,39 @@
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "Dash",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3ee17b2d-7368-4c16-ab00-db6f31f2fe8d",
+                    "path": "<Gamepad>/leftStickPress",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Dash",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "031900ed-2f3b-49ca-8a77-74e4d925718a",
+                    "path": "<Gamepad>/leftTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Ultimate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ecc2a653-d4be-4491-9acd-1b210b02d701",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Ultimate",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

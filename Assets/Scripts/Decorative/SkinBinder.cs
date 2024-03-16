@@ -17,6 +17,7 @@ public sealed class SkinBinder : NetworkBehaviour
     {
         base.OnNetworkSpawn();
 
+        SkinOrigin.SetParent(transform.parent?.Find(TargetParentPath), false);
     }
 
     public override void OnNetworkObjectParentChanged(NetworkObject parentNetworkObject)

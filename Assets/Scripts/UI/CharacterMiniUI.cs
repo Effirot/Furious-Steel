@@ -105,9 +105,12 @@ public class CharacterMiniUI : MonoBehaviour
         {
             if (i < holders.Length)
             {
-                drawers[i].gameObject.SetActive(true);
-                drawers[i].Draw(holders[i].powerUp);  
-                holders[i].OnPowerUpChanged += drawers[i].Draw;
+                if (drawers[i] != null)
+                {
+                    drawers[i].gameObject.SetActive(true);
+                    drawers[i].Draw(holders[i].powerUp);  
+                    holders[i].OnPowerUpChanged += drawers[i].Draw;
+                }
             }   
             else
             {

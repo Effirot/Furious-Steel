@@ -263,6 +263,36 @@ namespace CharacterSystem.Attacks
     }
     
     [Serializable]
+    public sealed class Push : AttackQueueElement
+    {
+        [Header("Events")]
+        
+        [Space]
+        [SerializeField]
+        private string CastAnimationName = "";
+        [SerializeField]
+        private Vector3 CastPushDirection = Vector3.forward / 2; 
+        public UnityEvent OnCast = new();
+        
+        public override IEnumerator AttackPipeline(DamageSource source)
+        {
+            yield return ChargedAttackPipeline(source, 1, false, false);
+        }
+        public IEnumerator ChargedAttackPipeline(DamageSource source, float chargeValue, bool flexibleCollider, bool flexibleDamage)
+        {
+            OnCast.Invoke();
+            
+            source.Invoker.Push(source.Invoker.transform.rotation * CastPushDirection);
+
+            yield break;
+        }
+
+        public override void OnDrawGizmos(Transform transform)
+        {
+
+        }
+    }
+    [Serializable]
     public sealed class Cast : AttackQueueElement, Charger.IChargeListener
     {
         [Header("Casters")]
