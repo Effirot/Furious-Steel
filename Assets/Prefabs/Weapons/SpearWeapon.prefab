@@ -62,7 +62,7 @@ Transform:
   m_GameObject: {fileID: 1003795457742228459}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 4.65}
+  m_LocalPosition: {x: 0, y: 0, z: 2.59}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -320,6 +320,9 @@ MonoBehaviour:
   OnDamageReport:
     m_PersistentCalls:
       m_Calls: []
+  OnAttackEnded:
+    m_PersistentCalls:
+      m_Calls: []
   SpeedReducing: 5
   references:
     version: 2
@@ -351,6 +354,7 @@ MonoBehaviour:
         Name: 
         casters:
         - rid: 2961813231421882372
+        - rid: 6928305752144609516
         CastAnimationName: Torso.Attack1
         CastPushDirection: {x: 0, y: 0, z: 0}
         OnCast:
@@ -387,10 +391,10 @@ MonoBehaviour:
           value: 30
           type: 1
           stunlock: 0.5
-          pushDirection: {x: 0, y: 0, z: 0.2}
+          pushDirection: {x: 0, y: 0, z: 0.3}
           RechargeUltimate: 1
         position: {x: 0, y: 0, z: 4.7}
-        size: {x: 0.92, y: 0.92, z: 1}
+        size: {x: 0.92, y: 1.77, z: 1}
         angle: {x: 0, y: 0, z: 0}
     - rid: 4973655737326895185
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
@@ -405,6 +409,18 @@ MonoBehaviour:
         OnEnd:
           m_PersistentCalls:
             m_Calls: []
+    - rid: 6928305752144609516
+      type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        damage:
+          value: 15
+          type: 1
+          stunlock: 0.3
+          pushDirection: {x: 0, y: 0, z: 0.2}
+          RechargeUltimate: 1
+        position: {x: 0, y: 0, z: 2.55}
+        size: {x: 0.3, y: 1.37, z: 2.09}
+        angle: {x: 0, y: 0, z: 0}
 --- !u!1 &4748355354840485092
 GameObject:
   m_ObjectHideFlags: 0
@@ -544,6 +560,9 @@ MonoBehaviour:
   OnDamageReport:
     m_PersistentCalls:
       m_Calls: []
+  OnAttackEnded:
+    m_PersistentCalls:
+      m_Calls: []
   SpeedReducing: 6
   RequireDamage: 200
   OnUltimateReady:
@@ -556,7 +575,7 @@ MonoBehaviour:
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          value: 15
+          value: 20
           type: 8
           stunlock: 0.5
           pushDirection: {x: 0, y: 0, z: 0.06}
@@ -728,7 +747,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6389387997060165717}
-  m_Mesh: {fileID: 4686849319519084627, guid: 5a1bb33d668f0424e8e8e274ef7eea88, type: 3}
+  m_Mesh: {fileID: -6280669117017369944, guid: 5a1bb33d668f0424e8e8e274ef7eea88, type: 3}
 --- !u!23 &4841311779467746947
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -801,7 +820,7 @@ Transform:
   m_GameObject: {fileID: 7324458738964129770}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 4.65}
+  m_LocalPosition: {x: 0, y: 0, z: 2.59}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1133,10 +1152,10 @@ AudioSource:
   SpatializePostEffects: 0
   Priority: 128
   DopplerLevel: 1
-  MinDistance: 6.1945553
-  MaxDistance: 12.07
+  MinDistance: 0
+  MaxDistance: 40
   Pan2D: 0
-  rolloffMode: 0
+  rolloffMode: 1
   BypassEffects: 0
   BypassListenerEffects: 0
   BypassReverbZones: 0
@@ -1169,7 +1188,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0

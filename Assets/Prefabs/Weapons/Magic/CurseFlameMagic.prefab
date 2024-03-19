@@ -88,7 +88,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1
-  MaxDistance: 12.039557
+  MaxDistance: 4.850659
   Pan2D: 0
   rolloffMode: 0
   BypassEffects: 0
@@ -271,7 +271,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1
-  MaxDistance: 14.978453
+  MaxDistance: 6.898452
   Pan2D: 0
   rolloffMode: 0
   BypassEffects: 0
@@ -771,6 +771,9 @@ MonoBehaviour:
   OnDamageReport:
     m_PersistentCalls:
       m_Calls: []
+  OnAttackEnded:
+    m_PersistentCalls:
+      m_Calls: []
   SpeedReducing: 4
   RequireDamage: 250
   OnUltimateReady:
@@ -950,6 +953,9 @@ MonoBehaviour:
   IsInterruptable: 0
   IsInterruptableWhenBlocked: 0
   OnDamageReport:
+    m_PersistentCalls:
+      m_Calls: []
+  OnAttackEnded:
     m_PersistentCalls:
       m_Calls: []
   SpeedReducing: 5
@@ -1217,6 +1223,9 @@ MonoBehaviour:
   OnDamageReport:
     m_PersistentCalls:
       m_Calls: []
+  OnAttackEnded:
+    m_PersistentCalls:
+      m_Calls: []
   SpeedReducing: 5
   references:
     version: 2
@@ -1225,13 +1234,13 @@ MonoBehaviour:
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          value: 5
+          value: 6
           type: 8
           stunlock: 0
           pushDirection: {x: 0, y: 0, z: 0.05}
           RechargeUltimate: 1
-        position: {x: 0, y: 0, z: 2.63}
-        size: {x: 0.6, y: 0.6, z: 0.94}
+        position: {x: 0, y: 0, z: 2.81}
+        size: {x: 0.6, y: 1.33, z: 1.29}
         angle: {x: 0, y: 0, z: 0}
     - rid: 672279927911088199
       type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
@@ -1272,13 +1281,13 @@ MonoBehaviour:
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          value: 15
+          value: 25
           type: 8
           stunlock: 0.5
           pushDirection: {x: 0, y: 0, z: 0.2}
           RechargeUltimate: 1
         position: {x: 0, y: 0, z: 2.63}
-        size: {x: 0.6, y: 0.6, z: 0.94}
+        size: {x: 1.08, y: 1.57, z: 1.12}
         angle: {x: 0, y: 0, z: 0}
     - rid: 2961813231421882462
       type: {class: Queue, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}

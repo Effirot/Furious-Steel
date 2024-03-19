@@ -46,6 +46,8 @@ public class ExplodePowerUp : PowerUp
             effect.visualEffectAsset = visualEffect;
             effect.Play();
 
+            AudioSource.PlayClipAtPoint(Resources.Load<AudioClip>("Sounds/PowerUps/Explode"), holder.transform.position, 1);
+
             Object.Destroy(effectObject, 5);
         }
     }

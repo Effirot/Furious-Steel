@@ -20,20 +20,20 @@ namespace CharacterSystem.DamageMath
             Parrying = 16,
         }
 
-        public static void Deliver(GameObject gameObject, Damage damage)
+        public static DamageDeliveryReport Deliver(GameObject gameObject, Damage damage)
         {
             if (!gameObject.TryGetComponent<IDamagable>(out var target)) 
-                return;
+                return new();
 
-            Deliver(target, damage);
+            return Deliver(target, damage);
         }
-        public static void Deliver(IDamagable target, Damage damage)
+        public static DamageDeliveryReport Deliver(IDamagable target, Damage damage)
         {
             if (target == null)
-                return;
+                return new();
 
             if (ITeammate.IsAlly(target, damage.sender))
-                return;
+                return new();
 
             var report = new DamageDeliveryReport();
 
@@ -60,11 +60,10 @@ namespace CharacterSystem.DamageMath
 
             if (damage.sender != null)
             {
-                using (report)
-                {
-                    damage.sender?.DamageDelivered(report);
-                }
+                damage.sender?.DamageDelivered(report);
             }
+
+            return new();
         }
 
         [SerializeField, Range(-50, 300)]

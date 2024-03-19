@@ -82,7 +82,7 @@ public class Projectile : NetworkBehaviour,
     {
         if (IsSpawned)
         {
-            NetworkObject.Despawn(false);
+            NetworkObject.Despawn(true);
         }
     }
 
@@ -106,8 +106,6 @@ public class Projectile : NetworkBehaviour,
         base.OnNetworkDespawn();
 
         onDespawnEvent.Invoke();
-
-        Destroy(gameObject, destroyTimeout);
     }
 
     private void FixedUpdate ()
@@ -119,6 +117,8 @@ public class Projectile : NetworkBehaviour,
             transform.position += MoveDirection * Time.fixedDeltaTime * speed;
 
             network_position.Value = transform.position;
+
+            CheckGroundCollision();
         }
         else
         {
@@ -138,8 +138,27 @@ public class Projectile : NetworkBehaviour,
         damage.pushDirection = transform.rotation * damage.pushDirection;
         damage.sender = Summoner;
 
-        Damage.Deliver(other.gameObject, damage);
+        var report = Damage.Deliver(other.gameObject, damage);
+
         if (IsServer)
+        {
+            if (report.isDelivered)
+            {
+                if (report.isBlocked)
+                {
+                    Push(-MoveDirection);
+                }
+                else
+                {
+                    Kill();
+                }
+            }
+        }
+    }
+
+    private void CheckGroundCollision()
+    {
+        if (Physics.Raycast(transform.position, MoveDirection, MoveDirection.magnitude, LayerMask.GetMask("Ground")))
         {
             Kill();
         }

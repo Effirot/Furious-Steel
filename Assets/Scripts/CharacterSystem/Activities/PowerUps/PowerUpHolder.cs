@@ -7,6 +7,9 @@ using System;
 using CharacterSystem.Attacks;
 using CharacterSystem.DamageMath;
 using CharacterSystem.Blocking;
+using Unity.VisualScripting;
+
+
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -36,6 +39,28 @@ namespace CharacterSystem.PowerUps
 
         private NetworkVariable<int> network_powerUpId = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
+        public void Drop(bool DestroyWithoutGround = true)
+        {
+            Vector3 position = transform.position;
+            
+            if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, LayerMask.GetMask("Ground")))
+            {
+                position = hit.point + Vector3.up * 2;
+            }
+            else
+            {
+                if (DestroyWithoutGround) return;
+            }
+
+            var powerupGameObject = Instantiate(powerUp.prefab, position, Quaternion.identity);
+        
+            powerupGameObject.GetComponent<NetworkObject>().Spawn();
+
+            if (IsServer)
+            {
+                Destroy(powerupGameObject, 10);
+            }
+        }
 
         public override void OnNetworkSpawn()
         {
@@ -49,15 +74,7 @@ namespace CharacterSystem.PowerUps
 
             if (IsServer && powerUp != null)
             {
-                Vector3 position = transform.position;
-                if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, LayerMask.GetMask("Ground")))
-                {
-                    position = hit.point + Vector3.up * 2;
-                }
-
-                var powerupGameObject = Instantiate(powerUp.prefab, position, Quaternion.identity);
-            
-                powerupGameObject.GetComponent<NetworkObject>().Spawn();
+                Drop();
             }
         }
 

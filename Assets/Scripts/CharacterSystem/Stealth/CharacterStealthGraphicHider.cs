@@ -2,22 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using CharacterSystem.Attacks;
-using CharacterSystem.Blocking;
-using CharacterSystem.DamageMath;
 using CharacterSystem.Objects;
-using CharacterSystem.PowerUps;
-using Cinemachine;
 using Cysharp.Threading.Tasks;
-using NUnit.Framework;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.Interactions;
-using UnityEngine.UI;
-using UnityEngine.VFX;
-using static UnityEngine.InputSystem.InputAction;
 
+[DisallowMultipleComponent]
 [RequireComponent(typeof(NetworkCharacter))]
 public class CharacterStealthGraphicHider : NetworkBehaviour
 {
@@ -43,18 +33,31 @@ public class CharacterStealthGraphicHider : NetworkBehaviour
     }
 
     private List<StealthObject> stealthObjects = new();
-    private float transparency = 1; 
-
-    private NetworkCharacter networkCharacter;
+    private float transparency = 1;
+    private NetworkCharacter character; 
 
     private NetworkVariable<bool> isObjectHidden_network = new NetworkVariable<bool> (false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
+    public override void OnNetworkSpawn()
+    {
+        base.OnNetworkSpawn();
+
+        character = GetComponent<NetworkCharacter>();
+    }
+    public override void OnNetworkDespawn()
+    {
+        foreach(var component in stealthObjects)
+        {
+            if (component != null && component.characterSteathers.Contains(this))
+            {
+                component.characterSteathers.Remove(this);
+            }
+        }
+    }
 
     private async void Start()
     {
         await UniTask.WaitUntil(() => IsSpawned);
-
-        networkCharacter = GetComponent<NetworkCharacter>();
 
         HiddableMeshRenderers = GetComponentsInChildren<MeshRenderer>();
         HiddableSkinnedMeshRenderers = GetComponentsInChildren<SkinnedMeshRenderer>();
@@ -62,10 +65,13 @@ public class CharacterStealthGraphicHider : NetworkBehaviour
 
     private void LateUpdate()
     {
-        var IsObservableInHideObject = stealthObjects.Exists(stealthObject => stealthObject.characterSteathers.Exists(item => item.networkCharacter == CharacterUIObserver.Singleton.observingCharacter));
+        var IsObservableInHideObject = stealthObjects.Exists(
+            stealthObject => stealthObject.characterSteathers.Exists(item => item != null && item.transform == CharacterUIObserver.Singleton.observingCharacter));
+        
+        var hideStatus = !IsHidden || IsObservableInHideObject;
+        
         transparency = Mathf.Lerp(transparency, IsHidden ? (IsObservableInHideObject ? 0.75f : 0) : 1, 20 * Time.deltaTime); 
 
-        var hideStatus = !IsHidden || IsOwner || IsObservableInHideObject;
         foreach (var item in HiddableObjects)
         {
             item.SetActive(hideStatus);
@@ -75,12 +81,15 @@ public class CharacterStealthGraphicHider : NetworkBehaviour
 
         foreach (var item in HiddableMeshRenderers)
         {
-            var color = item.material.color;
+            if (item != null && item.material != null)
+            {
+                var color = item.material.color;
 
-            color.a = transparency;
+                color.a = transparency;
 
-            item.material.color = color; 
-            item.shadowCastingMode = shadowCastMode;
+                item.material.color = color; 
+                item.shadowCastingMode = shadowCastMode;
+            }
         }
 
         foreach (var item in HiddableSkinnedMeshRenderers)

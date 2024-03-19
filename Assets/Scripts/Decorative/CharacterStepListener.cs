@@ -13,13 +13,13 @@ public class CharacterStepListener : MonoBehaviour
     private VisualEffect effect;
     
     [SerializeField]
-    new private AudioSource audio;
+    private AudioSource sound;
 
     private void Step()
     {
-        if (audio != null)
+        if (sound != null)
         {
-            audio.Play();
+            sound.Play();
         }
         if (effect != null)
         {

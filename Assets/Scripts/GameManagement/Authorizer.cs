@@ -109,6 +109,15 @@ public sealed class Authorizer : NetworkBehaviour
 
         NetworkManager.Singleton.ConnectionApprovalCallback += ConnectionAprovalCheck_Event;
     }
+    public override void OnDestroy()
+    {
+        base.OnDestroy();
+        
+        if (NetworkManager.Singleton != null)
+        {
+            NetworkManager.Singleton.ConnectionApprovalCallback -= ConnectionAprovalCheck_Event;
+        }
+    }
 
     private void OnClientConnected_Event(ulong ID)
     {
@@ -126,27 +135,30 @@ public sealed class Authorizer : NetworkBehaviour
 
     private void ConnectionAprovalCheck_Event(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
     {
-        if (request.Payload.Length == 0) 
+        if (NetworkManager.IsServer)
         {
-            response.Approved = false;
-
-            return;
-        }
-
-        if (response.Approved = AuthorizeArguments.TryParse(request.Payload, out var authorizeArguments))
-        {
-            roomManager.OnPlayerAuthorized(request.ClientNetworkId, authorizeArguments);
-            
-            var authorizeData = new AuthorizedPlayerData()
+            if (request.Payload.Length == 0) 
             {
-                Name = authorizeArguments.Name,
+                response.Approved = false;
 
-                AuthorizeTime = DateTime.Now
-            };
+                return;
+            }
 
-            authorizedPlayers.Add(request.ClientNetworkId, authorizeData);
+            if (response.Approved = AuthorizeArguments.TryParse(request.Payload, out var authorizeArguments))
+            {
+                roomManager.OnPlayerAuthorized(request.ClientNetworkId, authorizeArguments);
+                
+                var authorizeData = new AuthorizedPlayerData()
+                {
+                    Name = authorizeArguments.Name,
 
-            Debug.Log($"Player {authorizeArguments.Name} is succesfully authorized with ID:{request.ClientNetworkId}");
+                    AuthorizeTime = DateTime.Now
+                };
+
+                authorizedPlayers.Add(request.ClientNetworkId, authorizeData);
+
+                Debug.Log($"Player {authorizeArguments.Name} is succesfully authorized with ID:{request.ClientNetworkId}");
+            }
         }
     }
 }

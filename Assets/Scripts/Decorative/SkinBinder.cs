@@ -26,7 +26,12 @@ public sealed class SkinBinder : NetworkBehaviour
 
         if (parentNetworkObject != null)
         {
-            SkinOrigin.SetParent(parentNetworkObject.transform.Find(TargetParentPath), false);
+            var parent = parentNetworkObject.transform.Find(TargetParentPath);
+            
+            if (parent)
+            {
+                SkinOrigin.SetParent(parent, false);
+            }
         }
     }
 

@@ -50,19 +50,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inputAction: {fileID: 4628471853980608337, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   BeforeBlockCharacterPermissions: 1792
-  BeforeBlockTime: 0.1
+  BeforeBlockTime: 0.06
   BlockCharacterPermissions: 1280
-  BlockProcessTime: 0.3
+  BlockProcessTime: 0.5
   HoldMode: 0
   AfterBlockCharacterPermissions: 1024
-  AfterBlockTime: 0.6
+  AfterBlockTime: 0.4
   PushForce: 0.3
   SpeedReducing: 4
   InterruptOnHit: 1
   backDamage:
     value: 0
     type: 16
-    stunlock: 0.6
+    stunlock: 1.6
     pushDirection: {x: 0, y: 0, z: 0}
     RechargeUltimate: 1
   DamageReducing: 1
@@ -102,8 +102,8 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 2957754880498779104}
-        m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
+      - m_Target: {fileID: 9117342079310075130}
+        m_TargetAssemblyTypeName: UnityEngine.VFX.VisualEffect, UnityEngine
         m_MethodName: Play
         m_Mode: 1
         m_Arguments:
@@ -114,15 +114,15 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 9117342079310075130}
-        m_TargetAssemblyTypeName: UnityEngine.VFX.VisualEffect, UnityEngine
-        m_MethodName: Play
+      - m_Target: {fileID: 5459017836153784535}
+        m_TargetAssemblyTypeName: BlockPitchIncrieser, Assembly-CSharp
+        m_MethodName: Add
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
-          m_FloatArgument: 0
+          m_FloatArgument: 150
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
@@ -179,10 +179,10 @@ AudioSource:
   SpatializePostEffects: 0
   Priority: 128
   DopplerLevel: 1
-  MinDistance: 1
-  MaxDistance: 500
+  MinDistance: 0
+  MaxDistance: 40
   Pan2D: 0
-  rolloffMode: 0
+  rolloffMode: 1
   BypassEffects: 0
   BypassListenerEffects: 0
   BypassReverbZones: 0
@@ -215,7 +215,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -265,6 +265,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1994543803751081355}
   - component: {fileID: 6117314857605786761}
+  - component: {fileID: 5459017836153784535}
   m_Layer: 0
   m_Name: BlockingSplash
   m_TagString: Untagged
@@ -308,10 +309,10 @@ AudioSource:
   SpatializePostEffects: 0
   Priority: 128
   DopplerLevel: 1
-  MinDistance: 1
-  MaxDistance: 500
+  MinDistance: 0
+  MaxDistance: 40
   Pan2D: 0
-  rolloffMode: 0
+  rolloffMode: 1
   BypassEffects: 0
   BypassListenerEffects: 0
   BypassReverbZones: 0
@@ -344,7 +345,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -384,6 +385,22 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &5459017836153784535
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3007369956713728965}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa88eb80d12e645468b816d06552d98b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MinPicth: 0.7
+  MaxPicth: 1.25
+  PitchStep: 0.26
+  PitchReducingPerSecond: 0.05
 --- !u!1 &4321595696623354739
 GameObject:
   m_ObjectHideFlags: 0
@@ -550,10 +567,10 @@ AudioSource:
   SpatializePostEffects: 0
   Priority: 128
   DopplerLevel: 1
-  MinDistance: 1
-  MaxDistance: 500
+  MinDistance: 0
+  MaxDistance: 40
   Pan2D: 0
-  rolloffMode: 0
+  rolloffMode: 1
   BypassEffects: 0
   BypassListenerEffects: 0
   BypassReverbZones: 0
@@ -586,7 +603,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0

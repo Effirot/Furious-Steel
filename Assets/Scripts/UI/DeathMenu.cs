@@ -5,10 +5,23 @@ using UnityEngine;
 
 public class DeathMenu : MonoBehaviour
 {
+#if UNITY_EDITOR
+    public async void Respawn()
+#else
     public void Respawn()
+#endif
     {
         if (RoomManager.Singleton != null)
         {
+#if UNITY_EDITOR
+            if (!Unity.Netcode.NetworkManager.Singleton.IsListening)
+            {
+                Unity.Netcode.NetworkManager.Singleton.StartHost();
+
+                await Cysharp.Threading.Tasks.UniTask.WaitUntil(() => Unity.Netcode.NetworkManager.Singleton.IsListening);
+            }
+#endif
+
             RoomManager.Singleton.Spawn(RoomManager.SpawnArguments.This);
         }
     }

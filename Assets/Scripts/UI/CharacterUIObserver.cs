@@ -10,7 +10,7 @@ public class CharacterUIObserver : MonoBehaviour
 {
     public static CharacterUIObserver Singleton { get; private set; }
 
-    public NetworkCharacter observingCharacter
+    public Transform observingCharacter
     {
         get => _observingCharacter;
         set
@@ -22,7 +22,9 @@ public class CharacterUIObserver : MonoBehaviour
                 // Camera drawer
                 virtualCamera.Follow = value.transform;
                 
-                controllers?.SetActive(value.IsOwner && value is PlayerNetworkCharacter);
+                {
+                    controllers?.SetActive(value.gameObject.TryGetComponent<PlayerNetworkCharacter>(out var character) && character.IsOwner);
+                }
             }
             else
             {                
@@ -31,15 +33,17 @@ public class CharacterUIObserver : MonoBehaviour
 
             StopAllCoroutines();
 
-            if (value == null || !value.IsOwner)
             {
-                StartCoroutine(ObserveRandomCharacter());
+                if (value == null || !(value.gameObject.TryGetComponent<PlayerNetworkCharacter>(out var character) && character.IsOwner))
+                {
+                    StartCoroutine(ObserveRandomCharacter());
+                }
             }
         }
     }
 
     [SerializeField]
-    private NetworkCharacter _observingCharacter = null;
+    private Transform _observingCharacter = null;
 
     [SerializeField]
     private GameObject controllers;
@@ -77,12 +81,12 @@ public class CharacterUIObserver : MonoBehaviour
     {
         if (observingCharacter == null)
         {
-            observingCharacter = character;
+            observingCharacter = character.transform;
         }
     }
     private void ObserveCharacter_Event(PlayerNetworkCharacter character)
     {
-        observingCharacter = character;
+        observingCharacter = character.transform;
     }
     private void ResetObserver_Event(PlayerNetworkCharacter character)
     {
@@ -99,7 +103,7 @@ public class CharacterUIObserver : MonoBehaviour
         }
         else
         {
-            observingCharacter = PlayerNetworkCharacter.Players[Random.Range(0, PlayerNetworkCharacter.Players.Count - 1)];
+            observingCharacter = PlayerNetworkCharacter.Players[Random.Range(0, PlayerNetworkCharacter.Players.Count - 1)].transform;
         }
     }
 }

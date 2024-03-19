@@ -51,6 +51,9 @@ namespace CharacterSystem.Attacks
         [SerializeField]
         private UnityEvent<DamageDeliveryReport> OnDamageReport = new ();
         
+        [SerializeField]
+        private UnityEvent OnAttackEnded = new ();
+        
         private NetworkVariable<bool> network_isPerforming = new NetworkVariable<bool>(true, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
         public bool IsAttacking => attackProcess != null;
@@ -103,7 +106,10 @@ namespace CharacterSystem.Attacks
             {
                 EndAttack_ClientRpc();
                 
-                EndAttack_Internal();
+                if (!IsClient)
+                {
+                    EndAttack_Internal();
+                }
             }
         }
 
@@ -127,16 +133,16 @@ namespace CharacterSystem.Attacks
 
         protected virtual void OnPerformStateChanged(bool OldValue, bool NewValue)
         {
-            if (!NewValue)
+            if (NewValue)
             {
-                EndAttack();
+                if (IsPressed)
+                {                    
+                    StartAttack();
+                }   
             }
             else
             {
-                if (IsPressed)
-                {
-                    StartAttack();
-                }   
+                EndAttack();
             }
         }
         protected override void OnStateChanged(bool value)
@@ -182,6 +188,9 @@ namespace CharacterSystem.Attacks
                 Invoker.permissions = CharacterPermission.All;
             
                 StopCoroutine(attackProcess);
+                
+                OnAttackEnded.Invoke();
+                
                 attackProcess = null;
             }
         }
@@ -282,6 +291,7 @@ namespace CharacterSystem.Attacks
         {
             OnCast.Invoke();
             
+            PlayAnimation(source.Invoker, CastAnimationName);
             source.Invoker.Push(source.Invoker.transform.rotation * CastPushDirection);
 
             yield break;
@@ -476,8 +486,9 @@ namespace CharacterSystem.Attacks
         {
             OnStart.Invoke();
             PlayAnimation(source.Invoker, AnimationName);
-            source.Invoker.permissions = Permissions;
 
+            source.Invoker.permissions = Permissions;
+            
             yield return new WaitForSeconds(WaitTime);
 
             OnEnd.Invoke();
@@ -529,6 +540,10 @@ namespace CharacterSystem.Attacks
         [SerializeField, SerializeReference, SubclassSelector]
         public IChargeListener chargeListener; 
 
+        [SerializeField]
+        public Queue FullyChargeQueue;
+
+
         public override IEnumerator AttackPipeline (DamageSource source)
         {
             OnStart.Invoke();
@@ -557,7 +572,12 @@ namespace CharacterSystem.Attacks
 
             if (chargeListener != null)
             {
-                yield return chargeListener.ChargedAttackPipeline(source, Mathf.Lerp(MinChargeValue, MaxChargeValue, waitedTime / MaxChargingTime), flexibleCollider, flexibleDamage);
+                if (waitedTime >= MaxChargingTime)
+                {
+                    yield return FullyChargeQueue.AttackPipeline(source);
+                }
+
+                yield return chargeListener.ChargedAttackPipeline(source, Mathf.Lerp(MinChargeValue, MaxChargeValue, waitedTime / MaxChargingTime), flexibleCollider, flexibleDamage);           
             }
 
             OnEnd.Invoke();
@@ -565,6 +585,7 @@ namespace CharacterSystem.Attacks
         
         public override void OnDrawGizmos(Transform transform)
         {
+            FullyChargeQueue?.OnDrawGizmos(transform);
             chargeListener?.OnDrawGizmos(transform);
         }
     }

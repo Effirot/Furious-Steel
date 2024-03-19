@@ -259,6 +259,33 @@ MonoBehaviour:
   OnDamageReport:
     m_PersistentCalls:
       m_Calls: []
+  OnAttackEnded:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 3329722666136105221}
+        m_TargetAssemblyTypeName: CharacterSystem.Attacks.DamageSource, Assembly-CSharp
+        m_MethodName: set_IsPerforming
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 2730808604009932065}
+        m_TargetAssemblyTypeName: CharacterSystem.Attacks.DamageSource, Assembly-CSharp
+        m_MethodName: set_IsPerforming
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
   SpeedReducing: 6
   references:
     version: 2
@@ -345,38 +372,14 @@ MonoBehaviour:
             m_Calls: []
         OnEnd:
           m_PersistentCalls:
-            m_Calls:
-            - m_Target: {fileID: 3329722666136105221}
-              m_TargetAssemblyTypeName: CharacterSystem.Attacks.DamageSource, Assembly-CSharp
-              m_MethodName: set_IsPerforming
-              m_Mode: 6
-              m_Arguments:
-                m_ObjectArgument: {fileID: 0}
-                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-                m_IntArgument: 0
-                m_FloatArgument: 0
-                m_StringArgument: 
-                m_BoolArgument: 0
-              m_CallState: 2
-            - m_Target: {fileID: 2730808604009932065}
-              m_TargetAssemblyTypeName: CharacterSystem.Attacks.DamageSource, Assembly-CSharp
-              m_MethodName: set_IsPerforming
-              m_Mode: 6
-              m_Arguments:
-                m_ObjectArgument: {fileID: 0}
-                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-                m_IntArgument: 0
-                m_FloatArgument: 0
-                m_StringArgument: 
-                m_BoolArgument: 1
-              m_CallState: 2
+            m_Calls: []
     - rid: 3599543190338142292
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
           value: 45
           type: 1
-          stunlock: 1
+          stunlock: 0.6
           pushDirection: {x: 0, y: 0, z: 0.7}
           RechargeUltimate: 1
         position: {x: 0, y: 0, z: 3.4}
@@ -459,10 +462,10 @@ AudioSource:
   SpatializePostEffects: 0
   Priority: 128
   DopplerLevel: 1
-  MinDistance: 6.1945553
-  MaxDistance: 119.08272
+  MinDistance: 0
+  MaxDistance: 40
   Pan2D: 0
-  rolloffMode: 0
+  rolloffMode: 1
   BypassEffects: 0
   BypassListenerEffects: 0
   BypassReverbZones: 0
@@ -495,7 +498,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -866,6 +869,9 @@ VisualEffect:
       - m_Value: 0.231
         m_Name: Lifetime
         m_Overridden: 1
+      - m_Value: 0.3
+        m_Name: Thickness
+        m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
@@ -1009,6 +1015,9 @@ VisualEffect:
       - m_Value: 0.231
         m_Name: Lifetime
         m_Overridden: 1
+      - m_Value: 0.3
+        m_Name: Thickness
+        m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
@@ -1107,8 +1116,11 @@ MonoBehaviour:
   OnDamageReport:
     m_PersistentCalls:
       m_Calls: []
+  OnAttackEnded:
+    m_PersistentCalls:
+      m_Calls: []
   SpeedReducing: 3
-  RequireDamage: 300
+  RequireDamage: 200
   OnUltimateReady:
     m_PersistentCalls:
       m_Calls: []
@@ -1271,6 +1283,33 @@ MonoBehaviour:
   OnDamageReport:
     m_PersistentCalls:
       m_Calls: []
+  OnAttackEnded:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2730808604009932065}
+        m_TargetAssemblyTypeName: CharacterSystem.Attacks.DamageSource, Assembly-CSharp
+        m_MethodName: set_IsPerforming
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 3329722666136105221}
+        m_TargetAssemblyTypeName: CharacterSystem.Attacks.DamageSource, Assembly-CSharp
+        m_MethodName: set_IsPerforming
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
   SpeedReducing: 6
   references:
     version: 2
@@ -1357,38 +1396,14 @@ MonoBehaviour:
             m_Calls: []
         OnEnd:
           m_PersistentCalls:
-            m_Calls:
-            - m_Target: {fileID: 2730808604009932065}
-              m_TargetAssemblyTypeName: CharacterSystem.Attacks.DamageSource, Assembly-CSharp
-              m_MethodName: set_IsPerforming
-              m_Mode: 6
-              m_Arguments:
-                m_ObjectArgument: {fileID: 0}
-                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-                m_IntArgument: 0
-                m_FloatArgument: 0
-                m_StringArgument: 
-                m_BoolArgument: 0
-              m_CallState: 2
-            - m_Target: {fileID: 3329722666136105221}
-              m_TargetAssemblyTypeName: CharacterSystem.Attacks.DamageSource, Assembly-CSharp
-              m_MethodName: set_IsPerforming
-              m_Mode: 6
-              m_Arguments:
-                m_ObjectArgument: {fileID: 0}
-                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-                m_IntArgument: 0
-                m_FloatArgument: 0
-                m_StringArgument: 
-                m_BoolArgument: 1
-              m_CallState: 2
+            m_Calls: []
     - rid: 3599543190338142293
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
           value: 45
           type: 1
-          stunlock: 1
+          stunlock: 0.6
           pushDirection: {x: 0, y: 0, z: 0.7}
           RechargeUltimate: 1
         position: {x: 0, y: 0, z: 3.4}

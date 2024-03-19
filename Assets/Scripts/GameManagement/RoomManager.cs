@@ -384,7 +384,7 @@ public class RoomManager : NetworkBehaviour
         //     privateClientsData[ID].networkCharacter.Kill();
         // }
 
-        playersData.RemoveAt(publicDataIndex);
+        playersData?.RemoveAt(publicDataIndex);
         
         if (privatePlayersData.ContainsKey(ID))
         {

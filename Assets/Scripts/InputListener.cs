@@ -18,6 +18,13 @@ public class InputListener : MonoBehaviour
         inputAction.action.canceled += OnInputChanged_Event;
     }
 
+    private void OnDestroy()
+    {
+        inputAction.action.started -= OnInputChanged_Event;
+        inputAction.action.performed -= OnInputChanged_Event;
+        inputAction.action.canceled -= OnInputChanged_Event;
+    }
+
     private void OnInputChanged_Event(CallbackContext collbackContex)
     {
         foreach (Transform child in transform)

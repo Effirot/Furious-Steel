@@ -141,6 +141,9 @@ MonoBehaviour:
   OnDamageReport:
     m_PersistentCalls:
       m_Calls: []
+  OnAttackEnded:
+    m_PersistentCalls:
+      m_Calls: []
   SpeedReducing: 3
   references:
     version: 2
@@ -203,6 +206,9 @@ MonoBehaviour:
             m_Calls: []
         chargeListener:
           rid: 2961813231421882471
+        FullyChargeQueue:
+          Name: 
+          queue: []
     - rid: 2961813231421882471
       type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
@@ -374,6 +380,9 @@ MonoBehaviour:
   IsInterruptable: 0
   IsInterruptableWhenBlocked: 0
   OnDamageReport:
+    m_PersistentCalls:
+      m_Calls: []
+  OnAttackEnded:
     m_PersistentCalls:
       m_Calls: []
   SpeedReducing: 3
@@ -965,7 +974,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1
-  MaxDistance: 500
+  MaxDistance: 4.430214
   Pan2D: 0
   rolloffMode: 0
   BypassEffects: 0
@@ -1093,8 +1102,8 @@ AudioSource:
   SpatializePostEffects: 0
   Priority: 128
   DopplerLevel: 1
-  MinDistance: 6.1945553
-  MaxDistance: 119.08272
+  MinDistance: 0
+  MaxDistance: 40
   Pan2D: 0
   rolloffMode: 0
   BypassEffects: 0
@@ -1129,7 +1138,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -1502,37 +1511,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
-      propertyPath: OnSuccesfulBlockingEvent.m_PersistentCalls.m_Calls.Array.size
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
-      propertyPath: OnSuccesfulBlockingEvent.m_PersistentCalls.m_Calls.Array.data[2].m_Mode
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
       propertyPath: OnSuccesfulBlockingEvent.m_PersistentCalls.m_Calls.Array.data[2].m_Target
       value: 
       objectReference: {fileID: 5322431394780339528}
-    - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
-      propertyPath: OnSuccesfulBlockingEvent.m_PersistentCalls.m_Calls.Array.data[2].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
-      propertyPath: OnSuccesfulBlockingEvent.m_PersistentCalls.m_Calls.Array.data[2].m_MethodName
-      value: set_DeliveredDamage
-      objectReference: {fileID: 0}
-    - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
-      propertyPath: OnSuccesfulBlockingEvent.m_PersistentCalls.m_Calls.Array.data[2].m_TargetAssemblyTypeName
-      value: UltimateDamageSource, Assembly-CSharp
-      objectReference: {fileID: 0}
-    - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
-      propertyPath: OnSuccesfulBlockingEvent.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_FloatArgument
-      value: 150
-      objectReference: {fileID: 0}
-    - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
-      propertyPath: OnSuccesfulBlockingEvent.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
