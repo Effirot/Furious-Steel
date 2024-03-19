@@ -387,7 +387,13 @@ namespace CharacterSystem.Objects
             }
         }
 
-        protected virtual void OnValidate () { }
+        protected virtual void OnValidate () 
+        { 
+            if (!Application.isPlaying)
+            {
+                gameObject.layer = LayerMask.NameToLayer("Character");
+            }
+        }
         protected virtual void OnTriggerEnter (Collider collider) { }
         protected virtual void OnTriggerExit (Collider collider) { }
         protected virtual void OnDrawGizmos () { }

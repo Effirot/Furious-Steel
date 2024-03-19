@@ -623,7 +623,7 @@ namespace CharacterSystem.Attacks
 
         public override Collider[] CastCollider(Transform transform)
         {
-            return Physics.OverlapBox(transform.position + (transform.rotation * position), size, Quaternion.Euler(angle + transform.eulerAngles));
+            return Physics.OverlapBox(transform.position + (transform.rotation * position), size, Quaternion.Euler(angle + transform.eulerAngles), ~(1 << 7));
         }
 
         public override void CastColliderGizmos(Transform transform)
@@ -648,7 +648,7 @@ namespace CharacterSystem.Attacks
 
         public override Collider[] CastCollider(Transform transform)
         {
-            return Physics.OverlapSphere(transform.position + (transform.rotation * position), radius);
+            return Physics.OverlapSphere(transform.position + (transform.rotation * position), radius, ~(1 << 7));
         }
 
         public override void CastColliderGizmos(Transform transform)
@@ -674,7 +674,7 @@ namespace CharacterSystem.Attacks
 
         public override Collider[] CastCollider(Transform transform)
         {
-            if (Physics.Raycast((transform.rotation * origin) + transform.position, transform.rotation * direction, out var hit, maxDistance))
+            if (Physics.Raycast((transform.rotation * origin) + transform.position, transform.rotation * direction, out var hit, maxDistance, ~(1 << 7)))
             {
                 return new Collider[] { hit.collider };
             }
@@ -707,7 +707,7 @@ namespace CharacterSystem.Attacks
             {
                 var RayOrigin = (transform.rotation * origin) + transform.position;
 
-                if (Physics.Raycast(RayOrigin, target.position - RayOrigin, out var hit, maxDistance))
+                if (Physics.Raycast(RayOrigin, target.position - RayOrigin, out var hit, maxDistance, ~(1 << 7)))
                 {
                     return new Collider[] { hit.collider };
                 }
