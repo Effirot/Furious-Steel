@@ -10,7 +10,7 @@ using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using static UnityEngine.InputSystem.InputAction;
 
-public class AutoAim : NetworkBehaviour
+public class SphereColliderAutoAim : NetworkBehaviour
 {
     [SerializeField]
     private float SearchRadius;

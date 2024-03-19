@@ -1,3 +1,4 @@
+using System;
 using CharacterSystem.Attacks;
 using CharacterSystem.DamageMath;
 using Unity.Netcode;
@@ -16,14 +17,14 @@ public class Projectile : NetworkBehaviour,
     [field : SerializeField, Range (0.1f, 10)]
     private float lifetime = 3;
 
-    [field : SerializeField, Range (0.1f, 10)]
-    private float destroyTimeout = 3;
-
     [field : SerializeField]
     public VisualEffectAsset OnDestroyEffect { get; private set; }
     
     [field : SerializeField]
     public VisualEffect OnHitEffect { get; private set; }
+
+    [SerializeField]
+    public UnityEvent onDespawnEvent = new UnityEvent();
 
     [SerializeField]
     private Damage damage;
@@ -45,14 +46,16 @@ public class Projectile : NetworkBehaviour,
 
     public IDamageSource Summoner { get; private set; }
 
-    public UnityEvent onDespawnEvent = new UnityEvent();
+    public event Action<Damage> onDamageRecieved;
 
     public int TeamIndex => Summoner.TeamIndex;
 
 
     private NetworkVariable<Vector3> network_position = new NetworkVariable<Vector3> (Vector3.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     private NetworkVariable<Vector3> network_moveDirection = new NetworkVariable<Vector3> (Vector3.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-    
+
+
+
     public void Initialize (Vector3 direction, IDamageSource summoner)
     {
         Push (direction);
@@ -62,6 +65,8 @@ public class Projectile : NetworkBehaviour,
 
     public bool Hit (Damage damage)
     {
+        onDamageRecieved?.Invoke(damage);
+
         if (IsServer)
         {
             MoveDirection = damage.pushDirection;
@@ -70,7 +75,7 @@ public class Projectile : NetworkBehaviour,
         return false;
     }
     public bool Heal (Damage damage)
-    {
+    {        
         return false;
     }
     public void Push (Vector3 direction)

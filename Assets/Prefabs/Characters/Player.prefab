@@ -128,6 +128,8 @@ GameObject:
   - component: {fileID: 7280063651460184589}
   - component: {fileID: 3623222165156314097}
   - component: {fileID: 7011506643223629107}
+  - component: {fileID: 6228147872289046665}
+  - component: {fileID: 870618445999855470}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -192,7 +194,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 756936595
+  GlobalObjectIdHash: 3147394388
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -315,6 +317,34 @@ MonoBehaviour:
     m_DissipationDistance: 100
     m_PropagationSpeed: 343
   m_DefaultVelocity: {x: 0, y: -1, z: 0}
+--- !u!114 &6228147872289046665
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6610828187798962060}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebb33ee868eec9d4d953a4945ce22eb1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onListChanged:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &870618445999855470
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6610828187798962060}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76a4e8a3a146e7d4f96b27d049ef76a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speedReducing: 4
 --- !u!1 &7548537234594387752
 GameObject:
   m_ObjectHideFlags: 0

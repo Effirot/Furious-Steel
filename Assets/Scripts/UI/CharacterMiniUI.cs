@@ -88,14 +88,14 @@ public class CharacterMiniUI : MonoBehaviour
             }
 
             SetHealthSliderValue_Event(networkCharacter.health);
-            networkCharacter.OnHealthChanged += SetHealthSliderValue_Event;
+            networkCharacter.onHealthChanged += SetHealthSliderValue_Event;
         }
     }
     private void UnsubscribeToHealthBar()
     {
         if (HealthField != null)
         {
-            networkCharacter.OnHealthChanged -= SetHealthSliderValue_Event;
+            networkCharacter.onHealthChanged -= SetHealthSliderValue_Event;
         }
     }
 

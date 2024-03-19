@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using CharacterSystem.DamageMath;
@@ -31,6 +32,9 @@ namespace CharacterSystem.Objects
         [SerializeField]
         private AudioClip onHitSound;
 
+        public event Action<Damage> onDamageRecieved;
+
+
         public bool IsAlive => IsSpawned;
 
         public float health { 
@@ -49,9 +53,10 @@ namespace CharacterSystem.Objects
 
         public virtual bool Hit(Damage damage)
         {
-
             if (!Undestroyable) 
             {
+                onDamageRecieved?.Invoke(damage);
+
                 health -= damage.value;
 
                 if (health <= 0 && IsServer)

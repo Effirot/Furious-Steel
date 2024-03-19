@@ -8,12 +8,17 @@ using CharacterSystem.DamageMath;
 using JetBrains.Annotations;
 using Unity.Netcode;
 using Unity.VisualScripting;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
 using UnityEngine.TextCore.Text;
 using UnityEngine.VFX;
+
+
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace CharacterSystem.Objects
 {
@@ -94,10 +99,10 @@ namespace CharacterSystem.Objects
         [field : SerializeField]
         public virtual int TeamIndex { get; private set; }
 
-
-        public event Action<float> OnHealthChanged = delegate { };
-        public event Action<float> OnStunlockChanged = delegate { };
-        public event Action<bool> IsGrounded = delegate { };
+        
+        public event Action<Damage> onDamageRecieved = delegate { };
+        public event Action<float> onHealthChanged = delegate { };
+        public event Action<bool> isGrounded = delegate { };
 
         public Animator animator { get; private set; }
         public CharacterController characterController { get; private set; }
@@ -202,7 +207,6 @@ namespace CharacterSystem.Objects
             }
         }
         
-        public bool isInWater { get; private set; } = false;
 
         private NetworkVariable<Vector3> network_position = new NetworkVariable<Vector3>(Vector3.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);    
         private NetworkVariable<Vector2> network_movementVector = new NetworkVariable<Vector2>(Vector2.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
@@ -217,8 +221,6 @@ namespace CharacterSystem.Objects
         private Coroutine regenerationCoroutine;
 
         private float speed_acceleration_multipliyer = 0;
-
-        private List<Collider> collision_buffer = new();
 
         public virtual void Kill ()
         {
@@ -249,7 +251,10 @@ namespace CharacterSystem.Objects
             if (!IsSpawned)
                 return false;
             
+
             health -= damage.value;
+
+            onDamageRecieved?.Invoke(damage);
 
             if (health <= 0)
             {
@@ -280,6 +285,8 @@ namespace CharacterSystem.Objects
         public virtual bool Heal (Damage damage)
         {
             health += damage.value;
+
+            onDamageRecieved?.Invoke(damage);
 
             if (OnHealEffect != null)
             {
@@ -350,10 +357,9 @@ namespace CharacterSystem.Objects
             characterController = GetComponent<CharacterController>();
             animator = GetComponentInChildren<Animator>();
 
-            network_health.OnValueChanged += (Old, New) => OnHealthChanged.Invoke(New);
-            network_stunlock.OnValueChanged += (Old, New) => OnStunlockChanged.Invoke(New);
-
             network_permissions.OnValueChanged += OnPermissionsChanged;
+
+            network_health.OnValueChanged += (Old, New) => onHealthChanged(New);
         }
 
         protected virtual void FixedUpdate ()
@@ -382,20 +388,8 @@ namespace CharacterSystem.Objects
         }
 
         protected virtual void OnValidate () { }
-        protected virtual void OnTriggerEnter (Collider collider)
-        {
-            if (collider.gameObject.layer == 4)
-            {
-                isInWater = true;
-            }
-        }
-        protected virtual void OnTriggerExit (Collider collider)
-        {
-            if (collider.gameObject.layer == 4)
-            {
-                isInWater = false;
-            }
-        }
+        protected virtual void OnTriggerEnter (Collider collider) { }
+        protected virtual void OnTriggerExit (Collider collider) { }
         protected virtual void OnDrawGizmos () { }
         protected virtual void OnDrawGizmosSelected ()
         {
@@ -440,9 +434,7 @@ namespace CharacterSystem.Objects
             {
                 if (permissions.HasFlag(CharacterPermission.AllowMove))
                 {
-                    var waterSpeedReducing = isInWater ? 1.5f : 1;
-
-                    speed_acceleration_multipliyer = Mathf.Lerp(speed_acceleration_multipliyer, (movementVector.magnitude * Speed) / waterSpeedReducing, 0.12f);
+                    speed_acceleration_multipliyer = Mathf.Lerp(speed_acceleration_multipliyer, Speed <= 0 ? 0 : movementVector.magnitude * Speed, 0.12f);
 
                     if (IsServer)
                     {
@@ -571,4 +563,35 @@ namespace CharacterSystem.Objects
             transform.position = position;
         }
     }
+
+#if UNITY_EDITOR
+    [CustomEditor(typeof (NetworkCharacter), true)]
+    public class NetworkCharacter_Editor : Editor
+    {
+        private new NetworkCharacter target => base.target as NetworkCharacter;
+
+        public override void OnInspectorGUI()
+        {
+            if (target.IsServer && target.IsSpawned)
+            {
+                if (GUILayout.Button("Heal"))
+                {
+                    target.Heal(new Damage(
+                        9999.99f,
+                        null,
+                        0,
+                        Vector3.zero,
+                        Damage.Type.Unblockable));
+                }
+
+                if (GUILayout.Button("Kill"))
+                {
+                    target.Kill();
+                }
+            }
+
+            base.OnInspectorGUI();
+        }
+    }
+#endif
 }

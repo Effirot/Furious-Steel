@@ -26,7 +26,6 @@ public class ConnectionMenu : MonoBehaviour
 
             foreach (NetworkInterface netInterface in NetworkInterface.GetAllNetworkInterfaces())
             {
-                
                 IPInterfaceProperties ipProps = netInterface.GetIPProperties();
 
                 foreach (UnicastIPAddressInformation addr in ipProps.UnicastAddresses)
