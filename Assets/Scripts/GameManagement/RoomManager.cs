@@ -12,12 +12,6 @@ using System.Net.Sockets;
 using static Authorizer;
 using Cysharp.Threading.Tasks;
 
-
-
-
-
-
-
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -84,7 +78,7 @@ public class RoomManager : NetworkBehaviour
                 CharacterColorScheme.Black => Color.black,
                 CharacterColorScheme.White => Color.white,
                 CharacterColorScheme.Orange => new Color(1, 1, 0),
-                CharacterColorScheme.Purple => new Color(1, 0, 1) ,
+                CharacterColorScheme.Purple => new Color(1, 0, 1),
                 CharacterColorScheme.Pink => new Color(1, 0.5f, 1) ,
                 CharacterColorScheme.Cyan => Color.cyan,
 
@@ -103,7 +97,7 @@ public class RoomManager : NetworkBehaviour
                 CharacterColorScheme.Black => Color.black,
                 CharacterColorScheme.White => Color.black,
                 CharacterColorScheme.Orange => Color.white,
-                CharacterColorScheme.Purple => Color.blue,
+                CharacterColorScheme.Purple => new Color(1, 0, 1),
                 CharacterColorScheme.Pink => Color.red,
                 CharacterColorScheme.Cyan => Color.white,
 
