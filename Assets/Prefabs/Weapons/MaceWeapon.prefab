@@ -302,7 +302,7 @@ MonoBehaviour:
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         Name: 
-        WaitTime: 0.7
+        WaitTime: 0.8
         Permissions: 1280
         AnimationName: 
         OnStart:
@@ -379,11 +379,11 @@ MonoBehaviour:
         damage:
           value: 45
           type: 1
-          stunlock: 0.6
+          stunlock: 0.5
           pushDirection: {x: 0, y: 0, z: 0.7}
           RechargeUltimate: 1
         position: {x: 0, y: 0, z: 3.4}
-        size: {x: 1.72, y: 0.85, z: 1.46}
+        size: {x: 1.72, y: 1.84, z: 1.46}
         angle: {x: 0, y: 0, z: 0}
     - rid: 3599543190338142294
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
@@ -395,7 +395,7 @@ MonoBehaviour:
           pushDirection: {x: 0, y: 0, z: 0.3}
           RechargeUltimate: 1
         position: {x: -2.33, y: 0, z: 2.7}
-        size: {x: 1, y: 0.72, z: 1.85}
+        size: {x: 1, y: 1.53, z: 1.85}
         angle: {x: 0, y: 45, z: 0}
     - rid: 3599543190338142296
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
@@ -407,7 +407,7 @@ MonoBehaviour:
           pushDirection: {x: 0, y: 0, z: 0.3}
           RechargeUltimate: 1
         position: {x: 2.33, y: 0, z: 2.7}
-        size: {x: 1, y: 0.72, z: 1.85}
+        size: {x: 1, y: 1.53, z: 1.85}
         angle: {x: 0, y: -45, z: 0}
 --- !u!1 &3064985464026961555
 GameObject:
@@ -738,9 +738,9 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
     m_ImpulseDuration: 0.2
-    m_ImpulseType: 0
-    m_DissipationRate: 0.25
-    m_RawSignal: {fileID: 0}
+    m_ImpulseType: 3
+    m_DissipationRate: 0
+    m_RawSignal: {fileID: 11400000, guid: 69ce8388f6785dd4c8c39915efece2f4, type: 2}
     m_AmplitudeGain: 1
     m_FrequencyGain: 1
     m_RepeatMode: 0
@@ -760,15 +760,15 @@ MonoBehaviour:
         m_RotationOrder: 4
       m_AttackTime: 0
       m_SustainTime: 0.2
-      m_DecayTime: 0.7
+      m_DecayTime: 0.3
       m_ScaleWithImpact: 1
       m_HoldForever: 0
-    m_ImpactRadius: 100
+    m_ImpactRadius: 30
     m_DirectionMode: 0
     m_DissipationMode: 2
-    m_DissipationDistance: 100
+    m_DissipationDistance: 30
     m_PropagationSpeed: 343
-  m_DefaultVelocity: {x: 0, y: -1, z: 0}
+  m_DefaultVelocity: {x: 0, y: 1, z: 0}
 --- !u!1 &5598452190556703154
 GameObject:
   m_ObjectHideFlags: 0
@@ -1326,7 +1326,7 @@ MonoBehaviour:
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         Name: 
-        WaitTime: 0.7
+        WaitTime: 0.8
         Permissions: 1280
         AnimationName: 
         OnStart:
@@ -1403,11 +1403,11 @@ MonoBehaviour:
         damage:
           value: 45
           type: 1
-          stunlock: 0.6
+          stunlock: 0.5
           pushDirection: {x: 0, y: 0, z: 0.7}
           RechargeUltimate: 1
         position: {x: 0, y: 0, z: 3.4}
-        size: {x: 1.72, y: 0.85, z: 1.46}
+        size: {x: 1.72, y: 1.84, z: 1.46}
         angle: {x: 0, y: 0, z: 0}
     - rid: 3599543190338142295
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
@@ -1419,7 +1419,7 @@ MonoBehaviour:
           pushDirection: {x: 0, y: 0, z: 0.3}
           RechargeUltimate: 1
         position: {x: -2.33, y: 0, z: 2.7}
-        size: {x: 1, y: 0.72, z: 1.85}
+        size: {x: 1, y: 1.53, z: 1.85}
         angle: {x: 0, y: 45, z: 0}
     - rid: 3599543190338142297
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
@@ -1431,7 +1431,7 @@ MonoBehaviour:
           pushDirection: {x: 0, y: 0, z: 0.3}
           RechargeUltimate: 1
         position: {x: 2.33, y: 0, z: 2.7}
-        size: {x: 1, y: 0.72, z: 1.85}
+        size: {x: 1, y: 1.53, z: 1.85}
         angle: {x: 0, y: -45, z: 0}
 --- !u!1 &9175946607756572356
 GameObject:

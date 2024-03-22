@@ -29,7 +29,7 @@ namespace CharacterSystem.DamageMath
         }
         public static DamageDeliveryReport Deliver(IDamagable target, Damage damage)
         {
-            if (target == null)
+            if (target == null || target == damage.sender)
                 return new();
 
             if (ITeammate.IsAlly(target, damage.sender))

@@ -15,6 +15,7 @@ public class SkinnedMeshRendererDisolver : MonoBehaviour
         skinnedMeshRenderer = GetComponent<SkinnedMeshRenderer>();
     }
 
+#if UNITY_SERVER
     private void Update()
     {
         var color = skinnedMeshRenderer.material.color; 
@@ -23,4 +24,5 @@ public class SkinnedMeshRendererDisolver : MonoBehaviour
     
         skinnedMeshRenderer.material.color = color;
     }
+#endif
 }

@@ -387,11 +387,11 @@ namespace CharacterSystem.Objects
 
                 dodgeRoutine = StartCoroutine(DodgeRoutine(V3direction));
                 
-                if (IsClient) {
+                if (IsClient && DodgeEffect != null) {
                     DodgeEffect.SetVector3("Direction", V3direction);
                     DodgeEffect.Play();
 
-                    DodgeSound.Play();
+                    DodgeSound?.Play();
                 }
             }
         }

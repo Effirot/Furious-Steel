@@ -53,7 +53,6 @@ namespace CharacterSystem.Objects
         public static event OnCharacterStateChangedDelegate OnCharacterDead = delegate { };
         public static event OnCharacterStateChangedDelegate OnCharacterSpawn = delegate { };
 
-
         public const float RotateInterpolationTime = 11f;
         public const float ServerPositionInterpolationTime = 0.07f;
         public const float VelocityReducingMultipliyer = 0.85f;
@@ -251,7 +250,6 @@ namespace CharacterSystem.Objects
             if (!IsSpawned)
                 return false;
             
-
             health -= damage.value;
 
             onDamageRecieved?.Invoke(damage);
@@ -273,7 +271,7 @@ namespace CharacterSystem.Objects
                 OnHitEffect.Play();
             }
 
-            if (OnHitSound != null && !OnHitSound.isPlaying && !OnHitSound.gameObject.activeInHierarchy)
+            if (OnHitSound != null && OnHitSound.enabled && OnHitSound.gameObject.activeInHierarchy)
             {
                 OnHitSound.Play();
             }
@@ -357,8 +355,9 @@ namespace CharacterSystem.Objects
             characterController = GetComponent<CharacterController>();
             animator = GetComponentInChildren<Animator>();
 
-            network_permissions.OnValueChanged += OnPermissionsChanged;
+            gameObject.layer = LayerMask.NameToLayer("Character");
 
+            network_permissions.OnValueChanged += OnPermissionsChanged;
             network_health.OnValueChanged += (Old, New) => onHealthChanged(New);
         }
 
@@ -377,23 +376,17 @@ namespace CharacterSystem.Objects
             }
 
             CharacterMove(CalculateMovement() + CalculatePhysicsSimulation()); 
-        }
-        protected virtual void Update () { }
-        protected virtual void LateUpdate ()
-        {
+
             if (!isStunned)
             {
-                RotateCharacter();
+                RotateCharacter(Time.fixedDeltaTime);
             }
         }
+        
+        protected virtual void Update () { }
+        protected virtual void LateUpdate () { }
 
-        protected virtual void OnValidate () 
-        { 
-            if (!Application.isPlaying)
-            {
-                gameObject.layer = LayerMask.NameToLayer("Character");
-            }
-        }
+        protected virtual void OnValidate () { }
         protected virtual void OnTriggerEnter (Collider collider) { }
         protected virtual void OnTriggerExit (Collider collider) { }
         protected virtual void OnDrawGizmos () { }
@@ -422,6 +415,11 @@ namespace CharacterSystem.Objects
             {
                 var corpseObject = Instantiate(CorpsePrefab, transform.position, transform.rotation);
                 corpseObject.transform.localScale = transform.localScale;
+
+                foreach (var rigidbody in corpseObject.GetComponentsInChildren<Rigidbody>())
+                {
+                    rigidbody.AddForce(velocity * 100);
+                }
 
                 Destroy(corpseObject, 10);
             }
@@ -495,7 +493,7 @@ namespace CharacterSystem.Objects
                 }
             }
         }
-        private void RotateCharacter ()
+        private void RotateCharacter (float TimeScale)
         {
             if (permissions.HasFlag(CharacterPermission.AllowRotate))
             {
@@ -509,7 +507,7 @@ namespace CharacterSystem.Objects
                     }
                     else
                     {
-                        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(LookVector), RotateInterpolationTime * Time.deltaTime);
+                        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(LookVector), RotateInterpolationTime * TimeScale);
                     }
                 }
             }

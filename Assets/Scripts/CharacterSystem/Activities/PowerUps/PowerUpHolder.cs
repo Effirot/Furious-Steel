@@ -26,9 +26,10 @@ namespace CharacterSystem.PowerUps
 
     }
 
+    [RequireComponent(typeof(NetworkCharacter))]
     public class PowerUpHolder : SyncedActivities<IPowerUpActivator>
-    {
-        [SerializeField]
+    {   
+        [HideInInspector]
         public NetworkCharacter Character;
         
         public PowerUp powerUp => Id < 0 || Id >= PowerUp.AllPowerUps.Length ? null : PowerUp.AllPowerUps[Id];
@@ -91,6 +92,11 @@ namespace CharacterSystem.PowerUps
                 
                 network_powerUpId.Value = -1;
             }
+        }
+
+        private void Awake()
+        {
+            Character = GetComponent<NetworkCharacter>();
         }
 
         [ClientRpc]
