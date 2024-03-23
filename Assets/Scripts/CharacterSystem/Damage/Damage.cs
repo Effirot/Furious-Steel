@@ -8,7 +8,7 @@ using UnityEngine.VFX;
 namespace CharacterSystem.DamageMath
 {
     [Serializable]
-    public struct Damage
+    public struct Damage : INetworkSerializable
     {
         public enum Type : byte
         {
@@ -97,7 +97,32 @@ namespace CharacterSystem.DamageMath
 
         public override string ToString()
         {
-            return $"Sender: {sender.gameObject.name}\n Damage: {value}\n Type: {type}\n Stunlock: {stunlock}\n Push Force: {pushDirection}\n UltimateRecharged {RechargeUltimate}";
+            return $"Sender: {sender?.gameObject?.name ?? "null"}\n Damage: {value}\n Type: {type}\n Stunlock: {stunlock}\n Push Force: {pushDirection}\n UltimateRecharged {RechargeUltimate}";
+        }
+
+        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+        {
+            serializer.SerializeValue(ref value);
+            serializer.SerializeValue(ref type);
+            serializer.SerializeValue(ref stunlock);
+            serializer.SerializeValue(ref pushDirection);
+            serializer.SerializeValue(ref RechargeUltimate);
+            
+            var objectID = sender?.gameObject?.GetComponent<NetworkObject>()?.NetworkObjectId ?? ulong.MinValue;
+            serializer.SerializeValue(ref objectID);
+
+            if (serializer.IsReader)
+            {
+                if (objectID != ulong.MinValue)
+                {
+                    var dictionary = NetworkManager.Singleton.SpawnManager.SpawnedObjects;
+
+                    if (dictionary.ContainsKey(objectID) && dictionary[objectID].TryGetComponent<IDamageSource>(out var component))
+                    {
+                        sender = component;
+                    }
+                }
+            }
         }
 
         public static Damage operator * (Damage damage, float multipliyer)

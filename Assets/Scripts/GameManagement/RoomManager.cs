@@ -19,8 +19,6 @@ using UnityEditor;
 [DisallowMultipleComponent]
 public class RoomManager : NetworkBehaviour
 {
-
-    
     public struct SpawnArguments : INetworkSerializable
     {
         public static SpawnArguments This; 
@@ -214,7 +212,6 @@ public class RoomManager : NetworkBehaviour
 
         public PlayerNetworkCharacter networkCharacter;
         public NetworkObject networkCharacterWeapon;
-
 
         public void Dispose()
         {

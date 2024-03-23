@@ -45,25 +45,6 @@ namespace CharacterSystem.Objects
         [SerializeField]
         private CinemachineImpulseSource OnHitImpulseSource;
 
-        [Header("Dodge")]
-        [SerializeField]
-        [Range(0, 10)]
-        private float DodgePushForce = 2;
-
-        [SerializeField]
-        [Range(0, 10)]
-        private float DodgePushTime = 1;
-
-        [SerializeField]
-        [Range(0, 400)]
-        private float DodgeRechargeTime = 2f;
-
-        [SerializeField]
-        private VisualEffect DodgeEffect;
-
-        [SerializeField]
-        private AudioSource DodgeSound;
-
         public ulong ServerClientID => network_serverClientId.Value;
         public int ClientDataIndex => RoomManager.Singleton.IndexOfPlayerData(data => data.ID == ServerClientID);
         public RoomManager.PublicClientData ClientData 
@@ -78,7 +59,6 @@ namespace CharacterSystem.Objects
 
         public event Action<DamageDeliveryReport> OnDamageDelivered;
 
-        private Coroutine dodgeRoutine = null;
 
         public override bool Hit(Damage damage)
         {
@@ -282,39 +262,6 @@ namespace CharacterSystem.Objects
             catch { }
         }
 
-        private IEnumerator DodgeRoutine(Vector3 Direction)
-        {
-            Direction.Normalize();
-
-            permissions = CharacterPermission.Untouchable;
-            animator.SetBool("Dodge", true);
-
-            var timer = 0f;
-            while (timer < DodgePushTime)
-            {
-                timer += Time.fixedDeltaTime;
-                characterController.Move(Direction * DodgePushForce);
-
-                yield return new WaitForFixedUpdate();
-            } 
-
-            permissions = CharacterPermission.All;
-            animator.SetBool("Dodge", false);
-
-            yield return new WaitForSeconds(DodgeRechargeTime);
-
-            RechargeDodge();
-        }
-        private void RechargeDodge()
-        {
-            if (dodgeRoutine != null)
-            {
-                StopCoroutine(dodgeRoutine);
-            }
-
-            dodgeRoutine = null;
-        }
-
         private void OnMove(CallbackContext input)
         {
             movementVector = input.ReadValue<Vector2>();
@@ -348,51 +295,6 @@ namespace CharacterSystem.Objects
             if (movementVector.magnitude > 0 && input.ReadValueAsButton())
             {
                 Dash(movementVector);
-            }
-        }
-
-        public void Dash(Vector2 direction)
-        {
-            if (IsOwner)
-            {
-                Dash_ServerRpc(direction);
-            }
-        }
-        [ClientRpc]
-        private void Dash_ClientRpc(Vector2 direction)
-        {      
-            if (!IsServer)
-            {
-                Dash_Internal(direction);
-            }    
-        }
-        [ServerRpc]
-        private void Dash_ServerRpc(Vector2 direction)
-        {
-            direction.Normalize();
-
-            if (IsServer && !isStunned && dodgeRoutine == null && permissions.HasFlag(CharacterPermission.AllowDash))
-            {
-                SetAngle(Quaternion.LookRotation(new Vector3(direction.x, 0, direction.y)).eulerAngles.y);
-
-                Dash_ClientRpc(direction);
-                Dash_Internal(direction);
-            }
-        }
-        private void Dash_Internal(Vector2 direction)
-        {           
-            if (dodgeRoutine == null && permissions.HasFlag(CharacterPermission.AllowDash))
-            {
-                var V3direction = new Vector3(direction.x, 0, direction.y);
-
-                dodgeRoutine = StartCoroutine(DodgeRoutine(V3direction));
-                
-                if (IsClient && DodgeEffect != null) {
-                    DodgeEffect.SetVector3("Direction", V3direction);
-                    DodgeEffect.Play();
-
-                    DodgeSound?.Play();
-                }
             }
         }
 

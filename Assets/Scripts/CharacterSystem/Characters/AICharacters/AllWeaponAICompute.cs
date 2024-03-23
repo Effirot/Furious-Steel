@@ -36,7 +36,7 @@ namespace CharacterSystem.Objects.AI
 
         public override void StartAI()
         {
-
+            Character.onDamageRecieved += OnDamageRecieved_Event;
         }
         public override async Task AITick()
         {
@@ -102,6 +102,14 @@ namespace CharacterSystem.Objects.AI
 
             selectedDamageSource = null;
             followPath = true;
+        }
+
+        private void OnDamageRecieved_Event(DamageMath.Damage damage)
+        {
+            if (target == null && damage.sender != null)
+            {
+                target = damage.sender.transform;
+            }
         }
 
         private DamageSource SelectDamageSource()

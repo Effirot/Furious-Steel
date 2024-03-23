@@ -74,27 +74,27 @@ namespace CharacterSystem.Objects
         [field : SerializeField]
         public GameObject CorpsePrefab = null;
 
+        [Header("Dodge")]
+        [SerializeField]
+        [Range(0, 10)]
+        private float DodgePushForce = 2;
+
+        [SerializeField]
+        [Range(0, 10)]
+        private float DodgePushTime = 1;
+
+        [SerializeField]
+        [Range(0, 400)]
+        private float DodgeRechargeTime = 2f;
+
+        [SerializeField]
+        private VisualEffect DodgeEffect;
+
+        [SerializeField]
+        private AudioSource DodgeSound;
 
         [field : Space]
-        [field : Header("Effects")]
-        [field : SerializeField]
-        public VisualEffect OnHitEffect { get; private set; } = null;
-
-        [field : SerializeField]
-        public AudioSource OnHitSound { get; private set; } = null;
-
-        [field : SerializeField]
-        public VisualEffect OnHealEffect { get; private set; } = null;
-        
-        [field : SerializeField]
-        public AudioSource OnHealSound { get; private set; } = null;
-
-        [field : SerializeField]
-        public VisualEffect StulockEffect { get; private set; } = null;
-
-
-        [field : Space]
-        [field : Header("Effects")]
+        [field : Header("Team")]
         [field : SerializeField]
         public virtual int TeamIndex { get; private set; }
 
@@ -221,6 +221,8 @@ namespace CharacterSystem.Objects
 
         private float speed_acceleration_multipliyer = 0;
 
+        private Coroutine dodgeRoutine = null;
+
         public virtual void Kill ()
         {
             if (IsServer && IsSpawned)
@@ -249,34 +251,20 @@ namespace CharacterSystem.Objects
         {
             if (!IsSpawned)
                 return false;
-            
-            health -= damage.value;
 
-            onDamageRecieved?.Invoke(damage);
+            if (IsServer)
+            {
+                                
+                health -= damage.value;              
 
-            if (health <= 0)
-            {
-                Kill();
-            }
-            
-            if (OnHitEffect != null)
-            {
-                if (OnHitEffect.HasVector3("Direction"))
+                stunlock = Mathf.Max(damage.stunlock, stunlock); 
+             
+                OnHit_ClientRpc(damage);
+                if (!IsClient)
                 {
-                    OnHitEffect.SetVector3("Direction", damage.pushDirection);
+                    OnHit(damage);
                 }
-
-                animator.SetTrigger("OnHit");
-
-                OnHitEffect.Play();
             }
-
-            if (OnHitSound != null && OnHitSound.enabled && OnHitSound.gameObject.activeInHierarchy)
-            {
-                OnHitSound.Play();
-            }
-            
-            stunlock = Mathf.Max(damage.stunlock, stunlock); 
 
             return false;
         }
@@ -286,14 +274,10 @@ namespace CharacterSystem.Objects
 
             onDamageRecieved?.Invoke(damage);
 
-            if (OnHealEffect != null)
+            OnHeal_ClientRpc(damage);
+            if (!IsClient)
             {
-                OnHealEffect.Play();
-            }
-
-            if (OnHealSound != null)
-            {
-                OnHealSound.Play();
+                OnHeal(damage);
             }
 
             return true;
@@ -349,6 +333,32 @@ namespace CharacterSystem.Objects
                 SetPosition_ClientRpc(position);
             }
         }
+        public void Dash(Vector2 direction)
+        {
+            if (IsOwner)
+            {
+                Dash_ServerRpc(direction);
+            }
+        }
+        public void RechargeDodge()
+        {
+            if (dodgeRoutine != null)
+            {
+                StopCoroutine(dodgeRoutine);
+            }
+
+            dodgeRoutine = null;
+        }
+
+        protected virtual void OnHit(Damage damage) 
+        { 
+            onDamageRecieved?.Invoke(damage); 
+        }
+        protected virtual void OnHeal(Damage damage) 
+        { 
+            onDamageRecieved?.Invoke(damage); 
+        }
+
 
         protected virtual void Awake ()
         {
@@ -359,7 +369,10 @@ namespace CharacterSystem.Objects
 
             network_permissions.OnValueChanged += OnPermissionsChanged;
             network_health.OnValueChanged += (Old, New) => onHealthChanged(New);
+            network_health.OnValueChanged += (Old, New) => { if (New <= 0) Kill(); };
         }
+        protected virtual void Start () { }
+
 
         protected virtual void FixedUpdate ()
         {
@@ -381,8 +394,7 @@ namespace CharacterSystem.Objects
             {
                 RotateCharacter(Time.fixedDeltaTime);
             }
-        }
-        
+        }       
         protected virtual void Update () { }
         protected virtual void LateUpdate () { }
 
@@ -538,6 +550,78 @@ namespace CharacterSystem.Objects
             regenerationCoroutine = null;
         }
 
+        private IEnumerator DodgeRoutine(Vector3 Direction)
+        {
+            Direction.Normalize();
+
+            permissions = CharacterPermission.Untouchable;
+            animator.SetBool("Dodge", true);
+
+            var timer = 0f;
+            while (timer < DodgePushTime)
+            {
+                timer += Time.fixedDeltaTime;
+                characterController.Move(Direction * DodgePushForce);
+
+                yield return new WaitForFixedUpdate();
+            } 
+
+            permissions = CharacterPermission.All;
+            animator.SetBool("Dodge", false);
+
+            yield return new WaitForSeconds(DodgeRechargeTime);
+
+            RechargeDodge();
+        }
+
+        [ClientRpc]
+        private void Dash_ClientRpc(Vector2 direction)
+        {      
+            if (!IsServer)
+            {
+                Dash_Internal(direction);
+            }    
+        }
+        [ServerRpc]
+        private void Dash_ServerRpc(Vector2 direction)
+        {
+            direction.Normalize();
+
+            if (IsServer && !isStunned && dodgeRoutine == null && permissions.HasFlag(CharacterPermission.AllowDash))
+            {
+                SetAngle(Quaternion.LookRotation(new Vector3(direction.x, 0, direction.y)).eulerAngles.y);
+
+                Dash_ClientRpc(direction);
+                Dash_Internal(direction);
+            }
+        }
+        private void Dash_Internal(Vector2 direction)
+        {           
+            if (dodgeRoutine == null && permissions.HasFlag(CharacterPermission.AllowDash))
+            {
+                var V3direction = new Vector3(direction.x, 0, direction.y);
+
+                dodgeRoutine = StartCoroutine(DodgeRoutine(V3direction));
+                
+                if (IsClient && DodgeEffect != null) {
+                    DodgeEffect.SetVector3("Direction", V3direction);
+                    DodgeEffect.Play();
+
+                    DodgeSound?.Play();
+                }
+            }
+        }
+
+        [ClientRpc]
+        private void OnHit_ClientRpc(Damage damage)
+        {
+            OnHit(damage);
+        }
+        [ClientRpc]
+        private void OnHeal_ClientRpc(Damage damage)
+        {
+            OnHeal(damage);
+        }
 
         [ClientRpc]
         private void Spawn_ClientRpc ()
