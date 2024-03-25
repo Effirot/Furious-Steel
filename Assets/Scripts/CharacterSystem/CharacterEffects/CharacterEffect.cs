@@ -7,7 +7,7 @@ using UnityEngine;
 
 public abstract class CharacterEffect : INetworkSerializable
 {
-    public static Type[] AllCharacterEffectTypes = GetAllTypes();
+    public static Type[] AllCharacterEffectTypes { get; private set; } = GetAllTypes();
 
     private static Type[] GetAllTypes()
     {

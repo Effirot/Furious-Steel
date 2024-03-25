@@ -5,7 +5,6 @@ using System.Linq;
 using System.Security.Cryptography;
 using CharacterSystem.Blocking;
 using CharacterSystem.DamageMath;
-using JetBrains.Annotations;
 using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -13,8 +12,6 @@ using UnityEngine.AI;
 using UnityEngine.Events;
 using UnityEngine.TextCore.Text;
 using UnityEngine.VFX;
-
-
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -529,7 +526,11 @@ namespace CharacterSystem.Objects
         {
             if (animator.gameObject.activeInHierarchy && animator != null)
             {
-                animator.SetFloat("Walk_Speed", speed_acceleration_multipliyer);
+                var vector = new Vector3(movementVector.x , 0, -movementVector.y); 
+                var walkVector = transform.rotation * -vector * speed_acceleration_multipliyer;
+
+                animator.SetFloat("Walk_Speed_X",  walkVector.x);
+                animator.SetFloat("Walk_Speed_Y",  walkVector.z);
                 animator.SetBool("IsGrounded", characterController.isGrounded);
                 animator.SetBool("IsStunned", isStunned);
             }

@@ -13,10 +13,15 @@ public class AnimatorOverrider : NetworkBehaviour
         if (parentNetworkObject != null)
         {
             var animator = parentNetworkObject.GetComponentInChildren<Animator>();
+
+#error Override controller
+            var a = new AnimatorOverrideController();
+            
             if (animator != null)
             {
                 animator.runtimeAnimatorController = animatorController;
             }
+
         }
     }
 }
