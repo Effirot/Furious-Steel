@@ -249,9 +249,10 @@ namespace CharacterSystem.Objects
             if (!IsSpawned)
                 return false;
 
+            Push(damage.pushDirection);
+            
             if (IsServer)
             {
-                                
                 health -= damage.value;              
 
                 stunlock = Mathf.Max(damage.stunlock, stunlock); 
@@ -427,7 +428,7 @@ namespace CharacterSystem.Objects
 
                 foreach (var rigidbody in corpseObject.GetComponentsInChildren<Rigidbody>())
                 {
-                    rigidbody.AddForce(velocity * 100);
+                    rigidbody.AddForce(velocity * 250);
                 }
 
                 Destroy(corpseObject, 10);

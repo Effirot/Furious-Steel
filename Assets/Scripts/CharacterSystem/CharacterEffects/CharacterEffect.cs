@@ -31,4 +31,9 @@ public abstract class CharacterEffect : INetworkSerializable
     public virtual void Start() { }
     public virtual void Update() { }
     public virtual void Remove() { }
+
+    public override string ToString()
+    {
+        return GetType().Name;
+    }
 }

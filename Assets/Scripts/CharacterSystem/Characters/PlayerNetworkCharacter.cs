@@ -66,7 +66,7 @@ namespace CharacterSystem.Objects
 
             if (damage.value != 0)
             {
-                base.Hit(damage);
+                base.Hit(damage); 
             }
 
             if (isBlocked)

@@ -52,18 +52,12 @@ namespace CharacterSystem.DamageMath
                 report.isBlocked = target.Heal(damage);
             }
 
-            if (!report.isBlocked)
-            {
-                target.Push(damage.pushDirection);
-                target.stunlock = Mathf.Max(target.stunlock, damage.stunlock);
-            }
-
             if (damage.sender != null)
             {
                 damage.sender?.DamageDelivered(report);
             }
 
-            return new();
+            return report;
         }
 
         [SerializeField, Range(-50, 300)]

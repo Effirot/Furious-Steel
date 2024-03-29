@@ -35,5 +35,10 @@ namespace CharacterSystem.PowerUps
 
         public abstract void Activate(PowerUpHolder character);
         public abstract void OnPick(PowerUpHolder character);
+
+        public override string ToString()
+        {
+            return GetType().Name;
+        }
     }
 }
