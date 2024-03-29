@@ -45,6 +45,10 @@ public class CharacterMiniUI : MonoBehaviour
         SubscribeToHolders();
         SubscribeToUltimate();
     }
+    private void OnEnable()
+    {
+        transform.rotation = Camera.main.transform.rotation;
+    }
     private void OnDestroy()
     {
         UnsubscribeToHolders();
@@ -52,6 +56,7 @@ public class CharacterMiniUI : MonoBehaviour
 
         RoomManager.Singleton.playersData.OnListChanged -= OnOwnerPlayerDataChanged_event;
     }
+    
     private void LateUpdate()
     {
         transform.rotation = Camera.main.transform.rotation;

@@ -314,11 +314,11 @@ MonoBehaviour:
   <Speed>k__BackingField: 7
   <Mass>k__BackingField: 0.9
   CorpsePrefab: {fileID: 1051950103688114299, guid: 806dc84a36386754db3c9caf73d0564f, type: 3}
-  <OnHitEffect>k__BackingField: {fileID: 2549401813711551428}
-  <OnHitSound>k__BackingField: {fileID: 3972140436790800594}
-  <OnHealEffect>k__BackingField: {fileID: 0}
-  <OnHealSound>k__BackingField: {fileID: 0}
-  <StulockEffect>k__BackingField: {fileID: 0}
+  DodgePushForce: 2
+  DodgePushTime: 1
+  DodgeRechargeTime: 2
+  DodgeEffect: {fileID: 0}
+  DodgeSound: {fileID: 0}
   <TeamIndex>k__BackingField: 10
   PatchLayerIndex: 1
   AICompute:
@@ -570,7 +570,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5518014957221820556, guid: c00d9bda7fc8af444bd7ffecc8c9a80c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 3.575
+      value: 2.993
       objectReference: {fileID: 0}
     - target: {fileID: 5518014957221820556, guid: c00d9bda7fc8af444bd7ffecc8c9a80c, type: 3}
       propertyPath: m_LocalPosition.z
@@ -732,6 +732,8 @@ PrefabInstance:
     m_RemovedGameObjects:
     - {fileID: 6869956007444031633, guid: eb101eb5ba008aa4fad4497ac79afc31, type: 3}
     - {fileID: 8660843272844179282, guid: eb101eb5ba008aa4fad4497ac79afc31, type: 3}
+    - {fileID: 979357253341642804, guid: eb101eb5ba008aa4fad4497ac79afc31, type: 3}
+    - {fileID: 1323906872750359281, guid: eb101eb5ba008aa4fad4497ac79afc31, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: eb101eb5ba008aa4fad4497ac79afc31, type: 3}

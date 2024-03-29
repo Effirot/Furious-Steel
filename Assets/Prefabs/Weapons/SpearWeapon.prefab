@@ -265,7 +265,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91b59a25b78b63442bfa85d494b70054, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animatorController: {fileID: 22100000, guid: 160e3110bff843b42b44520b90e734bf, type: 2}
+  overrides:
+  - Name: Holding_Default
+    Clip: {fileID: -4470652782877245180, guid: eb101eb5ba008aa4fad4497ac79afc31, type: 3}
 --- !u!1 &1901328450275216932
 GameObject:
   m_ObjectHideFlags: 0
@@ -475,7 +477,7 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
     m_ImpulseDuration: 0.2
-    m_ImpulseType: 3
+    m_ImpulseType: 1
     m_DissipationRate: 0
     m_RawSignal: {fileID: 11400000, guid: 69ce8388f6785dd4c8c39915efece2f4, type: 2}
     m_AmplitudeGain: 1

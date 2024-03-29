@@ -70,7 +70,7 @@ public class CharacterStealthGraphicHider : NetworkBehaviour
         
         var hideStatus = !IsHidden || IsObservableInHideObject;
         
-        transparency = Mathf.Lerp(transparency, IsHidden ? (IsObservableInHideObject ? 0.75f : 0) : 1, 20 * Time.deltaTime); 
+        transparency = Mathf.Lerp(transparency, IsHidden ? (IsObservableInHideObject ? 0.5f : 0) : 1, 20 * Time.deltaTime); 
 
         foreach (var item in HiddableObjects)
         {

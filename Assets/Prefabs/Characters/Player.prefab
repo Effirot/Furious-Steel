@@ -194,7 +194,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 756936595
+  GlobalObjectIdHash: 3147394388
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -219,21 +219,16 @@ MonoBehaviour:
   <Speed>k__BackingField: 11
   <Mass>k__BackingField: 1
   CorpsePrefab: {fileID: 0}
-  <OnHitEffect>k__BackingField: {fileID: 5661648555660338103}
-  <OnHitSound>k__BackingField: {fileID: 5364668463935979163}
-  <OnHealEffect>k__BackingField: {fileID: 439211672651731550}
-  <OnHealSound>k__BackingField: {fileID: 0}
-  <StulockEffect>k__BackingField: {fileID: 0}
-  <TeamIndex>k__BackingField: 0
-  moveInput: {fileID: -3797342247120088548, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
-  lookInput: {fileID: 9093183501225965390, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
-  dashInput: {fileID: 3350768162098237311, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
-  OnHitImpulseSource: {fileID: 7011506643223629107}
   DodgePushForce: 0.3
   DodgePushTime: 0.3
   DodgeRechargeTime: 1.5
   DodgeEffect: {fileID: 5614067285868523917}
   DodgeSound: {fileID: 5866190622722593410}
+  <TeamIndex>k__BackingField: 0
+  moveInput: {fileID: -3797342247120088548, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
+  lookInput: {fileID: 9093183501225965390, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
+  dashInput: {fileID: 3350768162098237311, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
+  OnHitImpulseSource: {fileID: 7011506643223629107}
 --- !u!114 &7280063651460184589
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -286,7 +281,7 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
     m_ImpulseDuration: 0.2
-    m_ImpulseType: 3
+    m_ImpulseType: 1
     m_DissipationRate: 0
     m_RawSignal: {fileID: 11400000, guid: 69ce8388f6785dd4c8c39915efece2f4, type: 2}
     m_AmplitudeGain: 1
@@ -308,7 +303,7 @@ MonoBehaviour:
         m_RotationOrder: 4
       m_AttackTime: 0
       m_SustainTime: 0.2
-      m_DecayTime: 0.4
+      m_DecayTime: 0.3
       m_ScaleWithImpact: 1
       m_HoldForever: 0
     m_ImpactRadius: 30
