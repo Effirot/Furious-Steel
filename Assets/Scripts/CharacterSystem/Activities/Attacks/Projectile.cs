@@ -1,6 +1,7 @@
 using System;
 using CharacterSystem.Attacks;
 using CharacterSystem.DamageMath;
+using Cysharp.Threading.Tasks;
 using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -85,13 +86,13 @@ public class Projectile : NetworkBehaviour,
 
     public void Kill ()
     {
-        if (IsSpawned)
+        if (IsSpawned && IsServer)
         {
-            NetworkObject.Despawn(true);
+            NetworkObject.Despawn();
         }
     }
 
-    public override void OnNetworkSpawn ()
+    public async override void OnNetworkSpawn ()
     {
         base.OnNetworkSpawn();
 
@@ -104,7 +105,9 @@ public class Projectile : NetworkBehaviour,
             transform.position = network_position.Value;
         }
 
-        Destroy(gameObject, lifetime);
+        await UniTask.WaitForSeconds(5);
+
+        Kill ();
     }
     public override void OnNetworkDespawn ()
     {
@@ -135,7 +138,7 @@ public class Projectile : NetworkBehaviour,
             transform.rotation = Quaternion.LookRotation(network_moveDirection.Value);
         }
     }
-    private void OnTriggerEnter (UnityEngine.Collider other)
+    private void OnTriggerEnter (Collider other)
     {
         if (!IsSpawned) return;
 
@@ -151,7 +154,14 @@ public class Projectile : NetworkBehaviour,
             {
                 if (report.isBlocked)
                 {
-                    Push(-MoveDirection);
+                    Push(other.transform.forward);
+
+                    speed *= 2f;
+
+                    if (other.TryGetComponent<IDamageSource>(out var source))
+                    {
+                        Summoner = source;
+                    }
                 }
                 else
                 {

@@ -94,19 +94,15 @@ namespace CharacterSystem.Blocking
                     }
                 }
 
-                var reducingPercent = 1f - DamageReducing;
+                if (damage.sender != null && damage.type != Damage.Type.Magical)
+                {                    
+                    backDamage.sender = Invoker;
+                    backDamage.pushDirection = -damage.pushDirection.normalized * PushForce;
+                    backDamage.type = Damage.Type.Parrying;
 
-                if (damage.sender != null)
-                {
-                    var sendedBackDamage = backDamage;
-                    
-                    sendedBackDamage.sender = Invoker;
-                    sendedBackDamage.pushDirection = -damage.pushDirection.normalized * PushForce;
-                    sendedBackDamage.type = Damage.Type.Parrying;
-
-                    Damage.Deliver(damage.sender, sendedBackDamage);
+                    Damage.Deliver(damage.sender, backDamage);
                 }
-                damage *= reducingPercent;
+                damage *= 1f - DamageReducing;
 
                 return damage.value == 0;
             }
@@ -175,12 +171,11 @@ namespace CharacterSystem.Blocking
                 BlockProcessRoutine = null;
 
                 Invoker.animator.SetBool("Blocking", false);
-                Invoker.stunlock = 0;
                 Invoker.Speed += SpeedReducing;
                 Invoker.permissions = CharacterPermission.All;
+            
+                IsBlockInProcess = false;
             }
-
-            IsBlockInProcess = false;
         }
 
         protected override void OnStateChanged(bool IsPressed)

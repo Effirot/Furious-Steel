@@ -23,9 +23,8 @@ public class BonePlayerNetworkCharacter : PlayerNetworkCharacter
 
     [Space]
     [SerializeField]
-    public UnityEvent OnSplashDamageCast = new();
+    public GameObject SplashHitPrefab;
 
-    private bool isAttacking = false; 
     private float recievedDamage = 0; 
 
     // public override bool Hit(Damage damage)
@@ -43,14 +42,18 @@ public class BonePlayerNetworkCharacter : PlayerNetworkCharacter
     {
         recievedDamage += report.damage.value;
 
-        if (!isAttacking && IsServer && recievedDamage >= splashAttackRecievedDamage)
+        if (report.isDelivered && IsServer && recievedDamage >= splashAttackRecievedDamage)
         {
-
-            SplashAttack_ClientRpc();
-
-            if (!IsClient)
+            if (report.target.gameObject.TryGetComponent<NetworkObject>(out var component))
             {
-                SplashAttack();
+                var ID = component.NetworkObjectId;
+
+                SplashAttack_ClientRpc(ID);
+
+                if (!IsClient)
+                {
+                    SplashAttack(ID);
+                }
             }
         }
 
@@ -65,36 +68,41 @@ public class BonePlayerNetworkCharacter : PlayerNetworkCharacter
         Gizmos.DrawWireSphere(transform.position, splashAttackRange);
     }
 
-    private void SplashAttack()
+    private async void SplashAttack(ulong targetID)
     {
-        recievedDamage = 0;
-        isAttacking = true;
-        damage.sender = this;
+        var dictionary = NetworkManager.Singleton.SpawnManager.SpawnedObjects;
         
-        if (this == null || !IsSpawned) return;
+        if (!dictionary.ContainsKey(targetID)) return;
+        var target = dictionary[targetID];
 
-        OnSplashDamageCast.Invoke();
-        foreach (var target in Physics.OverlapSphere(transform.position, splashAttackRange))
+        await UniTask.WaitForSeconds(1); 
+        
+        if (target == null || this == null || !IsSpawned) return;
+
+        recievedDamage = 0;
+        damage.sender = this;
+
+        var vector = target.transform.position - transform.position;
+        Quaternion LookRotation = Quaternion.identity;
+        if (vector.magnitude > 0)
         {
-            var vector = target.transform.position - transform.position;
-            if (vector.magnitude > 0)
-            {
-                damage.pushDirection = Quaternion.LookRotation(target.transform.position - transform.position) * damage.pushDirection;
-            }
-            else
-            {
-                damage.pushDirection = Vector3.zero;
-            }
-
-
-            Damage.Deliver(target.gameObject, damage);
+            LookRotation = Quaternion.LookRotation(target.transform.position - transform.position);
+        }
+        if (LookRotation != Quaternion.identity)
+        {
+            damage.pushDirection = LookRotation * damage.pushDirection;
         }
 
-        isAttacking = false;
+        if (SplashHitPrefab)
+        {
+            Destroy(Instantiate(SplashHitPrefab, target.transform.position, LookRotation), 5);
+        }
+
+        Damage.Deliver(target.gameObject, damage);
     } 
     [ClientRpc]
-    private void SplashAttack_ClientRpc()
+    private void SplashAttack_ClientRpc(ulong targetID)
     {
-        SplashAttack();
+        SplashAttack(targetID);
     }
 }

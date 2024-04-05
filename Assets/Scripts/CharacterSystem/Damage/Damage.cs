@@ -29,33 +29,30 @@ namespace CharacterSystem.DamageMath
         }
         public static DamageDeliveryReport Deliver(IDamagable target, Damage damage)
         {
+            var report = new DamageDeliveryReport();
+
             if (target == null || target == damage.sender)
-                return new();
+                return report;
 
             if (ITeammate.IsAlly(target, damage.sender))
-                return new();
-
-            var report = new DamageDeliveryReport();
+                return report;
 
             report.target = target;
             report.damage = damage;
             report.isDelivered = true;
             
-            if (damage.value > 0)
+            if (damage.value >= 0)
             {
                 report.isBlocked = target.Hit(damage);
                 report.isLethal = target.health <= 0;
-            }
-            
-            if (damage.value < 0)
+            }         
+            else
             {
                 report.isBlocked = target.Heal(damage);
             }
 
-            if (damage.sender != null)
-            {
-                damage.sender?.DamageDelivered(report);
-            }
+            damage.sender?.DamageDelivered(report);
+            
 
             return report;
         }
@@ -101,7 +98,7 @@ namespace CharacterSystem.DamageMath
             serializer.SerializeValue(ref stunlock);
             serializer.SerializeValue(ref pushDirection);
             serializer.SerializeValue(ref RechargeUltimate);
-            
+
             var objectID = sender?.gameObject?.GetComponent<NetworkObject>()?.NetworkObjectId ?? ulong.MinValue;
             serializer.SerializeValue(ref objectID);
 

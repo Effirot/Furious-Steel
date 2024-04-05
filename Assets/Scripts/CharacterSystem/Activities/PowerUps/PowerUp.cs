@@ -31,10 +31,14 @@ namespace CharacterSystem.PowerUps
 
         protected PowerUp() { }
 
+        public virtual bool Undestroyable => false;
+
         public virtual GameObject prefab => Resources.Load<GameObject>($"PowerUps/{this.GetType().Name}");
 
         public abstract void Activate(PowerUpHolder character);
-        public abstract void OnPick(PowerUpHolder character);
+        
+        public virtual void OnPick(PowerUpHolder character) { }
+        public virtual void OnLost(PowerUpHolder character) { }
 
         public override string ToString()
         {

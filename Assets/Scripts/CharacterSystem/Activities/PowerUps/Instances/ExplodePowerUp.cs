@@ -9,7 +9,7 @@ using UnityEngine.VFX;
 
 public class ExplodePowerUp : PowerUp
 {
-    private static VisualEffectAsset visualEffect = Resources.Load<VisualEffectAsset>("Effects/Explode");
+    private static GameObject effectPrefab = Resources.Load<GameObject>("PowerUps/Prefabs/ExplodeEffect");
     
     public override void Activate(PowerUpHolder holder)
     {
@@ -34,26 +34,6 @@ public class ExplodePowerUp : PowerUp
             }
         }
 
-        InvokeEffect();
-
-        void InvokeEffect()
-        {
-            var effectObject = new GameObject(visualEffect.name);
-            effectObject.transform.position = holder.transform.position;
-
-            var effect = effectObject.AddComponent<VisualEffect>();
-
-            effect.visualEffectAsset = visualEffect;
-            effect.Play();
-
-            AudioSource.PlayClipAtPoint(Resources.Load<AudioClip>("Sounds/PowerUps/Explode"), holder.transform.position, 1);
-
-            Object.Destroy(effectObject, 5);
-        }
-    }
-
-    public override void OnPick(PowerUpHolder holder)
-    {
-
+        GameObject.Destroy(GameObject.Instantiate(effectPrefab, holder.transform.position, holder.transform.rotation), 5);
     }
 }

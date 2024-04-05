@@ -251,11 +251,12 @@ namespace CharacterSystem.Objects
 
             Push(damage.pushDirection);
             
+            health -= damage.value;  
+
+            stunlock = Mathf.Max(damage.stunlock, stunlock); 
+
             if (IsServer)
             {
-                health -= damage.value;              
-
-                stunlock = Mathf.Max(damage.stunlock, stunlock); 
              
                 OnHit_ClientRpc(damage);
                 if (!IsClient)
@@ -370,7 +371,6 @@ namespace CharacterSystem.Objects
             network_health.OnValueChanged += (Old, New) => { if (New <= 0) Kill(); };
         }
         protected virtual void Start () { }
-
 
         protected virtual void FixedUpdate ()
         {

@@ -28,11 +28,6 @@ public class SpeedBoostEffect : CharacterEffect
         time -= Time.fixedDeltaTime;
     }
 
-    public override void NetworkSerialize<T>(BufferSerializer<T> serializer)
-    {
-        
-    }
-
     public override string ToString()
     {
         return base.ToString() + " - " + time;

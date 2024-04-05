@@ -232,8 +232,6 @@ namespace CharacterSystem.Attacks
         
         protected void Execute(IEnumerable<Caster> casters, IDamageSource source)
         {
-            var alreadyHitColliders = new List<Collider>();
-
             foreach (var cast in casters)
             {
                 foreach (var collider in cast.CastCollider(source.transform))
@@ -242,11 +240,6 @@ namespace CharacterSystem.Attacks
                     if (collider.isTrigger)
                         continue;
 
-                    if (alreadyHitColliders.Contains(collider))
-                        continue;
-
-                    alreadyHitColliders.Add(collider);
-
                     var damage = cast.damage;
                     damage.pushDirection = source.transform.rotation * cast.damage.pushDirection;
                     damage.sender = source;
@@ -254,8 +247,6 @@ namespace CharacterSystem.Attacks
                     Damage.Deliver(collider.gameObject, damage);
                 }
             }
-
-            alreadyHitColliders.Clear();
         }
     
         public abstract IEnumerator AttackPipeline(DamageSource source);

@@ -62,12 +62,7 @@ namespace CharacterSystem.Objects
 
         public override bool Hit(Damage damage)
         {
-            var isBlocked = Blocker != null && Blocker.Block(ref damage);
-
-            if (damage.value != 0)
-            {
-                base.Hit(damage); 
-            }
+            var isBlocked = Blocker != null && Blocker.Block(ref damage) || base.Hit(damage);            
 
             if (isBlocked)
             {

@@ -5,7 +5,7 @@ using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 
-public abstract class CharacterEffect : INetworkSerializable
+public abstract class CharacterEffect
 {
     public static Type[] AllCharacterEffectTypes { get; private set; } = GetAllTypes();
 
@@ -25,8 +25,6 @@ public abstract class CharacterEffect : INetworkSerializable
     public abstract bool Existance { get; }
 
     public CharacterEffect() { }
-
-    public abstract void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter;
 
     public virtual void Start() { }
     public virtual void Update() { }
