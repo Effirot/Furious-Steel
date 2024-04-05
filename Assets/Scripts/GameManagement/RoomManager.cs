@@ -340,7 +340,7 @@ public class RoomManager : NetworkBehaviour
             }
         }
 
-        return null;
+        return weapons.PrefabList[0].Prefab;
     }
 
     public async void OnPlayerAuthorized(ulong ID, Authorizer.AuthorizeArguments authorizedPlayerData)
@@ -425,16 +425,12 @@ public class RoomManager : NetworkBehaviour
         
         if (client.networkCharacter == null)
             return;
+        if (client.networkCharacterWeapon != null)
+            return;
 
         var weapon = ResearchWeaponPrefab(args.WeaponName.Value);
         if (weapon == null)
             return;
-
-        if (client.networkCharacterWeapon != null && client.networkCharacterWeapon.IsSpawned)
-        {
-            client.networkCharacterWeapon.Despawn();
-            client.networkCharacterWeapon = null;
-        }
 
         // Spawn weapon
         var weaponGameObject = Instantiate(weapon, Vector3.zero, Quaternion.identity);

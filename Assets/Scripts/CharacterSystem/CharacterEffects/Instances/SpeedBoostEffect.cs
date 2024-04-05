@@ -25,7 +25,10 @@ public class SpeedBoostEffect : CharacterEffect
     }
     public override void Update()
     {
-        time -= Time.fixedDeltaTime;
+        if (IsServer)
+        {
+            time -= Time.fixedDeltaTime;
+        }
     }
 
     public override string ToString()

@@ -77,7 +77,9 @@ public class CharacterEffectsHolder : NetworkBehaviour
                 {
                     characterEffects[i].Remove();
                     characterEffects.RemoveAt(i);
-
+                    
+                    characterEffectIds_network.RemoveAt(i);
+                    
                     i--;
                 }
             }
@@ -97,7 +99,6 @@ public class CharacterEffectsHolder : NetworkBehaviour
                 instance.Start();
 
                 characterEffects.Insert(index, instance);
-
                 break;
                 
             case EventType.Insert: 

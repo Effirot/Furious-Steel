@@ -229,8 +229,9 @@ namespace CharacterSystem.Attacks
         [Space]
         [SerializeField, TextArea(1, 1)]
         private string Name;
-        
-        protected void Execute(IEnumerable<Caster> casters, IDamageSource source)
+
+
+        protected void Execute(IEnumerable<Caster> casters, IDamageSource source, DamageSource damageSource)
         {
             foreach (var cast in casters)
             {
@@ -244,7 +245,7 @@ namespace CharacterSystem.Attacks
                     damage.pushDirection = source.transform.rotation * cast.damage.pushDirection;
                     damage.sender = source;
 
-                    Damage.Deliver(collider.gameObject, damage);
+                    damageSource.HandleDamageReport(Damage.Deliver(collider.gameObject, damage));
                 }
             }
         }
@@ -326,7 +327,7 @@ namespace CharacterSystem.Attacks
             invoker.Push(invoker.transform.rotation * CastPushDirection);
             PlayAnimation(source.Invoker, CastAnimationName);
 
-            Execute(newCasters, invoker);
+            Execute(newCasters, invoker, source);
 
             yield break;
         }

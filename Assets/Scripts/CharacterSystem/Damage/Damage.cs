@@ -49,10 +49,7 @@ namespace CharacterSystem.DamageMath
             else
             {
                 report.isBlocked = target.Heal(damage);
-            }
-
-            damage.sender?.DamageDelivered(report);
-            
+            }            
 
             return report;
         }

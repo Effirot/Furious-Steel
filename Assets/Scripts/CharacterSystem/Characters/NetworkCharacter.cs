@@ -485,10 +485,10 @@ namespace CharacterSystem.Objects
             {
                 if(!IsServer)
                 {
-                    vector += Vector3.Lerp(Vector3.zero, network_position.Value - transform.position, 10f * Time.fixedDeltaTime);
+                    vector += Vector3.Lerp(Vector3.zero, network_position.Value - transform.position, 17f * Time.fixedDeltaTime);
                 }
 
-                if (Vector3.Distance(network_position.Value, transform.position) < 1f)
+                if (Vector3.Distance(network_position.Value, transform.position) < 1.4f)
                 {
                     characterController.Move(vector);
                 }

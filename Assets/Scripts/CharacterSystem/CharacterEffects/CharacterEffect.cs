@@ -20,6 +20,10 @@ public abstract class CharacterEffect
         return array.ToArray();
     }
 
+    public bool IsServer => effectsHolder.IsServer;
+    public bool IsClient => effectsHolder.IsClient;
+    public bool IsHost => effectsHolder.IsHost;
+
     public CharacterEffectsHolder effectsHolder { get; internal set; }
     
     public abstract bool Existance { get; }
