@@ -24,8 +24,6 @@ public class SphereColliderAutoAim : NetworkBehaviour
     [SerializeField]
     private Transform followPoint;
 
-    private bool Researching = true;
-
     private IEnumerable<Collider> colliders;
 
     public override void OnNetworkSpawn()

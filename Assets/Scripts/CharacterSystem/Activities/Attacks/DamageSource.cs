@@ -20,6 +20,7 @@ namespace CharacterSystem.Attacks
         IDamagable
     {
         float Speed { get; set; }
+        DamageDeliveryReport lastReport { get; set; }
 
         event Action<DamageDeliveryReport> OnDamageDelivered;
 
@@ -219,6 +220,7 @@ namespace CharacterSystem.Attacks
                 }
 
                 Invoker.DamageDelivered(report);
+                Invoker.lastReport = report;
             }
         }
     }
@@ -491,6 +493,49 @@ namespace CharacterSystem.Attacks
             
         }
     }
+    [Serializable]
+    public sealed class InterruptableWait : AttackQueueElement
+    {
+        [SerializeField, Range(0, 10)]
+        private float WaitTime = 1;
+
+        [SerializeField, Range(0, 5)]
+        private float LastHitRequireSeconds = 1;
+        
+        [SerializeField]
+        private CharacterPermission Permissions = CharacterPermission.All;
+
+        [SerializeField]
+        private string AnimationName = "";
+
+        [SerializeField]
+        private UnityEvent OnStart = new();
+        [SerializeField]
+        private UnityEvent OnEnd = new();
+
+        public override IEnumerator AttackPipeline(DamageSource source)
+        {
+            OnStart.Invoke();
+            PlayAnimation(source.Invoker, AnimationName);
+
+            source.Invoker.permissions = Permissions;
+
+            var deltaTime = DateTime.Now - (source.Invoker.lastReport?.time ?? DateTime.MinValue);
+                        
+            if (deltaTime > new TimeSpan((long)Mathf.Round(TimeSpan.TicksPerSecond * LastHitRequireSeconds)))
+            {
+                yield return new WaitForSeconds(WaitTime);
+            }
+
+            OnEnd.Invoke();
+            
+        }
+        
+        public override void OnDrawGizmos(Transform transform)
+        {
+            
+        }
+    }
 
     [Serializable]
     public sealed class Charger : AttackQueueElement
@@ -581,7 +626,6 @@ namespace CharacterSystem.Attacks
             chargeListener?.OnDrawGizmos(transform);
         }
     }
-
 
     [Serializable]
     public abstract class Caster 

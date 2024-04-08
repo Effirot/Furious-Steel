@@ -23,6 +23,7 @@ namespace CharacterSystem.Objects.AI
         private AICompute AICompute = new AllWeaponAICompute();
 
         public DamageBlocker Blocker { get; set; }
+        public DamageDeliveryReport lastReport { get; set; }
 
         public event Action<DamageDeliveryReport> OnDamageDelivered;
 

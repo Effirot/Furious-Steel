@@ -24,9 +24,18 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Attack",
+                    "name": "Attack1",
                     "type": "PassThrough",
                     "id": "f1a44021-8a51-45f5-81b4-98b6cfac0be9",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Attack2",
+                    "type": "PassThrough",
+                    "id": "2a811b7e-d62a-4f5c-a262-c07a7be7ffce",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -73,11 +82,11 @@
                 {
                     "name": "",
                     "id": "143bb1cd-cc10-4eca-a2f0-a3664166fe91",
-                    "path": "<Gamepad>/rightTrigger",
+                    "path": "<Gamepad>/leftTrigger",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Gamepad",
-                    "action": "Attack",
+                    "action": "Attack1",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -88,7 +97,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
-                    "action": "Attack",
+                    "action": "Attack1",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -106,7 +115,7 @@
                 {
                     "name": "",
                     "id": "32849004-3b51-4c53-ae99-e51dc76f818e",
-                    "path": "<Mouse>/rightButton",
+                    "path": "<Keyboard>/q",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
@@ -326,7 +335,7 @@
                 {
                     "name": "",
                     "id": "031900ed-2f3b-49ca-8a77-74e4d925718a",
-                    "path": "<Gamepad>/leftTrigger",
+                    "path": "<Gamepad>/rightShoulder",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
@@ -337,11 +346,33 @@
                 {
                     "name": "",
                     "id": "ecc2a653-d4be-4491-9acd-1b210b02d701",
-                    "path": "<Keyboard>/q",
+                    "path": "<Keyboard>/e",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "Ultimate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "98af04da-2103-4786-ac0b-49af5ad9f4fd",
+                    "path": "<Gamepad>/rightTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Attack2",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5ea290e4-8540-4095-8e14-313bfbf4bfdc",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Attack2",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

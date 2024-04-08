@@ -105,7 +105,7 @@ public class Projectile : NetworkBehaviour,
             transform.position = network_position.Value;
         }
 
-        await UniTask.WaitForSeconds(5);
+        await UniTask.WaitForSeconds(lifetime);
 
         Kill ();
     }

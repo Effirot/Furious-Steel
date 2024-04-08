@@ -130,8 +130,11 @@ namespace CharacterSystem.DamageMath
             return damage;
         }
     }
-
-    public class DamageDeliveryReport : IDisposable
+    
+    [Serializable]
+    public class DamageDeliveryReport : 
+        IDisposable, 
+        INetworkSerializable
     {
         public Damage damage = new Damage();
 
@@ -141,9 +144,29 @@ namespace CharacterSystem.DamageMath
 
         public IDamagable target = null;
 
+        public DateTime time = DateTime.Now;
+
         public void Dispose()
         {
             GC.SuppressFinalize(this);
+        }
+
+        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+        {
+            serializer.SerializeValue(ref damage);
+            serializer.SerializeValue(ref isDelivered);
+            serializer.SerializeValue(ref isBlocked);
+            serializer.SerializeValue(ref isLethal);
+            serializer.SerializeValue(ref time);
+            
+            var objectID = target?.gameObject?.GetComponent<NetworkObject>()?.NetworkObjectId ?? ulong.MinValue;
+
+            serializer.SerializeValue(ref objectID);
+
+            if (serializer.IsReader)
+            {
+                target = NetworkManager.Singleton.SpawnManager.SpawnedObjects[objectID].GetComponent<IDamagable>();
+            }
         }
     }
 }

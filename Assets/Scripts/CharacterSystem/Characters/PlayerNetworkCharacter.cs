@@ -54,6 +54,8 @@ namespace CharacterSystem.Objects
         }
 
         public DamageBlocker Blocker { get; set; }
+        public DamageDeliveryReport lastReport { get; set; }
+
 
         private NetworkVariable<ulong> network_serverClientId = new (0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 

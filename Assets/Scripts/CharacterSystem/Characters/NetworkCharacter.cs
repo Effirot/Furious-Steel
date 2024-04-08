@@ -73,7 +73,7 @@ namespace CharacterSystem.Objects
 
         [Header("Dodge")]
         [SerializeField]
-        [Range(0, 10)]
+        [Range(0, 20)]
         private float DodgePushForce = 2;
 
         [SerializeField]
@@ -180,8 +180,6 @@ namespace CharacterSystem.Objects
 
                     if (value > 0)
                     {
-                        speed_acceleration_multipliyer = 0;
-
                         SetAngle(transform.rotation.eulerAngles.y);
                     }
                     else
@@ -216,7 +214,7 @@ namespace CharacterSystem.Objects
         
         private Coroutine regenerationCoroutine;
 
-        private float speed_acceleration_multipliyer = 0;
+        private Vector2 speed_acceleration_multipliyer = Vector2.zero;
 
         private Coroutine dodgeRoutine = null;
 
@@ -386,7 +384,7 @@ namespace CharacterSystem.Objects
                 }
             }
 
-            CharacterMove(CalculateMovement() + CalculatePhysicsSimulation()); 
+            CharacterMove(CalculateMovement(Time.fixedDeltaTime / 2) + CalculatePhysicsSimulation()); 
 
             if (!isStunned)
             {
@@ -409,13 +407,16 @@ namespace CharacterSystem.Objects
 
         protected virtual void OnPermissionsChanged (CharacterPermission Old, CharacterPermission New)
         {
-            if (New.HasFlag(CharacterPermission.Untouchable))
+            if (!this.IsUnityNull())
             {
-                gameObject.layer = LayerMask.NameToLayer("Untouchable");
-            }
-            else
-            {
-                gameObject.layer = LayerMask.NameToLayer("Character");
+                if (New.HasFlag(CharacterPermission.Untouchable))
+                {
+                    gameObject.layer = LayerMask.NameToLayer("Untouchable");
+                }
+                else
+                {
+                    gameObject.layer = LayerMask.NameToLayer("Character");
+                }
             }
         }
         
@@ -436,29 +437,22 @@ namespace CharacterSystem.Objects
         }
         protected virtual void Spawn () { }
 
-        private Vector3 CalculateMovement ()
+        private Vector3 CalculateMovement (float TimeScale)
         {
             var characterMovement = Vector3.zero;
 
-            if (isStunned)
+            if (!isStunned && permissions.HasFlag(CharacterPermission.AllowMove))
             {
-                speed_acceleration_multipliyer = 0;
+                speed_acceleration_multipliyer = Vector2.Lerp(speed_acceleration_multipliyer, Speed <= 0 ? Vector2.zero : movementVector * Mathf.Max(0, Speed), 20 * TimeScale);
+
+                if (IsServer)
+                {
+                    characterMovement = isStunned ? Vector3.zero : new Vector3(speed_acceleration_multipliyer.x, 0, speed_acceleration_multipliyer.y) * TimeScale;
+                }
             }
             else
             {
-                if (permissions.HasFlag(CharacterPermission.AllowMove))
-                {
-                    speed_acceleration_multipliyer = Mathf.Lerp(speed_acceleration_multipliyer, Speed <= 0 ? 0 : movementVector.magnitude * Speed, 0.12f);
-
-                    if (IsServer)
-                    {
-                        characterMovement = isStunned ? Vector3.zero : new Vector3(movementVector.x, 0, movementVector.y) * (speed_acceleration_multipliyer / 100);
-                    }
-                }
-                else
-                {
-                    speed_acceleration_multipliyer = Mathf.Lerp(speed_acceleration_multipliyer, 0, 0.8f);
-                }
+                speed_acceleration_multipliyer = Vector2.zero;
             }
 
             return characterMovement;
@@ -527,8 +521,8 @@ namespace CharacterSystem.Objects
         {
             if (animator.gameObject.activeInHierarchy && animator != null)
             {
-                var vector = new Vector3(movementVector.x , 0, -movementVector.y); 
-                var walkVector = transform.rotation * -vector * speed_acceleration_multipliyer;
+                var vector = new Vector3(speed_acceleration_multipliyer.x , 0, -speed_acceleration_multipliyer.y); 
+                var walkVector = transform.rotation * -vector;
 
                 animator.SetFloat("Walk_Speed_X",  walkVector.x);
                 animator.SetFloat("Walk_Speed_Y",  walkVector.z);
@@ -559,11 +553,9 @@ namespace CharacterSystem.Objects
             permissions = CharacterPermission.Untouchable;
             animator.SetBool("Dodge", true);
 
-            var timer = 0f;
-            while (timer < DodgePushTime)
+            for (float timer = 0f; timer < DodgePushTime; timer += Time.fixedDeltaTime)
             {
-                timer += Time.fixedDeltaTime;
-                characterController.Move(Direction * DodgePushForce);
+                characterController.Move(Direction * Time.fixedDeltaTime * DodgePushForce);
 
                 yield return new WaitForFixedUpdate();
             } 
