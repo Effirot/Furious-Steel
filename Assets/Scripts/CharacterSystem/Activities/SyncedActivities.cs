@@ -17,7 +17,6 @@ public interface ISyncedActivitiesSource : IGameObjectLink
     
     public bool IsServer => NetworkManager.Singleton.IsServer;
     public bool IsOwner => NetworkObject.IsOwner;
-
 }
 
 public abstract class SyncedActivities<T> : NetworkBehaviour where T : ISyncedActivitiesSource

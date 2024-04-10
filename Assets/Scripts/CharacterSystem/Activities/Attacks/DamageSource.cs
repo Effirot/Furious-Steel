@@ -193,6 +193,11 @@ namespace CharacterSystem.Attacks
                 OnAttackEnded.Invoke();
                 
                 attackProcess = null;
+
+                if (IsServer && IsPressed)
+                {
+                    StartAttack();
+                }
             }
         }
         [ClientRpc]
