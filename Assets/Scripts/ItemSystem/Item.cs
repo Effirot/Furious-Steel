@@ -6,11 +6,8 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text.RegularExpressions;
 
-using MessagePack;
-
 namespace Effiry.Items
 {
-    [MessagePackObject]
     public class Item
     {
         public enum Quality : byte
@@ -23,16 +20,16 @@ namespace Effiry.Items
             Rare,
         }
 
+        
+        public ReactiveValue<string> Name = "Nameless";
+        public ReactiveValue<string> Description = "";
 
-        [Key(0)] public ReactiveValue<string> Name = "Nameless";
-        [Key(1)] public ReactiveValue<string> Description = "";
+        public ReactiveValue<Quality> Rarity = Quality.Common;
 
-        [Key(2)] public ReactiveValue<Quality> Rarity = Quality.Common;
+        public ReactiveValue<string[]> Args = Array.Empty<string>();
 
-        [Key(3)] public ReactiveValue<string[]> Args = Array.Empty<string>();
-
-        [Key(4)] public DateTime creationTime = DateTime.Now;
-        [Key(5)] public DateTime lastModificationTime = DateTime.Now;
+        public DateTime creationTime = DateTime.Now;
+        public DateTime lastModificationTime = DateTime.Now;
 
         
         public Item()
@@ -47,11 +44,8 @@ namespace Effiry.Items
         }
     }
 
-
-    [MessagePackObject]
     public class SAS : Item
     {
-        [Key(6)]
         public int U = 1;
     }
 }

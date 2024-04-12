@@ -110,7 +110,7 @@ namespace CharacterSystem.Objects
             {
                 if (IsServer)
                 {
-                    if (!value.HasFlag(CharacterPermission.AllowRotate))
+                    if (value.HasFlag(CharacterPermission.AllowRotate))
                     {   
                         SetAngle(transform.eulerAngles.y);
                     }

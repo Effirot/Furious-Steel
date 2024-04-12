@@ -1,14 +1,12 @@
 
 
 using System;
-using MessagePack;
+using System.Text.Json.Serialization;
 
 namespace Effiry
 {
-    [MessagePackObject()]
     public struct ReactiveValue<T> 
     {
-        [Key(0)]
         public T Value
         {
             get => _Value;
@@ -24,11 +22,11 @@ namespace Effiry
 
         }
 
+        [JsonInclude]
         private T _Value;
         
         public event Action<T> OnValueChanged;
         
-        [SerializationConstructor]
         public ReactiveValue(T value) : this (value, delegate { }) { }
         public ReactiveValue(T value, Action<T> actions)
         {

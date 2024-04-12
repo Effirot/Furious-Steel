@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using CharacterSystem.DamageMath;
 using CharacterSystem.Objects;
 using Cysharp.Threading.Tasks;
 using Unity.Netcode;
@@ -38,11 +39,15 @@ public class CharacterStealthGraphicHider : NetworkBehaviour
 
     private NetworkVariable<bool> isObjectHidden_network = new NetworkVariable<bool> (false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
+    private Coroutine OnHitTimeOut;
+
     public override void OnNetworkSpawn()
     {
+        character = GetComponent<NetworkCharacter>();
+
         base.OnNetworkSpawn();
 
-        character = GetComponent<NetworkCharacter>();
+        character.onDamageRecieved += UnhideWhileGetDamage;
     }
     public override void OnNetworkDespawn()
     {
@@ -53,6 +58,8 @@ public class CharacterStealthGraphicHider : NetworkBehaviour
                 component.characterSteathers.Remove(this);
             }
         }
+
+        character.onDamageRecieved -= UnhideWhileGetDamage;
     }
 
     private async void Start()
@@ -61,6 +68,7 @@ public class CharacterStealthGraphicHider : NetworkBehaviour
 
         HiddableMeshRenderers = GetComponentsInChildren<MeshRenderer>();
         HiddableSkinnedMeshRenderers = GetComponentsInChildren<SkinnedMeshRenderer>();
+     
     }
 
     private void LateUpdate()
@@ -127,5 +135,22 @@ public class CharacterStealthGraphicHider : NetworkBehaviour
     private void UpdateHideStatus()
     {
         IsHidden = stealthObjects.Any();
+    }
+
+    private void UnhideWhileGetDamage(Damage damage)
+    {
+        if (OnHitTimeOut != null)
+        {
+            StopCoroutine(OnHitTimeOut);
+            OnHitTimeOut = null;
+        }
+
+        OnHitTimeOut = StartCoroutine(OnHitRoutine());
+    }
+    private IEnumerator OnHitRoutine()
+    {
+        yield return new WaitForSeconds(1); 
+
+        OnHitTimeOut = null;
     }
 }
