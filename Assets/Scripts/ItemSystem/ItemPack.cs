@@ -1,26 +1,41 @@
 #nullable enable
 
-using System.Text.Json;
 using System.Collections.Generic;
-using Codice.Client.Common;
-using System;
+using Newtonsoft.Json;
+using System.Diagnostics;
+using Newtonsoft.Json.Serialization;
+using UnityEngine;
 
 namespace Effiry.Items
 {
-    
     public sealed class ItemPack
     {
-        [UnityEngine.RuntimeInitializeOnLoadMethod]
+        private static readonly JsonSerializerSettings JsonSerializSettings = new JsonSerializerSettings() { 
+            TypeNameHandling = TypeNameHandling.Auto,
+            NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
+        };
+
+        [RuntimeInitializeOnLoadMethod]
         public static void OnLoad()
-        {
-            
+        { 
+            var a = new ItemPack();
+
+            UnityEngine.Debug.Log(a.SaveToString());
+            a.LoadFromString(a.SaveToString());
         }
+        
+        public int MaxSize = 0;
+        public Item?[] items = System.Array.Empty<Item>();
 
-        public Item?[] items = Array.Empty<Item>();
+        public ItemPack() { }
 
-        public ItemPack(params Item?[] items)
+        public void LoadFromString(string Json)
         {
-            this.items = items;
+            JsonConvert.DeserializeAnonymousType(Json, this, JsonSerializSettings);
+        }
+        public string SaveToString()
+        {
+            return JsonConvert.SerializeObject(this, Formatting.Indented, JsonSerializSettings);
         }
     }
 }

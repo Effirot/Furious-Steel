@@ -604,7 +604,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 737768135341005266, guid: 145e10577e0c02344996a3a83100603e, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -218.50208
+      value: -218.50206
       objectReference: {fileID: 0}
     - target: {fileID: 823693337369471099, guid: 145e10577e0c02344996a3a83100603e, type: 3}
       propertyPath: m_AnchorMax.x
@@ -944,7 +944,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Key: SelectedWeapon
-  group: {fileID: 0}
 --- !u!1 &300239436 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2029857476372711698, guid: ebbddb5a7ee016045aef3896bec80321, type: 3}
@@ -2477,7 +2476,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Key: SelectedColor
-  group: {fileID: 0}
 --- !u!4 &717133329 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4188669589595104695, guid: 7b6f0dc7eed29ab41a2434cce1b4d46e, type: 3}
@@ -3989,18 +3987,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 199448742}
     m_Modifications:
-    - target: {fileID: -3846305236143087673, guid: 7ce72994d65d3bf4ca94ca7b5c3b9b95, type: 3}
-      propertyPath: m_Mesh
-      value: 
-      objectReference: {fileID: -1453128693247675973, guid: 4191a3f74ae7ddf409bd23b8e24e6c8b, type: 3}
-    - target: {fileID: 2029857476372711698, guid: 7ce72994d65d3bf4ca94ca7b5c3b9b95, type: 3}
-      propertyPath: m_Layer
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 2029857476372711698, guid: 7ce72994d65d3bf4ca94ca7b5c3b9b95, type: 3}
-      propertyPath: m_StaticEditorFlags
-      value: 2147483647
-      objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: ebbddb5a7ee016045aef3896bec80321, type: 3}
       propertyPath: m_LocalPosition.x
       value: 18.07
@@ -4050,6 +4036,18 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: ebbddb5a7ee016045aef3896bec80321, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: -3846305236143087673, guid: 7ce72994d65d3bf4ca94ca7b5c3b9b95, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: -1453128693247675973, guid: 4191a3f74ae7ddf409bd23b8e24e6c8b, type: 3}
+    - target: {fileID: 2029857476372711698, guid: 7ce72994d65d3bf4ca94ca7b5c3b9b95, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2029857476372711698, guid: 7ce72994d65d3bf4ca94ca7b5c3b9b95, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
@@ -4796,7 +4794,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Key: SelectedCharacter
-  group: {fileID: 0}
 --- !u!1001 &1350839175
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5725,26 +5722,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GlobalObjectIdHash: 3573500457
-  NetworkManagerOwner: {fileID: 0}
-  <NetworkObjectId>k__BackingField: 0
-  <OwnerClientId>k__BackingField: 0
   AlwaysReplicateAsRoot: 0
-  <IsPlayerObject>k__BackingField: 0
   SynchronizeTransform: 1
-  <IsSpawned>k__BackingField: 0
-  <DestroyWithScene>k__BackingField: 0
   ActiveSceneSynchronization: 0
   SceneMigrationSynchronization: 1
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
-  SceneOriginHandle: 0
-  NetworkSceneHandle: 0
-  m_SceneOrigin:
-    m_Handle: 0
-  m_CachedParent: {fileID: 0}
-  m_CachedWorldPositionStays: 1
-  m_ChildNetworkBehaviours: []
 --- !u!114 &1515811403
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5757,20 +5741,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a794e5f556aaa9a418ed1caa9af96b57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <IsLocalPlayer>k__BackingField: 0
-  <IsOwner>k__BackingField: 0
-  <IsServer>k__BackingField: 0
-  <IsClient>k__BackingField: 0
-  <IsHost>k__BackingField: 0
-  <IsOwnedByServer>k__BackingField: 0
-  <IsSpawned>k__BackingField: 0
-  m_NetworkObject: {fileID: 0}
-  <NetworkObjectId>k__BackingField: 0
-  <NetworkBehaviourId>k__BackingField: 0
-  NetworkBehaviourIdCache: 0
-  <OwnerClientId>k__BackingField: 0
-  m_VarInit: 0
-  <m_TargetIdBeingSynchronized>k__BackingField: 0
   CharactersLimit: 12
   characters: {fileID: 11400000, guid: 3577dd877111aef4f91d9757efba99fb, type: 2}
   weapons: {fileID: 11400000, guid: 272b89dd37dff9e4b98a4e7df7531d18, type: 2}
@@ -5801,21 +5771,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c9bd8c442ccc174a90a2ff4b9f8de38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <IsLocalPlayer>k__BackingField: 0
-  <IsOwner>k__BackingField: 0
-  <IsServer>k__BackingField: 0
-  <IsClient>k__BackingField: 0
-  <IsHost>k__BackingField: 0
-  <IsOwnedByServer>k__BackingField: 0
-  <IsSpawned>k__BackingField: 0
-  m_NetworkObject: {fileID: 0}
-  <NetworkObjectId>k__BackingField: 0
-  <NetworkBehaviourId>k__BackingField: 0
-  NetworkBehaviourIdCache: 0
-  <OwnerClientId>k__BackingField: 0
-  m_VarInit: 0
-  <m_TargetIdBeingSynchronized>k__BackingField: 0
-  roomManager: {fileID: 0}
 --- !u!1001 &1524606090
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -113,7 +113,8 @@ public class RoomManager : NetworkBehaviour
     {
         public static PlayerStatistics Empty() => new() 
         {
-            KillStreak = 0,
+            Points = 0,
+        
             KillStreakTotal = 0,
         
             AssistsStreak = 0,
@@ -125,7 +126,8 @@ public class RoomManager : NetworkBehaviour
             PowerUpsPicked = 0,
         };
 
-        public int KillStreak;
+        public int Points;
+
         public int KillStreakTotal;
         
         public int AssistsStreak;
@@ -144,7 +146,7 @@ public class RoomManager : NetworkBehaviour
             var stats = (PlayerStatistics)obj;
 
             return 
-                stats.KillStreak == KillStreak &&
+                stats.Points == Points &&
                 stats.KillStreakTotal == KillStreakTotal &&
                 stats.AssistsStreak == AssistsStreak &&
                 stats.AssistsStreakTotal == AssistsStreakTotal &&
@@ -159,7 +161,7 @@ public class RoomManager : NetworkBehaviour
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
-            serializer.SerializeValue(ref KillStreak);
+            serializer.SerializeValue(ref Points);
             serializer.SerializeValue(ref KillStreakTotal);
             serializer.SerializeValue(ref AssistsStreak);
             serializer.SerializeValue(ref AssistsStreakTotal);

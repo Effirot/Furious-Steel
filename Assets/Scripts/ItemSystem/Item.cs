@@ -4,11 +4,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Text.RegularExpressions;
 
 namespace Effiry.Items
 {
-    public class Item
+    public abstract class Item
     {
         public enum Quality : byte
         {
@@ -21,31 +20,51 @@ namespace Effiry.Items
         }
 
         
-        public ReactiveValue<string> Name = "Nameless";
-        public ReactiveValue<string> Description = "";
-
-        public ReactiveValue<Quality> Rarity = Quality.Common;
-
-        public ReactiveValue<string[]> Args = Array.Empty<string>();
-
-        public DateTime creationTime = DateTime.Now;
-        public DateTime lastModificationTime = DateTime.Now;
-
-        
-        public Item()
-        {
-            creationTime = DateTime.Now;
-            lastModificationTime = DateTime.Now;
-
-            Name.OnValueChanged += delegate { lastModificationTime = DateTime.Now; };
-            Description.OnValueChanged += delegate { lastModificationTime = DateTime.Now; };
-            Rarity.OnValueChanged += delegate { lastModificationTime = DateTime.Now; };
-            Args.OnValueChanged += delegate { lastModificationTime = DateTime.Now; };
+        public string Name { 
+            get => _name;
+            set
+            {
+                LastModificationTime = DateTime.Now;
+                _name = value;
+            }
         }
-    }
+        public string Description { 
+            get => _description;
+            set
+            {
+                LastModificationTime = DateTime.Now;
+                _description = value;
+            }
+        }
 
-    public class SAS : Item
-    {
-        public int U = 1;
+        public Quality Rarity { 
+            get => _rarity;
+            set
+            {
+                LastModificationTime = DateTime.Now;
+                _rarity = value;
+            }
+        }
+
+        public string[] Args { 
+            get => _args;
+            set
+            {
+                LastModificationTime = DateTime.Now;
+                _args = value;
+            }
+        }
+
+        private string _name = "";
+        private string _description = "";
+
+        private Quality _rarity = Quality.Common;
+
+        private string[] _args = Array.Empty<string>();
+
+        public DateTime CreationTime { get; private set; } = DateTime.Now;
+        public DateTime LastModificationTime { get; private set; } = DateTime.Now;
+
+        public Item() { }
     }
 }

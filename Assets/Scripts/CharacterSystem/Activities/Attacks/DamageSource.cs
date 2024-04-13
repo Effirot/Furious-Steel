@@ -243,7 +243,7 @@ namespace CharacterSystem.Attacks
         {
             foreach (var cast in casters)
             {
-                foreach (var collider in cast.CastCollider(source.transform))
+                foreach (var collider in cast.CastCollider(damageSource.transform))
                 {
                     
                     if (collider.isTrigger)

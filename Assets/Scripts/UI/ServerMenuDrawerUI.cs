@@ -84,7 +84,7 @@ public class ServerMenuDrawerUI : MonoBehaviour
         
         if (playerField.KillstreakField != null)
         {
-            playerField.KillstreakField.text = clientData.statistics.KillStreak.ToString();
+            playerField.KillstreakField.text = clientData.statistics.Points.ToString();
         }
         if (playerField.TotalKillstreakField != null)
         {

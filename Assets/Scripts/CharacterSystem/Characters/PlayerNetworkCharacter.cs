@@ -21,6 +21,8 @@ namespace CharacterSystem.Objects
         IDamageBlocker,
         IPowerUpActivator
     {
+        public static bool AllowChampionMode = true;
+
         public delegate void OnPlayerCharacterStateChangedDelegate (PlayerNetworkCharacter character);
 
         public static event OnPlayerCharacterStateChangedDelegate OnPlayerCharacterDead = delegate { };
@@ -41,6 +43,8 @@ namespace CharacterSystem.Objects
         private InputActionReference lookInput;
         [SerializeField]
         private InputActionReference dashInput;
+        [SerializeField]
+        private InputActionReference killBindInput;
 
         [SerializeField]
         private CinemachineImpulseSource OnHitImpulseSource;
@@ -88,11 +92,16 @@ namespace CharacterSystem.Objects
 
                 if (report.target is PlayerNetworkCharacter && report.isLethal)
                 {
-                    data.statistics.KillStreak += 1;
+                    data.statistics.Points += 1;
                     data.statistics.KillStreakTotal += 1;
                 }
 
                 ClientData = data;
+
+                if (AllowChampionMode && data.statistics.Points >= 10 && TryGetComponent<CharacterEffectsHolder>(out var component))
+                {
+                    component.AddEffect(new ChampionModeEffect());
+                }   
             }
 
             OnDamageDelivered?.Invoke(report);
@@ -111,7 +120,7 @@ namespace CharacterSystem.Objects
             {
                 var data = ClientData;
 
-                data.statistics.KillStreak = 0;
+                data.statistics.Points = 0;
                 data.statistics.AssistsStreak = 0;
 
                 ClientData = data;
@@ -129,7 +138,7 @@ namespace CharacterSystem.Objects
             {
                 Owner = this;
                 
-                {
+                if (moveInput != null) {
                     var action = moveInput.action;
                     action.Enable();
 
@@ -137,7 +146,7 @@ namespace CharacterSystem.Objects
                     action.canceled += OnMove;
                 }
 
-                {
+                if (lookInput != null) {
                     var action = lookInput.action;
                     action.Enable();
 
@@ -145,17 +154,24 @@ namespace CharacterSystem.Objects
                     action.canceled += OnLook;
                 }
 
-                {
+                if (dashInput != null) {
                     var action = dashInput.action;
                     action.Enable();
 
                     action.performed += OnDash;
                     action.canceled += OnDash;
                 }
+
+                if (killBindInput != null) {
+                    var action = killBindInput.action;
+                    action.Enable();
+
+                    action.performed += KillBind;
+                    action.canceled += KillBind;
+                }
             
                 OnOwnerPlayerCharacterSpawn.Invoke(this);
             }
-
             if (IsServer)
             {
                 network_serverClientId.Value = OwnerClientId;
@@ -195,6 +211,13 @@ namespace CharacterSystem.Objects
 
                     action.performed -= OnDash;
                     action.canceled -= OnDash;
+                }
+
+                {
+                    var action = killBindInput.action;
+
+                    action.performed -= KillBind;
+                    action.canceled -= KillBind;
                 }
             }
         }
@@ -259,6 +282,7 @@ namespace CharacterSystem.Objects
             catch { }
         }
 
+
         private void OnMove(CallbackContext input)
         {
             movementVector = input.ReadValue<Vector2>();
@@ -294,6 +318,17 @@ namespace CharacterSystem.Objects
                 Dash(movementVector);
             }
         }
+
+        private void KillBind(CallbackContext input)
+        {
+            KillBind_ServerRpc();
+        }
+
+        [ServerRpc]
+        private void KillBind_ServerRpc()
+        {
+            Kill();
+        } 
 
         [ClientRpc]
         private void RefreshColor_ClientRpc()

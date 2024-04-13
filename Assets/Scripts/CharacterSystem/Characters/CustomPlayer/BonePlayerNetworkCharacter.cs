@@ -26,6 +26,7 @@ public class BonePlayerNetworkCharacter : PlayerNetworkCharacter
     public GameObject SplashHitPrefab;
 
     private float recievedDamage = 0; 
+    private bool isSplashAttacking = false; 
 
     // public override bool Hit(Damage damage)
     // {
@@ -70,12 +71,19 @@ public class BonePlayerNetworkCharacter : PlayerNetworkCharacter
 
     private async void SplashAttack(ulong targetID)
     {
+        if (isSplashAttacking) return;
+
+        isSplashAttacking = true;
+
         var dictionary = NetworkManager.Singleton.SpawnManager.SpawnedObjects;
         
         if (!dictionary.ContainsKey(targetID)) return;
         var target = dictionary[targetID];
 
+
         await UniTask.WaitForSeconds(1); 
+        
+        isSplashAttacking = false;
         
         if (target == null || this == null || !IsSpawned) return;
 

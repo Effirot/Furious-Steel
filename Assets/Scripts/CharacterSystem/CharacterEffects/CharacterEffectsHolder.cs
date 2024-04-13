@@ -30,6 +30,8 @@ public class CharacterEffectsHolder : NetworkBehaviour
     {
         if (IsServer)
         {
+            if (characterEffects.Exists(effect => effect.GetType() == characterEffect.GetType())) return;
+
             characterEffect.effectsHolder = this;
 
             characterEffects.Add(characterEffect);
