@@ -65,11 +65,14 @@ namespace CharacterSystem.Objects
         [field : SerializeField, Range (0.1f, 25f)]
         public virtual float Speed { get; set; } = 11;
 
-        [field : SerializeField, Range (0.1f, 2.5f)]
-        public float Mass { get; set; } = 1f;
+        [SerializeField, Range (0.1f, 2.5f)]
+        public float Mass = 1f;
 
-        [field : SerializeField]
+        [SerializeField]
         public GameObject CorpsePrefab = null;
+
+        [SerializeField]
+        public AudioSource OnHitSound;
 
         [Header("Dodge")]
         [SerializeField]
@@ -249,6 +252,11 @@ namespace CharacterSystem.Objects
 
             Push(damage.pushDirection);
             
+            if (OnHitSound != null)
+            {
+                OnHitSound.Play();
+            }
+
             health -= damage.value;  
 
             stunlock = Mathf.Max(damage.stunlock, stunlock); 

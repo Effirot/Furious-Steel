@@ -158,14 +158,28 @@ namespace CharacterSystem.DamageMath
             serializer.SerializeValue(ref isBlocked);
             serializer.SerializeValue(ref isLethal);
             serializer.SerializeValue(ref time);
-            
-            var objectID = target?.gameObject?.GetComponent<NetworkObject>()?.NetworkObjectId ?? ulong.MinValue;
+
+            var objectID = ulong.MinValue;
+            // if (target != null && target.gameObject.TryGetComponent<NetworkObject>(out var networkObject))
+            // {
+            //     objectID = networkObject.NetworkObjectId;
+            // }
 
             serializer.SerializeValue(ref objectID);
 
             if (serializer.IsReader)
             {
-                target = NetworkManager.Singleton.SpawnManager.SpawnedObjects[objectID].GetComponent<IDamagable>();
+                var dictionary = NetworkManager.Singleton.SpawnManager.SpawnedObjects;
+
+                if (dictionary.ContainsKey(objectID))
+                {
+                    target = dictionary[objectID].GetComponent<IDamagable>();
+                }
+                else
+                {
+                    target = null;
+                }
+
             }
         }
     }

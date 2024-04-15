@@ -81,14 +81,33 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: 2243838571553120747, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
-  queueElement:
-    rid: 2961813231421882369
   IsPerformingAsDefault: 0
   IsInterruptable: 0
   IsInterruptableWhenBlocked: 1
+  SpeedReducing: 2.5
+  queueElement:
+    rid: 2961813231421882369
+  attackQueue:
+  - rid: 2961813231421882370
+  - rid: 868176892238758009
+  - rid: 2961813231421882371
+  - rid: 2961813231421882370
+  - rid: 5691645198379778204
   OnDamageReport:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 4019344269176271629}
+        m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
+        m_MethodName: Play
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   OnAttackEnded:
     m_PersistentCalls:
       m_Calls:
@@ -116,26 +135,27 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  SpeedReducing: 2.5
   references:
     version: 2
     RefIds:
+    - rid: 868176892238758009
+      type: {class: PlayAnimation, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        AnimationName: Torso.Attack2
     - rid: 2961813231421882369
       type: {class: Queue, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Name: 
         queue:
         - rid: 2961813231421882370
+        - rid: 868176892238758009
         - rid: 2961813231421882371
         - rid: 2961813231421882370
         - rid: 5691645198379778204
     - rid: 2961813231421882370
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Name: 
         WaitTime: 0.08
         Permissions: 5376
-        AnimationName: 
         OnStart:
           m_PersistentCalls:
             m_Calls: []
@@ -145,10 +165,8 @@ MonoBehaviour:
     - rid: 2961813231421882371
       type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Name: 
         casters:
         - rid: 2961813231421882372
-        CastAnimationName: Torso.Attack2
         CastPushDirection: {x: 0, y: 0, z: 0}
         OnCast:
           m_PersistentCalls:
@@ -183,7 +201,7 @@ MonoBehaviour:
         damage:
           value: 15
           type: 1
-          stunlock: 0.1
+          stunlock: 0
           pushDirection: {x: 0, y: 0, z: 0.1}
           RechargeUltimate: 1
         position: {x: 0, y: 0, z: 1.71}
@@ -192,154 +210,15 @@ MonoBehaviour:
     - rid: 5691645198379778204
       type: {class: InterruptableWait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Name: 
         WaitTime: 0.4
         LastHitRequireSeconds: 0.1
-        Permissions: 1280
-        AnimationName: 
+        Permissions: 1792
         OnStart:
           m_PersistentCalls:
             m_Calls: []
         OnEnd:
           m_PersistentCalls:
             m_Calls: []
---- !u!1 &848330919059323656
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7401076760315707830}
-  - component: {fileID: 8243475349468437208}
-  - component: {fileID: 5079389785802440337}
-  - component: {fileID: 8433054537523837320}
-  m_Layer: 6
-  m_Name: Slash
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &7401076760315707830
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 848330919059323656}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 3274555386623362085}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
---- !u!2083052967 &8243475349468437208
-VisualEffect:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 848330919059323656}
-  m_Enabled: 1
-  m_Asset: {fileID: 8926484042661614526, guid: 2fd2f69822791f348a9cdc271110e1d9, type: 3}
-  m_InitialEventName: OnPlay
-  m_InitialEventNameOverriden: 0
-  m_StartSeed: 0
-  m_ResetSeedOnPlay: 1
-  m_AllowInstancing: 1
-  m_ResourceVersion: 1
-  m_PropertySheet:
-    m_Float:
-      m_Array:
-      - m_Value: 2.5
-        m_Name: Radius
-        m_Overridden: 1
-      - m_Value: 0.077
-        m_Name: Lifetime
-        m_Overridden: 1
-    m_Vector2f:
-      m_Array: []
-    m_Vector3f:
-      m_Array:
-      - m_Value: {x: 0, y: 0, z: 5}
-        m_Name: Velocity
-        m_Overridden: 1
-    m_Vector4f:
-      m_Array: []
-    m_Uint:
-      m_Array: []
-    m_Int:
-      m_Array: []
-    m_Matrix4x4f:
-      m_Array: []
-    m_AnimationCurve:
-      m_Array: []
-    m_Gradient:
-      m_Array: []
-    m_NamedObject:
-      m_Array: []
-    m_Bool:
-      m_Array: []
---- !u!73398921 &5079389785802440337
-VFXRenderer:
-  serializedVersion: 1
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 848330919059323656}
-  m_Enabled: 1
-  m_CastShadows: 0
-  m_ReceiveShadows: 0
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 0
-  m_LightProbeUsage: 0
-  m_ReflectionProbeUsage: 0
-  m_RayTracingMode: 0
-  m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
---- !u!114 &8433054537523837320
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 848330919059323656}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef2ba1cca0108d547917f92585a7fb92, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  intensity: 30
-  intensitySecondary: 30
 --- !u!1 &1003795457742228459
 GameObject:
   m_ObjectHideFlags: 0
@@ -397,6 +276,9 @@ VisualEffect:
         m_Overridden: 1
       - m_Value: 0.077
         m_Name: Lifetime
+        m_Overridden: 1
+      - m_Value: 0.22
+        m_Name: Thickness
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
@@ -649,6 +531,7 @@ Transform:
   - {fileID: 2399946078457330118}
   - {fileID: 2773798555544522668}
   - {fileID: 478103804490765433}
+  - {fileID: 4118969723834944068}
   - {fileID: 564578008227288657}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -747,14 +630,33 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: 2243838571553120747, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
-  queueElement:
-    rid: 2961813231421882369
   IsPerformingAsDefault: 1
   IsInterruptable: 0
   IsInterruptableWhenBlocked: 1
+  SpeedReducing: 2.5
+  queueElement:
+    rid: 2961813231421882369
+  attackQueue:
+  - rid: 2961813231421882370
+  - rid: 868176892238758004
+  - rid: 2961813231421882371
+  - rid: 2961813231421882370
+  - rid: 5691645198379778205
   OnDamageReport:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 4019344269176271629}
+        m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
+        m_MethodName: Play
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   OnAttackEnded:
     m_PersistentCalls:
       m_Calls:
@@ -782,26 +684,27 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  SpeedReducing: 2.5
   references:
     version: 2
     RefIds:
+    - rid: 868176892238758004
+      type: {class: PlayAnimation, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        AnimationName: Torso.Attack1
     - rid: 2961813231421882369
       type: {class: Queue, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Name: 
         queue:
         - rid: 2961813231421882370
+        - rid: 868176892238758004
         - rid: 2961813231421882371
         - rid: 2961813231421882370
         - rid: 5691645198379778205
     - rid: 2961813231421882370
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Name: 
         WaitTime: 0.08
         Permissions: 5376
-        AnimationName: 
         OnStart:
           m_PersistentCalls:
             m_Calls: []
@@ -811,10 +714,8 @@ MonoBehaviour:
     - rid: 2961813231421882371
       type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Name: 
         casters:
         - rid: 2961813231421882372
-        CastAnimationName: Torso.Attack1
         CastPushDirection: {x: 0, y: 0, z: 0}
         OnCast:
           m_PersistentCalls:
@@ -849,7 +750,7 @@ MonoBehaviour:
         damage:
           value: 15
           type: 1
-          stunlock: 0.1
+          stunlock: 0
           pushDirection: {x: 0, y: 0, z: 0.1}
           RechargeUltimate: 1
         position: {x: 0, y: 0, z: 1.71}
@@ -858,11 +759,9 @@ MonoBehaviour:
     - rid: 5691645198379778205
       type: {class: InterruptableWait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Name: 
         WaitTime: 0.4
         LastHitRequireSeconds: 0.1
-        Permissions: 1280
-        AnimationName: 
+        Permissions: 1792
         OnStart:
           m_PersistentCalls:
             m_Calls: []
@@ -1397,6 +1296,135 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   intensity: 50
   intensitySecondary: 50
+--- !u!1 &5116556626113805223
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4118969723834944068}
+  - component: {fileID: 4019344269176271629}
+  m_Layer: 0
+  m_Name: HardSwordSwingSound
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4118969723834944068
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5116556626113805223}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.696, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2682705565289463711}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!82 &4019344269176271629
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5116556626113805223}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 8047190744935610207, guid: bdf3e7f7eae78f844bd4f60d57993222, type: 2}
+  m_audioClip: {fileID: 8300000, guid: 8ae609db06b501047a8857a36acd8c2c, type: 3}
+  m_Resource: {fileID: 8300000, guid: 8ae609db06b501047a8857a36acd8c2c, type: 3}
+  m_PlayOnAwake: 0
+  m_Volume: 0.737
+  m_Pitch: 0.98
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 0
+  MaxDistance: 40
+  Pan2D: 0
+  rolloffMode: 1
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &5290588026936850908
 GameObject:
   m_ObjectHideFlags: 0
@@ -1454,6 +1482,9 @@ VisualEffect:
         m_Overridden: 1
       - m_Value: 0.077
         m_Name: Lifetime
+        m_Overridden: 1
+      - m_Value: 0.22
+        m_Name: Thickness
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
@@ -1582,18 +1613,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: -697749738134341483, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
-  queueElement:
-    rid: 2961813231421882443
   IsPerformingAsDefault: 1
   IsInterruptable: 0
   IsInterruptableWhenBlocked: 0
+  SpeedReducing: 6
+  queueElement:
+    rid: 2961813231421882443
+  attackQueue:
+  - rid: 868176906250092631
   OnDamageReport:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 4019344269176271629}
+        m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
+        m_MethodName: Play
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   OnAttackEnded:
     m_PersistentCalls:
       m_Calls: []
-  SpeedReducing: 6
   RequireDamage: 200
   OnUltimateReady:
     m_PersistentCalls:
@@ -1601,29 +1646,195 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: 868176892238758019
+      type: {class: PlayAnimation, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        AnimationName: Torso.Attack1
+    - rid: 868176892238758021
+      type: {class: PlayAnimation, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        AnimationName: Torso.Attack2
+    - rid: 868176906250092631
+      type: {class: Repeat, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        queueElement:
+          rid: 868176906250092633
+        RepeatCount: 6
+    - rid: 868176906250092633
+      type: {class: Queue, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        queue:
+        - rid: 868176906250092634
+        - rid: 868176906250092635
+        - rid: 868176906250092636
+        - rid: 868176906250092637
+        - rid: 868176906250092638
+        - rid: 868176906250092639
+    - rid: 868176906250092634
+      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        WaitTime: 0.1
+        Permissions: 1280
+        OnStart:
+          m_PersistentCalls:
+            m_Calls: []
+        OnEnd:
+          m_PersistentCalls:
+            m_Calls: []
+    - rid: 868176906250092635
+      type: {class: PlayAnimation, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        AnimationName: Torso.Attack1
+    - rid: 868176906250092636
+      type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        casters:
+        - rid: 868176906250092640
+        CastPushDirection: {x: 0, y: 0, z: 0.1}
+        OnCast:
+          m_PersistentCalls:
+            m_Calls:
+            - m_Target: {fileID: 2652872123739994609}
+              m_TargetAssemblyTypeName: UnityEngine.VFX.VisualEffect, UnityEngine
+              m_MethodName: Play
+              m_Mode: 1
+              m_Arguments:
+                m_ObjectArgument: {fileID: 0}
+                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+                m_IntArgument: 0
+                m_FloatArgument: 0
+                m_StringArgument: 
+                m_BoolArgument: 0
+              m_CallState: 2
+            - m_Target: {fileID: 3487500842407008031}
+              m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
+              m_MethodName: Play
+              m_Mode: 1
+              m_Arguments:
+                m_ObjectArgument: {fileID: 0}
+                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+                m_IntArgument: 0
+                m_FloatArgument: 0
+                m_StringArgument: 
+                m_BoolArgument: 0
+              m_CallState: 2
+            - m_Target: {fileID: 3065854216598545760}
+              m_TargetAssemblyTypeName: UnityEngine.VFX.VisualEffect, UnityEngine
+              m_MethodName: Play
+              m_Mode: 1
+              m_Arguments:
+                m_ObjectArgument: {fileID: 0}
+                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+                m_IntArgument: 0
+                m_FloatArgument: 0
+                m_StringArgument: 
+                m_BoolArgument: 0
+              m_CallState: 2
+    - rid: 868176906250092637
+      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        WaitTime: 0.1
+        Permissions: 1280
+        OnStart:
+          m_PersistentCalls:
+            m_Calls: []
+        OnEnd:
+          m_PersistentCalls:
+            m_Calls: []
+    - rid: 868176906250092638
+      type: {class: PlayAnimation, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        AnimationName: Torso.Attack2
+    - rid: 868176906250092639
+      type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        casters:
+        - rid: 868176906250092641
+        CastPushDirection: {x: 0, y: 0, z: 0.1}
+        OnCast:
+          m_PersistentCalls:
+            m_Calls:
+            - m_Target: {fileID: 432901300442450224}
+              m_TargetAssemblyTypeName: UnityEngine.VFX.VisualEffect, UnityEngine
+              m_MethodName: Play
+              m_Mode: 1
+              m_Arguments:
+                m_ObjectArgument: {fileID: 0}
+                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+                m_IntArgument: 0
+                m_FloatArgument: 0
+                m_StringArgument: 
+                m_BoolArgument: 0
+              m_CallState: 2
+            - m_Target: {fileID: 3487500842407008031}
+              m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
+              m_MethodName: Play
+              m_Mode: 1
+              m_Arguments:
+                m_ObjectArgument: {fileID: 0}
+                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+                m_IntArgument: 0
+                m_FloatArgument: 0
+                m_StringArgument: 
+                m_BoolArgument: 0
+              m_CallState: 2
+            - m_Target: {fileID: 3065854216598545760}
+              m_TargetAssemblyTypeName: UnityEngine.VFX.VisualEffect, UnityEngine
+              m_MethodName: Play
+              m_Mode: 1
+              m_Arguments:
+                m_ObjectArgument: {fileID: 0}
+                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+                m_IntArgument: 0
+                m_FloatArgument: 0
+                m_StringArgument: 
+                m_BoolArgument: 0
+              m_CallState: 2
+    - rid: 868176906250092640
+      type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        damage:
+          value: 10
+          type: 8
+          stunlock: 0.3
+          pushDirection: {x: 0, y: 0, z: 0.1}
+          RechargeUltimate: 0
+        position: {x: 0, y: 0, z: 1.71}
+        size: {x: 1.54, y: 1.36, z: 1}
+        angle: {x: 0, y: 0, z: 0}
+    - rid: 868176906250092641
+      type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        damage:
+          value: 10
+          type: 8
+          stunlock: 0.5
+          pushDirection: {x: 0, y: 0, z: 0.1}
+          RechargeUltimate: 0
+        position: {x: 0, y: 0, z: 1.71}
+        size: {x: 1.54, y: 1.36, z: 1}
+        angle: {x: 0, y: 0, z: 0}
     - rid: 2961813231421882443
       type: {class: Repeat, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Name: 
         queueElement:
           rid: 2961813231421882445
         RepeatCount: 6
     - rid: 2961813231421882445
       type: {class: Queue, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Name: 
         queue:
         - rid: 2961813231421882446
+        - rid: 868176892238758019
         - rid: 2961813231421882447
         - rid: 2961813231421882449
+        - rid: 868176892238758021
         - rid: 2961813231421882450
     - rid: 2961813231421882446
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Name: 
         WaitTime: 0.1
         Permissions: 1280
-        AnimationName: 
         OnStart:
           m_PersistentCalls:
             m_Calls: []
@@ -1633,10 +1844,8 @@ MonoBehaviour:
     - rid: 2961813231421882447
       type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Name: 
         casters:
         - rid: 2961813231421882448
-        CastAnimationName: Torso.Attack1
         CastPushDirection: {x: 0, y: 0, z: 0.1}
         OnCast:
           m_PersistentCalls:
@@ -1692,10 +1901,8 @@ MonoBehaviour:
     - rid: 2961813231421882449
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Name: 
         WaitTime: 0.1
         Permissions: 1280
-        AnimationName: 
         OnStart:
           m_PersistentCalls:
             m_Calls: []
@@ -1705,10 +1912,8 @@ MonoBehaviour:
     - rid: 2961813231421882450
       type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Name: 
         casters:
         - rid: 2961813231421882451
-        CastAnimationName: Torso.Attack1
         CastPushDirection: {x: 0, y: 0, z: 0.1}
         OnCast:
           m_PersistentCalls:
@@ -1791,7 +1996,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 7401076760315707830}
+  - {fileID: 8096915976057874537}
+  - {fileID: 1463914806111732943}
   m_Father: {fileID: 1499673584990981568}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &617157475109657677
@@ -1807,44 +2013,74 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: 5277666054227158027, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
-  queueElement:
-    rid: 2961813231421882369
   IsPerformingAsDefault: 1
   IsInterruptable: 0
   IsInterruptableWhenBlocked: 1
+  SpeedReducing: 6
+  queueElement:
+    rid: 2961813231421882369
+  attackQueue:
+  - rid: 5691645226531684433
+  - rid: 5691645226531684437
+  - rid: 6352953082370064458
+  - rid: 868176892238758012
+  - rid: 2961813231421882371
+  - rid: 6352953196298371165
+  - rid: 868176892238758014
+  - rid: 6352953196298371167
+  - rid: 6352953196298371242
   OnDamageReport:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 4019344269176271629}
+        m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
+        m_MethodName: Play
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   OnAttackEnded:
     m_PersistentCalls:
       m_Calls: []
-  SpeedReducing: 6
   references:
     version: 2
     RefIds:
+    - rid: 868176892238758012
+      type: {class: PlayAnimation, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        AnimationName: Torso.Attack1
+    - rid: 868176892238758014
+      type: {class: PlayAnimation, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        AnimationName: Torso.Attack2
     - rid: 2961813231421882369
       type: {class: Queue, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Name: 
         queue:
         - rid: 5691645226531684433
         - rid: 5691645226531684437
         - rid: 6352953082370064458
+        - rid: 868176892238758012
         - rid: 2961813231421882371
-        - rid: 5691645198379778176
-        - rid: 5691645198379778129
+        - rid: 6352953196298371165
+        - rid: 868176892238758014
+        - rid: 6352953196298371167
+        - rid: 6352953196298371242
     - rid: 2961813231421882371
       type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Name: 
         casters:
         - rid: 2961813231421882372
-        CastAnimationName: Torso.Attack1
-        CastPushDirection: {x: 0, y: 0.3, z: 0}
+        CastPushDirection: {x: 0, y: 0, z: 0}
         OnCast:
           m_PersistentCalls:
             m_Calls:
-            - m_Target: {fileID: 8243475349468437208}
+            - m_Target: {fileID: 3338926948658243142}
               m_TargetAssemblyTypeName: UnityEngine.VFX.VisualEffect, UnityEngine
               m_MethodName: Play
               m_Mode: 1
@@ -1872,48 +2108,19 @@ MonoBehaviour:
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          value: 30
+          value: 15
           type: 1
-          stunlock: 0.4
-          pushDirection: {x: 0, y: 0.2, z: 0.1}
+          stunlock: 0.2
+          pushDirection: {x: 0, y: 0, z: 0.1}
           RechargeUltimate: 1
         position: {x: 0, y: 0, z: 2.05}
-        size: {x: 0.97, y: 1.36, z: 1.4}
+        size: {x: 0.97, y: 1.36, z: 1.77}
         angle: {x: 0, y: 0, z: 0}
-    - rid: 5691645198379778129
-      type: {class: InterruptableWait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        Name: 
-        WaitTime: 0.8
-        LastHitRequireSeconds: 1
-        Permissions: 1792
-        AnimationName: 
-        OnStart:
-          m_PersistentCalls:
-            m_Calls: []
-        OnEnd:
-          m_PersistentCalls:
-            m_Calls: []
-    - rid: 5691645198379778176
-      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        Name: 
-        WaitTime: 0.1
-        Permissions: 5888
-        AnimationName: 
-        OnStart:
-          m_PersistentCalls:
-            m_Calls: []
-        OnEnd:
-          m_PersistentCalls:
-            m_Calls: []
     - rid: 5691645226531684433
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Name: 
         WaitTime: 0.1
         Permissions: 65280
-        AnimationName: 
         OnStart:
           m_PersistentCalls:
             m_Calls: []
@@ -1923,25 +2130,229 @@ MonoBehaviour:
     - rid: 5691645226531684437
       type: {class: Push, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Name: 
-        CastAnimationName: 
-        CastPushDirection: {x: 0, y: 0.2, z: 0.7}
+        CastPushDirection: {x: 0, y: -0.2, z: 0.9}
         OnCast:
           m_PersistentCalls:
             m_Calls: []
     - rid: 6352953082370064458
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Name: 
         WaitTime: 0.2
         Permissions: 256
-        AnimationName: 
         OnStart:
           m_PersistentCalls:
             m_Calls: []
         OnEnd:
           m_PersistentCalls:
             m_Calls: []
+    - rid: 6352953196298371165
+      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        WaitTime: 0.1
+        Permissions: 1280
+        OnStart:
+          m_PersistentCalls:
+            m_Calls: []
+        OnEnd:
+          m_PersistentCalls:
+            m_Calls: []
+    - rid: 6352953196298371167
+      type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        casters:
+        - rid: 6352953196298371169
+        CastPushDirection: {x: 0, y: 0, z: 0}
+        OnCast:
+          m_PersistentCalls:
+            m_Calls:
+            - m_Target: {fileID: 4226677587793375878}
+              m_TargetAssemblyTypeName: UnityEngine.VFX.VisualEffect, UnityEngine
+              m_MethodName: Play
+              m_Mode: 1
+              m_Arguments:
+                m_ObjectArgument: {fileID: 0}
+                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+                m_IntArgument: 0
+                m_FloatArgument: 0
+                m_StringArgument: 
+                m_BoolArgument: 0
+              m_CallState: 2
+            - m_Target: {fileID: 3487500842407008031}
+              m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
+              m_MethodName: Play
+              m_Mode: 1
+              m_Arguments:
+                m_ObjectArgument: {fileID: 0}
+                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+                m_IntArgument: 0
+                m_FloatArgument: 0
+                m_StringArgument: 
+                m_BoolArgument: 0
+              m_CallState: 2
+    - rid: 6352953196298371169
+      type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        damage:
+          value: 15
+          type: 1
+          stunlock: 0.2
+          pushDirection: {x: 0, y: 0, z: 0.1}
+          RechargeUltimate: 1
+        position: {x: 0, y: 0, z: 2.05}
+        size: {x: 0.97, y: 1.36, z: 1.77}
+        angle: {x: 0, y: 0, z: 0}
+    - rid: 6352953196298371242
+      type: {class: InterruptableWait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        WaitTime: 0.6
+        LastHitRequireSeconds: 0.1
+        Permissions: 65280
+        OnStart:
+          m_PersistentCalls:
+            m_Calls: []
+        OnEnd:
+          m_PersistentCalls:
+            m_Calls: []
+--- !u!1 &5714871639485273240
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1463914806111732943}
+  - component: {fileID: 4226677587793375878}
+  - component: {fileID: 6535589038964829183}
+  - component: {fileID: 7087085648057352022}
+  m_Layer: 6
+  m_Name: Slash (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1463914806111732943
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5714871639485273240}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: 0.976296, w: 0.2164397}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3274555386623362085}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 155}
+--- !u!2083052967 &4226677587793375878
+VisualEffect:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5714871639485273240}
+  m_Enabled: 1
+  m_Asset: {fileID: 8926484042661614526, guid: 2fd2f69822791f348a9cdc271110e1d9, type: 3}
+  m_InitialEventName: OnPlay
+  m_InitialEventNameOverriden: 0
+  m_StartSeed: 0
+  m_ResetSeedOnPlay: 1
+  m_AllowInstancing: 1
+  m_ResourceVersion: 1
+  m_PropertySheet:
+    m_Float:
+      m_Array:
+      - m_Value: 2.93
+        m_Name: Radius
+        m_Overridden: 1
+      - m_Value: 0.077
+        m_Name: Lifetime
+        m_Overridden: 1
+      - m_Value: 0.26
+        m_Name: Thickness
+        m_Overridden: 1
+    m_Vector2f:
+      m_Array: []
+    m_Vector3f:
+      m_Array:
+      - m_Value: {x: 0, y: 0, z: 5}
+        m_Name: Velocity
+        m_Overridden: 1
+    m_Vector4f:
+      m_Array: []
+    m_Uint:
+      m_Array: []
+    m_Int:
+      m_Array: []
+    m_Matrix4x4f:
+      m_Array: []
+    m_AnimationCurve:
+      m_Array: []
+    m_Gradient:
+      m_Array: []
+    m_NamedObject:
+      m_Array: []
+    m_Bool:
+      m_Array: []
+--- !u!73398921 &6535589038964829183
+VFXRenderer:
+  serializedVersion: 1
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5714871639485273240}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 0
+  m_LightProbeUsage: 0
+  m_ReflectionProbeUsage: 0
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+--- !u!114 &7087085648057352022
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5714871639485273240}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef2ba1cca0108d547917f92585a7fb92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  intensity: 30
+  intensitySecondary: 30
 --- !u!1 &6389387997060165717
 GameObject:
   m_ObjectHideFlags: 0
@@ -2073,25 +2484,40 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: 0}
-  queueElement:
-    rid: 2961813231421882369
   IsPerformingAsDefault: 1
   IsInterruptable: 0
   IsInterruptableWhenBlocked: 0
+  SpeedReducing: 1
+  queueElement:
+    rid: 2961813231421882369
+  attackQueue:
+  - rid: 4973655737326895174
+  - rid: 2961813231421882371
+  - rid: 2961813231421882370
   OnDamageReport:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 4019344269176271629}
+        m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
+        m_MethodName: Play
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   OnAttackEnded:
     m_PersistentCalls:
       m_Calls: []
-  SpeedReducing: 1
   references:
     version: 2
     RefIds:
     - rid: 2961813231421882369
       type: {class: Queue, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Name: 
         queue:
         - rid: 4973655737326895174
         - rid: 2961813231421882371
@@ -2099,10 +2525,8 @@ MonoBehaviour:
     - rid: 2961813231421882370
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Name: 
         WaitTime: 0.3
         Permissions: 65280
-        AnimationName: 
         OnStart:
           m_PersistentCalls:
             m_Calls: []
@@ -2136,10 +2560,8 @@ MonoBehaviour:
     - rid: 2961813231421882371
       type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Name: 
         casters:
         - rid: 2961813231421882372
-        CastAnimationName: Torso.Attack1
         CastPushDirection: {x: 0, y: 0, z: 0}
         OnCast:
           m_PersistentCalls:
@@ -2183,10 +2605,8 @@ MonoBehaviour:
     - rid: 4973655737326895174
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Name: 
         WaitTime: 0.5
         Permissions: 1536
-        AnimationName: 
         OnStart:
           m_PersistentCalls:
             m_Calls: []
@@ -2379,6 +2799,146 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!1 &8899260759901428424
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8096915976057874537}
+  - component: {fileID: 3338926948658243142}
+  - component: {fileID: 1274497967760048474}
+  - component: {fileID: 3964118602028106413}
+  m_Layer: 6
+  m_Name: Slash
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8096915976057874537
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8899260759901428424}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: 0.2164396, w: 0.97629607}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3274555386623362085}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 25}
+--- !u!2083052967 &3338926948658243142
+VisualEffect:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8899260759901428424}
+  m_Enabled: 1
+  m_Asset: {fileID: 8926484042661614526, guid: 2fd2f69822791f348a9cdc271110e1d9, type: 3}
+  m_InitialEventName: OnPlay
+  m_InitialEventNameOverriden: 0
+  m_StartSeed: 0
+  m_ResetSeedOnPlay: 1
+  m_AllowInstancing: 1
+  m_ResourceVersion: 1
+  m_PropertySheet:
+    m_Float:
+      m_Array:
+      - m_Value: 2.93
+        m_Name: Radius
+        m_Overridden: 1
+      - m_Value: 0.077
+        m_Name: Lifetime
+        m_Overridden: 1
+      - m_Value: 0.26
+        m_Name: Thickness
+        m_Overridden: 1
+    m_Vector2f:
+      m_Array: []
+    m_Vector3f:
+      m_Array:
+      - m_Value: {x: 0, y: 0, z: 5}
+        m_Name: Velocity
+        m_Overridden: 1
+    m_Vector4f:
+      m_Array: []
+    m_Uint:
+      m_Array: []
+    m_Int:
+      m_Array: []
+    m_Matrix4x4f:
+      m_Array: []
+    m_AnimationCurve:
+      m_Array: []
+    m_Gradient:
+      m_Array: []
+    m_NamedObject:
+      m_Array: []
+    m_Bool:
+      m_Array: []
+--- !u!73398921 &1274497967760048474
+VFXRenderer:
+  serializedVersion: 1
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8899260759901428424}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 0
+  m_LightProbeUsage: 0
+  m_ReflectionProbeUsage: 0
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+--- !u!114 &3964118602028106413
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8899260759901428424}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef2ba1cca0108d547917f92585a7fb92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  intensity: 30
+  intensitySecondary: 30
 --- !u!1001 &2198380512597665389
 PrefabInstance:
   m_ObjectHideFlags: 0

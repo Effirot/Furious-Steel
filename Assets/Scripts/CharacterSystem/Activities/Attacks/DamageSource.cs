@@ -38,9 +38,6 @@ namespace CharacterSystem.Attacks
             AfterAttack,
         }
 
-        [SerializeField, SerializeReference, SubclassSelector]
-        public AttackQueueElement queueElement;
-
         [SerializeField]
         private bool IsPerformingAsDefault = false;
 
@@ -50,15 +47,21 @@ namespace CharacterSystem.Attacks
         [SerializeField]
         private bool IsInterruptableWhenBlocked = false;
 
+        [SerializeField, Range(0, 10)]
+        public float SpeedReducing = 3;
+        
+        [SerializeField, SerializeReference, SubclassSelector]
+        public AttackQueueElement[] attackQueue;
+
         [SerializeField]
         private UnityEvent<DamageDeliveryReport> OnDamageReport = new ();
         
         [SerializeField]
         private UnityEvent OnAttackEnded = new ();
-        
-        private NetworkVariable<bool> network_isPerforming = new NetworkVariable<bool>(true, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
-        public bool IsAttacking => attackProcess != null;
+
+        public AttackTimingStatement currentAttackStatement { get; protected set; }
+
         public bool IsPerforming 
         { 
             get => network_isPerforming.Value; 
@@ -70,13 +73,11 @@ namespace CharacterSystem.Attacks
                 }
             } 
         }
+        public bool IsAttacking => attackProcess != null;
 
         public virtual bool IsActive => Invoker.permissions.HasFlag(CharacterPermission.AllowAttacking) && IsPerforming; 
-        
 
-        public float SpeedReducing = 3;
-
-        public AttackTimingStatement currentAttackStatement { get; protected set; }
+        private NetworkVariable<bool> network_isPerforming = new NetworkVariable<bool>(true, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
         private Coroutine attackProcess = null;
 
@@ -162,11 +163,45 @@ namespace CharacterSystem.Attacks
             }
         }
 
-        private void OnDrawGizmosSelected()
+        internal void HandleDamageReport(DamageDeliveryReport report)
         {
-            queueElement?.OnDrawGizmos(transform);
+            if (report.isDelivered)
+            {
+                OnDamageReport.Invoke(report);
+
+                if (report.isBlocked && IsInterruptableWhenBlocked)
+                {
+                    EndAttack();
+                }
+
+                Invoker.DamageDelivered(report);
+                Invoker.lastReport = report;
+            }
         }
 
+        private void OnDrawGizmosSelected()
+        {
+            foreach (var item in attackQueue)
+            {
+                item?.OnDrawGizmos(transform);
+            }
+        }
+
+        private IEnumerator AttackSubprocess()
+        {
+            foreach (var item in attackQueue)
+            {
+                yield return item.AttackPipeline(this);
+            }
+
+            EndAttack_Internal();
+        }
+
+        [ClientRpc]
+        private void StartAttack_ClientRpc()
+        {
+            StartAttack_Internal();
+        }
         private void StartAttack_Internal()
         {
             if (!IsAttacking)
@@ -176,12 +211,12 @@ namespace CharacterSystem.Attacks
                 attackProcess = StartCoroutine(AttackSubprocess());
             }
         }
-        [ClientRpc]
-        private void StartAttack_ClientRpc()
-        {
-            StartAttack_Internal();
-        }
 
+        [ClientRpc]
+        private void EndAttack_ClientRpc()
+        {
+            EndAttack_Internal();
+        }
         private void EndAttack_Internal()
         {
             if (IsAttacking)
@@ -201,51 +236,17 @@ namespace CharacterSystem.Attacks
                 }
             }
         }
-        [ClientRpc]
-        private void EndAttack_ClientRpc()
-        {
-            EndAttack_Internal();
-        }
-    
-        private IEnumerator AttackSubprocess()
-        {
-            yield return queueElement.AttackPipeline(this);
-
-            EndAttack_Internal();
-        }
-
-        internal void HandleDamageReport(DamageDeliveryReport report)
-        {
-            if (report.isDelivered)
-            {
-                OnDamageReport.Invoke(report);
-
-                if (report.isBlocked && IsInterruptableWhenBlocked)
-                {
-                    EndAttack();
-                }
-
-                Invoker.DamageDelivered(report);
-                Invoker.lastReport = report;
-            }
-        }
     }
 
     [Serializable]
     public abstract class AttackQueueElement
     {
-        [Space]
-        [SerializeField, TextArea(1, 1)]
-        private string Name;
-
-
         protected void Execute(IEnumerable<Caster> casters, IDamageSource source, DamageSource damageSource)
         {
             foreach (var cast in casters)
             {
                 foreach (var collider in cast.CastCollider(damageSource.transform))
                 {
-                    
                     if (collider.isTrigger)
                         continue;
 
@@ -261,14 +262,6 @@ namespace CharacterSystem.Attacks
         public abstract IEnumerator AttackPipeline(DamageSource source);
 
         public abstract void OnDrawGizmos(Transform transform);
-    
-        public void PlayAnimation(IDamageSource source, string Path)
-        {
-            if (source.animator != null && source.animator.gameObject.activeInHierarchy)
-            {
-                source.animator.Play(Path, -1, 0.1f);
-            }
-        }
     }
     
     [Serializable]
@@ -277,8 +270,6 @@ namespace CharacterSystem.Attacks
         [Header("Events")]
         
         [Space]
-        [SerializeField]
-        private string CastAnimationName = "";
         [SerializeField]
         private Vector3 CastPushDirection = Vector3.forward / 2; 
         public UnityEvent OnCast = new();
@@ -291,7 +282,6 @@ namespace CharacterSystem.Attacks
         {
             OnCast.Invoke();
             
-            PlayAnimation(source.Invoker, CastAnimationName);
             source.Invoker.Push(source.Invoker.transform.rotation * CastPushDirection);
 
             yield break;
@@ -315,8 +305,6 @@ namespace CharacterSystem.Attacks
         
         [Space]
         [SerializeField]
-        private string CastAnimationName = "Torso.Attack1";
-        [SerializeField]
         private Vector3 CastPushDirection = Vector3.forward / 2; 
         public UnityEvent OnCast = new();
         
@@ -333,7 +321,6 @@ namespace CharacterSystem.Attacks
 
             OnCast.Invoke();
             invoker.Push(invoker.transform.rotation * CastPushDirection);
-            PlayAnimation(source.Invoker, CastAnimationName);
 
             Execute(newCasters, invoker, source);
 
@@ -475,9 +462,6 @@ namespace CharacterSystem.Attacks
         private CharacterPermission Permissions = CharacterPermission.All;
 
         [SerializeField]
-        private string AnimationName = "";
-
-        [SerializeField]
         private UnityEvent OnStart = new();
         [SerializeField]
         private UnityEvent OnEnd = new();
@@ -485,7 +469,6 @@ namespace CharacterSystem.Attacks
         public override IEnumerator AttackPipeline(DamageSource source)
         {
             OnStart.Invoke();
-            PlayAnimation(source.Invoker, AnimationName);
 
             source.Invoker.permissions = Permissions;
             
@@ -512,9 +495,6 @@ namespace CharacterSystem.Attacks
         private CharacterPermission Permissions = CharacterPermission.All;
 
         [SerializeField]
-        private string AnimationName = "";
-
-        [SerializeField]
         private UnityEvent OnStart = new();
         [SerializeField]
         private UnityEvent OnEnd = new();
@@ -522,7 +502,6 @@ namespace CharacterSystem.Attacks
         public override IEnumerator AttackPipeline(DamageSource source)
         {
             OnStart.Invoke();
-            PlayAnimation(source.Invoker, AnimationName);
 
             source.Invoker.permissions = Permissions;
 
@@ -544,6 +523,29 @@ namespace CharacterSystem.Attacks
     }
 
     [Serializable]
+    public sealed class PlayAnimation : AttackQueueElement
+    {
+        [SerializeField]
+        public string AnimationName = "Torso.Attack1";
+
+        public override IEnumerator AttackPipeline(DamageSource source)
+        {
+
+            if (source.Invoker.animator != null && source.Invoker.animator.gameObject.activeInHierarchy)
+            {
+                source.Invoker.animator.Play(AnimationName, -1, 0.1f);
+            }
+
+            yield break;
+        }
+
+        public override void OnDrawGizmos(Transform transform)
+        {
+
+        }
+    }
+
+    [Serializable]
     public sealed class Charger : AttackQueueElement
     {
         public interface IChargeListener 
@@ -555,9 +557,6 @@ namespace CharacterSystem.Attacks
         
         [SerializeField]
         private CharacterPermission Permissions = CharacterPermission.All;
-
-        [SerializeField]
-        private string AnimationName = "";
 
         [SerializeField, Range(0, 10)]
         private float MaxChargingTime = 1;
@@ -590,7 +589,6 @@ namespace CharacterSystem.Attacks
         public override IEnumerator AttackPipeline (DamageSource source)
         {
             OnStart.Invoke();
-            PlayAnimation(source.Invoker, AnimationName);
             source.Invoker.permissions = Permissions;
 
             var waitForFixedUpdate = new WaitForFixedUpdate();

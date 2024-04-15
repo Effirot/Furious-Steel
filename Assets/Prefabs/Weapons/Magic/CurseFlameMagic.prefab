@@ -242,90 +242,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: 5277666054227158027, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
-  queueElement:
-    rid: 2961813231421882462
   IsPerformingAsDefault: 1
   IsInterruptable: 0
   IsInterruptableWhenBlocked: 0
+  SpeedReducing: 5
+  attackQueue: []
   OnDamageReport:
     m_PersistentCalls:
       m_Calls: []
   OnAttackEnded:
     m_PersistentCalls:
       m_Calls: []
-  SpeedReducing: 5
   references:
     version: 2
-    RefIds:
-    - rid: 868176874442063945
-      type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        Name: 
-        casters:
-        - rid: 868176874442063946
-        CastAnimationName: Torso.Attack1
-        CastPushDirection: {x: 0, y: 0, z: 0}
-        OnCast:
-          m_PersistentCalls:
-            m_Calls:
-            - m_Target: {fileID: 2286865969441105857}
-              m_TargetAssemblyTypeName: UnityEngine.VFX.VisualEffect, UnityEngine
-              m_MethodName: SendEvent
-              m_Mode: 5
-              m_Arguments:
-                m_ObjectArgument: {fileID: 0}
-                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-                m_IntArgument: 0
-                m_FloatArgument: 0
-                m_StringArgument: OnBurst
-                m_BoolArgument: 0
-              m_CallState: 2
-    - rid: 868176874442063946
-      type: {class: SphereCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        damage:
-          value: 15
-          type: 4
-          stunlock: 0.4
-          pushDirection: {x: 0, y: 0, z: -0.4}
-          RechargeUltimate: 1
-        position: {x: 0, y: 0, z: 0}
-        radius: 1.22
-    - rid: 868176874442063949
-      type: {class: InterruptableWait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        Name: 
-        WaitTime: 0.4
-        LastHitRequireSeconds: 0.1
-        Permissions: 1792
-        AnimationName: 
-        OnStart:
-          m_PersistentCalls:
-            m_Calls: []
-        OnEnd:
-          m_PersistentCalls:
-            m_Calls: []
-    - rid: 2961813231421882462
-      type: {class: Queue, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        Name: 
-        queue:
-        - rid: 2961813231421882466
-        - rid: 868176874442063945
-        - rid: 868176874442063949
-    - rid: 2961813231421882466
-      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        Name: 
-        WaitTime: 0.8
-        Permissions: 1792
-        AnimationName: 
-        OnStart:
-          m_PersistentCalls:
-            m_Calls: []
-        OnEnd:
-          m_PersistentCalls:
-            m_Calls: []
+    RefIds: []
 --- !u!1 &1517727645108543378
 GameObject:
   m_ObjectHideFlags: 0
@@ -1141,145 +1071,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: -697749738134341483, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
-  queueElement:
-    rid: 2961813231421882452
   IsPerformingAsDefault: 1
   IsInterruptable: 0
   IsInterruptableWhenBlocked: 1
+  SpeedReducing: 4
+  attackQueue: []
   OnDamageReport:
     m_PersistentCalls:
       m_Calls: []
   OnAttackEnded:
     m_PersistentCalls:
       m_Calls: []
-  SpeedReducing: 4
   RequireDamage: 250
   OnUltimateReady:
     m_PersistentCalls:
       m_Calls: []
   references:
     version: 2
-    RefIds:
-    - rid: 2961813231421882452
-      type: {class: Queue, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        Name: 
-        queue:
-        - rid: 2961813231421882453
-        - rid: 2961813231421882454
-        - rid: 2961813231421882456
-    - rid: 2961813231421882453
-      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        Name: 
-        WaitTime: 0.71
-        Permissions: 1792
-        AnimationName: 
-        OnStart:
-          m_PersistentCalls:
-            m_Calls: []
-        OnEnd:
-          m_PersistentCalls:
-            m_Calls:
-            - m_Target: {fileID: 6675177096525595630}
-              m_TargetAssemblyTypeName: UnityEngine.VFX.VisualEffect, UnityEngine
-              m_MethodName: Play
-              m_Mode: 1
-              m_Arguments:
-                m_ObjectArgument: {fileID: 0}
-                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-                m_IntArgument: 0
-                m_FloatArgument: 0
-                m_StringArgument: 
-                m_BoolArgument: 0
-              m_CallState: 2
-            - m_Target: {fileID: 1944099414437852619}
-              m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
-              m_MethodName: Play
-              m_Mode: 1
-              m_Arguments:
-                m_ObjectArgument: {fileID: 0}
-                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-                m_IntArgument: 0
-                m_FloatArgument: 0
-                m_StringArgument: 
-                m_BoolArgument: 0
-              m_CallState: 2
-    - rid: 2961813231421882454
-      type: {class: Repeat, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        Name: 
-        queueElement:
-          rid: 2961813231421882458
-        RepeatCount: 45
-    - rid: 2961813231421882456
-      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        Name: 
-        WaitTime: 1
-        Permissions: 65280
-        AnimationName: 
-        OnStart:
-          m_PersistentCalls:
-            m_Calls:
-            - m_Target: {fileID: 6675177096525595630}
-              m_TargetAssemblyTypeName: UnityEngine.VFX.VisualEffect, UnityEngine
-              m_MethodName: Stop
-              m_Mode: 1
-              m_Arguments:
-                m_ObjectArgument: {fileID: 0}
-                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-                m_IntArgument: 0
-                m_FloatArgument: 0
-                m_StringArgument: 
-                m_BoolArgument: 0
-              m_CallState: 2
-        OnEnd:
-          m_PersistentCalls:
-            m_Calls: []
-    - rid: 2961813231421882458
-      type: {class: Queue, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        Name: 
-        queue:
-        - rid: 2961813231421882459
-        - rid: 2961813231421882460
-    - rid: 2961813231421882459
-      type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        Name: 
-        casters:
-        - rid: 2961813231421882461
-        CastAnimationName: Torso.Attack1
-        CastPushDirection: {x: 0, y: 0, z: 0}
-        OnCast:
-          m_PersistentCalls:
-            m_Calls: []
-    - rid: 2961813231421882460
-      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        Name: 
-        WaitTime: 0.1
-        Permissions: 17664
-        AnimationName: 
-        OnStart:
-          m_PersistentCalls:
-            m_Calls: []
-        OnEnd:
-          m_PersistentCalls:
-            m_Calls: []
-    - rid: 2961813231421882461
-      type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        damage:
-          value: 20
-          type: 8
-          stunlock: 0
-          pushDirection: {x: 0, y: 0, z: 0.1}
-          RechargeUltimate: 0
-        position: {x: 0, y: 0, z: 5.82}
-        size: {x: 1, y: 1, z: 4.04}
-        angle: {x: 0, y: 0, z: 0}
+    RefIds: []
 --- !u!1 &5520448365534785990
 GameObject:
   m_ObjectHideFlags: 0
@@ -1325,60 +1134,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: 4628471853980608337, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
-  queueElement:
-    rid: 2961813231421882462
   IsPerformingAsDefault: 1
   IsInterruptable: 0
   IsInterruptableWhenBlocked: 0
+  SpeedReducing: 5
+  attackQueue: []
   OnDamageReport:
     m_PersistentCalls:
       m_Calls: []
   OnAttackEnded:
     m_PersistentCalls:
       m_Calls: []
-  SpeedReducing: 5
   references:
     version: 2
-    RefIds:
-    - rid: 2961813231421882462
-      type: {class: Queue, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        Name: 
-        queue:
-        - rid: 2961813231421882466
-        - rid: 2961813231421882476
-        - rid: 2961813231421882463
-    - rid: 2961813231421882463
-      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        Name: 
-        WaitTime: 0.5
-        Permissions: 65280
-        AnimationName: 
-        OnStart:
-          m_PersistentCalls:
-            m_Calls: []
-        OnEnd:
-          m_PersistentCalls:
-            m_Calls: []
-    - rid: 2961813231421882466
-      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        Name: 
-        WaitTime: 0.9
-        Permissions: 1792
-        AnimationName: 
-        OnStart:
-          m_PersistentCalls:
-            m_Calls: []
-        OnEnd:
-          m_PersistentCalls:
-            m_Calls: []
-    - rid: 2961813231421882476
-      type: {class: ProjectileShooter, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        Name: 
-        projectilePrefab: {fileID: 6845969276890429663, guid: 09d3723c494213f48870b8a953457879, type: 3}
+    RefIds: []
 --- !u!1 &7876319948308732506
 GameObject:
   m_ObjectHideFlags: 0
@@ -1593,174 +1362,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: 2243838571553120747, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
-  queueElement:
-    rid: 2961813231421882462
   IsPerformingAsDefault: 1
   IsInterruptable: 0
   IsInterruptableWhenBlocked: 0
+  SpeedReducing: 5
+  attackQueue:
+  - rid: -2
+  - rid: -2
   OnDamageReport:
     m_PersistentCalls:
       m_Calls: []
   OnAttackEnded:
     m_PersistentCalls:
       m_Calls: []
-  SpeedReducing: 5
   references:
     version: 2
     RefIds:
-    - rid: 672279927911088198
-      type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        damage:
-          value: 5
-          type: 8
-          stunlock: 0
-          pushDirection: {x: 0, y: 0, z: 0.05}
-          RechargeUltimate: 1
-        position: {x: 0, y: 0, z: 2.81}
-        size: {x: 0.6, y: 1.33, z: 1.29}
-        angle: {x: 0, y: 0, z: 0}
-    - rid: 672279927911088199
-      type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        Name: 
-        casters:
-        - rid: 672279927911088200
-        CastAnimationName: Torso.Attack1
-        CastPushDirection: {x: 0, y: 0, z: -0.1}
-        OnCast:
-          m_PersistentCalls:
-            m_Calls:
-            - m_Target: {fileID: 5770795012485720414}
-              m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
-              m_MethodName: Play
-              m_Mode: 1
-              m_Arguments:
-                m_ObjectArgument: {fileID: 0}
-                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-                m_IntArgument: 0
-                m_FloatArgument: 0
-                m_StringArgument: 
-                m_BoolArgument: 0
-              m_CallState: 2
-            - m_Target: {fileID: 1626704158334431058}
-              m_TargetAssemblyTypeName: UnityEngine.VFX.VisualEffect, UnityEngine
-              m_MethodName: SendEvent
-              m_Mode: 5
-              m_Arguments:
-                m_ObjectArgument: {fileID: 0}
-                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-                m_IntArgument: 0
-                m_FloatArgument: 0
-                m_StringArgument: OnBurst
-                m_BoolArgument: 0
-              m_CallState: 2
-    - rid: 672279927911088200
-      type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        damage:
-          value: 25
-          type: 8
-          stunlock: 0.5
-          pushDirection: {x: 0, y: 0, z: 0.2}
-          RechargeUltimate: 1
-        position: {x: 0, y: 0, z: 2.63}
-        size: {x: 1.08, y: 1.57, z: 1.12}
-        angle: {x: 0, y: 0, z: 0}
-    - rid: 868176874442063948
-      type: {class: InterruptableWait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        Name: 
-        WaitTime: 0.6
-        LastHitRequireSeconds: 0.3
-        Permissions: 1792
-        AnimationName: 
-        OnStart:
-          m_PersistentCalls:
-            m_Calls: []
-        OnEnd:
-          m_PersistentCalls:
-            m_Calls:
-            - m_Target: {fileID: 6472360777228952142}
-              m_TargetAssemblyTypeName: UnityEngine.VFX.VisualEffect, UnityEngine
-              m_MethodName: Play
-              m_Mode: 1
-              m_Arguments:
-                m_ObjectArgument: {fileID: 0}
-                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-                m_IntArgument: 0
-                m_FloatArgument: 0
-                m_StringArgument: 
-                m_BoolArgument: 0
-              m_CallState: 2
-    - rid: 2961813231421882462
-      type: {class: Queue, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        Name: 
-        queue:
-        - rid: 868176874442063948
-        - rid: 672279927911088199
-        - rid: 3599543347677233228
-        - rid: 2961813231421882463
-    - rid: 2961813231421882463
-      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        Name: 
-        WaitTime: 0.3
-        Permissions: 1792
-        AnimationName: 
-        OnStart:
-          m_PersistentCalls:
-            m_Calls:
-            - m_Target: {fileID: 6472360777228952142}
-              m_TargetAssemblyTypeName: UnityEngine.VFX.VisualEffect, UnityEngine
-              m_MethodName: Stop
-              m_Mode: 1
-              m_Arguments:
-                m_ObjectArgument: {fileID: 0}
-                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-                m_IntArgument: 0
-                m_FloatArgument: 0
-                m_StringArgument: 
-                m_BoolArgument: 0
-              m_CallState: 2
-        OnEnd:
-          m_PersistentCalls:
-            m_Calls: []
-    - rid: 3599543347677233228
-      type: {class: HoldRepeat, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        Name: 
-        queueElement:
-          rid: 3599543347677233229
-    - rid: 3599543347677233229
-      type: {class: Queue, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        Name: 
-        queue:
-        - rid: 3599543347677233231
-        - rid: 3599543347677233230
-    - rid: 3599543347677233230
-      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        Name: 
-        WaitTime: 0.1
-        Permissions: 1792
-        AnimationName: 
-        OnStart:
-          m_PersistentCalls:
-            m_Calls: []
-        OnEnd:
-          m_PersistentCalls:
-            m_Calls: []
-    - rid: 3599543347677233231
-      type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        Name: 
-        casters:
-        - rid: 672279927911088198
-        CastAnimationName: Torso.Attack1
-        CastPushDirection: {x: 0, y: 0, z: -0.02}
-        OnCast:
-          m_PersistentCalls:
-            m_Calls: []
+    - rid: -2
+      type: {class: , ns: , asm: }

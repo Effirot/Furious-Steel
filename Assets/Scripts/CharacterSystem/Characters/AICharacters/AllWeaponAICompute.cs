@@ -120,7 +120,10 @@ namespace CharacterSystem.Objects.AI
         {
             List<Cast> casts = new();
 
-            GetCast (damageSource.queueElement);
+            foreach (var element in damageSource.attackQueue)
+            {
+                GetCast (element);
+            }
 
             return casts.ToArray();
             

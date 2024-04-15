@@ -351,18 +351,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: -697749738134341483, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
-  queueElement:
-    rid: 2961813231421882443
   IsPerformingAsDefault: 1
   IsInterruptable: 0
   IsInterruptableWhenBlocked: 0
+  SpeedReducing: 6
+  queueElement:
+    rid: 2961813231421882443
+  attackQueue:
+  - rid: 868176906250092645
   OnDamageReport:
     m_PersistentCalls:
       m_Calls: []
   OnAttackEnded:
     m_PersistentCalls:
       m_Calls: []
-  SpeedReducing: 6
   RequireDamage: 150
   OnUltimateReady:
     m_PersistentCalls:
@@ -370,27 +372,67 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: 868176906250092645
+      type: {class: Repeat, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        queueElement:
+          rid: 868176906250092646
+        RepeatCount: 2
+    - rid: 868176906250092646
+      type: {class: Queue, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        queue:
+        - rid: 868176906250092647
+        - rid: 868176906250092648
+    - rid: 868176906250092647
+      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        WaitTime: 0.5
+        Permissions: 1024
+        OnStart:
+          m_PersistentCalls:
+            m_Calls: []
+        OnEnd:
+          m_PersistentCalls:
+            m_Calls: []
+    - rid: 868176906250092648
+      type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        casters:
+        - rid: 868176906250092649
+        CastPushDirection: {x: 0, y: 0, z: 0.5}
+        OnCast:
+          m_PersistentCalls:
+            m_Calls: []
+    - rid: 868176906250092649
+      type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        damage:
+          value: 40
+          type: 1
+          stunlock: 0.2
+          pushDirection: {x: 0, y: 0, z: 2}
+          RechargeUltimate: 1
+        position: {x: 0, y: 0, z: 1.53}
+        size: {x: 0.76, y: 1.59, z: 1}
+        angle: {x: 0, y: 0, z: 0}
     - rid: 2961813231421882443
       type: {class: Repeat, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Name: 
         queueElement:
           rid: 2961813231421882445
         RepeatCount: 2
     - rid: 2961813231421882445
       type: {class: Queue, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Name: 
         queue:
         - rid: 2961813231421882446
         - rid: 2961813231421882447
     - rid: 2961813231421882446
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Name: 
         WaitTime: 0.5
         Permissions: 1024
-        AnimationName: 
         OnStart:
           m_PersistentCalls:
             m_Calls: []
@@ -400,10 +442,8 @@ MonoBehaviour:
     - rid: 2961813231421882447
       type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Name: 
         casters:
         - rid: 3712309818128859213
-        CastAnimationName: Torso.Attack1
         CastPushDirection: {x: 0, y: 0, z: 0.5}
         OnCast:
           m_PersistentCalls:
@@ -466,11 +506,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: 2243838571553120747, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
-  queueElement:
-    rid: 2961813231421882369
   IsPerformingAsDefault: 1
   IsInterruptable: 0
   IsInterruptableWhenBlocked: 0
+  SpeedReducing: 6
+  queueElement:
+    rid: 2961813231421882369
+  attackQueue:
+  - rid: 4973655737326895185
+  - rid: 3712309818128859208
+  - rid: 2961813231421882370
+  - rid: 3712309818128859211
   OnDamageReport:
     m_PersistentCalls:
       m_Calls:
@@ -489,14 +535,12 @@ MonoBehaviour:
   OnAttackEnded:
     m_PersistentCalls:
       m_Calls: []
-  SpeedReducing: 6
   references:
     version: 2
     RefIds:
     - rid: 2961813231421882369
       type: {class: Queue, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Name: 
         queue:
         - rid: 4973655737326895185
         - rid: 3712309818128859208
@@ -505,10 +549,8 @@ MonoBehaviour:
     - rid: 2961813231421882370
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Name: 
         WaitTime: 0.3
         Permissions: 1280
-        AnimationName: 
         OnStart:
           m_PersistentCalls:
             m_Calls: []
@@ -518,10 +560,8 @@ MonoBehaviour:
     - rid: 3712309818128859208
       type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Name: 
         casters:
         - rid: 3712309818128859210
-        CastAnimationName: Torso.Attack1
         CastPushDirection: {x: 0, y: 0, z: 0}
         OnCast:
           m_PersistentCalls:
@@ -541,10 +581,8 @@ MonoBehaviour:
     - rid: 3712309818128859211
       type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Name: 
         casters:
         - rid: 3712309818128859212
-        CastAnimationName: Torso.Attack1
         CastPushDirection: {x: 0, y: 0, z: 0}
         OnCast:
           m_PersistentCalls:
@@ -564,10 +602,8 @@ MonoBehaviour:
     - rid: 4973655737326895185
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Name: 
         WaitTime: 0.1
         Permissions: 1792
-        AnimationName: 
         OnStart:
           m_PersistentCalls:
             m_Calls: []
@@ -748,25 +784,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: 0}
-  queueElement:
-    rid: 2961813231421882369
   IsPerformingAsDefault: 1
   IsInterruptable: 0
   IsInterruptableWhenBlocked: 0
+  SpeedReducing: 5
+  queueElement:
+    rid: 2961813231421882369
+  attackQueue:
+  - rid: 4973655737326895185
+  - rid: 5691645133460602957
+  - rid: 2961813231421882370
   OnDamageReport:
     m_PersistentCalls:
       m_Calls: []
   OnAttackEnded:
     m_PersistentCalls:
       m_Calls: []
-  SpeedReducing: 5
   references:
     version: 2
     RefIds:
     - rid: 2961813231421882369
       type: {class: Queue, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Name: 
         queue:
         - rid: 4973655737326895185
         - rid: 5691645133460602957
@@ -774,10 +813,8 @@ MonoBehaviour:
     - rid: 2961813231421882370
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Name: 
         WaitTime: 0.4
         Permissions: 1280
-        AnimationName: 
         OnStart:
           m_PersistentCalls:
             m_Calls: []
@@ -787,10 +824,8 @@ MonoBehaviour:
     - rid: 4973655737326895185
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Name: 
         WaitTime: 0.4
         Permissions: 1792
-        AnimationName: 
         OnStart:
           m_PersistentCalls:
             m_Calls: []
@@ -800,9 +835,7 @@ MonoBehaviour:
     - rid: 5691645133460602957
       type: {class: Charger, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Name: 
         Permissions: 65280
-        AnimationName: 
         MaxChargingTime: 1
         MinChargeValue: 1.25
         MaxChargeValue: 1.25
@@ -823,15 +856,12 @@ MonoBehaviour:
         chargeListener:
           rid: 5691645133460602969
         FullyChargeQueue:
-          Name: 
           queue:
           - rid: 5691645133460602965
           - rid: 5691645133460602967
     - rid: 5691645133460602965
       type: {class: Push, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Name: 
-        CastAnimationName: 
         CastPushDirection: {x: 0, y: 0, z: 0.4}
         OnCast:
           m_PersistentCalls:
@@ -839,10 +869,8 @@ MonoBehaviour:
     - rid: 5691645133460602967
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Name: 
         WaitTime: 0.2
         Permissions: 65280
-        AnimationName: 
         OnStart:
           m_PersistentCalls:
             m_Calls: []
@@ -852,10 +880,8 @@ MonoBehaviour:
     - rid: 5691645133460602969
       type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Name: 
         casters:
         - rid: 5691645133460602971
-        CastAnimationName: Torso.Attack1
         CastPushDirection: {x: 0, y: 0, z: 0.5}
         OnCast:
           m_PersistentCalls:

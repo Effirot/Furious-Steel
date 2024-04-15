@@ -28,17 +28,6 @@ public class BonePlayerNetworkCharacter : PlayerNetworkCharacter
     private float recievedDamage = 0; 
     private bool isSplashAttacking = false; 
 
-    // public override bool Hit(Damage damage)
-    // {
-    //     if (!isAttacking)
-    //     {
-    //         recievedDamage += damage.value;
-
-    //         SplashAttack();
-    //     }
-
-    //     return base.Hit(damage);
-    // }
     public override void DamageDelivered(DamageDeliveryReport report)
     {
         recievedDamage += report.damage.value;
@@ -59,14 +48,6 @@ public class BonePlayerNetworkCharacter : PlayerNetworkCharacter
         }
 
         base.DamageDelivered(report);
-    }
-
-    protected override void OnDrawGizmos()
-    {
-        base.OnDrawGizmos();
-        
-        Gizmos.color = Color.black;
-        Gizmos.DrawWireSphere(transform.position, splashAttackRange);
     }
 
     private async void SplashAttack(ulong targetID)
@@ -103,7 +84,10 @@ public class BonePlayerNetworkCharacter : PlayerNetworkCharacter
 
         if (SplashHitPrefab)
         {
-            Destroy(Instantiate(SplashHitPrefab, target.transform.position, LookRotation), 5);
+            var effectObject = Instantiate(SplashHitPrefab, target.transform.position, LookRotation);
+            effectObject.SetActive(true);
+
+            Destroy(effectObject, 5);
         }
 
         Damage.Deliver(target.gameObject, damage);

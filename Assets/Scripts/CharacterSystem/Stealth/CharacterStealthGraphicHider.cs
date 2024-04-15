@@ -7,6 +7,7 @@ using CharacterSystem.Objects;
 using Cysharp.Threading.Tasks;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Events;
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(NetworkCharacter))]
@@ -21,7 +22,12 @@ public class CharacterStealthGraphicHider : NetworkBehaviour
     [SerializeField] 
     private SkinnedMeshRenderer[] HiddableSkinnedMeshRenderers; 
 
-    public bool IsHidden 
+    [SerializeField] 
+    private UnityEvent OnCharacterHide = new UnityEvent();
+    [SerializeField] 
+    private UnityEvent OnCharacterUnhide = new UnityEvent();
+
+    public bool IsHidden
     { 
         get => isObjectHidden_network.Value;
         set 
@@ -48,6 +54,16 @@ public class CharacterStealthGraphicHider : NetworkBehaviour
         base.OnNetworkSpawn();
 
         character.onDamageRecieved += UnhideWhileGetDamage;
+        isObjectHidden_network.OnValueChanged += (Old, New) => {
+            if (New)
+            {
+                OnCharacterHide.Invoke();
+            }
+            else
+            {
+                OnCharacterUnhide.Invoke();
+            }
+        };
     }
     public override void OnNetworkDespawn()
     {

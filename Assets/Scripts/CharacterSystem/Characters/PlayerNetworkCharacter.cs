@@ -58,9 +58,19 @@ namespace CharacterSystem.Objects
         }
 
         public DamageBlocker Blocker { get; set; }
-        public DamageDeliveryReport lastReport { get; set; }
+        public DamageDeliveryReport lastReport { 
+            get => network_lastReport.Value; 
+            set
+            {
+                if (IsServer)
+                {
+                    network_lastReport.Value = value;
+                }
+            } 
+        }
 
 
+        private NetworkVariable<DamageDeliveryReport> network_lastReport = new (new(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
         private NetworkVariable<ulong> network_serverClientId = new (0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
         public event Action<DamageDeliveryReport> OnDamageDelivered;
