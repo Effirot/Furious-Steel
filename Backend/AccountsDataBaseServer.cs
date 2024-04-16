@@ -42,8 +42,8 @@ public class AccountsDataBaseServer
 
                 CurrentRoomID INTEGER DEFAULT NULL,
                 BanWhile SNALLDATETIME DEFAULT NULL,
-
-                InventorySize SNALLINT DEFAULT 12);
+                
+                Rang INTEGER DEFAULT 0);
                 
             CREATE TABLE IF NOT EXISTS OppenedRooms (
                 ID INTEGER UNIQUE PRIMARY KEY AUTOINCREMENT, 

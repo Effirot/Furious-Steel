@@ -4,10 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CharacterSystem.DamageMath;
 using CharacterSystem.Objects;
-using Cysharp.Threading.Tasks;
-using JetBrains.Annotations;
 using Unity.Netcode;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
@@ -461,20 +458,11 @@ namespace CharacterSystem.Attacks
         [SerializeField]
         private CharacterPermission Permissions = CharacterPermission.All;
 
-        [SerializeField]
-        private UnityEvent OnStart = new();
-        [SerializeField]
-        private UnityEvent OnEnd = new();
-
         public override IEnumerator AttackPipeline(DamageSource source)
         {
-            OnStart.Invoke();
-
             source.Invoker.permissions = Permissions;
             
             yield return new WaitForSeconds(WaitTime);
-
-            OnEnd.Invoke();
         }
         
         public override void OnDrawGizmos(Transform transform)
@@ -494,15 +482,8 @@ namespace CharacterSystem.Attacks
         [SerializeField]
         private CharacterPermission Permissions = CharacterPermission.All;
 
-        [SerializeField]
-        private UnityEvent OnStart = new();
-        [SerializeField]
-        private UnityEvent OnEnd = new();
-
         public override IEnumerator AttackPipeline(DamageSource source)
         {
-            OnStart.Invoke();
-
             source.Invoker.permissions = Permissions;
 
             var deltaTime = DateTime.Now - (source.Invoker.lastReport?.time ?? DateTime.MinValue);
@@ -510,10 +491,7 @@ namespace CharacterSystem.Attacks
             if (deltaTime > new TimeSpan((long)Mathf.Round(TimeSpan.TicksPerSecond * LastHitRequireSeconds)))
             {
                 yield return new WaitForSeconds(WaitTime);
-            }
-
-            OnEnd.Invoke();
-            
+            }           
         }
         
         public override void OnDrawGizmos(Transform transform)

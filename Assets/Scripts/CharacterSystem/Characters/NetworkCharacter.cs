@@ -451,7 +451,10 @@ namespace CharacterSystem.Objects
 
             if (!isStunned && permissions.HasFlag(CharacterPermission.AllowMove))
             {
-                speed_acceleration_multipliyer = Vector2.Lerp(speed_acceleration_multipliyer, Speed <= 0 ? Vector2.zero : movementVector * Mathf.Max(0, Speed), 20 * TimeScale);
+                speed_acceleration_multipliyer = Vector2.Lerp(
+                    speed_acceleration_multipliyer, 
+                    Speed <= 0 ? Vector2.zero : movementVector * Mathf.Max(0, Speed) * (characterController.isGrounded ? 1f : 0.3f), 
+                    20 * TimeScale);
 
                 if (IsServer)
                 {

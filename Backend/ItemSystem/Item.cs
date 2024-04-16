@@ -72,4 +72,6 @@ namespace Effiry.Items
 
         }
     }
+
+    public class Sas : Item { } 
 }

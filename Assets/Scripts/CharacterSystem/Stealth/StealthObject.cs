@@ -16,5 +16,14 @@ using static UnityEngine.InputSystem.InputAction;
 [DisallowMultipleComponent]
 public class StealthObject : MonoBehaviour
 {
+    public List<StealthObject> Siblings = new();
     public List<CharacterStealthGraphicHider> characterSteathers = new();
+
+    private void OnDrawGizmosSelected()
+    {
+        foreach(var sibling in Siblings)
+        {
+            sibling?.gameObject.SendMessage("OnDrawGizmosSelected", SendMessageOptions.DontRequireReceiver);
+        }
+    }
 }

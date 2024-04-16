@@ -5,45 +5,40 @@ using System.Diagnostics;
 using System.Net;
 using System.Security.Authentication;
 using System.Text;
+using Effiry.Items;
 using Microsoft.VisualBasic;
 
 
-Console.Clear();
+
 var a = new HttpsRequestAgregator();
 a.Start();
 
-// HttpClient httpClient = new HttpClient(new HttpClientHandler()
-// {
-//     SslProtocols = SslProtocols.Tls12
-// });
-// httpClient.DefaultRequestHeaders.Add("Authorization", userprofile.Token);        
+while ()
+{
 
-// while (true)
-// {
-//     await Task.Delay(1000);
+}
 
-//     using var value = await httpClient.GetAsync("https://127.0.0.1:8888/");
-//     var bytes = await value.Content.ReadAsByteArrayAsync();
-
-//     Console.WriteLine(Encoding.UTF8.GetString(bytes));
-// }
-
-Console.ReadKey();
+a.Stop();
 
 public class HttpsRequestAgregator
 {
+    public delegate Task<string> AgregateCallback(HttpListenerContext context);
+
     public bool IsActive { get; private set; } = false;
 
     private HttpListener httpServer = new ();
     private Thread? responseThread = null;
 
-    public HttpsRequestAgregator()
-    {
-        httpServer.Prefixes.Add("http://127.0.0.1:8888/");
-    }
-    ~ HttpsRequestAgregator()
-    {
+    private AgregateCallback agregateCallback;
 
+    public HttpsRequestAgregator(AgregateCallback agregateCallback, params string[] prefixes)
+    {
+        this.agregateCallback = agregateCallback;
+        
+        foreach (var prefix in prefixes)
+        {
+            httpServer.Prefixes.Add(prefix);
+        }
     }
 
     public void Start()
@@ -60,24 +55,27 @@ public class HttpsRequestAgregator
         httpServer.Stop();
 
         IsActive = false;
-
-        responseThread = new Thread (ResponseProcess);
-        responseThread.Start();
     }
 
     private void ResponseProcess()
     {
         while (IsActive)
         {   
-            AgragateResponse(httpServer.GetContext());
+            try
+            {
+                AgragateResponse(httpServer.GetContext());
+            }
+            catch (HttpListenerException) { }
+            catch (Exception) { throw; }
         }
 
         responseThread = null;
+        Stop();
     }
 
     private async void AgragateResponse(HttpListenerContext httpListenerContext)
     {
-        var values = Encoding.UTF8.GetBytes("AAA");
+        var values = Encoding.UTF8.GetBytes(await agregateCallback.Invoke(httpListenerContext));
 
         httpListenerContext.Response.ContentLength64 = values.Length;
         await httpListenerContext.Response.OutputStream.WriteAsync(values);
