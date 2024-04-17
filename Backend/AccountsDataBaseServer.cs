@@ -6,57 +6,17 @@ public class AccountsDataBaseServer
 {
     public static AccountsDataBaseServer Instance { get; private set; } = new AccountsDataBaseServer();
 
+    public static void Initialize()
+    {
+        Instance = Instance;
+    }
+
     private SqliteConnection connection = new SqliteConnection("Data Source=usersdata.db");
 
     public bool isLoggingEnabled = true;
 
     private AccountsDataBaseServer() => Start(); 
     ~AccountsDataBaseServer() => connection.Dispose(); 
-
-    private void Log(string text)
-    {
-        if (isLoggingEnabled)
-        {
-            Console.WriteLine(@$"[{DateTime.Now.ToString()}] - " + text);
-        }
-    }
-
-    private void Start()
-    {
-        Log("Starting account dataBase server . . .");
-
-        connection.Open();
-
-        SendCommand(@$"
-            CREATE TABLE IF NOT EXISTS Accounts (
-                ID INTEGER UNIQUE PRIMARY KEY AUTOINCREMENT, 
-                
-                Name TEXT UNIQUE NOT NULL, 
-                Password TEXT NOT NULL, 
-                EMail TEXT NOT NULL, 
-                
-                IsOnline BOOL DEFAULT TRUE,
-
-                LastOnline SNALLDATETIME,
-                RegistrationDate SNALLDATETIME,
-
-                CurrentRoomID INTEGER DEFAULT NULL,
-                BanWhile SNALLDATETIME DEFAULT NULL,
-                
-                Rang INTEGER DEFAULT 0);
-                
-            CREATE TABLE IF NOT EXISTS OppenedRooms (
-                ID INTEGER UNIQUE PRIMARY KEY AUTOINCREMENT, 
-                
-                Name TEXT, 
-                Password TEXT, 
-                Address TEXT, 
-
-                MaxPlayersCount SNALLINT
-                CurrentPlayersCount SNALLINT);");
-
-        Log("Account dataBase server was succesfully started");
-    }
 
     public bool RegisterAccount(string Name, string Password, string Email)
     {
@@ -72,8 +32,8 @@ public class AccountsDataBaseServer
 
             return false;
         }
-        
-        return TrySendCommand(@$"
+
+        if (TrySendCommand(@$"
             INSERT INTO Accounts (
                 Name, 
                 Password, 
@@ -87,7 +47,14 @@ public class AccountsDataBaseServer
                 '{Email}', 
 
                 '{DateTime.Now}', 
-                '{DateTime.Now}');", out _);
+                '{DateTime.Now}');", out _))
+        {
+            Log(@$"{Name} was succesfully registered");   
+            
+            return true;
+        }
+
+        return false;
     }
     public async Task<bool> RegisterAccountAsync(string Name, string Password, string Email)
     {
@@ -144,6 +111,15 @@ public class AccountsDataBaseServer
         return await SendCommandAsync<long>($"SELECT EXISTS(SELECT 1 FROM Accounts WHERE Name=\'{Name}\')") != 0;
     }
 
+    public bool ValidateAccount(string Name, string Password)
+    {
+        return SendCommand<long>($"SELECT EXISTS(SELECT 1 FROM Accounts WHERE Name=\'{Name}\' AND Password=\'{Password}\')")  != 0;
+    }
+    public async Task<bool> ValidateAccountAsync(string Name, string Password)
+    {
+        return await SendCommandAsync<long>($"SELECT EXISTS(SELECT 1 FROM Accounts WHERE Name=\'{Name}\' AND Password=\'{Password}\')")  != 0;
+    }
+
     public long IndexOfAccount(string Name)
     {
         return SendCommand<long>($"SELECT EXISTS(SELECT 1 FROM Accounts WHERE Name=\'{Name}\')");
@@ -151,6 +127,52 @@ public class AccountsDataBaseServer
     public async Task<long> IndexOfAccountAsync(string Name)
     {
         return await SendCommandAsync<long>($"SELECT EXISTS(SELECT 1 FROM Accounts WHERE Name=\'{Name}\')");
+    }
+
+
+    private void Log(string text)
+    {
+        if (isLoggingEnabled)
+        {
+            Console.WriteLine(@$"[{DateTime.Now.ToString()}] - " + text);
+        }
+    }
+
+    private void Start()
+    {
+        Log("Starting account dataBase server . . .");
+
+        connection.Open();
+
+        SendCommand(@$"
+            CREATE TABLE IF NOT EXISTS Accounts (
+                ID INTEGER UNIQUE PRIMARY KEY AUTOINCREMENT, 
+                
+                Name TEXT UNIQUE NOT NULL, 
+                Password TEXT NOT NULL, 
+                EMail TEXT NOT NULL, 
+                
+                IsOnline BOOL DEFAULT TRUE,
+
+                LastOnline SNALLDATETIME,
+                RegistrationDate SNALLDATETIME,
+
+                CurrentRoomID INTEGER DEFAULT NULL,
+                BanWhile SNALLDATETIME DEFAULT NULL,
+                
+                Rang INTEGER DEFAULT 0);
+                
+            CREATE TABLE IF NOT EXISTS OppenedRooms (
+                ID INTEGER UNIQUE PRIMARY KEY AUTOINCREMENT, 
+                
+                Name TEXT, 
+                Password TEXT, 
+                Address TEXT, 
+
+                MaxPlayersCount SNALLINT
+                CurrentPlayersCount SNALLINT);");
+
+        Log("Account dataBase server was succesfully started");
     }
 
 

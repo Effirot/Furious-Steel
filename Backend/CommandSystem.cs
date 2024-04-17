@@ -14,11 +14,18 @@ public static class Command
         .SelectMany(t => t.GetTypes())
         .SelectMany(t => t.GetMethods())
         .Where(t => t.IsStatic)
-        .Where(m => m.GetCustomAttributes(typeof(CommandAttribute), false).Length > 0)
+        .Where(t => t.GetCustomAttributes(typeof(CommandAttribute), false).Length > 0)
         .ToArray();
 
-    public static void Invoke(string commandName)
+    public static void Invoke(string commandName, params string[] args)
     {
+        var method = Array.Find(AllMethods, method => method.Name.ToLower() == commandName.ToLower());
+    
+        if (method == null)
+        {
+            throw new NullReferenceException("Method not found");
+        }
 
+        method.Invoke(null, args);
     }
 }

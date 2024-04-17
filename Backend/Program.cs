@@ -1,84 +1,81 @@
 ﻿
-
-
 using System.Diagnostics;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Security.Authentication;
 using System.Text;
+using System.Text.RegularExpressions;
 using Effiry.Items;
-using Microsoft.VisualBasic;
 
+#region --- Main
 
+Console.Clear();
+AccountsDataBaseServer.Initialize();
 
-var a = new HttpsRequestAgregator();
-a.Start();
+var prefix = "http://127.0.0.1:8888/account/";
+var agregator = new HttpsRequestAgregator(AgragateFunction, prefix);
+agregator.Start();
 
-while ()
+while (true)
 {
+    var input = Console.ReadLine() ?? "";
+    
+    if (input.ToLower() == "stop")
+        break;
 
+    var splitInput = Regex.Split(input, @"\s+");
+    
+    try
+    {
+        Command.Invoke(splitInput[0], splitInput.Skip(1).ToArray());
+    }
+    catch (Exception e)
+    {
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine(e.Message);
+        Console.ResetColor();
+    }
+} 
+
+agregator.Stop();
+
+#endregion
+
+async Task<string> AgragateFunction(HttpListenerContext context)
+{
+    var Request = context.Request.Url!.AbsoluteUri.Replace(prefix, "");
+    
+    var command = Regex.Match(Request, @"\w+").Value;
+    var args = Regex.Matches(Request.Remove(0, command.Length), @"([^,(]?[\w|@|.]+[^,)]?)");
+    
+    foreach (var item in args)
+    {
+        Console.WriteLine(item);
+    }
+    return await HttpsRequest.Invoke(command, args.Select(a => a.Value).ToArray());
 }
 
-a.Stop();
-
-public class HttpsRequestAgregator
+public static class AdditiveCommands
 {
-    public delegate Task<string> AgregateCallback(HttpListenerContext context);
-
-    public bool IsActive { get; private set; } = false;
-
-    private HttpListener httpServer = new ();
-    private Thread? responseThread = null;
-
-    private AgregateCallback agregateCallback;
-
-    public HttpsRequestAgregator(AgregateCallback agregateCallback, params string[] prefixes)
+    [Command]
+    public static void Register(string Name, string Password, string Email)
     {
-        this.agregateCallback = agregateCallback;
-        
-        foreach (var prefix in prefixes)
-        {
-            httpServer.Prefixes.Add(prefix);
-        }
+        AccountsDataBaseServer.Instance.RegisterAccount(Name, Password, Email);
+    }
+}
+
+public static class HttpCommands
+{
+    [HttpsRequestable]
+    public static bool Validate(string Name, string Password)
+    {
+        return AccountsDataBaseServer.Instance.ValidateAccount(Name, Password);
     }
 
-    public void Start()
+    [HttpsRequestable]
+    public static async Task<bool> Register(string Name, string Password, string email)
     {
-        httpServer.Start();
-
-        IsActive = true;
-
-        responseThread = new Thread (ResponseProcess);
-        responseThread.Start();
-    }
-    public void Stop()
-    {
-        httpServer.Stop();
-
-        IsActive = false;
-    }
-
-    private void ResponseProcess()
-    {
-        while (IsActive)
-        {   
-            try
-            {
-                AgragateResponse(httpServer.GetContext());
-            }
-            catch (HttpListenerException) { }
-            catch (Exception) { throw; }
-        }
-
-        responseThread = null;
-        Stop();
-    }
-
-    private async void AgragateResponse(HttpListenerContext httpListenerContext)
-    {
-        var values = Encoding.UTF8.GetBytes(await agregateCallback.Invoke(httpListenerContext));
-
-        httpListenerContext.Response.ContentLength64 = values.Length;
-        await httpListenerContext.Response.OutputStream.WriteAsync(values);
-        await httpListenerContext.Response.OutputStream.FlushAsync();
+        Console.WriteLine(email);
+        return await AccountsDataBaseServer.Instance.RegisterAccountAsync(Name, Password, Password);
     }
 }
