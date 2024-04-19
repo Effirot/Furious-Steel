@@ -89,8 +89,8 @@ MonoBehaviour:
   - rid: 2961813231421882370
   - rid: 868176892238758009
   - rid: 2961813231421882371
+  - rid: 868176997118902352
   - rid: 2961813231421882370
-  - rid: 5691645198379778204
   OnDamageReport:
     m_PersistentCalls:
       m_Calls:
@@ -140,10 +140,18 @@ MonoBehaviour:
       type: {class: PlayAnimation, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         AnimationName: Torso.Attack2
+    - rid: 868176997118902352
+      type: {class: ReducableWait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        WaitTime: 0.25
+        MinWaitTime: 0.03
+        ReducingByHit: 0.06
+        ResetAfterSeconds: 0.2
+        Permissions: 1792
     - rid: 2961813231421882370
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        WaitTime: 0.08
+        WaitTime: 0.02
         Permissions: 5376
     - rid: 2961813231421882371
       type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
@@ -185,17 +193,11 @@ MonoBehaviour:
           value: 15
           type: 1
           stunlock: 0
-          pushDirection: {x: 0, y: 0, z: 0.1}
+          pushDirection: {x: 0.05, y: 0, z: 0.1}
           RechargeUltimate: 1
         position: {x: 0, y: 0, z: 1.71}
         size: {x: 1.54, y: 1.36, z: 1}
         angle: {x: 0, y: 0, z: 0}
-    - rid: 5691645198379778204
-      type: {class: InterruptableWait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        WaitTime: 0.4
-        LastHitRequireSeconds: 0.1
-        Permissions: 1792
 --- !u!1 &1003795457742228459
 GameObject:
   m_ObjectHideFlags: 0
@@ -615,8 +617,8 @@ MonoBehaviour:
   - rid: 2961813231421882370
   - rid: 868176892238758004
   - rid: 2961813231421882371
+  - rid: 868176997118902350
   - rid: 2961813231421882370
-  - rid: 5691645198379778205
   OnDamageReport:
     m_PersistentCalls:
       m_Calls:
@@ -666,6 +668,14 @@ MonoBehaviour:
       type: {class: PlayAnimation, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         AnimationName: Torso.Attack1
+    - rid: 868176997118902350
+      type: {class: ReducableWait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        WaitTime: 0.25
+        MinWaitTime: 0.03
+        ReducingByHit: 0.06
+        ResetAfterSeconds: 0.2
+        Permissions: 1792
     - rid: 2961813231421882370
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
@@ -711,17 +721,11 @@ MonoBehaviour:
           value: 15
           type: 1
           stunlock: 0
-          pushDirection: {x: 0, y: 0, z: 0.1}
+          pushDirection: {x: -0.05, y: 0, z: 0.1}
           RechargeUltimate: 1
         position: {x: 0, y: 0, z: 1.71}
         size: {x: 1.54, y: 1.36, z: 1}
         angle: {x: 0, y: 0, z: 0}
-    - rid: 5691645198379778205
-      type: {class: InterruptableWait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        WaitTime: 0.4
-        LastHitRequireSeconds: 0.1
-        Permissions: 1792
 --- !u!1 &2104688722119929948
 GameObject:
   m_ObjectHideFlags: 0
@@ -2120,13 +2124,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6389387997060165717}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 2682705565289463711}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!33 &3130020443736745185
 MeshFilter:
   m_ObjectHideFlags: 0

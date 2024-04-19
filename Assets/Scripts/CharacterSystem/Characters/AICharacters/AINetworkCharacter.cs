@@ -25,6 +25,9 @@ namespace CharacterSystem.Objects.AI
         public DamageBlocker Blocker { get; set; }
         public DamageDeliveryReport lastReport { get; set; }
 
+        public int Combo => 0;
+
+
         public event Action<DamageDeliveryReport> OnDamageDelivered;
 
 

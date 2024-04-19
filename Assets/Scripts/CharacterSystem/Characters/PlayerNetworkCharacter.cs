@@ -6,7 +6,9 @@ using CharacterSystem.Blocking;
 using CharacterSystem.DamageMath;
 using CharacterSystem.PowerUps;
 using Cinemachine;
+using Cysharp.Threading.Tasks;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Interactions;
@@ -49,6 +51,9 @@ namespace CharacterSystem.Objects
         [SerializeField]
         private CinemachineImpulseSource OnHitImpulseSource;
 
+        [SerializeField]
+        private GameObject suicideCorpsePrefab;
+
         public ulong ServerClientID => network_serverClientId.Value;
         public int ClientDataIndex => RoomManager.Singleton.IndexOfPlayerData(data => data.ID == ServerClientID);
         public RoomManager.PublicClientData ClientData 
@@ -69,12 +74,41 @@ namespace CharacterSystem.Objects
             } 
         }
 
+        public int Combo 
+        {
+            get {
+                return IsOwner ? network_combo.Value : 0;
+            }
+            private set {
+                if (IsServer)
+                {
+                    if (network_combo.Value != value && value > 0)
+                    {
+                        if (comboResetTimer != null)
+                        {
+                            StopCoroutine(comboResetTimer);
+                            comboResetTimer = null;
+                        }
+
+                        comboResetTimer = StartCoroutine(ComboResetTimer());
+                    }
+
+                    network_combo.Value = value;
+
+                    OnComboChanged?.Invoke(value);
+                }
+            }
+        }
 
         private NetworkVariable<DamageDeliveryReport> network_lastReport = new (new(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
         private NetworkVariable<ulong> network_serverClientId = new (0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+        private NetworkVariable<int> network_combo = new (0, NetworkVariableReadPermission.Owner, NetworkVariableWritePermission.Server);
 
         public event Action<DamageDeliveryReport> OnDamageDelivered;
 
+        public event Action<int> OnComboChanged;
+
+        private Coroutine comboResetTimer = null;
 
         public override bool Hit(Damage damage)
         {
@@ -97,6 +131,8 @@ namespace CharacterSystem.Objects
         {
             if (IsServer)
             {
+                Combo += 1;
+
                 var data = ClientData;
                 data.statistics.DeliveredDamage += report.damage.value;
 
@@ -122,6 +158,7 @@ namespace CharacterSystem.Objects
             RefreshColor_ClientRpc();
         }
         
+
         public override void Kill()
         {
             base.Kill();
@@ -134,6 +171,15 @@ namespace CharacterSystem.Objects
                 data.statistics.AssistsStreak = 0;
 
                 ClientData = data;
+            }
+        }
+        public void Kill(bool IsSuicide)
+        {
+            this.Kill();
+
+            if (IsSuicide && IsServer && IsSpawned)
+            {
+                OnSuicide_ClientRpc();
             }
         }
 
@@ -292,6 +338,14 @@ namespace CharacterSystem.Objects
             catch { }
         }
 
+        private IEnumerator ComboResetTimer()
+        {
+            yield return new WaitForSeconds(1.5f);
+
+            Combo = 0;
+            comboResetTimer = null;
+        }
+
 
         private void OnMove(CallbackContext input)
         {
@@ -334,10 +388,25 @@ namespace CharacterSystem.Objects
             KillBind_ServerRpc();
         }
 
+
         [ServerRpc]
         private void KillBind_ServerRpc()
         {
-            Kill();
+            // await UniTask.WaitForSeconds(3);
+
+            if (!this.IsUnityNull())
+            {
+                Kill(true);
+            }
+        } 
+
+        [ClientRpc]
+        private void OnSuicide_ClientRpc()
+        {
+            if (suicideCorpsePrefab != null)
+            {
+                Destroy(Instantiate(suicideCorpsePrefab, transform.position, transform.rotation), 5);
+            }
         } 
 
         [ClientRpc]

@@ -84,6 +84,16 @@ namespace CharacterSystem.Blocking
 
             if (IsBlockInProcess)
             {
+                if (InterruptOnHit)
+                {
+                    StopBlock_ClientRpc();
+
+                    if (!IsClient)
+                    {
+                        StopBlockProcess();
+                    }
+                }
+                
                 if (IsServer)
                 {
                     ExecuteSuccesfullyBlockEvent_ClientRpc();
@@ -105,11 +115,6 @@ namespace CharacterSystem.Blocking
                 damage *= 1f - DamageReducing;
 
                 return damage.value == 0;
-            }
-
-            if (InterruptOnHit)
-            {
-                StopBlockProcess();
             }
 
             return false;
@@ -169,7 +174,7 @@ namespace CharacterSystem.Blocking
                 StopCoroutine(BlockProcessRoutine);
                 
                 BlockProcessRoutine = null;
-
+            
                 Invoker.animator.SetBool("Blocking", false);
                 Invoker.Speed += SpeedReducing;
                 Invoker.permissions = CharacterPermission.All;
@@ -184,6 +189,12 @@ namespace CharacterSystem.Blocking
             {   
                 StartBlockProcess();
             }
+        }
+
+        [ClientRpc]
+        private void StopBlock_ClientRpc()
+        {
+            StopBlockProcess();
         }
 
         [ClientRpc]

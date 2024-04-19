@@ -5,6 +5,8 @@ using System.Linq;
 using CharacterSystem.DamageMath;
 using CharacterSystem.Objects;
 using Unity.Netcode;
+using Unity.VisualScripting;
+using UnityEditor.Timeline.Actions;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
@@ -18,10 +20,14 @@ namespace CharacterSystem.Attacks
         IDamagable
     {
         float Speed { get; set; }
+
         DamageDeliveryReport lastReport { get; set; }
+
+        int Combo { get; }
 
         event Action<DamageDeliveryReport> OnDamageDelivered;
 
+        void SetPosition (Vector3 position);
         void DamageDelivered(DamageDeliveryReport report);
     }
 
@@ -51,13 +57,14 @@ namespace CharacterSystem.Attacks
         public AttackQueueElement[] attackQueue;
 
         [SerializeField]
-        private UnityEvent<DamageDeliveryReport> OnDamageReport = new ();
+        public UnityEvent<DamageDeliveryReport> OnDamageReport = new ();
         
         [SerializeField]
-        private UnityEvent OnAttackEnded = new ();
+        public UnityEvent OnAttackEnded = new ();
 
 
         public AttackTimingStatement currentAttackStatement { get; protected set; }
+        public DamageDeliveryReport currentAttackDamageReport { get; protected set; }
 
         public bool IsPerforming 
         { 
@@ -171,6 +178,8 @@ namespace CharacterSystem.Attacks
                     EndAttack();
                 }
 
+                currentAttackDamageReport = report;
+
                 Invoker.DamageDelivered(report);
                 Invoker.lastReport = report;
             }
@@ -225,6 +234,8 @@ namespace CharacterSystem.Attacks
                 
                 OnAttackEnded.Invoke();
                 
+                currentAttackDamageReport = null;
+
                 attackProcess = null;
 
                 if (IsServer && IsPressed)
@@ -269,17 +280,80 @@ namespace CharacterSystem.Attacks
         [Space]
         [SerializeField]
         private Vector3 CastPushDirection = Vector3.forward / 2; 
-        public UnityEvent OnCast = new();
         
         public override IEnumerator AttackPipeline(DamageSource source)
         {
             yield return ChargedAttackPipeline(source, 1, false, false);
         }
         public IEnumerator ChargedAttackPipeline(DamageSource source, float chargeValue, bool flexibleCollider, bool flexibleDamage)
-        {
-            OnCast.Invoke();
-            
+        {            
             source.Invoker.Push(source.Invoker.transform.rotation * CastPushDirection);
+
+            yield break;
+        }
+
+        public override void OnDrawGizmos(Transform transform)
+        {
+
+        }
+    }
+    [Serializable]
+    public sealed class Event : AttackQueueElement
+    {
+        [Header("Events")]
+        
+        [Space]
+        [SerializeField]
+        private UnityEvent Function = new(); 
+        
+        public override IEnumerator AttackPipeline(DamageSource source)
+        {
+            Function.Invoke();
+
+            yield break;
+        }
+
+        public override void OnDrawGizmos(Transform transform)
+        {
+
+        }
+    }
+    [Serializable]
+    public sealed class Teleport : AttackQueueElement
+    {
+        [Header("Events")]
+        
+        [Space]
+        [SerializeField]
+        private Vector3 TeleportRelativeDirectionDirection = Vector3.forward * 3; 
+        
+        public override IEnumerator AttackPipeline(DamageSource source)
+        {
+            source.Invoker.SetPosition (source.transform.position + source.transform.rotation * TeleportRelativeDirectionDirection);
+
+            yield break;
+        }
+
+        public override void OnDrawGizmos(Transform transform)
+        {
+
+        }
+    }
+    [Serializable]
+    public sealed class TeleportToLastTarget : AttackQueueElement
+    {
+        [Header("Events")]
+        
+        [Space]
+        [SerializeField]
+        private Vector3 AdditiveTeleportRelativeDirectionDirection = Vector3.forward * 3; 
+        
+        public override IEnumerator AttackPipeline(DamageSource source)
+        {
+            if (source.currentAttackDamageReport != null && !source.currentAttackDamageReport.target.IsUnityNull())
+            {
+                source.Invoker.SetPosition (source.currentAttackDamageReport.target.transform.position + source.transform.rotation * AdditiveTeleportRelativeDirectionDirection);
+            }
 
             yield break;
         }
@@ -471,6 +545,33 @@ namespace CharacterSystem.Attacks
         }
     }
     [Serializable]
+    public sealed class ReducableWait : AttackQueueElement
+    {
+        [SerializeField, Range(0, 10)]
+        private float WaitTime = 1;
+
+        [SerializeField, Range(0, 10)]
+        private float MinWaitTime = 0.2f;
+
+        [SerializeField, Range(0, 10)]
+        private float ReducingByHit = 0.03f;
+        
+        [SerializeField]
+        private CharacterPermission Permissions = CharacterPermission.All;
+
+        public override IEnumerator AttackPipeline(DamageSource source)
+        {
+            source.Invoker.permissions = Permissions;
+            
+            yield return new WaitForSeconds(Mathf.Clamp(WaitTime - source.Invoker.Combo * ReducingByHit, MinWaitTime, WaitTime));
+        }
+        
+        public override void OnDrawGizmos(Transform transform)
+        {
+            
+        }
+    }
+    [Serializable]
     public sealed class InterruptableWait : AttackQueueElement
     {
         [SerializeField, Range(0, 10)]
@@ -499,6 +600,7 @@ namespace CharacterSystem.Attacks
             
         }
     }
+
 
     [Serializable]
     public sealed class PlayAnimation : AttackQueueElement

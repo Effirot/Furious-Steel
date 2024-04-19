@@ -285,18 +285,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8ecdfc990da94647995780684bb1166, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inputAction: {fileID: 2243838571553120747, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
+  inputAction: {fileID: 5277666054227158027, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   IsPerformingAsDefault: 1
   IsInterruptable: 1
   IsInterruptableWhenBlocked: 0
-  SpeedReducing: 6
+  SpeedReducing: 4
   attackQueue:
-  - rid: 6352953245085466699
   - rid: 6352953245085466719
   - rid: 6352953245085466701
+  - rid: 868176997118902382
   - rid: 6352953245085466721
   - rid: 6352953245085466705
-  - rid: 6352953245085466707
+  - rid: 868176997118902345
   - rid: 6352953245085466709
   OnDamageReport:
     m_PersistentCalls:
@@ -313,18 +313,37 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 897015580173702940}
+        m_TargetAssemblyTypeName: Cinemachine.CinemachineImpulseSource, Cinemachine
+        m_MethodName: GenerateImpulse
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   OnAttackEnded:
     m_PersistentCalls:
       m_Calls: []
   references:
     version: 2
     RefIds:
-    - rid: 6352953245085466699
+    - rid: 868176997118902345
       type: {class: InterruptableWait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        WaitTime: 0.2
-        LastHitRequireSeconds: 0.2
-        Permissions: 1792
+        WaitTime: 0.7
+        LastHitRequireSeconds: 0.1
+        Permissions: 5376
+    - rid: 868176997118902382
+      type: {class: Push, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        CastPushDirection: {x: 0, y: 0, z: 0.7}
+        OnCast:
+          m_PersistentCalls:
+            m_Calls: []
     - rid: 6352953245085466701
       type: {class: HoldRepeat, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
@@ -340,8 +359,6 @@ MonoBehaviour:
       data:
         casters:
         - rid: 6352953245085466713
-        - rid: 6352953245085466715
-        - rid: 6352953245085466717
         CastPushDirection: {x: 0, y: 0, z: 0}
         OnCast:
           m_PersistentCalls:
@@ -370,56 +387,27 @@ MonoBehaviour:
                 m_StringArgument: 
                 m_BoolArgument: 0
               m_CallState: 2
-    - rid: 6352953245085466707
-      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        WaitTime: 0.1
-        Permissions: 1280
     - rid: 6352953245085466709
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        WaitTime: 0.1
-        Permissions: 1792
+        WaitTime: 0.5
+        Permissions: 5888
     - rid: 6352953245085466713
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
           value: 35
           type: 1
-          stunlock: 0
-          pushDirection: {x: 0, y: 0, z: 0.3}
+          stunlock: 0.5
+          pushDirection: {x: 0, y: 0.9, z: 0.1}
           RechargeUltimate: 1
         position: {x: 0, y: 0, z: 3.75}
-        size: {x: 1.96, y: 1.54, z: 1}
+        size: {x: 1.18, y: 1.83, z: 1}
         angle: {x: 0, y: 0, z: 0}
-    - rid: 6352953245085466715
-      type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        damage:
-          value: 15
-          type: 1
-          stunlock: 0
-          pushDirection: {x: 0, y: 0, z: 0.3}
-          RechargeUltimate: 1
-        position: {x: -2.8, y: 0, z: 2.55}
-        size: {x: 1.96, y: 1.34, z: 1}
-        angle: {x: 0, y: -45, z: 0}
-    - rid: 6352953245085466717
-      type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        damage:
-          value: 15
-          type: 1
-          stunlock: 0
-          pushDirection: {x: 0, y: 0, z: 0.3}
-          RechargeUltimate: 1
-        position: {x: 2.8, y: 0, z: 2.55}
-        size: {x: 1.96, y: 1.34, z: 1}
-        angle: {x: 0, y: 45, z: 0}
     - rid: 6352953245085466719
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        WaitTime: 0.3
+        WaitTime: 0.2
         Permissions: 1792
     - rid: 6352953245085466721
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
@@ -475,21 +463,32 @@ MonoBehaviour:
   IsPerformingAsDefault: 0
   IsInterruptable: 1
   IsInterruptableWhenBlocked: 0
-  SpeedReducing: 6
+  SpeedReducing: 4
   attackQueue:
   - rid: 6352953245085466698
   - rid: 6352953245085466718
   - rid: 6352953245085466700
   - rid: 6352953245085466720
   - rid: 6352953245085466704
-  - rid: 6352953245085466706
-  - rid: 6352953245085466708
+  - rid: 868176997118902380
   OnDamageReport:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 4669531178987684204}
         m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
         m_MethodName: Play
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 897015580173702940}
+        m_TargetAssemblyTypeName: Cinemachine.CinemachineImpulseSource, Cinemachine
+        m_MethodName: GenerateImpulse
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -529,11 +528,19 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: 868176997118902380
+      type: {class: ReducableWait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        WaitTime: 0.4
+        MinWaitTime: 0.1
+        ReducingByHit: 0.07
+        ResetAfterSeconds: 0.5
+        Permissions: 1280
     - rid: 6352953245085466698
       type: {class: InterruptableWait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        WaitTime: 0.2
-        LastHitRequireSeconds: 0.2
+        WaitTime: 0.5
+        LastHitRequireSeconds: 0.6
         Permissions: 1792
     - rid: 6352953245085466700
       type: {class: HoldRepeat, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
@@ -580,24 +587,14 @@ MonoBehaviour:
                 m_StringArgument: 
                 m_BoolArgument: 0
               m_CallState: 2
-    - rid: 6352953245085466706
-      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        WaitTime: 0.1
-        Permissions: 1280
-    - rid: 6352953245085466708
-      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        WaitTime: 0.1
-        Permissions: 1792
     - rid: 6352953245085466712
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          value: 35
+          value: 32
           type: 1
-          stunlock: 0
-          pushDirection: {x: 0, y: 0, z: 0.3}
+          stunlock: 0.2
+          pushDirection: {x: 0.33, y: 0, z: 0.1}
           RechargeUltimate: 1
         position: {x: 0, y: 0, z: 3.75}
         size: {x: 1.96, y: 1.54, z: 1}
@@ -608,8 +605,8 @@ MonoBehaviour:
         damage:
           value: 15
           type: 1
-          stunlock: 0
-          pushDirection: {x: 0, y: 0, z: 0.3}
+          stunlock: 0.2
+          pushDirection: {x: 0.1, y: 0, z: 0}
           RechargeUltimate: 1
         position: {x: -2.8, y: 0, z: 2.55}
         size: {x: 1.96, y: 1.34, z: 1}
@@ -620,8 +617,8 @@ MonoBehaviour:
         damage:
           value: 15
           type: 1
-          stunlock: 0
-          pushDirection: {x: 0, y: 0, z: 0.3}
+          stunlock: 0.2
+          pushDirection: {x: 0.1, y: 0, z: 0}
           RechargeUltimate: 1
         position: {x: 2.8, y: 0, z: 2.55}
         size: {x: 1.96, y: 1.34, z: 1}
@@ -629,7 +626,7 @@ MonoBehaviour:
     - rid: 6352953245085466718
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        WaitTime: 0.3
+        WaitTime: 0.1
         Permissions: 1792
     - rid: 6352953245085466720
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
@@ -1042,7 +1039,7 @@ AudioSource:
   m_Resource: {fileID: 8300000, guid: 8ae609db06b501047a8857a36acd8c2c, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.772
-  m_Pitch: 0.44
+  m_Pitch: 0.84
   Loop: 0
   Mute: 0
   Spatialize: 0
@@ -1152,13 +1149,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5598452190556703154}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: -0.13052624, w: 0.9914449}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5822518252044395748}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -15}
 --- !u!73398921 &9179240728732966600
 VFXRenderer:
   serializedVersion: 1
@@ -1298,13 +1295,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6076769996495484624}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 1, w: 0}
+  m_LocalRotation: {x: 0, y: -0, z: 0.99144495, w: -0.13052607}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7656772186853074720}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 180}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 195}
 --- !u!73398921 &3808926835572641147
 VFXRenderer:
   serializedVersion: 1
@@ -1477,13 +1474,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6302003552654447452}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2805340755205534694}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
 --- !u!73398921 &8078950071593644581
 VFXRenderer:
   serializedVersion: 1
@@ -1647,10 +1644,37 @@ MonoBehaviour:
   IsInterruptable: 0
   IsInterruptableWhenBlocked: 0
   SpeedReducing: 3
-  attackQueue: []
+  attackQueue:
+  - rid: 868176997118902383
+  - rid: 868176997118902384
+  - rid: 868176997118902386
   OnDamageReport:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 4669531178987684204}
+        m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
+        m_MethodName: Play
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 897015580173702940}
+        m_TargetAssemblyTypeName: Cinemachine.CinemachineImpulseSource, Cinemachine
+        m_MethodName: GenerateImpulse
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   OnAttackEnded:
     m_PersistentCalls:
       m_Calls: []
@@ -1660,7 +1684,85 @@ MonoBehaviour:
       m_Calls: []
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 868176997118902383
+      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        WaitTime: 0.2
+        Permissions: 1280
+    - rid: 868176997118902384
+      type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        casters:
+        - rid: 868176997118902385
+        CastPushDirection: {x: 0, y: 0, z: 0.5}
+        OnCast:
+          m_PersistentCalls:
+            m_Calls:
+            - m_Target: {fileID: 897015580173702940}
+              m_TargetAssemblyTypeName: Cinemachine.CinemachineImpulseSource, Cinemachine
+              m_MethodName: GenerateImpulse
+              m_Mode: 1
+              m_Arguments:
+                m_ObjectArgument: {fileID: 0}
+                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+                m_IntArgument: 0
+                m_FloatArgument: 0
+                m_StringArgument: 
+                m_BoolArgument: 0
+              m_CallState: 2
+            - m_Target: {fileID: 8126954680756248644}
+              m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
+              m_MethodName: Play
+              m_Mode: 1
+              m_Arguments:
+                m_ObjectArgument: {fileID: 0}
+                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+                m_IntArgument: 0
+                m_FloatArgument: 0
+                m_StringArgument: 
+                m_BoolArgument: 0
+              m_CallState: 2
+            - m_Target: {fileID: 3818641581718748100}
+              m_TargetAssemblyTypeName: UnityEngine.VFX.VisualEffect, UnityEngine
+              m_MethodName: Play
+              m_Mode: 1
+              m_Arguments:
+                m_ObjectArgument: {fileID: 0}
+                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+                m_IntArgument: 0
+                m_FloatArgument: 0
+                m_StringArgument: 
+                m_BoolArgument: 0
+              m_CallState: 2
+            - m_Target: {fileID: 4383618358936296898}
+              m_TargetAssemblyTypeName: UnityEngine.VFX.VisualEffect, UnityEngine
+              m_MethodName: Play
+              m_Mode: 1
+              m_Arguments:
+                m_ObjectArgument: {fileID: 0}
+                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+                m_IntArgument: 0
+                m_FloatArgument: 0
+                m_StringArgument: 
+                m_BoolArgument: 0
+              m_CallState: 2
+    - rid: 868176997118902385
+      type: {class: SphereCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        damage:
+          value: 70
+          type: 8
+          stunlock: 1.4
+          pushDirection: {x: 0, y: 0.66, z: 1.21}
+          RechargeUltimate: 0
+        position: {x: 0, y: 0, z: 3.94}
+        radius: 1.91
+    - rid: 868176997118902386
+      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        WaitTime: 0.2
+        Permissions: 1280
 --- !u!1 &8459401213791337542
 GameObject:
   m_ObjectHideFlags: 0
@@ -1710,21 +1812,32 @@ MonoBehaviour:
   IsPerformingAsDefault: 1
   IsInterruptable: 1
   IsInterruptableWhenBlocked: 0
-  SpeedReducing: 6
+  SpeedReducing: 4
   attackQueue:
   - rid: 6352953245085466699
   - rid: 6352953245085466719
   - rid: 6352953245085466701
   - rid: 6352953245085466721
   - rid: 6352953245085466705
-  - rid: 6352953245085466707
-  - rid: 6352953245085466709
+  - rid: 868176997118902381
   OnDamageReport:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 4669531178987684204}
         m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
         m_MethodName: Play
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 897015580173702940}
+        m_TargetAssemblyTypeName: Cinemachine.CinemachineImpulseSource, Cinemachine
+        m_MethodName: GenerateImpulse
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1764,11 +1877,19 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: 868176997118902381
+      type: {class: ReducableWait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        WaitTime: 0.4
+        MinWaitTime: 0.1
+        ReducingByHit: 0.07
+        ResetAfterSeconds: 0.5
+        Permissions: 1280
     - rid: 6352953245085466699
       type: {class: InterruptableWait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        WaitTime: 0.2
-        LastHitRequireSeconds: 0.2
+        WaitTime: 0.5
+        LastHitRequireSeconds: 0.6
         Permissions: 1792
     - rid: 6352953245085466701
       type: {class: HoldRepeat, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
@@ -1815,24 +1936,14 @@ MonoBehaviour:
                 m_StringArgument: 
                 m_BoolArgument: 0
               m_CallState: 2
-    - rid: 6352953245085466707
-      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        WaitTime: 0.1
-        Permissions: 1280
-    - rid: 6352953245085466709
-      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        WaitTime: 0.1
-        Permissions: 1792
     - rid: 6352953245085466713
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          value: 35
+          value: 32
           type: 1
-          stunlock: 0
-          pushDirection: {x: 0, y: 0, z: 0.3}
+          stunlock: 0.2
+          pushDirection: {x: -0.33, y: 0, z: 0.1}
           RechargeUltimate: 1
         position: {x: 0, y: 0, z: 3.75}
         size: {x: 1.96, y: 1.54, z: 1}
@@ -1843,8 +1954,8 @@ MonoBehaviour:
         damage:
           value: 15
           type: 1
-          stunlock: 0
-          pushDirection: {x: 0, y: 0, z: 0.3}
+          stunlock: 0.2
+          pushDirection: {x: -0.1, y: 0, z: 0}
           RechargeUltimate: 1
         position: {x: -2.8, y: 0, z: 2.55}
         size: {x: 1.96, y: 1.34, z: 1}
@@ -1855,8 +1966,8 @@ MonoBehaviour:
         damage:
           value: 15
           type: 1
-          stunlock: 0
-          pushDirection: {x: 0, y: 0, z: 0.3}
+          stunlock: 0.2
+          pushDirection: {x: -0.1, y: 0, z: 0}
           RechargeUltimate: 1
         position: {x: 2.8, y: 0, z: 2.55}
         size: {x: 1.96, y: 1.34, z: 1}
@@ -1864,7 +1975,7 @@ MonoBehaviour:
     - rid: 6352953245085466719
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        WaitTime: 0.3
+        WaitTime: 0.1
         Permissions: 1792
     - rid: 6352953245085466721
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}

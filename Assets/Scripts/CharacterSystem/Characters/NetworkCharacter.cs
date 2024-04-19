@@ -12,6 +12,9 @@ using UnityEngine.AI;
 using UnityEngine.Events;
 using UnityEngine.TextCore.Text;
 using UnityEngine.VFX;
+using Cysharp.Threading.Tasks;
+
+
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -74,6 +77,9 @@ namespace CharacterSystem.Objects
         [SerializeField]
         public AudioSource OnHitSound;
 
+        [SerializeField]
+        public VisualEffect OnHitEffect;
+
         [Header("Dodge")]
         [SerializeField]
         [Range(0, 20)]
@@ -101,7 +107,9 @@ namespace CharacterSystem.Objects
         
         public event Action<Damage> onDamageRecieved = delegate { };
         public event Action<float> onHealthChanged = delegate { };
-        public event Action<bool> isGrounded = delegate { };
+        public event Action<bool> isGroundedEvent = delegate { };
+
+        public bool IsGrounded => characterController.isGrounded;
 
         public Animator animator { get; private set; }
         public CharacterController characterController { get; private set; }
@@ -218,6 +226,7 @@ namespace CharacterSystem.Objects
         private Coroutine regenerationCoroutine;
 
         private Vector2 speed_acceleration_multipliyer = Vector2.zero;
+        private Vector3 gravity_acceleration = Vector3.zero;
 
         private Coroutine dodgeRoutine = null;
 
@@ -255,6 +264,11 @@ namespace CharacterSystem.Objects
             if (OnHitSound != null)
             {
                 OnHitSound.Play();
+            }
+            if (OnHitEffect != null && damage.value > 0)
+            {
+                OnHitEffect.SetVector3("Direction", velocity);
+                OnHitEffect.Play();
             }
 
             health -= damage.value;  
@@ -332,10 +346,12 @@ namespace CharacterSystem.Objects
         {
             if (IsServer)
             {
-                transform.position = position;
+                // characterController.enabled = false;
                 network_position.Value = position;
+                transform.position = position;
 
                 SetPosition_ClientRpc(position);
+                // characterController.enabled = true;
             }
         }
         public void Dash(Vector2 direction)
@@ -437,7 +453,11 @@ namespace CharacterSystem.Objects
 
                 foreach (var rigidbody in corpseObject.GetComponentsInChildren<Rigidbody>())
                 {
-                    rigidbody.AddForce(velocity * 250);
+                    rigidbody.AddForce(velocity * 1750 * UnityEngine.Random.Range(0.5f, 1.5f) + Vector3.up * 500 * UnityEngine.Random.Range(0.5f, 1.5f));
+                    rigidbody.AddTorque(
+                        Vector3.right * 4000 * UnityEngine.Random.Range(0.5f, 2f) + 
+                        Vector3.up * 4000 * UnityEngine.Random.Range(0.5f, 2f) + 
+                        Vector3.left * 4000 * UnityEngine.Random.Range(0.5f, 2f));
                 }
 
                 Destroy(corpseObject, 10);
@@ -470,19 +490,11 @@ namespace CharacterSystem.Objects
         }
         private Vector3 CalculatePhysicsSimulation ()
         {
-            velocity *= VelocityReducingMultipliyer;
-            velocity /= Mass;
-
-            Vector3 gravity = Vector3.zero; 
+            velocity = Vector3.Lerp(velocity, Vector3.zero, (IsGrounded ? 0.15f : 0.06f) * Mass);
             
-            if (permissions.HasFlag(CharacterPermission.AllowGravity))
-            {
-                gravity = Physics.gravity + (Vector3.up * characterController.velocity.y);
-                gravity /= 1.6f;
-                gravity *= Time.fixedDeltaTime;
-            }
-
-            return velocity + gravity;
+            gravity_acceleration = Vector3.Lerp(gravity_acceleration, permissions.HasFlag(CharacterPermission.AllowGravity) && !IsGrounded ? Physics.gravity : Vector3.zero, 0.003f);
+            
+            return velocity + gravity_acceleration;
         }
         private void CharacterMove (Vector3 vector)
         {
