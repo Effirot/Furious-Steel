@@ -35,6 +35,125 @@ Transform:
   - {fileID: 6375053301139795725}
   m_Father: {fileID: 2682705565289463711}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &724167200949464823
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5490153348418956600}
+  - component: {fileID: 3611871250690425382}
+  - component: {fileID: 6676870419901297605}
+  m_Layer: 0
+  m_Name: Explode
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5490153348418956600
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 724167200949464823}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3472960674384853248}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!2083052967 &3611871250690425382
+VisualEffect:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 724167200949464823}
+  m_Enabled: 1
+  m_Asset: {fileID: 8926484042661614526, guid: 20834f894643cb24aaee3f38ee138d20, type: 3}
+  m_InitialEventName: OnPlay
+  m_InitialEventNameOverriden: 0
+  m_StartSeed: 0
+  m_ResetSeedOnPlay: 1
+  m_AllowInstancing: 1
+  m_ResourceVersion: 1
+  m_PropertySheet:
+    m_Float:
+      m_Array:
+      - m_Value: 7.58
+        m_Name: Size
+        m_Overridden: 1
+    m_Vector2f:
+      m_Array: []
+    m_Vector3f:
+      m_Array: []
+    m_Vector4f:
+      m_Array:
+      - m_Value: {x: 0, y: 4.2810335, z: 29.508846, w: 1}
+        m_Name: Color
+        m_Overridden: 1
+    m_Uint:
+      m_Array: []
+    m_Int:
+      m_Array: []
+    m_Matrix4x4f:
+      m_Array: []
+    m_AnimationCurve:
+      m_Array: []
+    m_Gradient:
+      m_Array: []
+    m_NamedObject:
+      m_Array: []
+    m_Bool:
+      m_Array: []
+--- !u!73398921 &6676870419901297605
+VFXRenderer:
+  serializedVersion: 1
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 724167200949464823}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 0
+  m_LightProbeUsage: 0
+  m_ReflectionProbeUsage: 0
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
 --- !u!1 &998055257534133035
 GameObject:
   m_ObjectHideFlags: 0
@@ -89,7 +208,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 0
-  MaxDistance: 40
+  MaxDistance: 120
   Pan2D: 0
   rolloffMode: 1
   BypassEffects: 0
@@ -267,6 +386,55 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
+--- !u!1 &2024765257504329697
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5955366354693829654}
+  - component: {fileID: 6472428936169772303}
+  m_Layer: 0
+  m_Name: Aim
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5955366354693829654
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2024765257504329697}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.3, y: 0, z: 8.65}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 4511964577994829457}
+  m_Father: {fileID: 698400827903392113}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6472428936169772303
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2024765257504329697}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d22261168b975cf488d9cad1f519b18c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SearchRadius: 6.48
+  SearchSpherePoint: {x: 0, y: 0, z: 0}
+  AdditivePosition: {x: 0, y: 1, z: 0}
+  followPoint: {fileID: 4511964577994829457}
 --- !u!1 &2264843534275818021
 GameObject:
   m_ObjectHideFlags: 0
@@ -900,6 +1068,8 @@ GameObject:
   - component: {fileID: 3896784985292033021}
   - component: {fileID: 4200806320178342763}
   - component: {fileID: 8339312877924039369}
+  - component: {fileID: 5038775703954996780}
+  - component: {fileID: 3975824261485393168}
   m_Layer: 0
   m_Name: LightningCast (1)
   m_TagString: Untagged
@@ -956,7 +1126,7 @@ VisualEffect:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0, y: 0, z: 10.76}
+      - m_Value: {x: -0.3, y: 0, z: 8.65}
         m_Name: Direction
         m_Overridden: 1
       - m_Value: {x: 0, y: 0, z: 0}
@@ -1058,6 +1228,38 @@ VFXRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &5038775703954996780
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3124338665859964730}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdafc37f32b176349b1684c4455b98e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ExecuteInEditor: 1
+  m_Bindings:
+  - {fileID: 3975824261485393168}
+  m_VisualEffect: {fileID: 4200806320178342763}
+--- !u!114 &3975824261485393168
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3124338665859964730}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07c3070554d0a8944a95ff8f018c2c9f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Space: 2
+  m_Property:
+    m_Name: Direction
+  Target: {fileID: 4511964577994829457}
 --- !u!1 &3628402810788269752
 GameObject:
   m_ObjectHideFlags: 0
@@ -1226,6 +1428,8 @@ GameObject:
   - component: {fileID: 532826844987236810}
   - component: {fileID: 755592559422086166}
   - component: {fileID: 6004930240941488236}
+  - component: {fileID: 8144740037578185802}
+  - component: {fileID: 4932136509886810767}
   m_Layer: 0
   m_Name: LightningCast (2)
   m_TagString: Untagged
@@ -1282,7 +1486,7 @@ VisualEffect:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0, y: 0, z: 10.76}
+      - m_Value: {x: -0.3, y: 0, z: 8.65}
         m_Name: Direction
         m_Overridden: 1
       - m_Value: {x: 0, y: 0, z: 0}
@@ -1384,6 +1588,38 @@ VFXRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &8144740037578185802
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3859373570223353731}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdafc37f32b176349b1684c4455b98e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ExecuteInEditor: 1
+  m_Bindings:
+  - {fileID: 4932136509886810767}
+  m_VisualEffect: {fileID: 755592559422086166}
+--- !u!114 &4932136509886810767
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3859373570223353731}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07c3070554d0a8944a95ff8f018c2c9f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Space: 2
+  m_Property:
+    m_Name: Direction
+  Target: {fileID: 4511964577994829457}
 --- !u!1 &4113476367880194424
 GameObject:
   m_ObjectHideFlags: 0
@@ -1395,6 +1631,8 @@ GameObject:
   - component: {fileID: 1737961754890365510}
   - component: {fileID: 66650394881076738}
   - component: {fileID: 4371598358417469954}
+  - component: {fileID: 4311487688442622242}
+  - component: {fileID: 1401149787793443413}
   m_Layer: 0
   m_Name: LightningCast
   m_TagString: Untagged
@@ -1451,7 +1689,7 @@ VisualEffect:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0, y: 0, z: 10.76}
+      - m_Value: {x: -0.3, y: 0, z: 8.65}
         m_Name: Direction
         m_Overridden: 1
       - m_Value: {x: 0, y: 0, z: 0}
@@ -1553,6 +1791,38 @@ VFXRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &4311487688442622242
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4113476367880194424}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdafc37f32b176349b1684c4455b98e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ExecuteInEditor: 1
+  m_Bindings:
+  - {fileID: 1401149787793443413}
+  m_VisualEffect: {fileID: 66650394881076738}
+--- !u!114 &1401149787793443413
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4113476367880194424}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07c3070554d0a8944a95ff8f018c2c9f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Space: 2
+  m_Property:
+    m_Name: Direction
+  Target: {fileID: 4511964577994829457}
 --- !u!1 &4182517739294238308
 GameObject:
   m_ObjectHideFlags: 0
@@ -1702,7 +1972,7 @@ MonoBehaviour:
     - rid: 868177009411096672
       type: {class: Teleport, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        TeleportRelativeDirectionDirection: {x: 0, y: 0, z: 5}
+        TeleportRelativeDirectionDirection: {x: 0, y: 0, z: 6}
     - rid: 868177009411096674
       type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
@@ -1745,7 +2015,7 @@ MonoBehaviour:
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          value: 20
+          value: 25
           type: 4
           stunlock: 0.5
           pushDirection: {x: 0, y: 0.2, z: 0.2}
@@ -1757,8 +2027,8 @@ MonoBehaviour:
       type: {class: ReducableWait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         WaitTime: 1.5
-        MinWaitTime: 0.09
-        ReducingByHit: 0.01
+        MinWaitTime: 0.3
+        ReducingByHit: 0.02
         Permissions: 65280
     - rid: 868177009411096678
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
@@ -1850,6 +2120,37 @@ MonoBehaviour:
     m_DissipationDistance: 30
     m_PropagationSpeed: 343
   m_DefaultVelocity: {x: 0, y: 1, z: 0}
+--- !u!1 &5273813567567372875
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4511964577994829457}
+  m_Layer: 0
+  m_Name: Target
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4511964577994829457
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5273813567567372875}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5955366354693829654}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5520448365534785990
 GameObject:
   m_ObjectHideFlags: 0
@@ -1884,6 +2185,7 @@ Transform:
   - {fileID: 3896784985292033021}
   - {fileID: 532826844987236810}
   - {fileID: 3393607241399652024}
+  - {fileID: 5955366354693829654}
   m_Father: {fileID: 564578008227288657}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &7072334191340875770
@@ -1922,7 +2224,7 @@ MonoBehaviour:
       type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         casters:
-        - rid: 868177009411096681
+        - rid: 868177088022052940
         CastPushDirection: {x: 0, y: 0, z: -0.1}
         OnCast:
           m_PersistentCalls:
@@ -1980,18 +2282,6 @@ MonoBehaviour:
       data:
         WaitTime: 0.5
         Permissions: 1792
-    - rid: 868177009411096681
-      type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        damage:
-          value: 20
-          type: 4
-          stunlock: 0.3
-          pushDirection: {x: 0, y: 0, z: 0.5}
-          RechargeUltimate: 1
-        position: {x: 0, y: 0, z: 3.94}
-        size: {x: 1, y: 2.5, z: 7}
-        angle: {x: 0, y: 0, z: 0}
     - rid: 868177009411096682
       type: {class: InterruptableWait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
@@ -2001,12 +2291,24 @@ MonoBehaviour:
     - rid: 868177009411096683
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        WaitTime: 0.2
+        WaitTime: 0.5
         Permissions: 1792
     - rid: 868177009411096684
       type: {class: TeleportToLastTarget, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        AdditiveTeleportRelativeDirectionDirection: {x: 0, y: 0, z: -1.2}
+        AdditiveTeleportRelativeDirectionDirection: {x: 0, y: 0, z: -1}
+    - rid: 868177088022052940
+      type: {class: TargetRaycastCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        damage:
+          value: 25
+          type: 4
+          stunlock: 0.3
+          pushDirection: {x: 0, y: 0, z: 0.5}
+          RechargeUltimate: 1
+        origin: {x: 0, y: 0, z: 0}
+        target: {fileID: 4511964577994829457}
+        maxDistance: 50.2
 --- !u!1 &5586159812807522224
 GameObject:
   m_ObjectHideFlags: 0
@@ -2403,8 +2705,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: -3.4830003}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1096789982940083024}
+  m_Children: []
   m_Father: {fileID: 3472960674384853248}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!82 &8773606796617476896
@@ -2429,7 +2730,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 0
-  MaxDistance: 120
+  MaxDistance: 200
   Pan2D: 0
   rolloffMode: 1
   BypassEffects: 0
@@ -2734,6 +3035,8 @@ Transform:
   - {fileID: 834078377140746970}
   - {fileID: 3019359905940095534}
   - {fileID: 3004372957685564978}
+  - {fileID: 1096789982940083024}
+  - {fileID: 5490153348418956600}
   m_Father: {fileID: 2380658926719229897}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3599704063550444368
@@ -2764,6 +3067,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   RequireDamage: 130
+  ClearCharge: 1
   OnUltimateReady:
     m_PersistentCalls:
       m_Calls: []
@@ -2832,6 +3136,18 @@ MonoBehaviour:
                 m_StringArgument: 
                 m_BoolArgument: 0
               m_CallState: 2
+            - m_Target: {fileID: 3611871250690425382}
+              m_TargetAssemblyTypeName: UnityEngine.VFX.VisualEffect, UnityEngine
+              m_MethodName: Play
+              m_Mode: 1
+              m_Arguments:
+                m_ObjectArgument: {fileID: 0}
+                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+                m_IntArgument: 0
+                m_FloatArgument: 0
+                m_StringArgument: 
+                m_BoolArgument: 0
+              m_CallState: 2
             - m_Target: {fileID: 1290408324712979381}
               m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
               m_MethodName: Play
@@ -2876,7 +3192,7 @@ MonoBehaviour:
                 m_ObjectArgument: {fileID: 0}
                 m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
                 m_IntArgument: 0
-                m_FloatArgument: 5
+                m_FloatArgument: 0.04
                 m_StringArgument: 
                 m_BoolArgument: 0
               m_CallState: 2
@@ -2924,13 +3240,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7738324126533394570}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 20, z: 3.4830003}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 3004372957685564978}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_Father: {fileID: 3472960674384853248}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!108 &7282584497801708508
 Light:
   m_ObjectHideFlags: 0
@@ -2940,10 +3256,10 @@ Light:
   m_GameObject: {fileID: 7738324126533394570}
   m_Enabled: 1
   serializedVersion: 11
-  m_Type: 2
+  m_Type: 1
   m_Color: {r: 10.600686, g: 18.5596, b: 77.87429, a: 1}
   m_Intensity: 0
-  m_Range: 40
+  m_Range: 100
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
@@ -3027,7 +3343,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e05c77b879e3b004492fab56cadf8808, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 0.005
+  speed: 0.03
   targetValue: 0
 --- !u!1 &8800108009563664986
 GameObject:
@@ -3170,13 +3486,13 @@ MonoBehaviour:
     - rid: 868177009411096670
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        WaitTime: 0.18
+        WaitTime: 0.195
         Permissions: 1792
     - rid: 868177009411096671
       type: {class: TargetRaycastCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          value: 5
+          value: 3
           type: 4
           stunlock: 0
           pushDirection: {x: 0, y: 0, z: 0}
@@ -3188,7 +3504,7 @@ MonoBehaviour:
       type: {class: TargetRaycastCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          value: 3
+          value: 2
           type: 4
           stunlock: 0
           pushDirection: {x: 0, y: 0, z: 0}
@@ -3200,7 +3516,7 @@ MonoBehaviour:
       type: {class: TargetRaycastCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          value: 3
+          value: 2
           type: 4
           stunlock: 0
           pushDirection: {x: 0, y: 0, z: 0}
@@ -3598,7 +3914,7 @@ VisualEffect:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0, y: 0, z: 5.5}
+      - m_Value: {x: 0, y: 0, z: 6.5}
         m_Name: Direction
         m_Overridden: 1
     m_Vector4f:

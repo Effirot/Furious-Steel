@@ -6,7 +6,7 @@ using CharacterSystem.Blocking;
 using CharacterSystem.DamageMath;
 using CharacterSystem.PowerUps;
 using Cinemachine;
-using Cysharp.Threading.Tasks;
+using Unity.Collections;
 using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -76,9 +76,7 @@ namespace CharacterSystem.Objects
 
         public int Combo 
         {
-            get {
-                return IsOwner ? network_combo.Value : 0;
-            }
+            get => network_combo.Value;
             private set {
                 if (IsServer)
                 {
@@ -94,18 +92,15 @@ namespace CharacterSystem.Objects
                     }
 
                     network_combo.Value = value;
-
-                    OnComboChanged?.Invoke(value);
                 }
             }
         }
 
         private NetworkVariable<DamageDeliveryReport> network_lastReport = new (new(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
         private NetworkVariable<ulong> network_serverClientId = new (0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-        private NetworkVariable<int> network_combo = new (0, NetworkVariableReadPermission.Owner, NetworkVariableWritePermission.Server);
+        private NetworkVariable<int> network_combo = new (0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
         public event Action<DamageDeliveryReport> OnDamageDelivered;
-
         public event Action<int> OnComboChanged;
 
         private Coroutine comboResetTimer = null;
@@ -117,12 +112,15 @@ namespace CharacterSystem.Objects
             if (isBlocked)
             {
                 RechargeDodge();
+                
+                Combo += 5;
             }
 
             if (IsOwner)
             {
                 OnHitImpulseSource?.GenerateImpulse();
             }
+
 
             return isBlocked;
         }
@@ -186,6 +184,11 @@ namespace CharacterSystem.Objects
         public override void OnNetworkSpawn()
         {
             RoomManager.Singleton.playersData.OnListChanged += OnOwnerPlayerDataChanged_event;
+
+            network_combo.OnValueChanged += (Old, New) => {
+                OnComboChanged?.Invoke(New);
+            };
+            
             Players.Add(this);
 
             base.OnNetworkSpawn();
@@ -340,9 +343,18 @@ namespace CharacterSystem.Objects
 
         private IEnumerator ComboResetTimer()
         {
-            yield return new WaitForSeconds(1.5f);
+            yield return new WaitForSeconds(0.5f);
 
-            Combo = 0;
+            var recudeTimeout = 0.1f;
+            while (network_combo.Value > 0)
+            {
+                yield return new WaitForSeconds(recudeTimeout);
+
+                recudeTimeout -= 0.005f;
+                
+                network_combo.Value -= 1;
+            }
+
             comboResetTimer = null;
         }
 

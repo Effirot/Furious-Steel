@@ -515,14 +515,13 @@ MonoBehaviour:
       type: {class: ReducableWait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         WaitTime: 0.3
-        MinWaitTime: 0.08
+        MinWaitTime: 0.01
         ReducingByHit: 0.08
-        ResetAfterSeconds: 0.4
         Permissions: 1792
     - rid: 868177009411096656
       type: {class: InterruptableWait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        WaitTime: 0.1
+        WaitTime: 0.2
         LastHitRequireSeconds: 0.1
         Permissions: 1280
     - rid: 2961813231421882370
@@ -568,7 +567,7 @@ MonoBehaviour:
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          value: 25
+          value: 20
           type: 1
           stunlock: 0.2
           pushDirection: {x: 0, y: 0, z: 0.2}
@@ -580,10 +579,10 @@ MonoBehaviour:
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          value: 15
+          value: 10
           type: 1
           stunlock: 0.3
-          pushDirection: {x: 0, y: 0, z: 0.2}
+          pushDirection: {x: 0, y: 0, z: 0.6}
           RechargeUltimate: 1
         position: {x: 0, y: 0, z: 2.55}
         size: {x: 0.3, y: 1.37, z: 2.09}
@@ -1016,9 +1015,6 @@ MonoBehaviour:
       type: {class: Push, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         CastPushDirection: {x: 0, y: 0, z: 0.8}
-        OnCast:
-          m_PersistentCalls:
-            m_Calls: []
     - rid: 6352953082370064458
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:

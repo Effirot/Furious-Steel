@@ -15,6 +15,9 @@ public class UltimateDamageSource : DamageSource
     [SerializeField, Range(0, 2000)]
     public float RequireDamage = 500;
 
+    [SerializeField, Range(0, 2000)]
+    public bool ClearCharge = true;
+
     public UnityEvent OnUltimateReady = new();
 
     public event Action<float> OnValueChanged = delegate { };
@@ -54,7 +57,10 @@ public class UltimateDamageSource : DamageSource
             IsPerforming &&
             !IsAttacking)
         {
-            DeliveredDamage = 0;
+            if (ClearCharge)
+            {
+                DeliveredDamage = 0;
+            }
 
             base.StartAttackForced();
         }

@@ -2,6 +2,7 @@ using System;
 using CharacterSystem.Attacks;
 using CharacterSystem.Objects;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.VFX;
 
@@ -160,10 +161,10 @@ namespace CharacterSystem.DamageMath
             serializer.SerializeValue(ref time);
 
             var objectID = ulong.MinValue;
-            // if (target != null && target.gameObject.TryGetComponent<NetworkObject>(out var networkObject))
-            // {
-            //     objectID = networkObject.NetworkObjectId;
-            // }
+            if (!target.IsUnityNull() && target.gameObject.TryGetComponent<NetworkObject>(out var networkObject))
+            {
+                objectID = networkObject.NetworkObjectId;
+            }
 
             serializer.SerializeValue(ref objectID);
 

@@ -14,15 +14,6 @@ namespace Effiry.Items
             TypeNameHandling = TypeNameHandling.Auto,
             NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
         };
-
-        [RuntimeInitializeOnLoadMethod]
-        public static void OnLoad()
-        { 
-            var a = new ItemPack();
-
-            UnityEngine.Debug.Log(a.SaveToString());
-            a.LoadFromString(a.SaveToString());
-        }
         
         public int MaxSize = 0;
         public Item?[] items = System.Array.Empty<Item>();
@@ -31,7 +22,13 @@ namespace Effiry.Items
 
         public void LoadFromString(string Json)
         {
-            JsonConvert.DeserializeAnonymousType(Json, this, JsonSerializSettings);
+            var pack = JsonConvert.DeserializeObject<ItemPack>(Json, JsonSerializSettings);
+            
+            if (pack is not null)
+            {
+                items = pack.items;
+                MaxSize = pack.MaxSize;
+            }
         }
         public string SaveToString()
         {

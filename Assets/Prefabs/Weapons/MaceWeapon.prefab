@@ -341,9 +341,6 @@ MonoBehaviour:
       type: {class: Push, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         CastPushDirection: {x: 0, y: 0, z: 0.7}
-        OnCast:
-          m_PersistentCalls:
-            m_Calls: []
     - rid: 6352953245085466701
       type: {class: HoldRepeat, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
@@ -402,7 +399,7 @@ MonoBehaviour:
           pushDirection: {x: 0, y: 0.9, z: 0.1}
           RechargeUltimate: 1
         position: {x: 0, y: 0, z: 3.75}
-        size: {x: 1.18, y: 1.83, z: 1}
+        size: {x: 1.18, y: 1.83, z: 1.6}
         angle: {x: 0, y: 0, z: 0}
     - rid: 6352953245085466719
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
@@ -463,14 +460,14 @@ MonoBehaviour:
   IsPerformingAsDefault: 0
   IsInterruptable: 1
   IsInterruptableWhenBlocked: 0
-  SpeedReducing: 4
+  SpeedReducing: 2
   attackQueue:
-  - rid: 6352953245085466698
   - rid: 6352953245085466718
   - rid: 6352953245085466700
   - rid: 6352953245085466720
   - rid: 6352953245085466704
   - rid: 868176997118902380
+  - rid: 6352953245085466698
   OnDamageReport:
     m_PersistentCalls:
       m_Calls:
@@ -534,12 +531,11 @@ MonoBehaviour:
         WaitTime: 0.4
         MinWaitTime: 0.1
         ReducingByHit: 0.07
-        ResetAfterSeconds: 0.5
         Permissions: 1280
     - rid: 6352953245085466698
       type: {class: InterruptableWait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        WaitTime: 0.5
+        WaitTime: 0.3
         LastHitRequireSeconds: 0.6
         Permissions: 1792
     - rid: 6352953245085466700
@@ -631,7 +627,7 @@ MonoBehaviour:
     - rid: 6352953245085466720
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        WaitTime: 0.3
+        WaitTime: 0.1
         Permissions: 1280
 --- !u!1 &3064985464026961555
 GameObject:
@@ -1679,6 +1675,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   RequireDamage: 200
+  ClearCharge: 1
   OnUltimateReady:
     m_PersistentCalls:
       m_Calls: []
@@ -1812,14 +1809,14 @@ MonoBehaviour:
   IsPerformingAsDefault: 1
   IsInterruptable: 1
   IsInterruptableWhenBlocked: 0
-  SpeedReducing: 4
+  SpeedReducing: 2
   attackQueue:
-  - rid: 6352953245085466699
   - rid: 6352953245085466719
   - rid: 6352953245085466701
   - rid: 6352953245085466721
   - rid: 6352953245085466705
   - rid: 868176997118902381
+  - rid: 6352953245085466699
   OnDamageReport:
     m_PersistentCalls:
       m_Calls:
@@ -1883,12 +1880,11 @@ MonoBehaviour:
         WaitTime: 0.4
         MinWaitTime: 0.1
         ReducingByHit: 0.07
-        ResetAfterSeconds: 0.5
         Permissions: 1280
     - rid: 6352953245085466699
       type: {class: InterruptableWait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        WaitTime: 0.5
+        WaitTime: 0.3
         LastHitRequireSeconds: 0.6
         Permissions: 1792
     - rid: 6352953245085466701
@@ -1980,7 +1976,7 @@ MonoBehaviour:
     - rid: 6352953245085466721
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        WaitTime: 0.3
+        WaitTime: 0.1
         Permissions: 1280
 --- !u!1 &9175946607756572356
 GameObject:

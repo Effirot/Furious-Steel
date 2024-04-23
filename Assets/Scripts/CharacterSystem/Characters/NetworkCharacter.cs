@@ -12,8 +12,6 @@ using UnityEngine.AI;
 using UnityEngine.Events;
 using UnityEngine.TextCore.Text;
 using UnityEngine.VFX;
-using Cysharp.Threading.Tasks;
-
 
 
 #if UNITY_EDITOR
@@ -260,16 +258,6 @@ namespace CharacterSystem.Objects
                 return false;
 
             Push(damage.pushDirection);
-            
-            if (OnHitSound != null)
-            {
-                OnHitSound.Play();
-            }
-            if (OnHitEffect != null && damage.value > 0)
-            {
-                OnHitEffect.SetVector3("Direction", velocity);
-                OnHitEffect.Play();
-            }
 
             health -= damage.value;  
 
@@ -277,11 +265,11 @@ namespace CharacterSystem.Objects
 
             if (IsServer)
             {
-             
                 OnHit_ClientRpc(damage);
+
                 if (!IsClient)
                 {
-                    OnHit(damage);
+                    OnHitReaction(damage);
                 }
             }
 
@@ -296,7 +284,7 @@ namespace CharacterSystem.Objects
             OnHeal_ClientRpc(damage);
             if (!IsClient)
             {
-                OnHeal(damage);
+                OnHealReaction(damage);
             }
 
             return true;
@@ -346,12 +334,10 @@ namespace CharacterSystem.Objects
         {
             if (IsServer)
             {
-                // characterController.enabled = false;
                 network_position.Value = position;
-                transform.position = position;
+                characterController.Move(position - transform.position);
 
-                SetPosition_ClientRpc(position);
-                // characterController.enabled = true;
+                SetPosition_ClientRpc(position);;
             }
         }
         public void Dash(Vector2 direction)
@@ -371,11 +357,24 @@ namespace CharacterSystem.Objects
             dodgeRoutine = null;
         }
 
-        protected virtual void OnHit(Damage damage) 
+        protected virtual void OnHitReaction(Damage damage) 
         { 
             onDamageRecieved?.Invoke(damage); 
+           
+            if (damage.type is not Damage.Type.Magical)
+            {
+                if (OnHitSound != null)
+                {
+                    OnHitSound.Play();
+                }
+                if (OnHitEffect != null && damage.value > 0)
+                {
+                    OnHitEffect.SetVector3("Direction", velocity);
+                    OnHitEffect.Play();
+                }
+            }
         }
-        protected virtual void OnHeal(Damage damage) 
+        protected virtual void OnHealReaction(Damage damage) 
         { 
             onDamageRecieved?.Invoke(damage); 
         }
@@ -474,7 +473,7 @@ namespace CharacterSystem.Objects
                 speed_acceleration_multipliyer = Vector2.Lerp(
                     speed_acceleration_multipliyer, 
                     Speed <= 0 ? Vector2.zero : movementVector * Mathf.Max(0, Speed) * (characterController.isGrounded ? 1f : 0.3f), 
-                    20 * TimeScale);
+                    25 * TimeScale);
 
                 if (IsServer)
                 {
@@ -492,7 +491,7 @@ namespace CharacterSystem.Objects
         {
             velocity = Vector3.Lerp(velocity, Vector3.zero, (IsGrounded ? 0.15f : 0.06f) * Mass);
             
-            gravity_acceleration = Vector3.Lerp(gravity_acceleration, permissions.HasFlag(CharacterPermission.AllowGravity) && !IsGrounded ? Physics.gravity : Vector3.zero, 0.003f);
+            gravity_acceleration = Vector3.Lerp(gravity_acceleration, permissions.HasFlag(CharacterPermission.AllowGravity) && !IsGrounded ? Physics.gravity : Vector3.zero, 0.001f);
             
             return velocity + gravity_acceleration;
         }
@@ -502,7 +501,7 @@ namespace CharacterSystem.Objects
             {
                 if(!IsServer)
                 {
-                    vector += Vector3.Lerp(Vector3.zero, network_position.Value - transform.position, 17f * Time.fixedDeltaTime);
+                    vector += Vector3.Lerp(Vector3.zero, network_position.Value - transform.position, 29f * Time.fixedDeltaTime);
                 }
 
                 if (Vector3.Distance(network_position.Value, transform.position) < 1.4f)
@@ -573,7 +572,7 @@ namespace CharacterSystem.Objects
         {
             Direction.Normalize();
 
-            permissions = CharacterPermission.Untouchable;
+            permissions = CharacterPermission.Untouchable | CharacterPermission.AllowRotate;
             animator.SetBool("Dodge", true);
 
             for (float timer = 0f; timer < DodgePushTime; timer += Time.fixedDeltaTime)
@@ -632,12 +631,12 @@ namespace CharacterSystem.Objects
         [ClientRpc]
         private void OnHit_ClientRpc(Damage damage)
         {
-            OnHit(damage);
+            OnHitReaction(damage);
         }
         [ClientRpc]
         private void OnHeal_ClientRpc(Damage damage)
         {
-            OnHeal(damage);
+            OnHealReaction(damage);
         }
 
         [ClientRpc]
@@ -665,7 +664,7 @@ namespace CharacterSystem.Objects
         [ClientRpc]
         private void SetPosition_ClientRpc (Vector3 position, ClientRpcParams rpcParams = default)
         {
-            transform.position = position;
+            characterController.Move(position - transform.position);
         }
     }
 

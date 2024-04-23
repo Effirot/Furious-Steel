@@ -58,19 +58,7 @@ MonoBehaviour:
   - rid: 2961813231421882370
   OnDamageReport:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
-        m_MethodName: Play
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   OnAttackEnded:
     m_PersistentCalls:
       m_Calls:
@@ -108,10 +96,9 @@ MonoBehaviour:
     - rid: 868176997118902350
       type: {class: ReducableWait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        WaitTime: 0.2
-        MinWaitTime: 0.05
-        ReducingByHit: 0.05
-        ResetAfterSeconds: 0.2
+        WaitTime: 0.15
+        MinWaitTime: 0.03
+        ReducingByHit: 0.055
         Permissions: 1792
     - rid: 2961813231421882370
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
@@ -155,7 +142,7 @@ MonoBehaviour:
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          value: 15
+          value: 20
           type: 1
           stunlock: 0
           pushDirection: {x: -0.05, y: 0, z: 0.05}
@@ -469,6 +456,7 @@ MonoBehaviour:
   - rid: 2961813231421882469
   - rid: 2961813231421882470
   - rid: 2961813231421882473
+  - rid: 868177088022052937
   OnDamageReport:
     m_PersistentCalls:
       m_Calls:
@@ -499,9 +487,10 @@ MonoBehaviour:
       type: {class: Push, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         CastPushDirection: {x: 0, y: 0, z: 0.6}
-        OnCast:
-          m_PersistentCalls:
-            m_Calls: []
+    - rid: 868177088022052937
+      type: {class: PlayAnimation, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        AnimationName: Torso.Attack1
     - rid: 2961813231421882469
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
@@ -511,9 +500,9 @@ MonoBehaviour:
       type: {class: Charger, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         Permissions: 3840
-        MaxChargingTime: 1
-        MinChargeValue: 0.2
-        MaxChargeValue: 0.8
+        MaxChargingTime: 0.6
+        MinChargeValue: 0.4
+        MaxChargeValue: 1
         flexibleDamage: 1
         flexibleCollider: 0
         OnStart:
@@ -1129,6 +1118,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   RequireDamage: 100
+  ClearCharge: 1
   OnUltimateReady:
     m_PersistentCalls:
       m_Calls: []
@@ -1715,19 +1705,7 @@ MonoBehaviour:
   - rid: 2961813231421882370
   OnDamageReport:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
-        m_MethodName: Play
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   OnAttackEnded:
     m_PersistentCalls:
       m_Calls:
@@ -1765,10 +1743,9 @@ MonoBehaviour:
     - rid: 868176997118902352
       type: {class: ReducableWait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        WaitTime: 0.2
-        MinWaitTime: 0.05
-        ReducingByHit: 0.05
-        ResetAfterSeconds: 0.2
+        WaitTime: 0.15
+        MinWaitTime: 0.03
+        ReducingByHit: 0.055
         Permissions: 1792
     - rid: 2961813231421882370
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
@@ -1812,7 +1789,7 @@ MonoBehaviour:
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          value: 15
+          value: 20
           type: 1
           stunlock: 0
           pushDirection: {x: 0.05, y: 0, z: 0.05}

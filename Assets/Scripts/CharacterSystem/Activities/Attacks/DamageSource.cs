@@ -6,7 +6,6 @@ using CharacterSystem.DamageMath;
 using CharacterSystem.Objects;
 using Unity.Netcode;
 using Unity.VisualScripting;
-using UnityEditor.Timeline.Actions;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
@@ -167,6 +166,14 @@ namespace CharacterSystem.Attacks
             }
         }
 
+        protected virtual void FixedUpdate()
+        {
+            if (IsServer && IsPressed)
+            {
+                StartAttack();
+            }
+        }
+
         internal void HandleDamageReport(DamageDeliveryReport report)
         {
             if (report.isDelivered)
@@ -315,7 +322,7 @@ namespace CharacterSystem.Attacks
 
         public override void OnDrawGizmos(Transform transform)
         {
-
+            
         }
     }
     [Serializable]

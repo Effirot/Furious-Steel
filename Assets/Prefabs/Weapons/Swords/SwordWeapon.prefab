@@ -146,7 +146,6 @@ MonoBehaviour:
         WaitTime: 0.25
         MinWaitTime: 0.03
         ReducingByHit: 0.06
-        ResetAfterSeconds: 0.2
         Permissions: 1792
     - rid: 2961813231421882370
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
@@ -674,7 +673,6 @@ MonoBehaviour:
         WaitTime: 0.25
         MinWaitTime: 0.03
         ReducingByHit: 0.06
-        ResetAfterSeconds: 0.2
         Permissions: 1792
     - rid: 2961813231421882370
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
@@ -1894,9 +1892,6 @@ MonoBehaviour:
       type: {class: Push, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         CastPushDirection: {x: 0, y: -0.2, z: 0.9}
-        OnCast:
-          m_PersistentCalls:
-            m_Calls: []
     - rid: 6352953082370064458
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
@@ -2303,7 +2298,7 @@ MonoBehaviour:
           value: 30
           type: 1
           stunlock: 0.5
-          pushDirection: {x: 0, y: 0, z: 0.2}
+          pushDirection: {x: 0, y: 0, z: 0.7}
           RechargeUltimate: 1
         position: {x: 0, y: 0, z: 1.71}
         size: {x: 1.54, y: 1.36, z: 1}
@@ -2311,7 +2306,7 @@ MonoBehaviour:
     - rid: 4973655737326895174
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        WaitTime: 0.5
+        WaitTime: 0.4
         Permissions: 1536
 --- !u!1 &7465451157433083536
 GameObject:

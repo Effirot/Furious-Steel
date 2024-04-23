@@ -195,7 +195,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 756936595
+  GlobalObjectIdHash: 3147394388
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -233,6 +233,7 @@ MonoBehaviour:
   dashInput: {fileID: 3350768162098237311, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   killBindInput: {fileID: 7880830833157163440, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   OnHitImpulseSource: {fileID: 7011506643223629107}
+  suicideCorpsePrefab: {fileID: 0}
 --- !u!114 &7280063651460184589
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -265,34 +266,10 @@ MonoBehaviour:
   HiddableSkinnedMeshRenderers: []
   OnCharacterHide:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 6957374696908509525}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   OnCharacterUnhide:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 6957374696908509525}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &7011506643223629107
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -504,6 +481,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6da13bde3c97cc749b0307342f4ef7f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  stealth: {fileID: 3623222165156314097}
 --- !u!1 &7548537234594387752
 GameObject:
   m_ObjectHideFlags: 0

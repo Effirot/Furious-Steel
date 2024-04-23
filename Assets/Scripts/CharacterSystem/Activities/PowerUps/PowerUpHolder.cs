@@ -31,7 +31,7 @@ namespace CharacterSystem.PowerUps
     {   
         [HideInInspector]
         public NetworkCharacter Character;
-        
+
         public PowerUp powerUp => Id < 0 || Id >= PowerUp.AllPowerUps.Length ? null : PowerUp.AllPowerUps[Id];
 
         public int Id => network_powerUpId.Value;
@@ -84,7 +84,7 @@ namespace CharacterSystem.PowerUps
             if (IsServer && powerUp != null && Invoker.permissions.HasFlag(CharacterPermission.AllowPowerUps))
             {
                 Activate_ClientRpc(Id);
-                
+
                 if (!IsClient)
                 {
                     Activate_Internal(Id);
