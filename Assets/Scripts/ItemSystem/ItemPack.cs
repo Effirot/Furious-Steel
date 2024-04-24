@@ -15,7 +15,7 @@ namespace Effiry.Items
             NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
         };
         
-        public int MaxSize = 0;
+        public int MaxSize => items.Length;
         public Item?[] items = System.Array.Empty<Item>();
 
         public ItemPack() { }
@@ -27,7 +27,6 @@ namespace Effiry.Items
             if (pack is not null)
             {
                 items = pack.items;
-                MaxSize = pack.MaxSize;
             }
         }
         public string SaveToString()

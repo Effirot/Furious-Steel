@@ -2,12 +2,12 @@
 
 using Effiry.Items;
 
-public interface IItemSlot
-{
-    public Item Item { get; set; }
-} 
 
-public interface IItemSlot<T> : IItemSlot
+public interface IItemSlot<T> where T : Item
 {
-    public new T Item { get; set; }
+    public T Item { get; set; }
+} 
+public interface IItemSlot : IItemSlot<Item>
+{
+
 } 

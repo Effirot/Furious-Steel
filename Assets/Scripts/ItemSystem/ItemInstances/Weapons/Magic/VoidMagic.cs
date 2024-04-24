@@ -1,11 +1,8 @@
 
 namespace Effiry.Items
 {
-    public class VoidMagic : Item
+    public class VoidMagic : Weapon
     {
-        public VoidMagic() : base()
-        {
-
-        }
+        
     }
 }

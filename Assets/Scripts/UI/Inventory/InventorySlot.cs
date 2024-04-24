@@ -44,24 +44,42 @@ public class InventorySlot : MonoBehaviour,
 
     private RectTransform dragObject = null;
 
+    // private void Awake()
+    // {
+    //     GetComponent<MaskableGraphic>().onCullStateChanged.AddListener(OnCullStateChanged);
+    // }
+
+    // private void OnCullStateChanged(bool cullState)
+    // {
+    //     Debug.Log("A");
+    //     image.gameObject.SetActive(cullState && Item != null);
+    // }
+
     private async void LoadIcon()
     {
-        if (Item == null)
+        foreach(Transform item in image.transform)
         {
-            image.enabled = false;
-            
-            return;
+            Destroy(item.gameObject);
         }
+
+        // GetComponent<MaskableGraphic>().raycastTarget = Item != null;
+        image.gameObject.SetActive(Item != null);
+        
+        if (Item == null)
+            return;
 
         var asyncRequest = Resources.LoadAsync($"Items/Icons/{Item.GetType().Name}");
         
-        image.enabled = true;
+        image.gameObject.SetActive(true);
         image.sprite = loadingSprite;
         
         await asyncRequest;
 
         if (asyncRequest.asset is Texture2D)
         {
+            image.enabled = true;
+            image.gameObject.SetActive(true);
+            
             image.sprite = ConvertToSprite(asyncRequest.asset as Texture2D);
 
             return;
@@ -70,17 +88,24 @@ public class InventorySlot : MonoBehaviour,
         if (asyncRequest.asset is GameObject)
         {
             image.enabled = false;
-            Instantiate(asyncRequest.asset, transform);
+            image.gameObject.SetActive(true);
+
+            Instantiate(asyncRequest.asset, image.transform);
 
             return;
         }
 
+        image.enabled = true;
+        image.gameObject.SetActive(true);
         image.sprite = invalidLoadingSprite;
     }
 
     private Sprite ConvertToSprite(Texture2D texture)
     {
-        return Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
+        var sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
+        sprite.name = texture.name + "(SPRITE)";
+
+        return sprite;
     }
 
     public void OnBeginDrag(PointerEventData eventData)
@@ -93,13 +118,13 @@ public class InventorySlot : MonoBehaviour,
         dragObject.SetParent(root, true);
         dragObject.SetAsLastSibling();
         
-        image.enabled = false;
+        image.gameObject.SetActive(false);
     }
     public void OnDrag(PointerEventData eventData)
     {
         if (dragObject != null)
         {
-            dragObject.position = eventData.position;
+            dragObject.position = eventData.pointerCurrentRaycast.worldPosition;
         }
     }
     public void OnEndDrag(PointerEventData eventData)
@@ -118,14 +143,14 @@ public class InventorySlot : MonoBehaviour,
             {
                 var newInventorySlot = newSlot as InventorySlot;
 
-                InventoryDrawer.LocalInventoryInstance.items[newInventorySlot.index] = this.Item;
-                InventoryDrawer.LocalInventoryInstance.items[this.index] = lastItem;
-                this.Item = lastItem;
+                InventoryDrawer.LocalInventoryInstance.items[newInventorySlot.index] = Item;
+                InventoryDrawer.LocalInventoryInstance.items[index] = lastItem;
+                Item = lastItem;
             }
         }
         else
         {
-            image.enabled = true;
+            image.gameObject.SetActive(true);
         }
     }
 }

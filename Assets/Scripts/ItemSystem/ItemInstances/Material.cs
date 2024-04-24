@@ -1,7 +1,7 @@
 
 namespace Effiry.Items
 {
-    public class ThunderMagic : Weapon
+    public class Material : Item
     {
 
     }

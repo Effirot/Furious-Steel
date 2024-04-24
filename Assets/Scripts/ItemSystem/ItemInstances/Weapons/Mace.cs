@@ -2,11 +2,8 @@
 
 namespace Effiry.Items
 {
-    public class Mace : Item
+    public class Mace : Weapon
     {
-        public Mace() : base()
-        {
-            
-        }
+
     }
 }

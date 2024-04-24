@@ -208,7 +208,6 @@ GameObject:
   - component: {fileID: 2352017416806294928}
   - component: {fileID: 3243559544155547056}
   - component: {fileID: 460555603180307708}
-  - component: {fileID: 1320183525047241935}
   m_Layer: 6
   m_Name: Slash
   m_TagString: Untagged
@@ -266,7 +265,13 @@ VisualEffect:
         m_Name: Velocity
         m_Overridden: 1
     m_Vector4f:
-      m_Array: []
+      m_Array:
+      - m_Value: {x: 1, y: 1, z: 1, w: 0.43137255}
+        m_Name: Color
+        m_Overridden: 1
+      - m_Value: {x: 1, y: 1, z: 1, w: 0.43137255}
+        m_Name: SecondColor
+        m_Overridden: 1
     m_Uint:
       m_Array: []
     m_Int:
@@ -323,20 +328,6 @@ VFXRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &1320183525047241935
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1003795457742228459}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef2ba1cca0108d547917f92585a7fb92, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  intensity: 30
-  intensitySecondary: 30
 --- !u!1 &1371635960334929080
 GameObject:
   m_ObjectHideFlags: 0
@@ -348,7 +339,6 @@ GameObject:
   - component: {fileID: 5020429119425049117}
   - component: {fileID: 2652872123739994609}
   - component: {fileID: 2872616289461588282}
-  - component: {fileID: 7126979331753070743}
   m_Layer: 6
   m_Name: Slash
   m_TagString: Untagged
@@ -403,7 +393,13 @@ VisualEffect:
         m_Name: Velocity
         m_Overridden: 1
     m_Vector4f:
-      m_Array: []
+      m_Array:
+      - m_Value: {x: 1, y: 1, z: 1, w: 0.43137255}
+        m_Name: Color
+        m_Overridden: 1
+      - m_Value: {x: 1, y: 1, z: 1, w: 0.43137255}
+        m_Name: SecondColor
+        m_Overridden: 1
     m_Uint:
       m_Array: []
     m_Int:
@@ -460,20 +456,6 @@ VFXRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &7126979331753070743
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1371635960334929080}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef2ba1cca0108d547917f92585a7fb92, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  intensity: 30
-  intensitySecondary: 30
 --- !u!1 &1517727645108543378
 GameObject:
   m_ObjectHideFlags: 0
@@ -735,7 +717,6 @@ GameObject:
   - component: {fileID: 4961048687999170052}
   - component: {fileID: 1027083193501714301}
   - component: {fileID: 783329724420148978}
-  - component: {fileID: 7434669682049448280}
   m_Layer: 6
   m_Name: Slash
   m_TagString: Untagged
@@ -833,12 +814,12 @@ VisualEffect:
         m_Overridden: 1
     m_Vector4f:
       m_Array:
-      - m_Value: {x: 757.30853, y: 0, z: 0, w: 1}
+      - m_Value: {x: 0.7490197, y: 0.7490197, z: 0.7490197, w: 0.43137255}
         m_Name: Color
-        m_Overridden: 0
-      - m_Value: {x: 13.766359, y: 0, z: 6.3689055, w: 1}
+        m_Overridden: 1
+      - m_Value: {x: 0.74901974, y: 0.74901974, z: 0.74901974, w: 0.43137255}
         m_Name: SecondColor
-        m_Overridden: 0
+        m_Overridden: 1
     m_Uint:
       m_Array: []
     m_Int:
@@ -853,20 +834,6 @@ VisualEffect:
       m_Array: []
     m_Bool:
       m_Array: []
---- !u!114 &7434669682049448280
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2104688722119929948}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef2ba1cca0108d547917f92585a7fb92, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  intensity: 50
-  intensitySecondary: 50
 --- !u!1 &3396118183375332136
 GameObject:
   m_ObjectHideFlags: 0
@@ -878,7 +845,6 @@ GameObject:
   - component: {fileID: 7482426792464629286}
   - component: {fileID: 432901300442450224}
   - component: {fileID: 2346936995839224298}
-  - component: {fileID: 5569225460430343991}
   m_Layer: 6
   m_Name: Slash
   m_TagString: Untagged
@@ -933,7 +899,13 @@ VisualEffect:
         m_Name: Velocity
         m_Overridden: 1
     m_Vector4f:
-      m_Array: []
+      m_Array:
+      - m_Value: {x: 1, y: 1, z: 1, w: 0.43137255}
+        m_Name: Color
+        m_Overridden: 1
+      - m_Value: {x: 1, y: 1, z: 1, w: 0.43137255}
+        m_Name: SecondColor
+        m_Overridden: 1
     m_Uint:
       m_Array: []
     m_Int:
@@ -990,20 +962,6 @@ VFXRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &5569225460430343991
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3396118183375332136}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef2ba1cca0108d547917f92585a7fb92, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  intensity: 30
-  intensitySecondary: 30
 --- !u!1 &4748355354840485092
 GameObject:
   m_ObjectHideFlags: 0
@@ -1392,7 +1350,6 @@ GameObject:
   - component: {fileID: 2821269605843472015}
   - component: {fileID: 3482662021443698871}
   - component: {fileID: 3738500038232777822}
-  - component: {fileID: 8360059594544185157}
   m_Layer: 6
   m_Name: Slash
   m_TagString: Untagged
@@ -1450,7 +1407,13 @@ VisualEffect:
         m_Name: Velocity
         m_Overridden: 1
     m_Vector4f:
-      m_Array: []
+      m_Array:
+      - m_Value: {x: 1, y: 1, z: 1, w: 0.43137255}
+        m_Name: Color
+        m_Overridden: 1
+      - m_Value: {x: 1, y: 1, z: 1, w: 0.43137255}
+        m_Name: SecondColor
+        m_Overridden: 1
     m_Uint:
       m_Array: []
     m_Int:
@@ -1507,20 +1470,6 @@ VFXRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &8360059594544185157
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5290588026936850908}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef2ba1cca0108d547917f92585a7fb92, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  intensity: 30
-  intensitySecondary: 30
 --- !u!1 &5339950106092455815
 GameObject:
   m_ObjectHideFlags: 0
@@ -1594,6 +1543,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   RequireDamage: 200
+  ClearCharge: 1
   OnUltimateReady:
     m_PersistentCalls:
       m_Calls: []
@@ -1964,7 +1914,6 @@ GameObject:
   - component: {fileID: 1463914806111732943}
   - component: {fileID: 4226677587793375878}
   - component: {fileID: 6535589038964829183}
-  - component: {fileID: 7087085648057352022}
   m_Layer: 6
   m_Name: Slash (1)
   m_TagString: Untagged
@@ -2022,7 +1971,13 @@ VisualEffect:
         m_Name: Velocity
         m_Overridden: 1
     m_Vector4f:
-      m_Array: []
+      m_Array:
+      - m_Value: {x: 1, y: 1, z: 1, w: 0.43137255}
+        m_Name: Color
+        m_Overridden: 1
+      - m_Value: {x: 1, y: 1, z: 1, w: 0.43137255}
+        m_Name: SecondColor
+        m_Overridden: 1
     m_Uint:
       m_Array: []
     m_Int:
@@ -2079,20 +2034,6 @@ VFXRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &7087085648057352022
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5714871639485273240}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef2ba1cca0108d547917f92585a7fb92, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  intensity: 30
-  intensitySecondary: 30
 --- !u!1 &6389387997060165717
 GameObject:
   m_ObjectHideFlags: 0
@@ -2481,7 +2422,6 @@ GameObject:
   - component: {fileID: 8096915976057874537}
   - component: {fileID: 3338926948658243142}
   - component: {fileID: 1274497967760048474}
-  - component: {fileID: 3964118602028106413}
   m_Layer: 6
   m_Name: Slash
   m_TagString: Untagged
@@ -2539,7 +2479,13 @@ VisualEffect:
         m_Name: Velocity
         m_Overridden: 1
     m_Vector4f:
-      m_Array: []
+      m_Array:
+      - m_Value: {x: 1, y: 1, z: 1, w: 0.43137255}
+        m_Name: Color
+        m_Overridden: 1
+      - m_Value: {x: 1, y: 1, z: 1, w: 0.43137255}
+        m_Name: SecondColor
+        m_Overridden: 1
     m_Uint:
       m_Array: []
     m_Int:
@@ -2596,20 +2542,6 @@ VFXRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &3964118602028106413
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8899260759901428424}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef2ba1cca0108d547917f92585a7fb92, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  intensity: 30
-  intensitySecondary: 30
 --- !u!1001 &2198380512597665389
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -2,11 +2,8 @@
 
 namespace Effiry.Items
 {
-    public class Rapier : Item
+    public class Rapier : Weapon
     {
-        public Rapier() : base()
-        {
-            
-        }
+
     }
 }

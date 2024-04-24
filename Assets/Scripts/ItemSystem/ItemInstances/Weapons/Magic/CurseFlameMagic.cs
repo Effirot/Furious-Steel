@@ -1,11 +1,8 @@
 
 namespace Effiry.Items
 {
-    public class CurseFlameMagic : Item
+    public class CurseFlameMagic : Weapon
     {
-        public CurseFlameMagic() : base()
-        {
 
-        }
     }
 }

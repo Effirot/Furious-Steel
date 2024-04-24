@@ -16,19 +16,14 @@ public class InventoryDrawer : MonoBehaviour
 
     public static ItemPack LocalInventoryInstance = new() { 
         items = new Item[] {
-            new Sword(), new LongSword(), new HeavySword(),
-            new Rapier(), new Axe(), new Mace(),
-            new Spear(), null, null,
-            null, null, null,
-            null, null, null,
+            new Sword(), new LongSword(), new Axe(), null, null, 
+            new Mace(), new Spear(), null, null, null, 
+            new HeavySword(), new Rapier(), null, null, null,
             
-            null, null, null,
-            null, null, null,
-            new VoidMagic(), new CurseFlameMagic(), new ThunderMagic(),
-            null, null, null,
-            new SteelScrap(), new SteelScrap(), new SteelScrap()
-        }, 
-        MaxSize = 30 
+            new VoidMagic(), null, null, null, new SteelScrap(), 
+            new CurseFlameMagic(), null, null, null, new SteelScrap(), 
+            new ThunderMagic(), null, null, null, new SteelScrap()
+        }
     };
     
 
@@ -77,7 +72,7 @@ public class InventoryDrawer : MonoBehaviour
     {
         while(slot_intances.Any())
         {
-            Destroy(slot_intances[0]);
+            Destroy(slot_intances[0].gameObject);
             slot_intances.RemoveAt(0);
         }
     }
@@ -98,7 +93,7 @@ public class InventoryDrawer : MonoBehaviour
 
         var slot = slotObject.GetComponent<InventorySlot>();
         slot.index = Index;
-        slot.Item = LocalInventoryInstance.items[Index];
+        slot.Item = Index <  LocalInventoryInstance.items.Length ? LocalInventoryInstance.items[Index] : null;
 
         slot_intances.Add(slot);
     }

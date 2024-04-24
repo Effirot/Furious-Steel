@@ -2,11 +2,8 @@
 
 namespace Effiry.Items
 {
-    public class Sword : Item
+    public class Sword : Weapon
     {
-        public Sword() : base()
-        {
-            
-        }
+
     }
 }
