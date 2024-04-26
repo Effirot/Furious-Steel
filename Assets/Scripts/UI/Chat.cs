@@ -43,9 +43,7 @@ public class Chat : MonoBehaviour
     }
 
     private void OnWriteToChat(PublicClientData clientData, FixedString512Bytes text)
-    {
-        var color = clientData.spawnArguments.GetColor();
-        
-        textField.text += $"<color=#{color.ToHexString()}>{clientData.Name}</color> - {text}\n";
+    {        
+        textField.text += $"{clientData.Name} - {text}\n";
     }
 }

@@ -79,8 +79,6 @@ public class ServerMenuDrawerUI : MonoBehaviour
     private void UpdateInfo(ServerMenuDrawerPlayerData playerField, PublicClientData clientData)
     {
         playerField.NameField.text = clientData.Name.Value;
-        playerField.ColorField.color = clientData.spawnArguments.GetColor();
-        playerField.SecondColorField.color = clientData.spawnArguments.GetSecondColor();
         
         if (playerField.KillstreakField != null)
         {

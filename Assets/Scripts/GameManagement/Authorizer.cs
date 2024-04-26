@@ -69,10 +69,11 @@ public sealed class Authorizer : NetworkBehaviour
     }
     
 
-    private Dictionary<ulong, AuthorizedPlayerData> authorizedPlayers = new();
-    
-    private RoomManager roomManager;
+    [SerializeField, Range(1, 64)]
+    private int CharactersLimit = 12;
 
+    private Dictionary<ulong, AuthorizedPlayerData> authorizedPlayers = new();
+    private RoomManager roomManager;
 
     public bool IsPlayerAuthorized (ulong ID)
     {
@@ -81,8 +82,6 @@ public sealed class Authorizer : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-
-
         base.OnNetworkSpawn();
 
         if (IsServer)
@@ -121,7 +120,7 @@ public sealed class Authorizer : NetworkBehaviour
 
     private void OnClientConnected_Event(ulong ID)
     {
-        Debug.Log("Someone is trying to connect . . .");
+        
     }
     private void OnClientDisconnected_Event(ulong ID)
     {
@@ -137,13 +136,13 @@ public sealed class Authorizer : NetworkBehaviour
     {
         if (NetworkManager.IsServer)
         {
-            if (request.Payload.Length == 0) 
-            {
-                response.Approved = false;
+            Debug.Log("Someone is trying to connect . . .");
 
+            response.Approved = false; 
+
+            if (request.Payload.Length == 0 || NetworkManager.PendingClients.Count + 1 >= CharactersLimit) 
                 return;
-            }
-
+            
             if (response.Approved = AuthorizeArguments.TryParse(request.Payload, out var authorizeArguments))
             {
                 roomManager.OnPlayerAuthorized(request.ClientNetworkId, authorizeArguments);

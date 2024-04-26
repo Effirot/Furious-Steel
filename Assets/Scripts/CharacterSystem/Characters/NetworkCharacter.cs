@@ -51,7 +51,7 @@ namespace CharacterSystem.Objects
         public static event OnCharacterStateChangedDelegate OnCharacterDead = delegate { };
         public static event OnCharacterStateChangedDelegate OnCharacterSpawn = delegate { };
 
-        public const float RotateInterpolationTime = 11f;
+        public const float RotateInterpolationTime = 15f;
         public const float ServerPositionInterpolationTime = 0.07f;
         public const float VelocityReducingMultipliyer = 0.85f;
 
@@ -119,7 +119,7 @@ namespace CharacterSystem.Objects
             {
                 if (IsServer)
                 {
-                    if (value.HasFlag(CharacterPermission.AllowRotate))
+                    if (!value.HasFlag(CharacterPermission.AllowRotate))
                     {   
                         SetAngle(transform.eulerAngles.y);
                     }
@@ -430,16 +430,13 @@ namespace CharacterSystem.Objects
 
         protected virtual void OnPermissionsChanged (CharacterPermission Old, CharacterPermission New)
         {
-            if (!this.IsUnityNull())
+            if (New.HasFlag(CharacterPermission.Untouchable))
             {
-                if (New.HasFlag(CharacterPermission.Untouchable))
-                {
-                    gameObject.layer = LayerMask.NameToLayer("Untouchable");
-                }
-                else
-                {
-                    gameObject.layer = LayerMask.NameToLayer("Character");
-                }
+                gameObject.layer = LayerMask.NameToLayer("Untouchable");
+            }
+            else
+            {
+                gameObject.layer = LayerMask.NameToLayer("Character");
             }
         }
         
@@ -473,7 +470,7 @@ namespace CharacterSystem.Objects
                 speed_acceleration_multipliyer = Vector2.Lerp(
                     speed_acceleration_multipliyer, 
                     Speed <= 0 ? Vector2.zero : movementVector * Mathf.Max(0, Speed) * (characterController.isGrounded ? 1f : 0.3f), 
-                    25 * TimeScale);
+                    38  * TimeScale);
 
                 if (IsServer)
                 {
@@ -501,7 +498,7 @@ namespace CharacterSystem.Objects
             {
                 if(!IsServer)
                 {
-                    vector += Vector3.Lerp(Vector3.zero, network_position.Value - transform.position, 29f * Time.fixedDeltaTime);
+                    vector += Vector3.Lerp(Vector3.zero, network_position.Value - transform.position, 34f * Time.fixedDeltaTime);
                 }
 
                 if (Vector3.Distance(network_position.Value, transform.position) < 1.4f)
@@ -538,16 +535,17 @@ namespace CharacterSystem.Objects
                 }
             }
         }
-
         private void SetAnimationStates ()
         {
             if (animator.gameObject.activeInHierarchy && animator != null)
             {
                 var vector = new Vector3(speed_acceleration_multipliyer.x , 0, -speed_acceleration_multipliyer.y); 
-                var walkVector = transform.rotation * -vector;
+                
+                vector = transform.rotation * -vector;
+                vector += velocity;
 
-                animator.SetFloat("Walk_Speed_X",  walkVector.x);
-                animator.SetFloat("Walk_Speed_Y",  walkVector.z);
+                animator.SetFloat("Walk_Speed_X", vector.x);
+                animator.SetFloat("Walk_Speed_Y", vector.z);
                 animator.SetBool("IsGrounded", characterController.isGrounded);
                 animator.SetBool("IsStunned", isStunned);
             }

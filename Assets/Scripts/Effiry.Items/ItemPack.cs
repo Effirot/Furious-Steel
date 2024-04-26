@@ -10,7 +10,7 @@ namespace Effiry.Items
 {
     public sealed class ItemPack
     {
-        private static readonly JsonSerializerSettings JsonSerializSettings = new JsonSerializerSettings() { 
+        public static readonly JsonSerializerSettings JsonSerializSettings = new JsonSerializerSettings() { 
             TypeNameHandling = TypeNameHandling.Auto,
             NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
         };

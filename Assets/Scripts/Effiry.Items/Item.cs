@@ -4,11 +4,21 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using Newtonsoft.Json;
 
 namespace Effiry.Items
 {
     public abstract class Item
     {
+        public static Item? FromJsonString(string Json)
+        {
+            return JsonConvert.DeserializeObject<Item>(Json, ItemPack.JsonSerializSettings);
+        }
+        public static string ToJsonString(Item item)
+        {
+            return JsonConvert.SerializeObject(item, typeof(Item), Formatting.Indented, ItemPack.JsonSerializSettings);
+        }
+
         public enum Quality : byte
         {
             Common,
@@ -20,6 +30,7 @@ namespace Effiry.Items
         }
 
         
+        public string TypeName => GetType().Name; 
         public string Name { 
             get => _name;
             set

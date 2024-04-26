@@ -150,11 +150,6 @@ namespace CharacterSystem.Objects
 
             OnDamageDelivered?.Invoke(report);
         }
-
-        public void RefreshColor()
-        {
-            RefreshColor_ClientRpc();
-        }
         
 
         public override void Kill()
@@ -181,12 +176,20 @@ namespace CharacterSystem.Objects
             }
         }
 
+        public virtual void OnWeaponChanged(NetworkObject networkObject) { }
+        public virtual void OnTrinketChanged(NetworkObject networkObject) { }
+
         public override void OnNetworkSpawn()
         {
             RoomManager.Singleton.playersData.OnListChanged += OnOwnerPlayerDataChanged_event;
 
             network_combo.OnValueChanged += (Old, New) => {
                 OnComboChanged?.Invoke(New);
+
+                if (New < 20)
+                {
+                    Speed += (New - Old) / 5f;
+                }
             };
             
             Players.Add(this);
@@ -237,7 +240,6 @@ namespace CharacterSystem.Objects
             }
 
             UpdateName();
-            RefreshColor_Internal();
         }
         public override void OnNetworkDespawn()
         {
@@ -312,11 +314,6 @@ namespace CharacterSystem.Objects
 
         protected virtual void OnOwnerPlayerDataChanged(NetworkListEvent<RoomManager.PublicClientData> changeEvent)
         {
-            if (changeEvent.Value.spawnArguments.ColorScheme != changeEvent.PreviousValue.spawnArguments.ColorScheme)
-            {
-                RefreshColor_Internal();
-            }
-
             UpdateName();
         }
 
@@ -418,26 +415,6 @@ namespace CharacterSystem.Objects
             if (suicideCorpsePrefab != null)
             {
                 Destroy(Instantiate(suicideCorpsePrefab, transform.position, transform.rotation), 5);
-            }
-        } 
-
-        [ClientRpc]
-        private void RefreshColor_ClientRpc()
-        {
-            RefreshColor_Internal();
-        }
-        private void RefreshColor_Internal()
-        {            
-            if (IsClient)
-            {
-                var clientdata = ClientData;
-
-                foreach(var paintable in GetComponentsInChildren<IPaintable>())
-                {
-                    
-                    paintable.SetColor(ClientData.spawnArguments.GetColor());
-                    paintable.SetSecondColor(ClientData.spawnArguments.GetSecondColor());
-                }
             }
         }
     }

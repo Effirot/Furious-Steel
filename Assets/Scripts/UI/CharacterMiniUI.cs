@@ -53,8 +53,6 @@ public class CharacterMiniUI : MonoBehaviour
     {
         UnsubscribeToHolders();
         UnsubscribeToHealthBar();
-
-        RoomManager.Singleton.playersData.OnListChanged -= OnOwnerPlayerDataChanged_event;
     }
     
     private void LateUpdate()
@@ -76,8 +74,6 @@ public class CharacterMiniUI : MonoBehaviour
             var player = (PlayerNetworkCharacter)networkCharacter;
                             
             NicknameField.text = player.ClientData.Name.ToString();
-
-            RoomManager.Singleton.playersData.OnListChanged += OnOwnerPlayerDataChanged_event;
         }
     }
 
@@ -85,13 +81,6 @@ public class CharacterMiniUI : MonoBehaviour
     {
         if (HealthField != null)
         {
-            if (networkCharacter is PlayerNetworkCharacter)
-            {
-                var player = (PlayerNetworkCharacter)networkCharacter;
-
-                HealthField.fillRect.GetComponent<Graphic>().color = player.ClientData.spawnArguments.GetColor();
-            }
-
             SetHealthSliderValue_Event(networkCharacter.health);
             networkCharacter.onHealthChanged += SetHealthSliderValue_Event;
         }
@@ -147,18 +136,6 @@ public class CharacterMiniUI : MonoBehaviour
         }
     }
 
-    private void OnOwnerPlayerDataChanged_event(NetworkListEvent<RoomManager.PublicClientData> changeEvent)
-    {
-        var player = (PlayerNetworkCharacter) networkCharacter;
-
-        if (changeEvent.Value.ID == player.ServerClientID)
-        {
-            if (changeEvent.Value.spawnArguments.ColorScheme != changeEvent.PreviousValue.spawnArguments.ColorScheme)
-            {
-                HealthField.fillRect.GetComponent<Graphic>().color = player.ClientData.spawnArguments.GetColor();
-            }
-        }
-    }
     private void OnUltimateValueChanged_event(float value)
     {
         UltimateField.value = value;

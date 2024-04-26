@@ -11,6 +11,15 @@ using static RoomManager.SpawnArguments;
 using System.Net.Sockets;
 using static Authorizer;
 using Cysharp.Threading.Tasks;
+using System.Linq;
+using Unity.VisualScripting;
+using Effiry.Items;
+
+
+
+
+
+
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -21,32 +30,17 @@ public class RoomManager : NetworkBehaviour
 {
     public struct SpawnArguments : INetworkSerializable
     {
-        public static SpawnArguments This; 
+        public static SpawnArguments Local; 
 
-        public enum CharacterColorScheme : byte
-        {
-            Red,
-            Green,
-            Blue,
-            Black,
-            White,
-            Orange,
-            Purple,
-            Pink,
-            Cyan,
-
-            Celestial,
-        } 
-
-        public CharacterColorScheme ColorScheme;
-        public FixedString128Bytes WeaponName;
-        public FixedString128Bytes CharacterName;
+        public FixedString512Bytes CharacterItemJson;
+        public FixedString512Bytes WeaponItemJson;
+        public FixedString512Bytes TrinketItemJson;
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
-            serializer.SerializeValue(ref ColorScheme);
-            serializer.SerializeValue(ref WeaponName);
-            serializer.SerializeValue(ref CharacterName);
+            serializer.SerializeValue(ref WeaponItemJson);
+            serializer.SerializeValue(ref CharacterItemJson);
+            serializer.SerializeValue(ref TrinketItemJson);
         }
 
         public override bool Equals(object obj)
@@ -57,57 +51,13 @@ public class RoomManager : NetworkBehaviour
             var stats = (SpawnArguments)obj;
 
             return 
-                stats.ColorScheme == ColorScheme &&
-                stats.WeaponName == WeaponName &&
-                stats.CharacterName == CharacterName;
+                stats.WeaponItemJson == WeaponItemJson &&
+                stats.CharacterItemJson == CharacterItemJson;
         }
         public override int GetHashCode()
         {
             return -1;
         }
-
-        public Color GetColor()
-        {
-            return ColorScheme switch
-            {
-                CharacterColorScheme.Red => Color.red,
-                CharacterColorScheme.Green => Color.green,
-                CharacterColorScheme.Blue => Color.blue,
-                CharacterColorScheme.Black => Color.black,
-                CharacterColorScheme.White => Color.white,
-                CharacterColorScheme.Orange => new Color(1, 1, 0),
-                CharacterColorScheme.Purple => new Color(1, 0, 1),
-                CharacterColorScheme.Pink => new Color(1, 0.5f, 1) ,
-                CharacterColorScheme.Cyan => Color.cyan,
-
-                CharacterColorScheme.Celestial => new Color(1, 1, 0.55f),
-
-                _ => Color.red
-            };
-        }
-        public Color GetSecondColor()
-        {
-            return ColorScheme switch
-            {
-                CharacterColorScheme.Red => Color.yellow,
-                CharacterColorScheme.Green => Color.yellow,
-                CharacterColorScheme.Blue => Color.cyan,
-                CharacterColorScheme.Black => Color.black,
-                CharacterColorScheme.White => Color.black,
-                CharacterColorScheme.Orange => Color.white,
-                CharacterColorScheme.Purple => new Color(1, 0, 1),
-                CharacterColorScheme.Pink => Color.red,
-                CharacterColorScheme.Cyan => Color.white,
-
-                CharacterColorScheme.Celestial => new Color(1f, 0.75f, 0.56f),
-
-                _ => Color.red
-            };
-        }
-        private float Intensity(float value)
-        {   
-            return value;
-        } 
     }
     public struct PlayerStatistics : INetworkSerializable
     {
@@ -214,6 +164,7 @@ public class RoomManager : NetworkBehaviour
 
         public PlayerNetworkCharacter networkCharacter;
         public NetworkObject networkCharacterWeapon;
+        public NetworkObject networkCharacterTrinket;
 
         public void Dispose()
         {
@@ -231,20 +182,15 @@ public class RoomManager : NetworkBehaviour
 
     public static readonly PublicClientData ServerData = new PublicClientData() { ID = 0, Name = "[SERVER]" };
 
-    [SerializeField, Range(1, 64)]
-    private int CharactersLimit = 12;
-
     [SerializeField]
     private NetworkPrefabsList characters;
     [SerializeField]
     private NetworkPrefabsList weapons;
 
-
-    public NetworkList<PublicClientData> playersData;
-
     [NonSerialized]
     public SpawnArguments spawnArgs;
-    
+    public NetworkList<PublicClientData> playersData;
+
     private Dictionary<ulong, PrivateClientInfo> privatePlayersData = new ();
 
 
@@ -264,7 +210,6 @@ public class RoomManager : NetworkBehaviour
 
         return false;
     }
-
     public int IndexOfPlayerData(Predicate<PublicClientData> alghoritm)
     {
         for (int i = 0; i < playersData.Count; i++)
@@ -279,6 +224,13 @@ public class RoomManager : NetworkBehaviour
 
         return -1;
     }
+    public Item JsonToItem (string json)
+    {
+        if (json == null || json.Length <= 0)
+            return null;
+
+        return Item.FromJsonString(json);
+    }
 
 
     public void Spawn(SpawnArguments args)
@@ -287,39 +239,12 @@ public class RoomManager : NetworkBehaviour
 
         Spawn_ServerRpc(args);
     }
-    public void SpawnWithRandomArgs()
-    {
-        Spawn(GetRandomArguments());
-    }
 
     public void WriteToChat(FixedString512Bytes text)
     {
         SendChatMessage_ServerRpc(text);
     }
 
-    public SpawnArguments GetRandomArguments()
-    {
-        return new()
-        {
-            ColorScheme = (CharacterColorScheme) UnityEngine.Random.Range(0, Enum.GetNames(typeof(CharacterColorScheme)).Length),
-            CharacterName = characters.PrefabList[UnityEngine.Random.Range(0, characters.PrefabList.Count)].Prefab.name,
-            WeaponName = weapons.PrefabList[UnityEngine.Random.Range(0, weapons.PrefabList.Count)].Prefab.name
-        };
-    }
-    public int GetCharactersCount()
-    {   
-        int count = 0;
-
-        foreach (var data in privatePlayersData)
-        {
-            if (data.Value.networkCharacter != null)
-            {
-                count++;
-            }
-        }
-
-        return count;
-    }
     public GameObject ResearchCharacterPrefab(string name)
     {
         foreach (var item in characters.PrefabList)
@@ -386,6 +311,7 @@ public class RoomManager : NetworkBehaviour
         }
     }
 
+
     private void Awake()
     {
         Singleton = this;
@@ -397,17 +323,24 @@ public class RoomManager : NetworkBehaviour
         Singleton = this;
     }
 
-    private PlayerNetworkCharacter SpawnCharacter (SpawnArguments args, ServerRpcParams Param)
+
+    private PlayerNetworkCharacter SpawnCharacter (Item item, ServerRpcParams Param)
+    {
+        if (item == null)
+            return null;
+        
+        return SpawnCharacter(item.TypeName, Param);
+    }
+    private PlayerNetworkCharacter SpawnCharacter (string name, ServerRpcParams Param)
     {
         var senderId = Param.Receive.SenderClientId;
         var client = privatePlayersData[senderId];
         
-        if (client.networkCharacter != null && client.networkCharacter.IsSpawned)
-            return null;
         
-        var character = ResearchCharacterPrefab(args.CharacterName.Value);
-        if (character == null)
-            return null;      
+        var character = ResearchCharacterPrefab(name);
+
+        if (client.networkCharacter != null && client.networkCharacter.IsSpawned || character == null)
+            return null;
         
         // Get spawn point
         var spawnPoint = SpawnPoint.GetSpawnPoint().transform;
@@ -420,59 +353,86 @@ public class RoomManager : NetworkBehaviour
 
         return client.networkCharacter;
     }
-    private void SetWeapon (SpawnArguments args, ServerRpcParams Param)
+   
+    private NetworkObject SetWeapon (Effiry.Items.Item item, ServerRpcParams Param)
+    {
+        if (item == null)
+            return null;
+
+        var weapon = SetWeapon (item.TypeName, Param);
+
+        if (weapon.TryGetComponent<WeaponItemBinder>(out var component))
+        {
+            component.item = item;
+        }    
+
+        return weapon;
+    }
+    private NetworkObject SetWeapon (string WeaponName, ServerRpcParams Param)
     {
         var senderId = Param.Receive.SenderClientId;
         var client = privatePlayersData[senderId];
-        
-        if (client.networkCharacter == null)
-            return;
-        if (client.networkCharacterWeapon != null)
-            return;
+        var weapon = ResearchWeaponPrefab(WeaponName);
 
-        var weapon = ResearchWeaponPrefab(args.WeaponName.Value);
-        if (weapon == null)
-            return;
+        if (client.networkCharacter == null || client.networkCharacterWeapon != null || weapon == null)
+            return null;
 
         // Spawn weapon
         var weaponGameObject = Instantiate(weapon, Vector3.zero, Quaternion.identity);
+        var weaponNetObject = client.networkCharacterWeapon = weaponGameObject.GetComponent<NetworkObject>();
 
-        if (client.networkCharacter == null)
+        weaponNetObject.SpawnWithOwnership(senderId, true);
+        weaponGameObject.transform.SetParent(client.networkCharacter.transform, false);
+
+        client.networkCharacter.OnWeaponChanged(weaponNetObject);
+
+        return weaponNetObject;
+    }
+   
+    private NetworkObject SetTrinket (Effiry.Items.Item item, ServerRpcParams Param)
+    {
+        if (item == null)
+            return null;
+
+        var trinket = SetTrinket(item.TypeName, Param);
+
+        if (trinket.TryGetComponent<WeaponItemBinder>(out var component))
         {
-            throw new InvalidOperationException();
+            component.item = item;
         } 
 
-        client.networkCharacterWeapon = weaponGameObject.GetComponent<NetworkObject>();
-
-        client.networkCharacterWeapon.SpawnWithOwnership(senderId, true);
-        weaponGameObject.transform.SetParent(client.networkCharacter.transform, false);
+        return trinket;
     }
+    private NetworkObject SetTrinket (string TrinketName, ServerRpcParams Param)
+    {
+        return null;
+    }
+
 
     [ServerRpc (RequireOwnership = false)]
     private void Spawn_ServerRpc(SpawnArguments args, ServerRpcParams Param = default)
     {   
         var DataIndex = IndexOfPlayerData(a => a.ID == Param.Receive.SenderClientId);
-        // var DataIndex = (int) Param.Receive.SenderClientId;
         if (DataIndex == -1)
-            return;
-
-        if (CharactersLimit <= GetCharactersCount())
             return;
         
         var data = playersData[DataIndex];
         data.spawnArguments = args;
         playersData[DataIndex] = data;
 
-        var player = SpawnCharacter(args, Param);
-        
-        if (player != null)
+        if (!SpawnCharacter(JsonToItem(args.CharacterItemJson.Value), Param).IsUnityNull())
         {
-            SetWeapon(args, Param);
+            try {
+                SetWeapon(JsonToItem(args.WeaponItemJson.Value), Param);
+            }
+            catch { }
 
-            player.RefreshColor();
+            try {
+                SetTrinket(JsonToItem(args.TrinketItemJson.Value), Param);
+            }
+            catch { }
         }
     }
-
     [ClientRpc]
     private void ServerException_ClientRpc(FixedString512Bytes message, ClientRpcParams rpcParams = default)
     {
@@ -489,7 +449,6 @@ public class RoomManager : NetworkBehaviour
             Debug.Log($"Message: {data.Name} - {text}");
         }
     }
-
     [ClientRpc]
     private void SendChatMessage_ClientRpc(ulong clientID, FixedString512Bytes text)
     {
@@ -500,6 +459,7 @@ public class RoomManager : NetworkBehaviour
             Debug.Log($"Message: {data.Name} - {text}");
         }
     }
+
 
 #if UNITY_EDITOR
     [CustomEditor(typeof(RoomManager))]

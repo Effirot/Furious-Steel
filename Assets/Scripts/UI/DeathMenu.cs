@@ -25,14 +25,7 @@ public class DeathMenu : MonoBehaviour
             }
 #endif
 
-            RoomManager.Singleton.Spawn(RoomManager.SpawnArguments.This);
-        }
-    }
-    public void RespawnRandomly()
-    {
-        if (RoomManager.Singleton != null)
-        {
-            RoomManager.Singleton.SpawnWithRandomArgs();
+            RoomManager.Singleton.Spawn(RoomManager.SpawnArguments.Local);
         }
     }
 

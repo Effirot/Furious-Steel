@@ -132,8 +132,9 @@ GameObject:
   - component: {fileID: 4043005819161963949}
   - component: {fileID: 9137112208162412568}
   - component: {fileID: 7367302898406761560}
+  - component: {fileID: 7639101197880856430}
   m_Layer: 6
-  m_Name: MaceWeapon
+  m_Name: Mace
   m_TagString: Weapon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -171,7 +172,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 646616531
+  GlobalObjectIdHash: 4172186589
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -208,6 +209,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SkinOrigin: {fileID: 2307094409115889765}
   TargetParentPath: Armor/Armor_Armature/SpineCenter/Spine.001/Spine.002/Shoulder.L/Hand.001.L/Hand.002.L/Palm.L
+--- !u!114 &7639101197880856430
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1517727645108543378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10096942c50533049a4d5bca036efdbe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1586529840252531286
 GameObject:
   m_ObjectHideFlags: 0
@@ -399,7 +412,7 @@ MonoBehaviour:
           pushDirection: {x: 0, y: 0.9, z: 0.1}
           RechargeUltimate: 1
         position: {x: 0, y: 0, z: 3.75}
-        size: {x: 1.18, y: 1.83, z: 1.6}
+        size: {x: 1.18, y: 1.83, z: 2.06}
         angle: {x: 0, y: 0, z: 0}
     - rid: 6352953245085466719
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
@@ -410,7 +423,7 @@ MonoBehaviour:
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         WaitTime: 0.3
-        Permissions: 1280
+        Permissions: 1792
 --- !u!1 &2720063402213980406
 GameObject:
   m_ObjectHideFlags: 0
@@ -769,7 +782,6 @@ GameObject:
   - component: {fileID: 1308603215747420929}
   - component: {fileID: 4383618358936296898}
   - component: {fileID: 5875323414065205679}
-  - component: {fileID: 4237238133958464116}
   m_Layer: 6
   m_Name: Explode
   m_TagString: Weapon
@@ -828,7 +840,7 @@ VisualEffect:
         m_Overridden: 1
     m_Vector4f:
       m_Array:
-      - m_Value: {x: 757.30853, y: 0, z: 0, w: 1}
+      - m_Value: {x: 1, y: 1, z: 1, w: 0.43137255}
         m_Name: Color
         m_Overridden: 1
       - m_Value: {x: 13.766359, y: 0, z: 6.3689055, w: 1}
@@ -890,20 +902,6 @@ VFXRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &4237238133958464116
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3544890041580184102}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef2ba1cca0108d547917f92585a7fb92, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  intensity: 37.4
-  intensitySecondary: 49.4
 --- !u!1 &4748355354840485092
 GameObject:
   m_ObjectHideFlags: 0
@@ -1129,7 +1127,6 @@ GameObject:
   - component: {fileID: 8462945282140042951}
   - component: {fileID: 9179240728732966600}
   - component: {fileID: 8729792007013798462}
-  - component: {fileID: 1380800908962943215}
   m_Layer: 6
   m_Name: Slash
   m_TagString: Untagged
@@ -1230,10 +1227,10 @@ VisualEffect:
         m_Overridden: 1
     m_Vector4f:
       m_Array:
-      - m_Value: {x: 13.766359, y: 0, z: 6.3689055, w: 1}
+      - m_Value: {x: 1, y: 1, z: 1, w: 0.43137255}
         m_Name: SecondColor
         m_Overridden: 1
-      - m_Value: {x: 757.30853, y: 0, z: 0, w: 1}
+      - m_Value: {x: 1, y: 1, z: 1, w: 0.43137255}
         m_Name: Color
         m_Overridden: 1
     m_Uint:
@@ -1250,20 +1247,6 @@ VisualEffect:
       m_Array: []
     m_Bool:
       m_Array: []
---- !u!114 &1380800908962943215
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5598452190556703154}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef2ba1cca0108d547917f92585a7fb92, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  intensity: 30.3
-  intensitySecondary: 47.7
 --- !u!1 &6076769996495484624
 GameObject:
   m_ObjectHideFlags: 0
@@ -1275,7 +1258,6 @@ GameObject:
   - component: {fileID: 2054289462409925677}
   - component: {fileID: 3808926835572641147}
   - component: {fileID: 5739056417569351746}
-  - component: {fileID: 9195050636677710347}
   m_Layer: 6
   m_Name: Slash
   m_TagString: Untagged
@@ -1376,10 +1358,10 @@ VisualEffect:
         m_Overridden: 1
     m_Vector4f:
       m_Array:
-      - m_Value: {x: 13.766359, y: 0, z: 6.3689055, w: 1}
+      - m_Value: {x: 1, y: 1, z: 1, w: 0.43137255}
         m_Name: SecondColor
         m_Overridden: 1
-      - m_Value: {x: 757.30853, y: 0, z: 0, w: 1}
+      - m_Value: {x: 1, y: 1, z: 1, w: 0.43137255}
         m_Name: Color
         m_Overridden: 1
     m_Uint:
@@ -1396,20 +1378,6 @@ VisualEffect:
       m_Array: []
     m_Bool:
       m_Array: []
---- !u!114 &9195050636677710347
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6076769996495484624}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef2ba1cca0108d547917f92585a7fb92, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  intensity: 30.3
-  intensitySecondary: 47.7
 --- !u!1 &6128022140918316128
 GameObject:
   m_ObjectHideFlags: 0
@@ -1454,7 +1422,6 @@ GameObject:
   - component: {fileID: 7360678346115743444}
   - component: {fileID: 8078950071593644581}
   - component: {fileID: 7100018236531950508}
-  - component: {fileID: 8558435191871425041}
   m_Layer: 6
   m_Name: Slash
   m_TagString: Untagged
@@ -1555,10 +1522,10 @@ VisualEffect:
         m_Overridden: 1
     m_Vector4f:
       m_Array:
-      - m_Value: {x: 13.766359, y: 0, z: 6.3689055, w: 1}
+      - m_Value: {x: 1, y: 1, z: 1, w: 0.43137255}
         m_Name: SecondColor
         m_Overridden: 1
-      - m_Value: {x: 757.30853, y: 0, z: 0, w: 1}
+      - m_Value: {x: 1, y: 1, z: 1, w: 0.43137255}
         m_Name: Color
         m_Overridden: 1
     m_Uint:
@@ -1575,20 +1542,6 @@ VisualEffect:
       m_Array: []
     m_Bool:
       m_Array: []
---- !u!114 &8558435191871425041
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6302003552654447452}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef2ba1cca0108d547917f92585a7fb92, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  intensity: 30.3
-  intensitySecondary: 47.7
 --- !u!1 &7129698021194682940
 GameObject:
   m_ObjectHideFlags: 0
@@ -1989,7 +1942,6 @@ GameObject:
   - component: {fileID: 6896967279598946166}
   - component: {fileID: 3818641581718748100}
   - component: {fileID: 3613853693980465804}
-  - component: {fileID: 7141618816193435717}
   m_Layer: 6
   m_Name: SlashUp
   m_TagString: Weapon
@@ -2045,10 +1997,10 @@ VisualEffect:
         m_Overridden: 1
     m_Vector4f:
       m_Array:
-      - m_Value: {x: 757.30853, y: 0, z: 0, w: 1}
+      - m_Value: {x: 1, y: 1, z: 1, w: 0.43137255}
         m_Name: Color
         m_Overridden: 1
-      - m_Value: {x: 13.766359, y: 0, z: 6.3689055, w: 1}
+      - m_Value: {x: 1, y: 1, z: 1, w: 0.43137255}
         m_Name: SecondColor
         m_Overridden: 1
     m_Uint:
@@ -2107,20 +2059,6 @@ VFXRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &7141618816193435717
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9175946607756572356}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef2ba1cca0108d547917f92585a7fb92, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  intensity: 37.4
-  intensitySecondary: 49.4
 --- !u!1001 &6143573050497554102
 PrefabInstance:
   m_ObjectHideFlags: 0

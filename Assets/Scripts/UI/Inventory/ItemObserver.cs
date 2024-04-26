@@ -67,14 +67,17 @@ public class ItemObserver : MonoBehaviour
         EventSystem.current.RaycastAll(eventData, eventDataRaycastResult);
         
 
-        if (eventDataRaycastResult.Any())
+        if (eventDataRaycastResult.Any() && eventDataRaycastResult.First().gameObject.TryGetComponent<IItemSlot>(out var component))
         {
-            if (eventDataRaycastResult.First().gameObject.TryGetComponent<IItemSlot>(out var component))
-            {
-                target = eventDataRaycastResult.First().gameObject;
-                SelectedItem = component.Item;
-            }
+            target = eventDataRaycastResult.First().gameObject;
+            SelectedItem = component.Item;
         }
+        else
+        {
+            target = null;
+            SelectedItem = null;
+        }
+
 
         if (FollowSlot)
         {

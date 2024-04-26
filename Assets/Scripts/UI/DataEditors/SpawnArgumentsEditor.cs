@@ -1,4 +1,5 @@
 
+using Effiry.Items;
 using UnityEngine;
 using static RoomManager;
 
@@ -7,18 +8,30 @@ using static RoomManager.SpawnArguments;
 
 public sealed class SpawnArgumentsEditor : MonoBehaviour
 {
-    public void SetCharacter(string Name)
+    public void SetCharacter(Item item)
     {
-        SpawnArguments.This.CharacterName = Name;
+        SetCharacter(item != null ? Item.ToJsonString(item) : "");
+    }
+    public void SetCharacter(string Json)
+    {
+        SpawnArguments.Local.CharacterItemJson = Json;
     }
 
-    public void SetWeapon(string Name)
+    public void SetWeapon(Item item)
     {
-        SpawnArguments.This.WeaponName = Name;
+        SetWeapon(item != null ? Item.ToJsonString(item) : "");
+    }
+    public void SetWeapon(string Json)
+    {
+        SpawnArguments.Local.WeaponItemJson = Json;
     }
 
-    public void SetColor(int index)
+    public void SetTrinket(Item item)
     {
-        SpawnArguments.This.ColorScheme = (CharacterColorScheme)index;
+        SetTrinket(item != null ? Item.ToJsonString(item) : "");
+    }
+    public void SetTrinket(string Json)
+    {
+        SpawnArguments.Local.TrinketItemJson = Json;
     }
 }

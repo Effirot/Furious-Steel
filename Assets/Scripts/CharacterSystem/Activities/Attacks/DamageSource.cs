@@ -217,12 +217,11 @@ namespace CharacterSystem.Attacks
         }
         private void StartAttack_Internal()
         {
-            if (!IsAttacking)
-            {
-                Invoker.Speed -= SpeedReducing;
+            EndAttack_Internal();
+            
+            Invoker.Speed -= SpeedReducing;
 
-                attackProcess = StartCoroutine(AttackSubprocess());
-            }
+            attackProcess = StartCoroutine(AttackSubprocess());
         }
 
         [ClientRpc]
@@ -252,6 +251,7 @@ namespace CharacterSystem.Attacks
             }
         }
     }
+
 
     [Serializable]
     public abstract class AttackQueueElement

@@ -29,7 +29,7 @@ public class BlockPitchIncrieser : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
     }
 
-#if UNITY_SERVER
+#if !UNITY_SERVER
     private void Update()
     {
         audioSource.pitch = Mathf.Clamp(audioSource.pitch - PitchReducingPerSecond * Time.deltaTime, MinPicth, MaxPicth);

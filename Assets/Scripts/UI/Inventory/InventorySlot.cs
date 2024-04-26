@@ -30,30 +30,29 @@ public class InventorySlot : MonoBehaviour,
 
     public Item Item
     {
-        get => _item;
+        get => InventoryDrawer.LocalInventoryInstance.items[index];
         set {
-            onItemChanged.Invoke(_item = value);
-            
+            onItemChanged.Invoke(InventoryDrawer.LocalInventoryInstance.items[index] = value);
+
             LoadIcon();
         }
     }
 
     public event Action<Item> onItemChanged = delegate { };
 
-    private Item _item;
-
     private RectTransform dragObject = null;
 
-    // private void Awake()
-    // {
-    //     GetComponent<MaskableGraphic>().onCullStateChanged.AddListener(OnCullStateChanged);
-    // }
 
-    // private void OnCullStateChanged(bool cullState)
-    // {
-    //     Debug.Log("A");
-    //     image.gameObject.SetActive(cullState && Item != null);
-    // }
+    private void Awake()
+    {
+        GetComponent<MaskableGraphic>().onCullStateChanged.AddListener(OnCullStateChanged);
+    }
+
+    private void OnCullStateChanged(bool cullState)
+    {
+        Debug.Log("A");
+        image.gameObject.SetActive(cullState && Item != null);
+    }
 
     private async void LoadIcon()
     {
@@ -63,10 +62,14 @@ public class InventorySlot : MonoBehaviour,
         }
 
         // GetComponent<MaskableGraphic>().raycastTarget = Item != null;
-        image.gameObject.SetActive(Item != null);
         
         if (Item == null)
+        {
+            image.gameObject.SetActive(false);
+
             return;
+        }
+
 
         var asyncRequest = Resources.LoadAsync($"Items/Icons/{Item.GetType().Name}");
         
@@ -136,21 +139,16 @@ public class InventorySlot : MonoBehaviour,
         if (!eventData.pointerEnter.IsUnityNull() && eventData.pointerEnter.gameObject.TryGetComponent<IItemSlot>(out var newSlot))
         {
             var lastItem = newSlot.Item;
-
             newSlot.Item = this.Item;
 
             if (newSlot is InventorySlot)
             {
                 var newInventorySlot = newSlot as InventorySlot;
 
-                InventoryDrawer.LocalInventoryInstance.items[newInventorySlot.index] = Item;
-                InventoryDrawer.LocalInventoryInstance.items[index] = lastItem;
-                Item = lastItem;
+                this.Item = lastItem;
             }
         }
-        else
-        {
-            image.gameObject.SetActive(true);
-        }
+        
+        image.gameObject.SetActive(true);      
     }
 }
