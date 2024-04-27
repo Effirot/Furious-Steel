@@ -13,7 +13,7 @@ public class AnimatorOverrider : NetworkBehaviour
         
         public AnimationClip Clip;
     }
-
+ 
     [SerializeField]
     private List<StringClipAnimatorOverrideLink> overrides;
 

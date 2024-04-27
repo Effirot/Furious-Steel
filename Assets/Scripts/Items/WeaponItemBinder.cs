@@ -23,15 +23,16 @@ public class WeaponItemBinder : NetworkBehaviour
 
     private Item _item;
     
-    private Renderer[] meshRenderers; 
-
-    private void OnItemChanged_ClientRpc(string Json)
-    {
-        item = Item.FromJsonString(Json);
-    }
+    private Renderer[] meshRenderers;  
 
     private void Awake()
     {
         meshRenderers = GetComponentsInChildren<Renderer>();
+    }
+
+    [ClientRpc]
+    private void OnItemChanged_ClientRpc(string Json)
+    {
+        item = Item.FromJsonString(Json);
     }
 }

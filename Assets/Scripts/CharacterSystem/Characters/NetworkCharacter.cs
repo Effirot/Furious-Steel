@@ -23,7 +23,7 @@ namespace CharacterSystem.Objects
     [Flags]
     public enum CharacterPermission 
     {
-        All                 = 0b_1111_1111_0000_0000,
+        Default                 = 0b_1111_1111_0000_0000,
         None                = 0b_0000_0000_0000_0000,
 
         Untouchable         = 0b_0000_0000_1000_0000,
@@ -216,7 +216,7 @@ namespace CharacterSystem.Objects
         private NetworkVariable<Vector2> network_lookVector = new NetworkVariable<Vector2>(Vector2.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
         private NetworkVariable<Vector3> network_velocity = new NetworkVariable<Vector3>(Vector3.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);   
 
-        private NetworkVariable<CharacterPermission> network_permissions = new (CharacterPermission.All, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+        private NetworkVariable<CharacterPermission> network_permissions = new (CharacterPermission.Default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
         private NetworkVariable<float> network_stunlock = new NetworkVariable<float>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
         private NetworkVariable<float> network_health = new NetworkVariable<float>(100, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
@@ -580,7 +580,7 @@ namespace CharacterSystem.Objects
                 yield return new WaitForFixedUpdate();
             } 
 
-            permissions = CharacterPermission.All;
+            permissions = CharacterPermission.Default;
             animator.SetBool("Dodge", false);
 
             yield return new WaitForSeconds(DodgeRechargeTime);

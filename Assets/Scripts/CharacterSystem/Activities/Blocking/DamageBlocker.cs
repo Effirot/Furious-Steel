@@ -177,7 +177,7 @@ namespace CharacterSystem.Blocking
             
                 Invoker.animator.SetBool("Blocking", false);
                 Invoker.Speed += SpeedReducing;
-                Invoker.permissions = CharacterPermission.All;
+                Invoker.permissions = CharacterPermission.Default;
             
                 IsBlockInProcess = false;
             }

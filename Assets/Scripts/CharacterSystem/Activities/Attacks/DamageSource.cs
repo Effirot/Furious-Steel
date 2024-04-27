@@ -234,7 +234,7 @@ namespace CharacterSystem.Attacks
             if (IsAttacking)
             {
                 Invoker.Speed += SpeedReducing;
-                Invoker.permissions = CharacterPermission.All;
+                Invoker.permissions = CharacterPermission.Default;
             
                 StopCoroutine(attackProcess);
                 
@@ -537,7 +537,7 @@ namespace CharacterSystem.Attacks
         private float WaitTime = 1;
         
         [SerializeField]
-        private CharacterPermission Permissions = CharacterPermission.All;
+        private CharacterPermission Permissions = CharacterPermission.Default;
 
         public override IEnumerator AttackPipeline(DamageSource source)
         {
@@ -564,7 +564,7 @@ namespace CharacterSystem.Attacks
         private float ReducingByHit = 0.03f;
         
         [SerializeField]
-        private CharacterPermission Permissions = CharacterPermission.All;
+        private CharacterPermission Permissions = CharacterPermission.Default;
 
         public override IEnumerator AttackPipeline(DamageSource source)
         {
@@ -588,7 +588,7 @@ namespace CharacterSystem.Attacks
         private float LastHitRequireSeconds = 1;
         
         [SerializeField]
-        private CharacterPermission Permissions = CharacterPermission.All;
+        private CharacterPermission Permissions = CharacterPermission.Default;
 
         public override IEnumerator AttackPipeline(DamageSource source)
         {
@@ -643,7 +643,7 @@ namespace CharacterSystem.Attacks
         }
         
         [SerializeField]
-        private CharacterPermission Permissions = CharacterPermission.All;
+        private CharacterPermission Permissions = CharacterPermission.Default;
 
         [SerializeField, Range(0, 10)]
         private float MaxChargingTime = 1;
