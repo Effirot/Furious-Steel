@@ -147,8 +147,15 @@ public class InventorySlot : MonoBehaviour,
 
                 this.Item = lastItem;
             }
+            else
+            {
+                image.gameObject.SetActive(true);
+            }
+        }
+        else
+        {
+            image.gameObject.SetActive(true);
         }
         
-        image.gameObject.SetActive(true);      
     }
 }

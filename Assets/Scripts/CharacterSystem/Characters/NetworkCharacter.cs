@@ -369,7 +369,7 @@ namespace CharacterSystem.Objects
                 }
                 if (OnHitEffect != null && damage.value > 0)
                 {
-                    OnHitEffect.SetVector3("Direction", velocity);
+                    OnHitEffect.SetVector3("Direction", damage.pushDirection);
                     OnHitEffect.Play();
                 }
             }

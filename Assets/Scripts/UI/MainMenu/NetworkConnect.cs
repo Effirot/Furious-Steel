@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using UnityEngine;
@@ -13,27 +15,39 @@ public class NetworkConnect : MonoBehaviour
     [SerializeField]
     private UnityEvent OnUnsuccesfullyConnect = new();
 
+    private static NetworkManager NetworkManager => NetworkManager.Singleton;
+
     private static void OnCharacterDisconnected_Event(ulong ID)
     {
         SceneManager.LoadScene(0);
 
-        NetworkManager.Singleton.OnClientDisconnectCallback -= OnCharacterDisconnected_Event;
+        NetworkManager.OnClientDisconnectCallback -= OnCharacterDisconnected_Event;
     }
     private static void StartHostOnLoad_Event(Scene scene, LoadSceneMode mode)
     {
-        NetworkManager.Singleton.StartHost();
+        NetworkManager.StartHost();
 
         SceneManager.sceneLoaded -= StartHostOnLoad_Event;
     }
     
-    public void Connect() 
+    public async void Connect() 
     {        
-        if (NetworkManager.Singleton.StartClient())
+        if (NetworkManager.StartClient())
         {
-            
+            await UniTask.WhenAny( 
+                UniTask.WaitUntil(() => NetworkManager.IsConnectedClient), 
+                UniTask.WaitForSeconds(10));
+
+            if (!NetworkManager.IsConnectedClient)
+            {
+                OnUnsuccesfullyConnect.Invoke();
+
+                NetworkManager.Shutdown();
+            }
+
             OnSuccesfullyConnect.Invoke();
 
-            NetworkManager.Singleton.OnClientDisconnectCallback += OnCharacterDisconnected_Event;
+            NetworkManager.OnClientDisconnectCallback += OnCharacterDisconnected_Event;
         }
         else
         {
@@ -46,22 +60,22 @@ public class NetworkConnect : MonoBehaviour
     }
     public void StartHost()
     {
-        NetworkManager.Singleton.StartHost();
+        NetworkManager.StartHost();
     }
     public void Shutdown()
     {
-        NetworkManager.Singleton.Shutdown();
+        NetworkManager.Shutdown();
     }
 
     public void SetIP(string IP)
     {
-        var transport = (UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
+        var transport = (UnityTransport)NetworkManager.NetworkConfig.NetworkTransport;
     
         transport.ConnectionData.Address = IP;
     }
     public void SetPort(string Port)
     {
-        var transport = (UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
+        var transport = (UnityTransport)NetworkManager.NetworkConfig.NetworkTransport;
     
         transport.ConnectionData.Port = ushort.Parse(Port);
     }

@@ -62,7 +62,7 @@ public class BonePlayerNetworkCharacter : PlayerNetworkCharacter
         var target = dictionary[targetID];
 
 
-        await UniTask.WaitForSeconds(1); 
+        await UniTask.WaitForSeconds(0.3f); 
         
         isSplashAttacking = false;
         

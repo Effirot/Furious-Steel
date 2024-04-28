@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using Newtonsoft.Json.Serialization;
-using UnityEngine;
 
 namespace Effiry.Items
 {

@@ -328,8 +328,15 @@ public class RoomManager : NetworkBehaviour
     {
         if (item == null)
             return null;
+
+            var character = SpawnCharacter(item.TypeName, Param);
         
-        return SpawnCharacter(item.TypeName, Param);
+        if (character.TryGetComponent<ItemBinder>(out var component))
+        {
+            component.item = item;
+        }    
+
+        return character;
     }
     private PlayerNetworkCharacter SpawnCharacter (string name, ServerRpcParams Param)
     {
@@ -354,14 +361,14 @@ public class RoomManager : NetworkBehaviour
         return client.networkCharacter;
     }
    
-    private NetworkObject SetWeapon (Effiry.Items.Item item, ServerRpcParams Param)
+    private NetworkObject SetWeapon (Item item, ServerRpcParams Param)
     {
         if (item == null)
             return null;
 
         var weapon = SetWeapon (item.TypeName, Param);
 
-        if (weapon.TryGetComponent<WeaponItemBinder>(out var component))
+        if (weapon.TryGetComponent<ItemBinder>(out var component))
         {
             component.item = item;
         }    
@@ -389,14 +396,14 @@ public class RoomManager : NetworkBehaviour
         return weaponNetObject;
     }
    
-    private NetworkObject SetTrinket (Effiry.Items.Item item, ServerRpcParams Param)
+    private NetworkObject SetTrinket (Item item, ServerRpcParams Param)
     {
         if (item == null)
             return null;
 
         var trinket = SetTrinket(item.TypeName, Param);
 
-        if (trinket.TryGetComponent<WeaponItemBinder>(out var component))
+        if (trinket.TryGetComponent<ItemBinder>(out var component))
         {
             component.item = item;
         } 

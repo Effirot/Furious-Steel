@@ -130,6 +130,8 @@ GameObject:
   - component: {fileID: 7011506643223629107}
   - component: {fileID: 6228147872289046665}
   - component: {fileID: 870618445999855470}
+  - component: {fileID: 8929279843199986160}
+  - component: {fileID: 8756047339975557824}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -351,6 +353,33 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speedReducing: 4
+--- !u!114 &8929279843199986160
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6610828187798962060}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d57c2abcaa77d34eb6a7bccd8cd2e8f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  IsLooped: 1
+  Permissions: 65280
+  WalkSpeedReduce: 3
+--- !u!114 &8756047339975557824
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6610828187798962060}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f8362cf897c101449b32c7c0a5fa054, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6957374696908509525
 GameObject:
   m_ObjectHideFlags: 0

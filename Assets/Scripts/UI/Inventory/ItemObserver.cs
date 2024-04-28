@@ -59,6 +59,7 @@ public class ItemObserver : MonoBehaviour
         SelectedItem = null;
     }
 
+#if !UNITY_SERVER || UNITY_EDITOR
     private void FixedUpdate()
     {
         PointerEventData eventData = new(EventSystem.current);
@@ -78,7 +79,6 @@ public class ItemObserver : MonoBehaviour
             SelectedItem = null;
         }
 
-
         if (FollowSlot)
         {
             if (target != null)
@@ -87,6 +87,5 @@ public class ItemObserver : MonoBehaviour
             }
         }
     }
-    
-    
+#endif
 }

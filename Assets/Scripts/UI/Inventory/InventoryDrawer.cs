@@ -42,26 +42,26 @@ public class InventoryDrawer : MonoBehaviour
 
     }
 
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
-    private static void OnLoad()
-    {
-        Application.quitting += OnQuitting;
+    // [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
+    // private static void OnLoad()
+    // {
+    //     Application.quitting += OnQuitting;
 
-        if (File.Exists(inventoryBufferPath))
-        {
-            var bytes = File.ReadAllBytes(inventoryBufferPath);
-            LocalInventoryInstance.LoadFromString(Encoding.UTF8.GetString(bytes));
+    //     if (File.Exists(inventoryBufferPath))
+    //     {
+    //         var bytes = File.ReadAllBytes(inventoryBufferPath);
+    //         LocalInventoryInstance.LoadFromString(Encoding.UTF8.GetString(bytes));
             
-            Debug.Log($"Inventory was succesfully loaded from \"{inventoryBufferPath}\"!");
-        }
-    } 
-    private static void OnQuitting()
-    {
-        var bytes = Encoding.UTF8.GetBytes(LocalInventoryInstance.SaveToString());
-        File.WriteAllBytes(inventoryBufferPath, bytes);
+    //         Debug.Log($"Inventory was succesfully loaded from \"{inventoryBufferPath}\"!");
+    //     }
+    // } 
+    // private static void OnQuitting()
+    // {
+    //     var bytes = Encoding.UTF8.GetBytes(LocalInventoryInstance.SaveToString());
+    //     File.WriteAllBytes(inventoryBufferPath, bytes);
         
-        Debug.Log($"Inventory was succesfully saved to \"{inventoryBufferPath}\"!");
-    }
+    //     Debug.Log($"Inventory was succesfully saved to \"{inventoryBufferPath}\"!");
+    // }
 
     [SerializeField]
     private GameObject inventorySlotPrefab;
