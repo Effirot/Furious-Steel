@@ -2,9 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using CharacterSystem.Attacks;
 using Unity.Netcode;
 using UnityEngine;
 
+[System.Serializable]
 public abstract class CharacterEffect
 {
     public static Type[] AllCharacterEffectTypes { get; private set; } = GetAllTypes();
@@ -25,6 +27,7 @@ public abstract class CharacterEffect
     public bool IsHost => effectsHolder.IsHost;
 
     public CharacterEffectsHolder effectsHolder { get; internal set; }
+    public IDamageSource effectsSource { get; internal set; }
     
     public abstract bool Existance { get; }
 
@@ -37,5 +40,10 @@ public abstract class CharacterEffect
     public override string ToString()
     {
         return GetType().Name;
+    }
+
+    public CharacterEffect Clone()
+    {
+        return this.MemberwiseClone() as CharacterEffect;
     }
 }

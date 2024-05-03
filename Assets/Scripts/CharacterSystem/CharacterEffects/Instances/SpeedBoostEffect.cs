@@ -3,10 +3,12 @@
 using Unity.Netcode;
 using UnityEngine;
 
+[System.Serializable]
 public class SpeedBoostEffect : CharacterEffect
 {
     public override bool Existance => time > 0;
 
+    [SerializeField, Range(0, 120)]
     private float time = 0;
 
     public SpeedBoostEffect() { }

@@ -42,18 +42,6 @@ public class InventorySlot : MonoBehaviour,
 
     private RectTransform dragObject = null;
 
-
-    private void Awake()
-    {
-        GetComponent<MaskableGraphic>().onCullStateChanged.AddListener(OnCullStateChanged);
-    }
-
-    private void OnCullStateChanged(bool cullState)
-    {
-        Debug.Log("A");
-        image.gameObject.SetActive(cullState && Item != null);
-    }
-
     private async void LoadIcon()
     {
         foreach(Transform item in image.transform)

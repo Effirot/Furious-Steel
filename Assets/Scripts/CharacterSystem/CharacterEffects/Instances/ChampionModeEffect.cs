@@ -1,5 +1,6 @@
 
 using CharacterSystem.Objects;
+using Unity.Netcode;
 
 public class ChampionModeEffect : CharacterEffect
 {

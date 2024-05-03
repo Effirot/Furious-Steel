@@ -19,6 +19,8 @@ namespace CharacterSystem.DamageMath
 
             Unblockable = 8,
             Parrying = 16,
+
+            Effect = 32,
         }
 
         public static DamageDeliveryReport Deliver(GameObject gameObject, Damage damage)
@@ -32,7 +34,7 @@ namespace CharacterSystem.DamageMath
         {
             var report = new DamageDeliveryReport();
 
-            if (target == null || target == damage.sender)
+            if (target.IsUnityNull() || target == damage.sender)
                 return report;
 
             if (ITeammate.IsAlly(target, damage.sender))
@@ -50,7 +52,15 @@ namespace CharacterSystem.DamageMath
             else
             {
                 report.isBlocked = target.Heal(damage);
-            }            
+            }
+
+            if (target.gameObject.TryGetComponent<CharacterEffectsHolder>(out var effectHolder) && damage.Effects != null)
+            {
+                foreach (var effect in damage.Effects)
+                {
+                    effectHolder.AddEffect(effect.Clone());
+                }
+            }
 
             return report;
         }
@@ -70,17 +80,21 @@ namespace CharacterSystem.DamageMath
         [SerializeField]
         public bool RechargeUltimate;
 
+        [SerializeField, SubclassSelector, SerializeReference]
+        public CharacterEffect[] Effects;
+
         [NonSerialized]
         public IDamageSource sender;
 
 
-        public Damage(float value, IDamageSource sender, float stunlock, Vector3 pushDirection, Type type)
+        public Damage(float value, IDamageSource sender, float stunlock, Vector3 pushDirection, Type type, params CharacterEffect[] effects)
         {
             this.value = value;
             this.sender = sender;
             this.stunlock = stunlock;
             this.pushDirection = pushDirection;
             this.type = type;
+            this.Effects = effects;
             this.RechargeUltimate = true;
         }
 

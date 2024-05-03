@@ -41,7 +41,7 @@ public class SpecializedSlot : MonoBehaviour,
             return Type switch
             {
                 RequirementType.HasAttribute => item.GetType().GetCustomAttributes().Where(attribute => attribute.GetType().Name == value).Any(),
-                RequirementType.IsSubclassOfType => item.GetType().IsSubclassOf(typeof(Item).Assembly.GetType(value)),
+                RequirementType.IsSubclassOfType => item.GetType().IsSubclassOf(typeof(Item).Assembly.GetType(value)) || item.GetType().GetInterface(value) != null,
                 RequirementType.HasArgument => Array.Exists(item.Args, arg => arg == value),
                 RequirementType.Rarity => item.Rarity == Enum.Parse<Item.Quality>(value),
                 _ => false,

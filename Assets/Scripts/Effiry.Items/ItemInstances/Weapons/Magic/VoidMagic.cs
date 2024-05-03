@@ -1,7 +1,8 @@
 
 namespace Effiry.Items
 {
-    public class VoidMagic : Weapon
+    public class VoidMagic : Weapon,
+        ITrinket
     {
         
     }

@@ -1,7 +1,8 @@
 
 namespace Effiry.Items
 {
-    public class CurseFlameMagic : Weapon
+    public class CurseFlameMagic : Weapon,
+        ITrinket
     {
 
     }

@@ -12,12 +12,12 @@ using UnityEngine.Events;
 
 public class InventoryDrawer : MonoBehaviour
 {
-    public static readonly string inventoryBufferPath = Application.dataPath + "/inventory.json";
+    public static string inventoryBufferPath => Application.persistentDataPath + "/inventory.json";
 
     public static ItemPack LocalInventoryInstance = new() { 
         items = new Item[] {
-            new Sword(), new LongSword(), new Axe(), null, new Bone(), 
-            new Mace(), new Spear(), null, null, new Chesplate(), 
+            new Sword(), new LongSword(), new Axe(), new Buckler(), new Bone(), 
+            new Mace(), new Spear(), new Shield(), null, new Plate(), 
             new HeavySword(), new Rapier(), null, null, new LeatherJacket(),
             
             new VoidMagic(), null, null, null, new SteelScrap(), 
@@ -26,42 +26,16 @@ public class InventoryDrawer : MonoBehaviour
         }
     };
     
-
-    public static UnityEvent OnInventoryUpdated = new();
-
-    public static async Task UpdateLocalInventory()
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
+    private static void OnLoad()
     {
-        // using (var request = UnityEngine.Networking.UnityWebRequest.Get("https://discussions.unity.com/t/how-do-i-get-into-the-data-returned-from-a-unitywebrequest/218510/2"))
-        // {
-        //     await request.SendWebRequest();
+        Application.quitting += OnQuitting;
 
-        //     LocalInventoryInstance.LoadFromString(request.downloadHandler.text);
-
-        //     OnInventoryUpdated.Invoke();
-        // }
-
+    } 
+    private static void OnQuitting()
+    {       
+        Debug.Log($"Inventory was succesfully saved to \"{inventoryBufferPath}\"!");
     }
-
-    // [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
-    // private static void OnLoad()
-    // {
-    //     Application.quitting += OnQuitting;
-
-    //     if (File.Exists(inventoryBufferPath))
-    //     {
-    //         var bytes = File.ReadAllBytes(inventoryBufferPath);
-    //         LocalInventoryInstance.LoadFromString(Encoding.UTF8.GetString(bytes));
-            
-    //         Debug.Log($"Inventory was succesfully loaded from \"{inventoryBufferPath}\"!");
-    //     }
-    // } 
-    // private static void OnQuitting()
-    // {
-    //     var bytes = Encoding.UTF8.GetBytes(LocalInventoryInstance.SaveToString());
-    //     File.WriteAllBytes(inventoryBufferPath, bytes);
-        
-    //     Debug.Log($"Inventory was succesfully saved to \"{inventoryBufferPath}\"!");
-    // }
 
     [SerializeField]
     private GameObject inventorySlotPrefab;
@@ -76,9 +50,17 @@ public class InventoryDrawer : MonoBehaviour
             slot_intances.RemoveAt(0);
         }
     }
-    public void Refresh()
+    public async void Refresh()
     {
         Clear();
+     
+        if (File.Exists(inventoryBufferPath))
+        {
+            var bytes = await File.ReadAllBytesAsync(inventoryBufferPath);
+            LocalInventoryInstance.LoadFromString(Encoding.UTF8.GetString(bytes));
+            
+            Debug.Log($"Inventory was succesfully loaded from \"{inventoryBufferPath}\"!");
+        }
 
         for (int i = 0; i < LocalInventoryInstance.MaxSize; i++)
         {
@@ -98,17 +80,14 @@ public class InventoryDrawer : MonoBehaviour
         slot_intances.Add(slot);
     }
 
-    private async void OnEnable()
+    private void OnEnable()
     {   
-        await UpdateLocalInventory();
-
-        OnInventoryUpdated.AddListener(Refresh);
-
         Refresh();
     }
-    private void OnDisable()
+    private async void OnDisable()
     {
-        OnInventoryUpdated.RemoveListener(Refresh);
+        var bytes = Encoding.UTF8.GetBytes(LocalInventoryInstance.SaveToString());
+        await File.WriteAllBytesAsync(inventoryBufferPath, bytes);
 
         Clear();
     }

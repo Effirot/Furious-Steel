@@ -108,6 +108,7 @@ namespace CharacterSystem.Objects
         public event Action<bool> isGroundedEvent = delegate { };
 
         public bool IsGrounded => characterController.isGrounded;
+        public bool isDashing { get; private set; } = false;
 
         public Animator animator { get; private set; }
         public CharacterController characterController { get; private set; }
@@ -187,11 +188,7 @@ namespace CharacterSystem.Objects
                 {
                     network_stunlock.Value = value;
 
-                    if (value > 0)
-                    {
-                        SetAngle(transform.rotation.eulerAngles.y);
-                    }
-                    else
+                    if (value <= 0)
                     {
                         network_stunlock.Value = 0;
                     }
@@ -233,22 +230,20 @@ namespace CharacterSystem.Objects
             if (IsServer && IsSpawned)
             {
                 Dead_ClientRpc();
+
                 if (!IsClient)
                 {
                     Dead();
                 }
     
-                foreach (var item in GetComponentsInChildren<NetworkObject>()) 
+                foreach (var item in GetComponentsInChildren<NetworkObject>().Reverse()) 
                 {
-                    if (this.NetworkObject != item && item.IsSpawned)
-                    {
-                        item.Despawn(true);
-                    }
+                    Destroy(item.gameObject);
                 }
 
                 if (this.NetworkObject.IsSpawned)
                 {
-                    this.NetworkObject.Despawn(true);
+                    Destroy(gameObject);
                 }
             }
         }
@@ -301,7 +296,6 @@ namespace CharacterSystem.Objects
         {
             base.OnNetworkSpawn();
 
-            SetAngle(transform.rotation.eulerAngles.y);
             SetPosition(transform.position);
 
             if (IsServer)
@@ -328,7 +322,6 @@ namespace CharacterSystem.Objects
 
                 SetAngle_ClientRpc(angle);
             }
-
         }
         public void SetPosition (Vector3 position)
         {
@@ -363,7 +356,7 @@ namespace CharacterSystem.Objects
            
             if (damage.type is not Damage.Type.Magical)
             {
-                if (OnHitSound != null)
+                if (OnHitSound != null && OnHitSound.enabled && OnHitSound.gameObject.activeInHierarchy)
                 {
                     OnHitSound.Play();
                 }
@@ -488,7 +481,14 @@ namespace CharacterSystem.Objects
         {
             velocity = Vector3.Lerp(velocity, Vector3.zero, (IsGrounded ? 0.15f : 0.06f) * Mass);
             
-            gravity_acceleration = Vector3.Lerp(gravity_acceleration, permissions.HasFlag(CharacterPermission.AllowGravity) && !IsGrounded ? Physics.gravity : Vector3.zero, 0.001f);
+            if (isDashing)
+            {
+                gravity_acceleration = Vector3.zero;
+            }   
+            else
+            {
+                gravity_acceleration = Vector3.Lerp(gravity_acceleration, permissions.HasFlag(CharacterPermission.AllowGravity) && !IsGrounded ? Physics.gravity : Vector3.zero, 0.001f);
+            }         
             
             return velocity + gravity_acceleration;
         }
@@ -546,8 +546,13 @@ namespace CharacterSystem.Objects
 
                 animator.SetFloat("Walk_Speed_X", vector.x);
                 animator.SetFloat("Walk_Speed_Y", vector.z);
+                animator.SetFloat("Falling_Speed", gravity_acceleration.y);
+
                 animator.SetBool("IsGrounded", characterController.isGrounded);
                 animator.SetBool("IsStunned", isStunned);
+
+                animator.SetBool("Dodge", isDashing);
+                
             }
         }
 
@@ -571,7 +576,8 @@ namespace CharacterSystem.Objects
             Direction.Normalize();
 
             permissions = CharacterPermission.Untouchable | CharacterPermission.AllowRotate;
-            animator.SetBool("Dodge", true);
+
+            isDashing = true;
 
             for (float timer = 0f; timer < DodgePushTime; timer += Time.fixedDeltaTime)
             {
@@ -579,6 +585,8 @@ namespace CharacterSystem.Objects
 
                 yield return new WaitForFixedUpdate();
             } 
+
+            isDashing = false;
 
             permissions = CharacterPermission.Default;
             animator.SetBool("Dodge", false);
@@ -603,8 +611,6 @@ namespace CharacterSystem.Objects
 
             if (IsServer && !isStunned && dodgeRoutine == null && permissions.HasFlag(CharacterPermission.AllowDash))
             {
-                SetAngle(Quaternion.LookRotation(new Vector3(direction.x, 0, direction.y)).eulerAngles.y);
-
                 Dash_ClientRpc(direction);
                 Dash_Internal(direction);
             }

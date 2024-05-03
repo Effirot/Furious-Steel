@@ -186,6 +186,8 @@ public class RoomManager : NetworkBehaviour
     private NetworkPrefabsList characters;
     [SerializeField]
     private NetworkPrefabsList weapons;
+    [SerializeField]
+    private NetworkPrefabsList trinkets;
 
     [NonSerialized]
     public SpawnArguments spawnArgs;
@@ -268,6 +270,18 @@ public class RoomManager : NetworkBehaviour
         }
 
         return weapons.PrefabList[0].Prefab;
+    }
+    public GameObject ResearchTrinketPrefab(string name)
+    {
+        foreach (var item in trinkets.PrefabList)
+        {
+            if (item.Prefab.name == name)
+            {
+                return item.Prefab;
+            }
+        }
+
+        return null;
     }
 
     public async void OnPlayerAuthorized(ulong ID, Authorizer.AuthorizeArguments authorizedPlayerData)
@@ -381,8 +395,13 @@ public class RoomManager : NetworkBehaviour
         var client = privatePlayersData[senderId];
         var weapon = ResearchWeaponPrefab(WeaponName);
 
-        if (client.networkCharacter == null || client.networkCharacterWeapon != null || weapon == null)
+        if (client.networkCharacter == null || weapon == null)
             return null;
+
+        if (client.networkCharacterWeapon != null)
+        {
+            Destroy(client.networkCharacterWeapon);
+        }
 
         // Spawn weapon
         var weaponGameObject = Instantiate(weapon, Vector3.zero, Quaternion.identity);
@@ -412,7 +431,28 @@ public class RoomManager : NetworkBehaviour
     }
     private NetworkObject SetTrinket (string TrinketName, ServerRpcParams Param)
     {
-        return null;
+        var senderId = Param.Receive.SenderClientId;
+        var client = privatePlayersData[senderId];
+        var trinket = ResearchTrinketPrefab(TrinketName);
+
+        if (client.networkCharacter == null || trinket == null)
+            return null;
+        
+        if (client.networkCharacterTrinket != null)
+        {
+            Destroy(client.networkCharacterTrinket);
+        }
+
+        // Spawn trinket
+        var trinketGameObject = Instantiate(trinket, Vector3.zero, Quaternion.identity);
+        var trinketNetObject = client.networkCharacterTrinket = trinketGameObject.GetComponent<NetworkObject>();
+
+        trinketNetObject.SpawnWithOwnership(senderId, true);
+        trinketGameObject.transform.SetParent(client.networkCharacter.transform, false);
+
+        client.networkCharacter.OnTrinketChanged(trinketNetObject);
+
+        return trinketNetObject;
     }
 
 
@@ -430,12 +470,12 @@ public class RoomManager : NetworkBehaviour
         if (!SpawnCharacter(JsonToItem(args.CharacterItemJson.Value), Param).IsUnityNull())
         {
             try {
-                SetWeapon(JsonToItem(args.WeaponItemJson.Value), Param);
+                SetTrinket(JsonToItem(args.TrinketItemJson.Value), Param);
             }
             catch { }
 
             try {
-                SetTrinket(JsonToItem(args.TrinketItemJson.Value), Param);
+                SetWeapon(JsonToItem(args.WeaponItemJson.Value), Param);
             }
             catch { }
         }

@@ -94,8 +94,10 @@ namespace CharacterSystem.PowerUps
             }
         }
 
-        private void Awake()
+        public override void Awake()
         {
+            base.Awake();
+            
             Character = GetComponent<NetworkCharacter>();
         }
 

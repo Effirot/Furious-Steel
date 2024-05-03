@@ -14,7 +14,7 @@ public class InputListener : MonoBehaviour
 
     private bool SwitchState = false;
 
-    private void Awake()
+    private void OnEnable()
     {
         inputAction.action.Enable();
 
@@ -22,12 +22,14 @@ public class InputListener : MonoBehaviour
         inputAction.action.performed += OnInputChanged_Event;
         inputAction.action.canceled += OnInputChanged_Event;
     }
-    private void OnDestroy()
+    private void OnDisable()
     {
         // inputAction.action.started -= OnInputChanged_Event;
         inputAction.action.performed -= OnInputChanged_Event;
         inputAction.action.canceled -= OnInputChanged_Event;
     }
+
+    private void OnDestroy() => OnDisable();
 
     private void OnInputChanged_Event(CallbackContext collbackContex)
     {

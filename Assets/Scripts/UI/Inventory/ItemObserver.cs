@@ -40,7 +40,13 @@ public class ItemObserver : MonoBehaviour
             if (value != null)
             {
                 NameField?.SetText(value.GetType().Name + (value.Name.Any() ? "(" + value.Name + ")" : ""));
-                DescriptionField?.SetText("");
+                DescriptionField?.SetText(@$"
+{value.GetType().Name}
+{string.Join("\n", value.GetType().GetInterfaces().Select(i => i.Name))}
+
+Last modification time: {value.LastModificationTime.ToLongTimeString()}
+Creation time: {value.CreationTime.ToLongTimeString()}");
+
                 ArgumentsField?.SetText(string.Join("\n", value.Args.Select(arg => " - " + arg)));
             }
             else

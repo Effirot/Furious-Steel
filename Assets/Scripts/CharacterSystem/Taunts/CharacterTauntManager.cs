@@ -13,16 +13,7 @@ using UnityEditor;
 [DisallowMultipleComponent]
 [RequireComponent(typeof(NetworkCharacter))]
 public class CharacterTauntManager : NetworkBehaviour
-{
-    [SerializeField]
-    private bool IsLooped = true;
-    
-    [SerializeField]
-    private CharacterPermission Permissions = CharacterPermission.Default; 
-    
-    [SerializeField, Range(0, 10)]
-    private float WalkSpeedReduce = 3; 
-
+{ 
     public bool IsPlaing => TauntProcessRoutine != null;
 
 
