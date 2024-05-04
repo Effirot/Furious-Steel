@@ -339,10 +339,9 @@ GameObject:
   m_Component:
   - component: {fileID: 2682705565289463711}
   - component: {fileID: 4043005819161963949}
-  - component: {fileID: 553983600808035742}
   - component: {fileID: 5633976333175869961}
   - component: {fileID: 3849626912261458713}
-  - component: {fileID: 7341613547324644073}
+  - component: {fileID: 553983600808035742}
   m_Layer: 6
   m_Name: Spear
   m_TagString: Weapon
@@ -390,19 +389,6 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
---- !u!114 &553983600808035742
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1517727645108543378}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e02cc2139c0c4704ca305884101e1c4f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  TargetParentPath: Armor/Armor_Armature/SpineCenter/Spine.001/Spine.002/Shoulder.L/Hand.001.L/Hand.002.L/Palm.L
 --- !u!114 &5633976333175869961
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -418,6 +404,8 @@ MonoBehaviour:
   overrides:
   - Name: Holding_Default
     Clip: {fileID: -3005454521810875173, guid: eb101eb5ba008aa4fad4497ac79afc31, type: 3}
+  - Name: Attack1
+    Clip: {fileID: -41055732848757815, guid: eb101eb5ba008aa4fad4497ac79afc31, type: 3}
 --- !u!114 &3849626912261458713
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -430,61 +418,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f8362cf897c101449b32c7c0a5fa054, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!137 &7341613547324644073
-SkinnedMeshRenderer:
+--- !u!114 &553983600808035742
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1517727645108543378}
   m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 3
-  m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 0}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  serializedVersion: 2
-  m_Quality: 0
-  m_UpdateWhenOffscreen: 0
-  m_SkinnedMotionVectors: 1
-  m_Mesh: {fileID: 0}
-  m_Bones: []
-  m_BlendShapeWeights: []
-  m_RootBone: {fileID: 0}
-  m_AABB:
-    m_Center: {x: 0, y: 0, z: 0}
-    m_Extent: {x: 0, y: 0, z: 0}
-  m_DirtyAABB: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e02cc2139c0c4704ca305884101e1c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TargetParentPath: Armor/Armor_Armature/SpineCenter
+  origin: {fileID: 4230450402353312103}
 --- !u!1 &1901328450275216932
 GameObject:
   m_ObjectHideFlags: 0
@@ -538,6 +485,7 @@ MonoBehaviour:
   SpeedReducing: 3
   attackQueue:
   - rid: 868177009411096655
+  - rid: 8630937662073602138
   - rid: 2961813231421882371
   - rid: 868177009411096656
   - rid: 2961813231421882370
@@ -634,6 +582,10 @@ MonoBehaviour:
       data:
         time: 10
         damage: 20
+    - rid: 8630937662073602138
+      type: {class: PlayAnimation, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        AnimationName: Torso.Attack1
 --- !u!1 &4748355354840485092
 GameObject:
   m_ObjectHideFlags: 0
@@ -797,6 +749,7 @@ MonoBehaviour:
       data:
         queue:
         - rid: 868176906250092652
+        - rid: 8630937662073602140
         - rid: 868176906250092653
     - rid: 868176906250092652
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
@@ -849,6 +802,10 @@ MonoBehaviour:
         position: {x: 0, y: 0, z: 4.16}
         size: {x: 0.92, y: 1.88, z: 1.52}
         angle: {x: 0, y: 0, z: 0}
+    - rid: 8630937662073602140
+      type: {class: PlayAnimation, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        AnimationName: Torso.Attack1
 --- !u!1 &6389387997060165717
 GameObject:
   m_ObjectHideFlags: 0
@@ -858,10 +815,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2399946078457330118}
-  - component: {fileID: 3130020443736745185}
-  - component: {fileID: 4841311779467746947}
+  - component: {fileID: 4230450402353312103}
   m_Layer: 0
-  m_Name: Skin L
+  m_Name: Skin
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -882,16 +838,8 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2682705565289463711}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &3130020443736745185
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6389387997060165717}
-  m_Mesh: {fileID: -6280669117017369944, guid: 5a1bb33d668f0424e8e8e274ef7eea88, type: 3}
---- !u!23 &4841311779467746947
-MeshRenderer:
+--- !u!137 &4230450402353312103
+SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -905,7 +853,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
+  m_RayTracingMode: 3
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
@@ -933,7 +881,74 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_AdditionalVertexStreams: {fileID: 0}
+  serializedVersion: 2
+  m_Quality: 0
+  m_UpdateWhenOffscreen: 0
+  m_SkinnedMotionVectors: 1
+  m_Mesh: {fileID: -6280669117017369944, guid: eb101eb5ba008aa4fad4497ac79afc31, type: 3}
+  m_Bones:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  m_BlendShapeWeights: []
+  m_RootBone: {fileID: 0}
+  m_AABB:
+    m_Center: {x: -0.13724884, y: 1.1401346, z: 0.047834396}
+    m_Extent: {x: 0.35906592, y: 0.64954126, z: 0.5839946}
+  m_DirtyAABB: 0
 --- !u!1 &6677008410516524281
 GameObject:
   m_ObjectHideFlags: 0
@@ -989,6 +1004,7 @@ MonoBehaviour:
   - rid: 5691645226531684433
   - rid: 5691645226531684437
   - rid: 6352953082370064458
+  - rid: 8630937662073602139
   - rid: 2961813231421882371
   - rid: 5691645198379778129
   - rid: 5691645198379778176
@@ -1072,6 +1088,10 @@ MonoBehaviour:
       data:
         WaitTime: 0.2
         Permissions: 256
+    - rid: 8630937662073602139
+      type: {class: PlayAnimation, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        AnimationName: Torso.Attack1
 --- !u!1 &7324458738964129770
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,36 +1,33 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 
-[RequireComponent(typeof(SkinnedMeshRenderer))]
-[DisallowMultipleComponent]
 public sealed class SkinBinder : NetworkBehaviour
 {
     [SerializeField, TextArea]
     private string TargetParentPath = "";
 
+    [SerializeField]
     private SkinnedMeshRenderer origin;
 
-    public override void OnNetworkSpawn()
+    public override void OnNetworkDespawn()
     {
-        base.OnNetworkSpawn();
-
-        origin.rootBone = transform.parent?.Find(TargetParentPath);
+        base.OnNetworkDespawn();
     }
 
     public override void OnNetworkObjectParentChanged(NetworkObject parentNetworkObject)
     {
         base.OnNetworkObjectParentChanged(parentNetworkObject);
-
-        origin.rootBone = parentNetworkObject?.transform.Find(TargetParentPath);
-    }
-
-    private void Awake()
-    {
-        origin = GetComponent<SkinnedMeshRenderer>();
+        
+        if (parentNetworkObject != null)
+        {
+            origin.rootBone = parentNetworkObject.transform.Find(TargetParentPath);
+            origin.bones = origin.rootBone.parent.GetComponentsInChildren<Transform>();
+        }
     }
 
 #if UNITY_EDITOR

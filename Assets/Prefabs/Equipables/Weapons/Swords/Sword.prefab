@@ -195,6 +195,7 @@ MonoBehaviour:
           stunlock: 0
           pushDirection: {x: 0.05, y: 0, z: 0.1}
           RechargeUltimate: 1
+          Effects: []
         position: {x: 0, y: 0, z: 1.71}
         size: {x: 1.54, y: 1.36, z: 1}
         angle: {x: 0, y: 0, z: 0}
@@ -469,6 +470,7 @@ GameObject:
   - component: {fileID: 4043005819161963949}
   - component: {fileID: 5633976333175869961}
   - component: {fileID: -6062769866557274273}
+  - component: {fileID: 5260753540106727385}
   m_Layer: 6
   m_Name: Sword
   m_TagString: Weapon
@@ -547,6 +549,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f8362cf897c101449b32c7c0a5fa054, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &5260753540106727385
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1517727645108543378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e02cc2139c0c4704ca305884101e1c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TargetParentPath: Armor/Armor_Armature/SpineCenter
+  origin: {fileID: 4413948113321333777}
 --- !u!1 &1901328450275216932
 GameObject:
   m_ObjectHideFlags: 0
@@ -707,6 +723,7 @@ MonoBehaviour:
           stunlock: 0
           pushDirection: {x: -0.05, y: 0, z: 0.1}
           RechargeUltimate: 1
+          Effects: []
         position: {x: 0, y: 0, z: 1.71}
         size: {x: 1.54, y: 1.36, z: 1}
         angle: {x: 0, y: 0, z: 0}
@@ -1673,6 +1690,7 @@ MonoBehaviour:
           stunlock: 0.3
           pushDirection: {x: 0, y: 0, z: 0.1}
           RechargeUltimate: 0
+          Effects: []
         position: {x: 0, y: 0, z: 1.71}
         size: {x: 1.54, y: 1.36, z: 1}
         angle: {x: 0, y: 0, z: 0}
@@ -1685,6 +1703,7 @@ MonoBehaviour:
           stunlock: 0.5
           pushDirection: {x: 0, y: 0, z: 0.1}
           RechargeUltimate: 0
+          Effects: []
         position: {x: 0, y: 0, z: 1.71}
         size: {x: 1.54, y: 1.36, z: 1}
         angle: {x: 0, y: 0, z: 0}
@@ -1821,6 +1840,7 @@ MonoBehaviour:
           stunlock: 0.2
           pushDirection: {x: 0, y: 0, z: 0.1}
           RechargeUltimate: 1
+          Effects: []
         position: {x: 0, y: 0, z: 2.05}
         size: {x: 0.97, y: 1.36, z: 1.77}
         angle: {x: 0, y: 0, z: 0}
@@ -1885,6 +1905,7 @@ MonoBehaviour:
           stunlock: 0.2
           pushDirection: {x: 0, y: 0, z: 0.1}
           RechargeUltimate: 1
+          Effects: []
         position: {x: 0, y: 0, z: 2.05}
         size: {x: 0.97, y: 1.36, z: 1.77}
         angle: {x: 0, y: 0, z: 0}
@@ -2034,9 +2055,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2399946078457330118}
-  - component: {fileID: 3130020443736745185}
   - component: {fileID: 4413948113321333777}
-  - component: {fileID: 4822416814102249534}
   m_Layer: 0
   m_Name: Skin
   m_TagString: Untagged
@@ -2059,14 +2078,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2682705565289463711}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &3130020443736745185
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6389387997060165717}
-  m_Mesh: {fileID: 4686849319519084627, guid: eb101eb5ba008aa4fad4497ac79afc31, type: 3}
 --- !u!137 &4413948113321333777
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
@@ -2115,26 +2126,69 @@ SkinnedMeshRenderer:
   m_UpdateWhenOffscreen: 0
   m_SkinnedMotionVectors: 1
   m_Mesh: {fileID: 4686849319519084627, guid: eb101eb5ba008aa4fad4497ac79afc31, type: 3}
-  m_Bones: []
+  m_Bones:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   m_BlendShapeWeights: []
   m_RootBone: {fileID: 0}
   m_AABB:
-    m_Center: {x: 0.31250092, y: 0.0023949984, z: 0.002581492}
-    m_Extent: {x: 0.44551137, y: 0.042479217, z: 0.091533124}
+    m_Center: {x: -0.13724884, y: 1.1401346, z: 0.047834396}
+    m_Extent: {x: 0.35906592, y: 0.64954126, z: 0.5839946}
   m_DirtyAABB: 0
---- !u!114 &4822416814102249534
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6389387997060165717}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e02cc2139c0c4704ca305884101e1c4f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  TargetParentPath: Armor/Armor_Armature
 --- !u!1 &7183041107876742520
 GameObject:
   m_ObjectHideFlags: 0
@@ -2258,6 +2312,7 @@ MonoBehaviour:
           stunlock: 0.5
           pushDirection: {x: 0, y: 0, z: 0.7}
           RechargeUltimate: 1
+          Effects: []
         position: {x: 0, y: 0, z: 1.71}
         size: {x: 1.54, y: 1.36, z: 1}
         angle: {x: 0, y: 0, z: 0}
