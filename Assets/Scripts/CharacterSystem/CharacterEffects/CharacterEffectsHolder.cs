@@ -5,41 +5,124 @@ using CharacterSystem.Objects;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Events;
-using EventType = Unity.Netcode.NetworkListEvent<int>.EventType;
-using NetworkListEvent = Unity.Netcode.NetworkListEvent<int>;
 using System.Linq;
+using CharacterSystem.Attacks;
+
 
 
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
+
 [DisallowMultipleComponent]
 [RequireComponent(typeof(NetworkCharacter))]
 public class CharacterEffectsHolder : NetworkBehaviour
 {
+    private struct NetworkCharacterEffectData : 
+        INetworkSerializable, 
+        IEquatable<NetworkCharacterEffectData>
+    {
+        public int EffectTypeId;
+
+        public ulong EffectsSourceLink;
+
+        public IDamageSource EffectSource
+        {
+            get {
+                if (EffectsSourceLink != ulong.MinValue)
+                {
+                    var dictionary = NetworkManager.Singleton.SpawnManager.SpawnedObjects;
+
+                    if (dictionary.ContainsKey(EffectsSourceLink) && dictionary[EffectsSourceLink].TryGetComponent<IDamageSource>(out var component))
+                    {
+                        return component;
+                    }
+                }
+
+                return null;
+            }
+            set{
+                EffectsSourceLink = value?.gameObject?.GetComponent<NetworkObject>()?.NetworkObjectId ?? ulong.MinValue;
+            } 
+        }
+        public Type EffectType
+        {
+            get {
+                return EffectTypeId < 0 || EffectTypeId >= CharacterEffect.AllCharacterEffectTypes.Length ? null : CharacterEffect.AllCharacterEffectTypes[EffectTypeId];
+            }
+            set{
+                EffectTypeId = Array.IndexOf(CharacterEffect.AllCharacterEffectTypes, value);
+            } 
+        }
+
+        public NetworkCharacterEffectData(int TypeId, ulong EffectsSourceLink)
+        {
+            this.EffectTypeId = TypeId;
+            this.EffectsSourceLink = EffectsSourceLink;
+        }
+        public NetworkCharacterEffectData(int TypeId, IDamageSource EffectsSource)
+        {
+            this.EffectTypeId = TypeId;
+            this.EffectsSourceLink = 0;
+            this.EffectSource = EffectsSource;
+        }
+
+        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+        {
+            serializer.SerializeValue(ref EffectTypeId);
+            serializer.SerializeValue(ref EffectsSourceLink);
+        }
+
+        public bool Equals(NetworkCharacterEffectData other)
+        {
+            return EffectTypeId == other.EffectTypeId && EffectsSourceLink == other.EffectsSourceLink;
+        }
+    }
+
+    [SerializeField]
+    private SkinnedMeshRenderer characterSkinnedMeshRenderer;
+
+    [SerializeField]
+    private Shader GlowingShader;
+
     public NetworkCharacter character { get; private set; }
 
-    public UnityEvent<NetworkListEvent> onListChanged = new();
-
-    private NetworkList<int> characterEffectIds_network;
+    private NetworkList<NetworkCharacterEffectData> characterEffectIds_network;
     private List<CharacterEffect> characterEffects = new();
 
+    private Material materialLink;
 
-    public void AddEffect (CharacterEffect characterEffect)
+    public bool AddEffect (CharacterEffect effect)
     {
         if (IsServer)
         {
-            if (characterEffects.Exists(effect => effect.GetType() == characterEffect.GetType())) return;
+            var dublicate = characterEffects.Find(e => e.GetType() == effect.GetType());
+            if (dublicate != null) 
+            {
+                dublicate.AddDublicate(effect);
 
-            characterEffect.effectsHolder = this;
+                return false;
+            }
 
-            characterEffects.Add(characterEffect);
+            effect.effectsHolder = this;
+
+            if (effect.Existance)
+            {
+                characterEffects.Add(effect);
+                
+                characterEffectIds_network.Add(new (
+                    Array.IndexOf(CharacterEffect.AllCharacterEffectTypes, effect.GetType()),
+                    effect.effectsSource));
             
-            characterEffectIds_network.Add(Array.IndexOf(CharacterEffect.AllCharacterEffectTypes, characterEffect.GetType()));
-        
-            characterEffect.Start();
+                effect.IsValid = true;
+                effect.Start();
+
+                return true;
+            }
         }
+
+        return false;
     }
 
     public override void OnNetworkSpawn ()
@@ -63,9 +146,16 @@ public class CharacterEffectsHolder : NetworkBehaviour
 
     private void Awake ()
     {
+        // materialLink = new Material(GlowingShader);
+        // characterSkinnedMeshRenderer.materials = characterSkinnedMeshRenderer.materials.Append(materialLink).ToArray();
+        // materialLink.SetVector("Color", new Color(0, 0, 0, 0));
+        // materialLink.SetFloat("Power", 10);
+
+        // materialLink.renderQueue = 3050;
+
         character = GetComponent<NetworkCharacter>();
 
-        characterEffectIds_network = new NetworkList<int>(Array.Empty<int>(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+        characterEffectIds_network = new NetworkList<NetworkCharacterEffectData>(Array.Empty<NetworkCharacterEffectData>(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     }
     private void FixedUpdate()
     {
@@ -77,6 +167,7 @@ public class CharacterEffectsHolder : NetworkBehaviour
             {
                 if (!characterEffects[i].Existance)
                 {
+                    characterEffects[i].IsValid = false;
                     characterEffects[i].Remove();
                     characterEffects.RemoveAt(i);
                     
@@ -87,55 +178,66 @@ public class CharacterEffectsHolder : NetworkBehaviour
             }
         }
     }
+#if !UNITY_SERVER || UNITY_EDITOR
+    private void Update()
+    {
 
-    private void OnListChanged_event (NetworkListEvent networkListEvent)
+    }
+#endif
+
+    private void OnListChanged_event (NetworkListEvent<CharacterEffectsHolder.NetworkCharacterEffectData> networkListEvent)
     {
         var index = networkListEvent.Index;
 
         switch (networkListEvent.Type)
         {
-            case EventType.Add: 
-                CharacterEffect instance = Activator.CreateInstance(CharacterEffect.AllCharacterEffectTypes[index]) as CharacterEffect;
+            case NetworkListEvent<CharacterEffectsHolder.NetworkCharacterEffectData>.EventType.Add: 
+                CharacterEffect instance = Activator.CreateInstance(networkListEvent.Value.EffectType) as CharacterEffect;
                 
                 instance.effectsHolder = this;
+                instance.effectsSource = networkListEvent.Value.EffectSource;
+                instance.IsValid = true;
                 instance.Start();
 
                 characterEffects.Insert(index, instance);
                 break;
                 
-            case EventType.Insert: 
-                goto case EventType.Add;
+            case NetworkListEvent<CharacterEffectsHolder.NetworkCharacterEffectData>.EventType.Insert: 
+                goto case NetworkListEvent<CharacterEffectsHolder.NetworkCharacterEffectData>.EventType.Add;
 
-            case EventType.Remove:
-                characterEffects[index].Remove();
+            case NetworkListEvent<CharacterEffectsHolder.NetworkCharacterEffectData>.EventType.Remove:
+                var effect = characterEffects[index];
+                effect.IsValid = false;
+                effect.Remove();
                 
-                characterEffects.RemoveAt(index);
+                characterEffects.Remove(effect);
                 break;
 
-            case EventType.RemoveAt: 
-                goto case EventType.Remove;
+            case NetworkListEvent<CharacterEffectsHolder.NetworkCharacterEffectData>.EventType.RemoveAt: 
+                goto case NetworkListEvent<CharacterEffectsHolder.NetworkCharacterEffectData>.EventType.Remove;
 
-            case EventType.Value: 
+            case NetworkListEvent<CharacterEffectsHolder.NetworkCharacterEffectData>.EventType.Value: 
                 break;
 
-            case EventType.Clear: 
+            case NetworkListEvent<CharacterEffectsHolder.NetworkCharacterEffectData>.EventType.Clear: 
                 RemoveAll();
                 break;
 
-            case EventType.Full: 
+            case NetworkListEvent<CharacterEffectsHolder.NetworkCharacterEffectData>.EventType.Full: 
                 RefreshAll();
                 break;   
         }
-
-        onListChanged.Invoke(networkListEvent);
     }
 
     private void RefreshAll()
     {
         foreach (var item in characterEffectIds_network)
         {
-            var type = CharacterEffect.AllCharacterEffectTypes[item];
+            var type = CharacterEffect.AllCharacterEffectTypes[item.EffectTypeId];
             var instance = Activator.CreateInstance(type) as CharacterEffect;
+            instance.effectsHolder = this;
+            instance.effectsSource = item.EffectSource;
+            instance.IsValid = true;
             instance.Start();
 
             characterEffects.Add(instance);
@@ -145,6 +247,7 @@ public class CharacterEffectsHolder : NetworkBehaviour
     {
         foreach (var item in characterEffects)
         {
+            item.IsValid = false;
             item.Remove();
         }
         characterEffects.Clear();
@@ -160,12 +263,13 @@ public class CharacterEffectsHolder : NetworkBehaviour
 
         void OnEnable()
         {
-            onListChangedEvent = serializedObject.FindProperty("onListChanged");
+            // onListChangedEvent = serializedObject.FindProperty("onListChanged");
         }
 
         public override void OnInspectorGUI()
         {
-            EditorGUILayout.PropertyField(onListChangedEvent);
+            base.OnInspectorGUI();
+            // EditorGUILayout.PropertyField(onListChangedEvent);
 
             foreach (var value in target.characterEffects)
             {

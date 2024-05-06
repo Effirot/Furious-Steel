@@ -9,5 +9,7 @@ public static class ExecuteOnLoadMethod
     {
         GameObject.DontDestroyOnLoad(GameObject.Instantiate(Resources.Load<GameObject>("[NetworkManager]")));
         GameObject.DontDestroyOnLoad(GameObject.Instantiate(Resources.Load<GameObject>("[MainMenu]")));
+        
+        Application.targetFrameRate = -1;
     }
 }

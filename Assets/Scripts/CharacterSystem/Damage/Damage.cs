@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using CharacterSystem.Attacks;
 using CharacterSystem.Objects;
 using Unity.Netcode;
@@ -56,10 +57,19 @@ namespace CharacterSystem.DamageMath
 
             if (target.gameObject.TryGetComponent<CharacterEffectsHolder>(out var effectHolder) && damage.Effects != null)
             {
+                List<CharacterEffect> addedEffect = new();
+
                 foreach (var effect in damage.Effects)
                 {
-                    effectHolder.AddEffect(effect.Clone());
+                    var effectClone = effect.Clone();
+
+                    if (effectHolder.AddEffect(effectClone))
+                    {
+                        addedEffect.Add(effectClone);
+                    }
                 }
+
+                report.RecievedEffects = addedEffect.ToArray();
             }
 
             return report;
@@ -84,18 +94,50 @@ namespace CharacterSystem.DamageMath
         public CharacterEffect[] Effects;
 
         [NonSerialized]
-        public IDamageSource sender;
+        public ulong senderID;
+         
+        public IDamageSource sender { 
+            get {
+                if (senderID != ulong.MinValue)
+                {
+                    var dictionary = NetworkManager.Singleton.SpawnManager.SpawnedObjects;
+
+                    if (dictionary.ContainsKey(senderID) && dictionary[senderID].TryGetComponent<IDamageSource>(out var component))
+                    {
+                        return component;
+                    }
+                }
+
+                return null;
+            }
+            set{
+                senderID = value?.gameObject?.GetComponent<NetworkObject>()?.NetworkObjectId ?? ulong.MinValue;
+            } 
+        }
 
 
-        public Damage(float value, IDamageSource sender, float stunlock, Vector3 pushDirection, Type type, params CharacterEffect[] effects)
+        public Damage(float value, ulong senderID, float stunlock, Vector3 pushDirection, Type type, params CharacterEffect[] effects)
         {
             this.value = value;
-            this.sender = sender;
+            this.senderID = senderID;
+            this.stunlock = stunlock;
+            this.pushDirection = pushDirection;
+            this.type = type;
+            this.Effects = effects;
+            this.RechargeUltimate = true;   
+        }
+        public Damage(float value, IDamageSource sender, float stunlock, Vector3 pushDirection, Type type, params CharacterEffect[] effects)
+        {
+            senderID = 0;
+
+            this.value = value;
             this.stunlock = stunlock;
             this.pushDirection = pushDirection;
             this.type = type;
             this.Effects = effects;
             this.RechargeUltimate = true;
+            
+            this.sender = sender;
         }
 
         public override string ToString()
@@ -111,21 +153,7 @@ namespace CharacterSystem.DamageMath
             serializer.SerializeValue(ref pushDirection);
             serializer.SerializeValue(ref RechargeUltimate);
 
-            var objectID = sender?.gameObject?.GetComponent<NetworkObject>()?.NetworkObjectId ?? ulong.MinValue;
-            serializer.SerializeValue(ref objectID);
-
-            if (serializer.IsReader)
-            {
-                if (objectID != ulong.MinValue)
-                {
-                    var dictionary = NetworkManager.Singleton.SpawnManager.SpawnedObjects;
-
-                    if (dictionary.ContainsKey(objectID) && dictionary[objectID].TryGetComponent<IDamageSource>(out var component))
-                    {
-                        sender = component;
-                    }
-                }
-            }
+            serializer.SerializeValue(ref senderID);
         }
 
         public static Damage operator * (Damage damage, float multipliyer)
@@ -160,6 +188,8 @@ namespace CharacterSystem.DamageMath
         public IDamagable target = null;
 
         public DateTime time = DateTime.Now;
+
+        public CharacterEffect[] RecievedEffects;
 
         public void Dispose()
         {

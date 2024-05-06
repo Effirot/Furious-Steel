@@ -100,7 +100,7 @@ namespace CharacterSystem.Objects
         private NetworkVariable<ulong> network_serverClientId = new (0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
         private NetworkVariable<int> network_combo = new (0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
-        public event Action<DamageDeliveryReport> OnDamageDelivered;
+        public event Action<DamageDeliveryReport> onDamageDelivered;
         public event Action<int> OnComboChanged;
 
         private Coroutine comboResetTimer = null;
@@ -116,9 +116,9 @@ namespace CharacterSystem.Objects
                 Combo += 5;
             }
 
-            if (IsOwner)
+            if (IsOwner && damage.type is not Damage.Type.Effect)
             {
-                OnHitImpulseSource?.GenerateImpulse();
+                OnHitImpulseSource?.GenerateImpulse(damage.value / 10f);
             }
 
 
@@ -148,7 +148,7 @@ namespace CharacterSystem.Objects
                 }   
             }
 
-            OnDamageDelivered?.Invoke(report);
+            onDamageDelivered?.Invoke(report);
         }
         
 
@@ -294,7 +294,7 @@ namespace CharacterSystem.Objects
 
                 if (IsOwner)
                 {
-                    CharacterUIObserver.Singleton.observingCharacter = corpseObject.transform;
+                    CharacterUIObserver.Singleton.observingTransform = corpseObject.transform;
                 }    
             }
 

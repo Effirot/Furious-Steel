@@ -814,6 +814,10 @@ PrefabInstance:
       propertyPath: <Speed>k__BackingField
       value: 9
       objectReference: {fileID: 0}
+    - target: {fileID: 6228147872289046665, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
+      propertyPath: characterSkinnedMeshRenderer
+      value: 
+      objectReference: {fileID: 6007954073590068278}
     - target: {fileID: 6327362061181660400, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
       propertyPath: networkCharacter
       value: 
@@ -935,9 +939,13 @@ MonoBehaviour:
     stunlock: 0
     pushDirection: {x: 0, y: 0.2, z: 0}
     RechargeUltimate: 1
+    Effects: []
   splashAttackRecievedDamage: 70
   splashAttackRange: 3.57
   SplashHitPrefab: {fileID: 1406424607424647358}
+  references:
+    version: 2
+    RefIds: []
 --- !u!82 &7661303531023154292 stripped
 AudioSource:
   m_CorrespondingSourceObject: {fileID: 5866190622722593410, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
@@ -1316,6 +1324,11 @@ Transform:
 --- !u!4 &4457293729771508034 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5561197783928764643, guid: eb101eb5ba008aa4fad4497ac79afc31, type: 3}
+  m_PrefabInstance: {fileID: 8139740533285726625}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &6007954073590068278 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -6658958499664732777, guid: eb101eb5ba008aa4fad4497ac79afc31, type: 3}
   m_PrefabInstance: {fileID: 8139740533285726625}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &7844741721803442140 stripped

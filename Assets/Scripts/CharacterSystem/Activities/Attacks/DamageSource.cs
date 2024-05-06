@@ -24,7 +24,7 @@ namespace CharacterSystem.Attacks
 
         int Combo { get; }
 
-        event Action<DamageDeliveryReport> OnDamageDelivered;
+        event Action<DamageDeliveryReport> onDamageDelivered;
 
         void SetPosition (Vector3 position);
         void DamageDelivered(DamageDeliveryReport report);
@@ -88,6 +88,11 @@ namespace CharacterSystem.Attacks
         {
             if (Invoker.IsServer)
             {
+                if (IsAttacking)
+                {
+                    EndAttack_ClientRpc();
+                }
+
                 StartAttack_ClientRpc();
 
                 if (!IsClient)
@@ -218,10 +223,13 @@ namespace CharacterSystem.Attacks
         private void StartAttack_Internal()
         {
             EndAttack_Internal();
-            
-            Invoker.Speed -= SpeedReducing;
 
-            attackProcess = StartCoroutine(AttackSubprocess());
+            if (attackQueue.Any())
+            {
+                Invoker.Speed -= SpeedReducing;
+
+                attackProcess = StartCoroutine(AttackSubprocess());
+            }
         }
 
         [ClientRpc]
@@ -235,14 +243,13 @@ namespace CharacterSystem.Attacks
             {
                 Invoker.Speed += SpeedReducing;
                 Invoker.permissions = CharacterPermission.Default;
-            
+                
                 StopCoroutine(attackProcess);
+                attackProcess = null;
                 
                 OnAttackEnded.Invoke();
                 
                 currentAttackDamageReport = null;
-
-                attackProcess = null;
 
                 if (IsServer && IsPressed)
                 {
@@ -332,11 +339,25 @@ namespace CharacterSystem.Attacks
         
         [Space]
         [SerializeField]
-        private Vector3 TeleportRelativeDirectionDirection = Vector3.forward * 3; 
+        private Vector3 TeleportRelativeDirection = Vector3.forward * 3; 
         
         public override IEnumerator AttackPipeline(DamageSource source)
         {
-            source.Invoker.SetPosition (source.transform.position + source.transform.rotation * TeleportRelativeDirectionDirection);
+            if (source.IsServer)
+            {
+                var newPosition = source.transform.position + source.transform.rotation * TeleportRelativeDirection;
+
+                if (Physics.Linecast(
+                    source.transform.position, 
+                    source.transform.position + source.transform.rotation * TeleportRelativeDirection, 
+                    out var hit,
+                    LayerMask.GetMask("Ground")))
+                {
+                    newPosition = hit.point;
+                }
+
+                source.Invoker.SetPosition (newPosition);
+            }
 
             yield break;
         }

@@ -31,11 +31,14 @@ public abstract class CharacterEffect
     
     public abstract bool Existance { get; }
 
+    public bool IsValid { get; internal set; } = false;
+
     public CharacterEffect() { }
 
     public virtual void Start() { }
     public virtual void Update() { }
     public virtual void Remove() { }
+    public virtual void AddDublicate(CharacterEffect effect) { }
 
     public override string ToString()
     {

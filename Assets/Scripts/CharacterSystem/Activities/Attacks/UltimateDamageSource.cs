@@ -15,7 +15,7 @@ public class UltimateDamageSource : DamageSource
     [SerializeField, Range(0, 2000)]
     public float RequireDamage = 500;
 
-    [SerializeField, Range(0, 2000)]
+    [SerializeField]
     public bool ClearCharge = true;
 
     public UnityEvent OnUltimateReady = new();
@@ -36,6 +36,7 @@ public class UltimateDamageSource : DamageSource
 
     private NetworkVariable<float> network_delivereDamageValue = new (0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
+
     public override void OnNetworkDespawn()
     {
         base.OnNetworkDespawn();
@@ -44,14 +45,13 @@ public class UltimateDamageSource : DamageSource
         
         if (Invoker != null)
         {
-            Invoker.OnDamageDelivered -= OnDamageDelivered_Event;
+            Invoker.onDamageDelivered -= OnDamageDelivered_Event;
         }
     }
 
     public override void StartAttack()
     {
         if (DeliveredDamage >= RequireDamage && 
-            Invoker.permissions.HasFlag(CharacterPermission.AllowUltimate) &&
             Invoker.permissions.HasFlag(CharacterPermission.AllowAttacking) &&
             !Invoker.isStunned && 
             IsPerforming &&
@@ -66,10 +66,12 @@ public class UltimateDamageSource : DamageSource
         }
     }
 
-    private void Start()
+    protected virtual void Start()
     {
+        if (HasOverrides()) return;
+        
         network_delivereDamageValue.OnValueChanged += ExecuteOnValueChangedEvent;
-        Invoker.OnDamageDelivered += OnDamageDelivered_Event;
+        Invoker.onDamageDelivered += OnDamageDelivered_Event;
     }
 
     private void OnDamageDelivered_Event(DamageDeliveryReport report)

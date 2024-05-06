@@ -21,8 +21,8 @@ ModelImporter:
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
-    importConstraints: 0
-    animationCompression: 1
+    importConstraints: 1
+    animationCompression: 3
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
@@ -1473,7 +1473,7 @@ ModelImporter:
       - path: Armor_Armature/SpineCenter/Spine.000/Hip.R/Leg.000.R/Leg.001.R/Feet.000.R/Feet.001.R
         weight: 0
       - path: Armor_Armature/SpineCenter/Spine.001
-        weight: 1
+        weight: 0
       - path: Armor_Armature/SpineCenter/Spine.001/Spine.002
         weight: 1
       - path: Armor_Armature/SpineCenter/Spine.001/Spine.002/Neck
@@ -1518,6 +1518,8 @@ ModelImporter:
         weight: 1
       - path: Armor_Armature/SpineCenter/Spine.001/Spine.002/Shoulder.L/Hand.001.L/Hand.002.L/Palm.L/Finger5.L.000/Finger5.L.001/Finger5.L.002
         weight: 1
+      - path: Armor_Armature/SpineCenter/Spine.001/Spine.002/Shoulder.L/Hand.001.L/Hand.002.L/Palm.L/Weapon
+        weight: 1
       - path: Armor_Armature/SpineCenter/Spine.001/Spine.002/Shoulder.R
         weight: 1
       - path: Armor_Armature/SpineCenter/Spine.001/Spine.002/Shoulder.R/Hand.001.R
@@ -1556,9 +1558,7 @@ ModelImporter:
         weight: 1
       - path: Armor_Armature/SpineCenter/Spine.001/Spine.002/Shoulder.R/Hand.001.R/Hand.002.R/Palm.R/Finger5.R.000/Finger5.R.001/Finger5.R.002
         weight: 1
-      - path: Armor_Armature/Weapon
-        weight: 1
-      - path: Armor_Armature/Weapon_Additive
+      - path: Armor_Armature/SpineCenter/Weapon_Additive
         weight: 1
       - path: Axe
         weight: 0
@@ -2400,13 +2400,13 @@ ModelImporter:
     globalScale: 1
     rootMotionBoneName: 
     hasTranslationDoF: 0
-    hasExtraRoot: 0
+    hasExtraRoot: 1
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
   autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 2
   humanoidOversampling: 1
-  avatarSetup: 0
+  avatarSetup: 1
   addHumanoidExtraRootOnlyWhenUsingAvatar: 1
   importBlendShapeDeformPercent: 1
   remapMaterialsIfMaterialImportModeIsNone: 0

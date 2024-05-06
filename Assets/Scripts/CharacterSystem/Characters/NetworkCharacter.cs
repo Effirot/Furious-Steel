@@ -36,7 +36,6 @@ namespace CharacterSystem.Objects
         AllowAttacking      = 0b_0001_0000_0000_0000,
         AllowBlocking       = 0b_0010_0000_0000_0000,
         AllowPowerUps       = 0b_0100_0000_0000_0000,
-        AllowUltimate       = 0b_1000_0000_0000_0000,
     }
 
     [DisallowMultipleComponent]
@@ -330,7 +329,7 @@ namespace CharacterSystem.Objects
                 network_position.Value = position;
                 characterController.Move(position - transform.position);
 
-                SetPosition_ClientRpc(position);;
+                SetPosition_ClientRpc(position);
             }
         }
         public void Dash(Vector2 direction)
@@ -354,7 +353,7 @@ namespace CharacterSystem.Objects
         { 
             onDamageRecieved?.Invoke(damage); 
            
-            if (damage.type is not Damage.Type.Magical)
+            if (damage.type is Damage.Type.Physics or Damage.Type.Balistic)
             {
                 if (OnHitSound != null && OnHitSound.enabled && OnHitSound.gameObject.activeInHierarchy)
                 {

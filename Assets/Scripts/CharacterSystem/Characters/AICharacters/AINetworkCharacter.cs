@@ -28,12 +28,12 @@ namespace CharacterSystem.Objects.AI
         public int Combo => 0;
 
 
-        public event Action<DamageDeliveryReport> OnDamageDelivered;
+        public event Action<DamageDeliveryReport> onDamageDelivered;
 
 
         public void DamageDelivered(DamageDeliveryReport report)
         {
-            OnDamageDelivered?.Invoke(report);
+            onDamageDelivered?.Invoke(report);
         }
 
         public override void OnNetworkSpawn()

@@ -49,6 +49,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: 4628471853980608337, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
+  Priority: 2
   BeforeBlockCharacterPermissions: 1792
   BeforeBlockTime: 0.06
   BlockCharacterPermissions: 1280
@@ -62,9 +63,10 @@ MonoBehaviour:
   backDamage:
     value: 0
     type: 16
-    stunlock: 0.8
+    stunlock: 1.2
     pushDirection: {x: 0, y: 0, z: 0}
     RechargeUltimate: 1
+    Effects: []
   DamageReducing: 1
   OnBeforeBlockingEvent:
     m_PersistentCalls:
@@ -126,6 +128,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &1105129815627750286
 GameObject:
   m_ObjectHideFlags: 0

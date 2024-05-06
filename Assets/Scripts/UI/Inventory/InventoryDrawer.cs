@@ -7,6 +7,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Effiry.Items;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -18,7 +19,7 @@ public class InventoryDrawer : MonoBehaviour
         items = new Item[] {
             new Sword(), new LongSword(), new Axe(), new Buckler(), new Bone(), 
             new Mace(), new Spear(), new Shield(), null, new Plate(), 
-            new HeavySword(), new Rapier(), null, null, new LeatherJacket(),
+            new HeavySword(), new Rapier(), new Bow(), null, new LeatherJacket(),
             
             new VoidMagic(), null, null, null, new SteelScrap(), 
             new CurseFlameMagic(), null, null, null, new SteelScrap(), 
@@ -46,7 +47,11 @@ public class InventoryDrawer : MonoBehaviour
     {
         while(slot_intances.Any())
         {
-            Destroy(slot_intances[0].gameObject);
+            if (!slot_intances[0].IsUnityNull())
+            {
+                Destroy(slot_intances[0].gameObject);
+            }
+
             slot_intances.RemoveAt(0);
         }
     }

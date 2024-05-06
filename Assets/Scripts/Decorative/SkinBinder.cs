@@ -26,7 +26,40 @@ public sealed class SkinBinder : NetworkBehaviour
         if (parentNetworkObject != null)
         {
             origin.rootBone = parentNetworkObject.transform.Find(TargetParentPath);
-            origin.bones = origin.rootBone.parent.GetComponentsInChildren<Transform>();
+            
+            if (origin.rootBone != null)
+            {
+                origin.bones = origin.rootBone.parent.parent.GetComponentInChildren<SkinnedMeshRenderer>().bones;
+
+                // Debug.Log(string.Join("\n", origin.bones.Select(a=>a.gameObject.name)));
+                // Debug.Log(string.Join("\n", EnumerateTransforms(origin.rootBone).Select(a=>a.gameObject.name)));
+            }
+        }
+    }
+
+    private IEnumerable<Transform> EnumerateTransforms(Transform transform, bool reversed = false)
+    {
+        yield return transform;
+        
+        if (reversed)
+        {
+            for (int i = transform.childCount - 1; i >= 0; i--)
+            {
+                foreach (var child in EnumerateTransforms(transform.GetChild(i), true))
+                {
+                    yield return child;
+                }
+            }
+        }
+        else
+        {
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                foreach (var child in EnumerateTransforms(transform.GetChild(i), true))
+                {
+                    yield return child;
+                }
+            }
         }
     }
 

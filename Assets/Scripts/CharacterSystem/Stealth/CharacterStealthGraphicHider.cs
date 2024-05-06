@@ -17,9 +17,6 @@ public class CharacterStealthGraphicHider : NetworkBehaviour
     private GameObject[] HiddableObjects; 
 
     [SerializeField] 
-    private MeshRenderer[] HiddableMeshRenderers; 
-
-    [SerializeField] 
     private SkinnedMeshRenderer[] HiddableSkinnedMeshRenderers; 
 
     [SerializeField] 
@@ -82,15 +79,13 @@ public class CharacterStealthGraphicHider : NetworkBehaviour
     {
         await UniTask.WaitUntil(() => IsSpawned);
 
-        HiddableMeshRenderers = GetComponentsInChildren<MeshRenderer>();
-        HiddableSkinnedMeshRenderers = GetComponentsInChildren<SkinnedMeshRenderer>();
-     
+        HiddableSkinnedMeshRenderers = GetComponentsInChildren<SkinnedMeshRenderer>();    
     }
 
     private void LateUpdate()
     {
         var IsObservableInHideObject = stealthObjects.Exists(
-            stealthObject => stealthObject.characterSteathers.Exists(item => item != null && item.transform == CharacterUIObserver.Singleton.observingCharacter));
+            stealthObject => stealthObject.characterSteathers.Exists(item => item != null && item.transform == CharacterUIObserver.Singleton.observingTransform));
         
         var hideStatus = !IsHidden || IsObservableInHideObject;
         
@@ -103,27 +98,19 @@ public class CharacterStealthGraphicHider : NetworkBehaviour
 
         var shadowCastMode = IsHidden ? UnityEngine.Rendering.ShadowCastingMode.Off : UnityEngine.Rendering.ShadowCastingMode.On;
 
-        foreach (var item in HiddableMeshRenderers)
+        foreach (var item in HiddableSkinnedMeshRenderers)
         {
-            if (item != null && item.material != null)
+            var material = item.materials.FirstOrDefault();
+            
+            if (material != null)
             {
-                var color = item.material.color;
+                var color = material.color;
 
                 color.a = transparency;
 
-                item.material.color = color; 
+                material.color = color; 
                 item.shadowCastingMode = shadowCastMode;
             }
-        }
-
-        foreach (var item in HiddableSkinnedMeshRenderers)
-        {
-            var color = item.material.color;
-
-            color.a = transparency;
-
-            item.material.color = color; 
-            item.shadowCastingMode = shadowCastMode;
         }
     }
 

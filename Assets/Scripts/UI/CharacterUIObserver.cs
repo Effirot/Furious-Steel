@@ -10,7 +10,7 @@ public class CharacterUIObserver : MonoBehaviour
 {
     public static CharacterUIObserver Singleton { get; private set; }
 
-    public Transform observingCharacter
+    public Transform observingTransform
     {
         get => _observingCharacter;
         set
@@ -54,7 +54,7 @@ public class CharacterUIObserver : MonoBehaviour
     private void Awake()
     {
         Singleton = this;
-        observingCharacter = null;
+        observingTransform = null;
     
 #if !UNITY_ANDROID 
         Destroy(controllers);
@@ -79,18 +79,18 @@ public class CharacterUIObserver : MonoBehaviour
 
     private void ObserveRandomCharacterCharacter_Event(PlayerNetworkCharacter character)
     {
-        if (observingCharacter == null)
+        if (observingTransform == null)
         {
-            observingCharacter = character.transform;
+            observingTransform = character.transform;
         }
     }
     private void ObserveCharacter_Event(PlayerNetworkCharacter character)
     {
-        observingCharacter = character.transform;
+        observingTransform = character.transform;
     }
     private void ResetObserver_Event(PlayerNetworkCharacter character)
     {
-        observingCharacter = null;
+        observingTransform = null;
     }
 
     private IEnumerator ObserveRandomCharacter()
@@ -99,11 +99,11 @@ public class CharacterUIObserver : MonoBehaviour
 
         if (PlayerNetworkCharacter.Players.Count == 0)
         {
-            observingCharacter = null;
+            observingTransform = null;
         }
         else
         {
-            observingCharacter = PlayerNetworkCharacter.Players[Random.Range(0, PlayerNetworkCharacter.Players.Count - 1)].transform;
+            observingTransform = PlayerNetworkCharacter.Players[Random.Range(0, PlayerNetworkCharacter.Players.Count - 1)].transform;
         }
     }
 }

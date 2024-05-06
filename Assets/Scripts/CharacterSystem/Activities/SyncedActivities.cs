@@ -68,8 +68,11 @@ public abstract class SyncedActivities : NetworkBehaviour
     private ISyncedActivitiesSource m_invoker;
 
 
-    protected abstract void OnStateChanged(bool IsPressed);
-
+    public bool HasOverrides()
+    {
+        return !regsitredSyncedActivities.Find(activity => activity.inputAction == this.inputAction && activity.Priority > this.Priority).IsUnityNull();
+    }
+    
     public override void OnNetworkSpawn ()
     {
         base.OnNetworkSpawn();
@@ -94,6 +97,8 @@ public abstract class SyncedActivities : NetworkBehaviour
         regsitredSyncedActivities.Remove(this);
     }
 
+    protected abstract void OnStateChanged(bool IsPressed);
+
     private void Register()
     {
         var index = 0;
@@ -112,7 +117,7 @@ public abstract class SyncedActivities : NetworkBehaviour
     }
     private void Subscribe ()
     {
-        if (HasOverrides()) return;
+        if (HasOverrides()) return;  
 
         network_isPressed.OnValueChanged += InvokeStateChangedFunction_Event;
         
@@ -135,11 +140,6 @@ public abstract class SyncedActivities : NetworkBehaviour
             inputAction.action.performed -= OnInputPressStateChanged_Event;
             inputAction.action.canceled -= OnInputPressStateChanged_Event;
         }
-    }
-
-    private bool HasOverrides()
-    {
-        return !regsitredSyncedActivities.Find(activity => activity.inputAction == this.inputAction && activity.Priority > this.Priority).IsUnityNull();
     }
 
     private void OnInputPressStateChanged_Event(CallbackContext callback)

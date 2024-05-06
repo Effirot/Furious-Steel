@@ -44,8 +44,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2307094409115889765}
-  - component: {fileID: 8496518799200616761}
-  - component: {fileID: 6259683482484910352}
+  - component: {fileID: 5756781166153586538}
   m_Layer: 0
   m_Name: Skin
   m_TagString: Untagged
@@ -68,16 +67,8 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2682705565289463711}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &8496518799200616761
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1485048399431621740}
-  m_Mesh: {fileID: -4787119038829713828, guid: 5a1bb33d668f0424e8e8e274ef7eea88, type: 3}
---- !u!23 &6259683482484910352
-MeshRenderer:
+--- !u!137 &5756781166153586538
+SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -91,7 +82,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
+  m_RayTracingMode: 3
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
@@ -119,7 +110,18 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_AdditionalVertexStreams: {fileID: 0}
+  serializedVersion: 2
+  m_Quality: 0
+  m_UpdateWhenOffscreen: 0
+  m_SkinnedMotionVectors: 1
+  m_Mesh: {fileID: -4787119038829713828, guid: eb101eb5ba008aa4fad4497ac79afc31, type: 3}
+  m_Bones: []
+  m_BlendShapeWeights: []
+  m_RootBone: {fileID: 0}
+  m_AABB:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 0, y: 0, z: 0}
+  m_DirtyAABB: 0
 --- !u!1 &1517727645108543378
 GameObject:
   m_ObjectHideFlags: 0
@@ -172,7 +174,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 4172186589
+  GlobalObjectIdHash: 646616531
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -207,8 +209,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e02cc2139c0c4704ca305884101e1c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SkinOrigin: {fileID: 2307094409115889765}
-  TargetParentPath: Armor/Armor_Armature/SpineCenter/Spine.001/Spine.002/Shoulder.L/Hand.001.L/Hand.002.L/Palm.L
+  TargetParentPath: Armor/Armor_Armature/SpineCenter
+  origin: {fileID: 5756781166153586538}
 --- !u!114 &7554306889337461902
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -299,6 +301,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: 5277666054227158027, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
+  Priority: 2
   IsPerformingAsDefault: 1
   IsInterruptable: 1
   IsInterruptableWhenBlocked: 0
@@ -411,6 +414,7 @@ MonoBehaviour:
           stunlock: 0.5
           pushDirection: {x: 0, y: 0.9, z: 0.1}
           RechargeUltimate: 1
+          Effects: []
         position: {x: 0, y: 0, z: 3.75}
         size: {x: 1.18, y: 1.83, z: 2.06}
         angle: {x: 0, y: 0, z: 0}
@@ -470,6 +474,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: 2243838571553120747, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
+  Priority: 2
   IsPerformingAsDefault: 0
   IsInterruptable: 1
   IsInterruptableWhenBlocked: 0
@@ -559,7 +564,7 @@ MonoBehaviour:
     - rid: 6352953245085466702
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        WaitTime: 0.1
+        WaitTime: 0.05
         Permissions: 1792
     - rid: 6352953245085466704
       type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
@@ -605,6 +610,7 @@ MonoBehaviour:
           stunlock: 0.2
           pushDirection: {x: 0.33, y: 0, z: 0.1}
           RechargeUltimate: 1
+          Effects: []
         position: {x: 0, y: 0, z: 3.75}
         size: {x: 1.96, y: 1.54, z: 1}
         angle: {x: 0, y: 0, z: 0}
@@ -617,6 +623,7 @@ MonoBehaviour:
           stunlock: 0.2
           pushDirection: {x: 0.1, y: 0, z: 0}
           RechargeUltimate: 1
+          Effects: []
         position: {x: -2.8, y: 0, z: 2.55}
         size: {x: 1.96, y: 1.34, z: 1}
         angle: {x: 0, y: -45, z: 0}
@@ -629,18 +636,19 @@ MonoBehaviour:
           stunlock: 0.2
           pushDirection: {x: 0.1, y: 0, z: 0}
           RechargeUltimate: 1
+          Effects: []
         position: {x: 2.8, y: 0, z: 2.55}
         size: {x: 1.96, y: 1.34, z: 1}
         angle: {x: 0, y: 45, z: 0}
     - rid: 6352953245085466718
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        WaitTime: 0.1
+        WaitTime: 0.11
         Permissions: 1792
     - rid: 6352953245085466720
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        WaitTime: 0.1
+        WaitTime: 0.05
         Permissions: 1280
 --- !u!1 &3064985464026961555
 GameObject:
@@ -1589,6 +1597,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: -697749738134341483, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
+  Priority: 2
   IsPerformingAsDefault: 1
   IsInterruptable: 0
   IsInterruptableWhenBlocked: 0
@@ -1706,6 +1715,7 @@ MonoBehaviour:
           stunlock: 1.4
           pushDirection: {x: 0, y: 0.66, z: 1.21}
           RechargeUltimate: 0
+          Effects: []
         position: {x: 0, y: 0, z: 3.94}
         radius: 1.91
     - rid: 868176997118902386
@@ -1759,6 +1769,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: 2243838571553120747, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
+  Priority: 2
   IsPerformingAsDefault: 1
   IsInterruptable: 1
   IsInterruptableWhenBlocked: 0
@@ -1848,7 +1859,7 @@ MonoBehaviour:
     - rid: 6352953245085466703
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        WaitTime: 0.1
+        WaitTime: 0.05
         Permissions: 1792
     - rid: 6352953245085466705
       type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
@@ -1894,6 +1905,7 @@ MonoBehaviour:
           stunlock: 0.2
           pushDirection: {x: -0.33, y: 0, z: 0.1}
           RechargeUltimate: 1
+          Effects: []
         position: {x: 0, y: 0, z: 3.75}
         size: {x: 1.96, y: 1.54, z: 1}
         angle: {x: 0, y: 0, z: 0}
@@ -1906,6 +1918,7 @@ MonoBehaviour:
           stunlock: 0.2
           pushDirection: {x: -0.1, y: 0, z: 0}
           RechargeUltimate: 1
+          Effects: []
         position: {x: -2.8, y: 0, z: 2.55}
         size: {x: 1.96, y: 1.34, z: 1}
         angle: {x: 0, y: -45, z: 0}
@@ -1918,18 +1931,19 @@ MonoBehaviour:
           stunlock: 0.2
           pushDirection: {x: -0.1, y: 0, z: 0}
           RechargeUltimate: 1
+          Effects: []
         position: {x: 2.8, y: 0, z: 2.55}
         size: {x: 1.96, y: 1.34, z: 1}
         angle: {x: 0, y: 45, z: 0}
     - rid: 6352953245085466719
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        WaitTime: 0.1
+        WaitTime: 0.11
         Permissions: 1792
     - rid: 6352953245085466721
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        WaitTime: 0.1
+        WaitTime: 0.05
         Permissions: 1280
 --- !u!1 &9175946607756572356
 GameObject:
