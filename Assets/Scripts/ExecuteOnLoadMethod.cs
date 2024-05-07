@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public static class ExecuteOnLoadMethod
@@ -8,8 +9,6 @@ public static class ExecuteOnLoadMethod
     public static void OnLoad()
     {
         GameObject.DontDestroyOnLoad(GameObject.Instantiate(Resources.Load<GameObject>("[NetworkManager]")));
-        GameObject.DontDestroyOnLoad(GameObject.Instantiate(Resources.Load<GameObject>("[MainMenu]")));
-        
-        Application.targetFrameRate = -1;
+        GameObject.DontDestroyOnLoad(GameObject.Instantiate(Resources.Load<GameObject>("[MainMenu]"))); 
     }
 }

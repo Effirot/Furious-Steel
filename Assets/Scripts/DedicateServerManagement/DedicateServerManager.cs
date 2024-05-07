@@ -21,14 +21,14 @@ public class DedicateServerManager : MonoBehaviour
         SceneManager.sceneLoaded -= StartServerOnLoad_Event;
     }
 
-#if UNITY_EDITOR
+#if !UNITY_SERVER || UNITY_EDITOR
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void OnStartClient()
     {
         Application.targetFrameRate = -1;
         QualitySettings.vSyncCount = 2; 
     }
-#elif UNITY_SERVER && !UNITY_EDITOR
+#else 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void OnStartDedicateServer()
     {

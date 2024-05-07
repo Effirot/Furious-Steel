@@ -12,6 +12,13 @@ using static UnityEngine.InputSystem.InputAction;
 
 public class SphereColliderAutoAim : NetworkBehaviour
 {
+    public enum LockState
+    {
+        None,
+        LockOnTarget,
+        LockOnPosition,
+    }
+
     [SerializeField]
     private float SearchRadius;
 
@@ -24,7 +31,15 @@ public class SphereColliderAutoAim : NetworkBehaviour
     [SerializeField]
     private Transform followPoint;
 
+    [SerializeField]
+    private LockState lockState = LockState.None;
+
     private IEnumerable<Collider> colliders;
+
+    public void SetLockState(int lockStateIndex)
+    {
+        lockState = (LockState)lockStateIndex;
+    }
 
     public override void OnNetworkSpawn()
     {
@@ -39,7 +54,7 @@ public class SphereColliderAutoAim : NetworkBehaviour
         StopAllCoroutines();
     }
 
-    private void LateUpdate()
+    private void FixedUpdate()
     {
         Collider targetCollider = null;
         float minDistance = 1000000;

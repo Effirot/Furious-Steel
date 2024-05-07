@@ -240,10 +240,7 @@ namespace CharacterSystem.Objects
                     Destroy(item.gameObject);
                 }
 
-                if (this.NetworkObject.IsSpawned)
-                {
-                    Destroy(gameObject);
-                }
+                Destroy(gameObject);
             }
         }
         public virtual bool Hit (Damage damage)
@@ -287,6 +284,8 @@ namespace CharacterSystem.Objects
         {
             if (velocity.magnitude < direction.magnitude)
             {
+                speed_acceleration_multipliyer = Vector2.zero;
+                gravity_acceleration = Vector3.zero;
                 velocity = direction;
             }
         }
@@ -655,8 +654,6 @@ namespace CharacterSystem.Objects
             OnCharacterDead.Invoke(this);
 
             Dead();
-
-            gameObject.layer = LayerMask.NameToLayer("Untouchable");
         }
 
         [ClientRpc]

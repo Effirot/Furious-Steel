@@ -381,9 +381,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: 5277666054227158027, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
+  Priority: 2
   IsPerformingAsDefault: 1
-  IsInterruptable: 0
   IsInterruptableWhenBlocked: 0
+  IsInterruptOnHit: 1
+  RestartWhenHolding: 1
   SpeedReducing: 0
   attackQueue:
   - rid: 868177069005340745
@@ -500,6 +502,7 @@ MonoBehaviour:
           stunlock: 0.5
           pushDirection: {x: 0, y: 1, z: 0}
           RechargeUltimate: 1
+          Effects: []
         position: {x: 0, y: 0, z: 0}
         radius: 4.22
     - rid: 868177069005340749
@@ -2614,9 +2617,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: -697749738134341483, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
+  Priority: 2
   IsPerformingAsDefault: 1
-  IsInterruptable: 0
   IsInterruptableWhenBlocked: 1
+  IsInterruptOnHit: 1
+  RestartWhenHolding: 1
   SpeedReducing: 5
   attackQueue:
   - rid: 868177009411096714
@@ -2672,6 +2677,7 @@ MonoBehaviour:
           stunlock: 0
           pushDirection: {x: 0, y: 0, z: 0.1}
           RechargeUltimate: 0
+          Effects: []
         position: {x: 0, y: 0, z: 4.29}
         size: {x: 1.45, y: 1.27, z: 3}
         angle: {x: 0, y: 0, z: 0}
@@ -2735,6 +2741,7 @@ MonoBehaviour:
           stunlock: 0.5
           pushDirection: {x: 0, y: 0, z: 0.6}
           RechargeUltimate: 0
+          Effects: []
         position: {x: 0, y: 0, z: 3.48}
         size: {x: 1.97, y: 1.82, z: 1.92}
         angle: {x: 0, y: 0, z: 0}
@@ -2779,7 +2786,7 @@ GameObject:
   - component: {fileID: 698400827903392113}
   - component: {fileID: 7072334191340875770}
   m_Layer: 0
-  m_Name: SecondAttack
+  m_Name: BlockAttack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2813,11 +2820,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: 4628471853980608337, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
+  Priority: 2
   IsPerformingAsDefault: 1
-  IsInterruptable: 0
   IsInterruptableWhenBlocked: 0
-  SpeedReducing: 5
-  attackQueue: []
+  IsInterruptOnHit: 1
+  RestartWhenHolding: 0
+  SpeedReducing: 0
+  attackQueue:
+  - rid: 8630937752400560212
+  - rid: 8630937752400560214
+  - rid: 8630937752400560213
+  - rid: 8630937752400560215
+  - rid: 8630937752400560220
   OnDamageReport:
     m_PersistentCalls:
       m_Calls: []
@@ -2826,7 +2840,48 @@ MonoBehaviour:
       m_Calls: []
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 8630937752400560212
+      type: {class: Push, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        CastPushDirection: {x: 0, y: 0.2, z: 0}
+    - rid: 8630937752400560213
+      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        WaitTime: 0.5
+        Permissions: 512
+    - rid: 8630937752400560214
+      type: {class: InterruptableWait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        WaitTime: 0.5
+        LastHitRequireSeconds: 0.8
+        Permissions: 512
+    - rid: 8630937752400560215
+      type: {class: HoldRepeat, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        queueElement:
+          rid: 8630937752400560217
+        RepeatLimit: 0
+    - rid: 8630937752400560217
+      type: {class: Queue, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        queue:
+        - rid: 8630937752400560219
+        - rid: 8630937752400560218
+    - rid: 8630937752400560218
+      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        WaitTime: 0.05
+        Permissions: 512
+    - rid: 8630937752400560219
+      type: {class: Push, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        CastPushDirection: {x: 0, y: 0, z: 0.13}
+    - rid: 8630937752400560220
+      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        WaitTime: 3
+        Permissions: 65280
 --- !u!1 &5736484124137740474
 GameObject:
   m_ObjectHideFlags: 0
@@ -3612,7 +3667,7 @@ Light:
   m_CookieSize: 10
   m_Shadows:
     m_Type: 0
-    m_Resolution: -1
+    m_Resolution: 128
     m_CustomResolution: -1
     m_Strength: 1
     m_Bias: 0.05
@@ -3669,7 +3724,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 3
   m_UsePipelineSettings: 1
-  m_AdditionalLightsShadowResolutionTier: 2
+  m_AdditionalLightsShadowResolutionTier: 1
   m_LightLayerMask: 1
   m_RenderingLayers: 1
   m_CustomShadowLayers: 0
@@ -3728,9 +3783,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: 2243838571553120747, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
+  Priority: 2
   IsPerformingAsDefault: 1
-  IsInterruptable: 0
-  IsInterruptableWhenBlocked: 1
+  IsInterruptableWhenBlocked: 0
+  IsInterruptOnHit: 1
+  RestartWhenHolding: 0
   SpeedReducing: 5
   attackQueue:
   - rid: 868177009411096693
@@ -3757,6 +3814,7 @@ MonoBehaviour:
       data:
         queueElement:
           rid: 868177009411096695
+        RepeatLimit: 0
     - rid: 868177009411096695
       type: {class: Queue, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
@@ -3782,6 +3840,7 @@ MonoBehaviour:
           stunlock: 0
           pushDirection: {x: 0, y: 0, z: 0.01}
           RechargeUltimate: 1
+          Effects: []
         position: {x: 0, y: 0, z: 3.66}
         size: {x: 0.76, y: 1.22, z: 2.17}
         angle: {x: 0, y: 0, z: 0}
@@ -3940,6 +3999,7 @@ MonoBehaviour:
           stunlock: 0.5
           pushDirection: {x: 0, y: 0, z: 0.45}
           RechargeUltimate: 1
+          Effects: []
         position: {x: 0, y: 0, z: 3.14}
         size: {x: 1.91, y: 1.7, z: 1.65}
         angle: {x: 0, y: 0, z: 0}
@@ -4066,5 +4126,6 @@ MonoBehaviour:
           stunlock: 0
           pushDirection: {x: 0, y: 0, z: 0}
           RechargeUltimate: 1
+          Effects: []
         position: {x: 0, y: 0, z: 0}
         radius: 3.72

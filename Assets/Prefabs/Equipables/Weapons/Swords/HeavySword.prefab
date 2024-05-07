@@ -544,7 +544,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1759718249864470706, guid: f6ad48e8cfc685240829df5bb96a0212, type: 3}
       propertyPath: attackQueue.Array.size
-      value: 6
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 1759718249864470706, guid: f6ad48e8cfc685240829df5bb96a0212, type: 3}
       propertyPath: 'attackQueue.Array.data[0]'
@@ -564,10 +564,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1759718249864470706, guid: f6ad48e8cfc685240829df5bb96a0212, type: 3}
       propertyPath: 'attackQueue.Array.data[4]'
-      value: 868176997118902372
+      value: 8630937752400560211
       objectReference: {fileID: 0}
     - target: {fileID: 1759718249864470706, guid: f6ad48e8cfc685240829df5bb96a0212, type: 3}
       propertyPath: 'attackQueue.Array.data[5]'
+      value: 868176997118902372
+      objectReference: {fileID: 0}
+    - target: {fileID: 1759718249864470706, guid: f6ad48e8cfc685240829df5bb96a0212, type: 3}
+      propertyPath: 'attackQueue.Array.data[6]'
       value: 8630937699458744403
       objectReference: {fileID: 0}
     - target: {fileID: 1759718249864470706, guid: f6ad48e8cfc685240829df5bb96a0212, type: 3}
@@ -577,6 +581,10 @@ PrefabInstance:
     - target: {fileID: 1759718249864470706, guid: f6ad48e8cfc685240829df5bb96a0212, type: 3}
       propertyPath: 'managedReferences[8630937699458744403]'
       value: Assembly-CSharp CharacterSystem.Attacks.Wait
+      objectReference: {fileID: 0}
+    - target: {fileID: 1759718249864470706, guid: f6ad48e8cfc685240829df5bb96a0212, type: 3}
+      propertyPath: 'managedReferences[8630937752400560211]'
+      value: Assembly-CSharp CharacterSystem.Attacks.InterruptableWait
       objectReference: {fileID: 0}
     - target: {fileID: 1759718249864470706, guid: f6ad48e8cfc685240829df5bb96a0212, type: 3}
       propertyPath: managedReferences[868176906250092676].size.z
@@ -623,6 +631,10 @@ PrefabInstance:
       value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 1759718249864470706, guid: f6ad48e8cfc685240829df5bb96a0212, type: 3}
+      propertyPath: managedReferences[8630937752400560211].WaitTime
+      value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 1759718249864470706, guid: f6ad48e8cfc685240829df5bb96a0212, type: 3}
       propertyPath: managedReferences[868176906250092676].position.z
       value: 3.14
       objectReference: {fileID: 0}
@@ -636,7 +648,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1759718249864470706, guid: f6ad48e8cfc685240829df5bb96a0212, type: 3}
       propertyPath: managedReferences[868176997118902372].MinWaitTime
-      value: 0.05
+      value: 0.15
       objectReference: {fileID: 0}
     - target: {fileID: 1759718249864470706, guid: f6ad48e8cfc685240829df5bb96a0212, type: 3}
       propertyPath: managedReferences[868176997118902372].Permissions
@@ -644,10 +656,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1759718249864470706, guid: f6ad48e8cfc685240829df5bb96a0212, type: 3}
       propertyPath: managedReferences[8630937699458744401].Permissions
-      value: 5376
+      value: 1280
       objectReference: {fileID: 0}
     - target: {fileID: 1759718249864470706, guid: f6ad48e8cfc685240829df5bb96a0212, type: 3}
       propertyPath: managedReferences[8630937699458744403].Permissions
+      value: 65280
+      objectReference: {fileID: 0}
+    - target: {fileID: 1759718249864470706, guid: f6ad48e8cfc685240829df5bb96a0212, type: 3}
+      propertyPath: managedReferences[8630937752400560211].Permissions
       value: 65280
       objectReference: {fileID: 0}
     - target: {fileID: 1759718249864470706, guid: f6ad48e8cfc685240829df5bb96a0212, type: 3}
@@ -677,6 +693,10 @@ PrefabInstance:
     - target: {fileID: 1759718249864470706, guid: f6ad48e8cfc685240829df5bb96a0212, type: 3}
       propertyPath: managedReferences[8630937699458744401].LastHitRequireSeconds
       value: 0.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1759718249864470706, guid: f6ad48e8cfc685240829df5bb96a0212, type: 3}
+      propertyPath: managedReferences[8630937752400560211].LastHitRequireSeconds
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 1759718249864470706, guid: f6ad48e8cfc685240829df5bb96a0212, type: 3}
       propertyPath: managedReferences[868177071831253068].damage.pushDirection.x
@@ -776,7 +796,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3822683079490355910, guid: f6ad48e8cfc685240829df5bb96a0212, type: 3}
       propertyPath: attackQueue.Array.size
-      value: 6
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 3822683079490355910, guid: f6ad48e8cfc685240829df5bb96a0212, type: 3}
       propertyPath: 'attackQueue.Array.data[0]'
@@ -796,10 +816,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3822683079490355910, guid: f6ad48e8cfc685240829df5bb96a0212, type: 3}
       propertyPath: 'attackQueue.Array.data[4]'
-      value: 868176997118902371
+      value: 8630937752400560210
       objectReference: {fileID: 0}
     - target: {fileID: 3822683079490355910, guid: f6ad48e8cfc685240829df5bb96a0212, type: 3}
       propertyPath: 'attackQueue.Array.data[5]'
+      value: 868176997118902371
+      objectReference: {fileID: 0}
+    - target: {fileID: 3822683079490355910, guid: f6ad48e8cfc685240829df5bb96a0212, type: 3}
+      propertyPath: 'attackQueue.Array.data[6]'
       value: 8630937699458744402
       objectReference: {fileID: 0}
     - target: {fileID: 3822683079490355910, guid: f6ad48e8cfc685240829df5bb96a0212, type: 3}
@@ -809,6 +833,10 @@ PrefabInstance:
     - target: {fileID: 3822683079490355910, guid: f6ad48e8cfc685240829df5bb96a0212, type: 3}
       propertyPath: 'managedReferences[8630937699458744402]'
       value: Assembly-CSharp CharacterSystem.Attacks.Wait
+      objectReference: {fileID: 0}
+    - target: {fileID: 3822683079490355910, guid: f6ad48e8cfc685240829df5bb96a0212, type: 3}
+      propertyPath: 'managedReferences[8630937752400560210]'
+      value: Assembly-CSharp CharacterSystem.Attacks.InterruptableWait
       objectReference: {fileID: 0}
     - target: {fileID: 3822683079490355910, guid: f6ad48e8cfc685240829df5bb96a0212, type: 3}
       propertyPath: managedReferences[868176906250092662].size.z
@@ -855,6 +883,10 @@ PrefabInstance:
       value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 3822683079490355910, guid: f6ad48e8cfc685240829df5bb96a0212, type: 3}
+      propertyPath: managedReferences[8630937752400560210].WaitTime
+      value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 3822683079490355910, guid: f6ad48e8cfc685240829df5bb96a0212, type: 3}
       propertyPath: managedReferences[868176906250092662].position.z
       value: 3.14
       objectReference: {fileID: 0}
@@ -868,7 +900,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3822683079490355910, guid: f6ad48e8cfc685240829df5bb96a0212, type: 3}
       propertyPath: managedReferences[868176997118902371].MinWaitTime
-      value: 0.05
+      value: 0.15
       objectReference: {fileID: 0}
     - target: {fileID: 3822683079490355910, guid: f6ad48e8cfc685240829df5bb96a0212, type: 3}
       propertyPath: managedReferences[868176997118902371].Permissions
@@ -876,10 +908,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3822683079490355910, guid: f6ad48e8cfc685240829df5bb96a0212, type: 3}
       propertyPath: managedReferences[8630937699458744400].Permissions
-      value: 5376
+      value: 1280
       objectReference: {fileID: 0}
     - target: {fileID: 3822683079490355910, guid: f6ad48e8cfc685240829df5bb96a0212, type: 3}
       propertyPath: managedReferences[8630937699458744402].Permissions
+      value: 65280
+      objectReference: {fileID: 0}
+    - target: {fileID: 3822683079490355910, guid: f6ad48e8cfc685240829df5bb96a0212, type: 3}
+      propertyPath: managedReferences[8630937752400560210].Permissions
       value: 65280
       objectReference: {fileID: 0}
     - target: {fileID: 3822683079490355910, guid: f6ad48e8cfc685240829df5bb96a0212, type: 3}
@@ -909,6 +945,10 @@ PrefabInstance:
     - target: {fileID: 3822683079490355910, guid: f6ad48e8cfc685240829df5bb96a0212, type: 3}
       propertyPath: managedReferences[8630937699458744400].LastHitRequireSeconds
       value: 0.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 3822683079490355910, guid: f6ad48e8cfc685240829df5bb96a0212, type: 3}
+      propertyPath: managedReferences[8630937752400560210].LastHitRequireSeconds
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 3822683079490355910, guid: f6ad48e8cfc685240829df5bb96a0212, type: 3}
       propertyPath: managedReferences[868177071831253067].damage.pushDirection.x
@@ -1046,6 +1086,10 @@ PrefabInstance:
       propertyPath: OnDamageReport.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
+    - target: {fileID: 5264837719388484797, guid: f6ad48e8cfc685240829df5bb96a0212, type: 3}
+      propertyPath: m_Asset
+      value: 
+      objectReference: {fileID: 8926484042661614526, guid: 2fd2f69822791f348a9cdc271110e1d9, type: 3}
     - target: {fileID: 5264837719388484797, guid: f6ad48e8cfc685240829df5bb96a0212, type: 3}
       propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[0].m_Value
       value: 4.85

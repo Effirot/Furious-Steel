@@ -11,8 +11,9 @@ using Unity.VisualScripting;
 using UnityEngine.Rendering;
 using Cysharp.Threading.Tasks;
 using TMPro;
+using Cinemachine;
 
-public class CursedFlameMagicTrinketUltimate : UltimateDamageSource
+public class ExplodeMagicTrinketUltimate : UltimateDamageSource
 {
     [SerializeField]
     private GameObject ExplodeEffectPrefab;
@@ -107,7 +108,9 @@ public class CursedFlameMagicTrinketUltimate : UltimateDamageSource
     {
         var gameObject = Instantiate(ExplodeEffectPrefab, position, Quaternion.identity);
         gameObject.SetActive(true);
-        Destroy(gameObject, 5);   
+        Destroy(gameObject, 5);
+
+        gameObject.GetComponent<CinemachineImpulseSource>()?.GenerateImpulse();   
     }    
 
     protected override void Start()

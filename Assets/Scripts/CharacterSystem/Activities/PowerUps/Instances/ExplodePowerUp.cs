@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using CharacterSystem.DamageMath;
 using CharacterSystem.Objects;
 using CharacterSystem.PowerUps;
+using Cinemachine;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.VFX;
@@ -34,6 +35,9 @@ public class ExplodePowerUp : PowerUp
             }
         }
 
-        GameObject.Destroy(GameObject.Instantiate(effectPrefab, holder.transform.position, holder.transform.rotation), 5);
+        var explodeEffectObject = GameObject.Instantiate(effectPrefab, holder.transform.position, holder.transform.rotation);
+        GameObject.Destroy(explodeEffectObject, 5);
+
+        explodeEffectObject.GetComponent<CinemachineImpulseSource>()?.GenerateImpulse();   
     }
 }

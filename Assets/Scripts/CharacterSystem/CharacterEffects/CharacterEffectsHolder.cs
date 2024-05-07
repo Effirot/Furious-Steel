@@ -7,13 +7,13 @@ using UnityEngine;
 using UnityEngine.Events;
 using System.Linq;
 using CharacterSystem.Attacks;
+using Unity.Collections;
 
 
 
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
-
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(NetworkCharacter))]

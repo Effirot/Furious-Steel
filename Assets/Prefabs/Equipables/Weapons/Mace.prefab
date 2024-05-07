@@ -303,9 +303,9 @@ MonoBehaviour:
   inputAction: {fileID: 5277666054227158027, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 2
   IsPerformingAsDefault: 1
-  IsInterruptable: 1
   IsInterruptableWhenBlocked: 0
-  SpeedReducing: 4
+  IsInterruptOnHit: 1
+  SpeedReducing: 2
   attackQueue:
   - rid: 6352953245085466719
   - rid: 6352953245085466701
@@ -476,9 +476,9 @@ MonoBehaviour:
   inputAction: {fileID: 2243838571553120747, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 2
   IsPerformingAsDefault: 0
-  IsInterruptable: 1
   IsInterruptableWhenBlocked: 0
-  SpeedReducing: 2
+  IsInterruptOnHit: 1
+  SpeedReducing: 1
   attackQueue:
   - rid: 6352953245085466718
   - rid: 6352953245085466700
@@ -605,7 +605,7 @@ MonoBehaviour:
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          value: 32
+          value: 40
           type: 1
           stunlock: 0.2
           pushDirection: {x: 0.33, y: 0, z: 0.1}
@@ -618,7 +618,7 @@ MonoBehaviour:
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          value: 15
+          value: 20
           type: 1
           stunlock: 0.2
           pushDirection: {x: 0.1, y: 0, z: 0}
@@ -631,7 +631,7 @@ MonoBehaviour:
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          value: 15
+          value: 20
           type: 1
           stunlock: 0.2
           pushDirection: {x: 0.1, y: 0, z: 0}
@@ -1599,8 +1599,8 @@ MonoBehaviour:
   inputAction: {fileID: -697749738134341483, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 2
   IsPerformingAsDefault: 1
-  IsInterruptable: 0
   IsInterruptableWhenBlocked: 0
+  IsInterruptOnHit: 1
   SpeedReducing: 3
   attackQueue:
   - rid: 868176997118902383
@@ -1771,9 +1771,9 @@ MonoBehaviour:
   inputAction: {fileID: 2243838571553120747, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 2
   IsPerformingAsDefault: 1
-  IsInterruptable: 1
   IsInterruptableWhenBlocked: 0
-  SpeedReducing: 2
+  IsInterruptOnHit: 1
+  SpeedReducing: 1
   attackQueue:
   - rid: 6352953245085466719
   - rid: 6352953245085466701
@@ -1900,7 +1900,7 @@ MonoBehaviour:
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          value: 32
+          value: 40
           type: 1
           stunlock: 0.2
           pushDirection: {x: -0.33, y: 0, z: 0.1}
@@ -1913,7 +1913,7 @@ MonoBehaviour:
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          value: 15
+          value: 20
           type: 1
           stunlock: 0.2
           pushDirection: {x: -0.1, y: 0, z: 0}
@@ -1926,7 +1926,7 @@ MonoBehaviour:
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          value: 15
+          value: 20
           type: 1
           stunlock: 0.2
           pushDirection: {x: -0.1, y: 0, z: 0}

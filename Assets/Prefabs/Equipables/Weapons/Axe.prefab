@@ -46,10 +46,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: 2243838571553120747, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
+  Priority: 2
   IsPerformingAsDefault: 1
-  IsInterruptable: 0
   IsInterruptableWhenBlocked: 1
-  SpeedReducing: 2.5
+  IsInterruptOnHit: 1
+  SpeedReducing: 0
   attackQueue:
   - rid: 2961813231421882370
   - rid: 868176892238758004
@@ -147,6 +148,7 @@ MonoBehaviour:
           stunlock: 0
           pushDirection: {x: -0.05, y: 0, z: 0.05}
           RechargeUltimate: 1
+          Effects: []
         position: {x: 0, y: 0, z: 1.35}
         size: {x: 1.33, y: 1.36, z: 0.82}
         angle: {x: 0, y: 0, z: 0}
@@ -384,8 +386,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e02cc2139c0c4704ca305884101e1c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SkinOrigin: {fileID: 2399946078457330118}
-  TargetParentPath: Armor/Armor_Armature/SpineCenter/Spine.001/Spine.002/Shoulder.L/Hand.001.L/Hand.002.L/Palm.L
+  TargetParentPath: Armor/Armor_Armature/SpineCenter
+  origin: {fileID: 2359737243416969426}
 --- !u!114 &5633976333175869961
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -401,6 +403,10 @@ MonoBehaviour:
   overrides:
   - Name: Holding_Default
     Clip: {fileID: -4470652782877245180, guid: eb101eb5ba008aa4fad4497ac79afc31, type: 3}
+  - Name: Attack1
+    Clip: {fileID: 6240583513438823314, guid: eb101eb5ba008aa4fad4497ac79afc31, type: 3}
+  - Name: Attack2
+    Clip: {fileID: -4594244577245916917, guid: eb101eb5ba008aa4fad4497ac79afc31, type: 3}
 --- !u!114 &7669626182777078651
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -460,15 +466,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: 5277666054227158027, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
+  Priority: 2
   IsPerformingAsDefault: 1
-  IsInterruptable: 1
   IsInterruptableWhenBlocked: 1
+  IsInterruptOnHit: 1
   SpeedReducing: 3
   attackQueue:
   - rid: 2961813231421882469
   - rid: 2961813231421882470
-  - rid: 2961813231421882473
   - rid: 868177088022052937
+  - rid: 2961813231421882473
   OnDamageReport:
     m_PersistentCalls:
       m_Calls:
@@ -512,7 +519,7 @@ MonoBehaviour:
       type: {class: Charger, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         Permissions: 3840
-        MaxChargingTime: 0.45
+        MaxChargingTime: 0.25
         MinChargeValue: 0.4
         MaxChargeValue: 1
         flexibleDamage: 1
@@ -601,6 +608,7 @@ MonoBehaviour:
           stunlock: 1
           pushDirection: {x: 0, y: 0.4, z: 0.5}
           RechargeUltimate: 1
+          Effects: []
         position: {x: 0, y: 0, z: 1.76}
         size: {x: 0.67, y: 1, z: 1}
         angle: {x: 0, y: 0, z: 0}
@@ -1078,9 +1086,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: -697749738134341483, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
+  Priority: 2
   IsPerformingAsDefault: 1
-  IsInterruptable: 0
   IsInterruptableWhenBlocked: 0
+  IsInterruptOnHit: 1
   SpeedReducing: 3
   attackQueue:
   - rid: 868176906250092643
@@ -1164,6 +1173,7 @@ MonoBehaviour:
           stunlock: 1.5
           pushDirection: {x: 0, y: 0.3, z: 0.8}
           RechargeUltimate: 0
+          Effects: []
         position: {x: 0, y: 0, z: 1.76}
         size: {x: 0.67, y: 1, z: 1}
         angle: {x: 0, y: 0, z: 0}
@@ -1520,8 +1530,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2399946078457330118}
-  - component: {fileID: 3130020443736745185}
-  - component: {fileID: 4841311779467746947}
+  - component: {fileID: 2359737243416969426}
   m_Layer: 0
   m_Name: Skin
   m_TagString: Untagged
@@ -1544,16 +1553,8 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2682705565289463711}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
---- !u!33 &3130020443736745185
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6389387997060165717}
-  m_Mesh: {fileID: -8287839383430266118, guid: 5a1bb33d668f0424e8e8e274ef7eea88, type: 3}
---- !u!23 &4841311779467746947
-MeshRenderer:
+--- !u!137 &2359737243416969426
+SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -1567,14 +1568,14 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
+  m_RayTracingMode: 3
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 4cde90ee6d36ebd41b2880f92114afa5, type: 2}
+  - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1595,7 +1596,18 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_AdditionalVertexStreams: {fileID: 0}
+  serializedVersion: 2
+  m_Quality: 0
+  m_UpdateWhenOffscreen: 0
+  m_SkinnedMotionVectors: 1
+  m_Mesh: {fileID: -8287839383430266118, guid: eb101eb5ba008aa4fad4497ac79afc31, type: 3}
+  m_Bones: []
+  m_BlendShapeWeights: []
+  m_RootBone: {fileID: 0}
+  m_AABB:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 0, y: 0, z: 0}
+  m_DirtyAABB: 0
 --- !u!1 &6729764071637663521
 GameObject:
   m_ObjectHideFlags: 0
@@ -1642,10 +1654,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: 2243838571553120747, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
+  Priority: 2
   IsPerformingAsDefault: 0
-  IsInterruptable: 0
   IsInterruptableWhenBlocked: 1
-  SpeedReducing: 2.5
+  IsInterruptOnHit: 1
+  SpeedReducing: 0
   attackQueue:
   - rid: 2961813231421882370
   - rid: 868176892238758009
@@ -1743,6 +1756,7 @@ MonoBehaviour:
           stunlock: 0
           pushDirection: {x: 0.05, y: 0, z: 0.05}
           RechargeUltimate: 1
+          Effects: []
         position: {x: 0, y: 0, z: 1.35}
         size: {x: 1.33, y: 1.36, z: 0.82}
         angle: {x: 0, y: 0, z: 0}

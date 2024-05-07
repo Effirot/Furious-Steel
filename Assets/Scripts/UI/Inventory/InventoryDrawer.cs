@@ -21,7 +21,7 @@ public class InventoryDrawer : MonoBehaviour
             new Mace(), new Spear(), new Shield(), null, new Plate(), 
             new HeavySword(), new Rapier(), new Bow(), null, new LeatherJacket(),
             
-            new VoidMagic(), null, null, null, new SteelScrap(), 
+            new VoidMagic(), new ExplodeMagic(), null, null, new SteelScrap(), 
             new CurseFlameMagic(), null, null, null, new SteelScrap(), 
             new ThunderMagic(), null, null, null, new SteelScrap()
         }

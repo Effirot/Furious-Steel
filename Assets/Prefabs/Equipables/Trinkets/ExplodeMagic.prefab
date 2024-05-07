@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2682705565289463711}
   - component: {fileID: 4043005819161963949}
   m_Layer: 6
-  m_Name: CurseFlameMagic
+  m_Name: ExplodeMagic
   m_TagString: Weapon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -101,8 +101,8 @@ MonoBehaviour:
   inputAction: {fileID: -697749738134341483, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 3
   IsPerformingAsDefault: 1
-  IsInterruptable: 0
   IsInterruptableWhenBlocked: 0
+  IsInterruptOnHit: 1
   SpeedReducing: 3
   attackQueue: []
   OnDamageReport:
@@ -121,9 +121,9 @@ MonoBehaviour:
     time: 3
     damagePerSecond: 2
   explodeDamage:
-    value: 35
+    value: 20
     type: 32
-    stunlock: 2
+    stunlock: 1
     pushDirection: {x: 0, y: 0.7, z: -0.5}
     RechargeUltimate: 1
     Effects: []
@@ -196,23 +196,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5703535841718628397, guid: 04245663e3d3ae9439887411c250ec3f, type: 3}
       propertyPath: m_PropertySheet.m_Vector4f.m_Array.Array.data[0].m_Value.w
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5703535841718628397, guid: 04245663e3d3ae9439887411c250ec3f, type: 3}
       propertyPath: m_PropertySheet.m_Vector4f.m_Array.Array.data[0].m_Value.x
-      value: 9.212719
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5703535841718628397, guid: 04245663e3d3ae9439887411c250ec3f, type: 3}
       propertyPath: m_PropertySheet.m_Vector4f.m_Array.Array.data[0].m_Value.y
-      value: 6.023794
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5703535841718628397, guid: 04245663e3d3ae9439887411c250ec3f, type: 3}
       propertyPath: m_PropertySheet.m_Vector4f.m_Array.Array.data[0].m_Value.z
-      value: 41.19498
-      objectReference: {fileID: 0}
-    - target: {fileID: 5703535841718628397, guid: 04245663e3d3ae9439887411c250ec3f, type: 3}
-      propertyPath: m_PropertySheet.m_Vector4f.m_Array.Array.data[0].m_Overridden
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8514960153952812828, guid: 04245663e3d3ae9439887411c250ec3f, type: 3}
       propertyPath: m_Enabled

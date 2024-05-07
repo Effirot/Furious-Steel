@@ -41,15 +41,21 @@ namespace CharacterSystem.Attacks
         }
 
         [SerializeField]
-        private bool IsPerformingAsDefault = false;
+        private bool StartOnInitialize = false;
 
         [SerializeField]
-        private bool IsInterruptable = false;
+        private bool IsPerformingAsDefault = false;
 
         [SerializeField]
         private bool IsInterruptableWhenBlocked = false;
 
-        [SerializeField, Range(0, 10)]
+        [SerializeField]
+        private bool IsInterruptOnHit = true;
+
+        [SerializeField]
+        private bool RestartWhenHolding = true;
+
+        [SerializeField, Range(-4, 10)]
         public float SpeedReducing = 3;
         
         [SerializeField, SerializeReference, SubclassSelector]
@@ -113,7 +119,7 @@ namespace CharacterSystem.Attacks
         }
         public virtual void EndAttack()
         {
-            if (IsServer && !IsAttacking)
+            if (IsServer && IsAttacking)
             {
                 EndAttack_ClientRpc();
                 
@@ -142,6 +148,16 @@ namespace CharacterSystem.Attacks
             EndAttack();
         }
 
+        private void Start()
+        {
+            if (IsServer && IsInterruptOnHit)
+            {
+                Invoker.onDamageRecieved += delegate { 
+                    EndAttack(); 
+                };
+            }
+        }
+
         protected virtual void OnPerformStateChanged(bool OldValue, bool NewValue)
         {
             if (NewValue)
@@ -162,18 +178,11 @@ namespace CharacterSystem.Attacks
             {
                 StartAttack();
             }
-            else
-            {
-                if (IsInterruptable && currentAttackStatement == AttackTimingStatement.BeforeAttack)
-                {
-                    EndAttack();
-                }
-            }
         }
 
         protected virtual void FixedUpdate()
         {
-            if (IsServer && IsPressed)
+            if (IsServer && IsPressed && RestartWhenHolding)
             {
                 StartAttack();
             }
@@ -246,20 +255,16 @@ namespace CharacterSystem.Attacks
                 
                 StopCoroutine(attackProcess);
                 attackProcess = null;
+                StopAllCoroutines();
                 
                 OnAttackEnded.Invoke();
                 
                 currentAttackDamageReport = null;
-
-                if (IsServer && IsPressed)
-                {
-                    StartAttack();
-                }
             }
         }
     }
 
-
+#region Queue elements
     [Serializable]
     public abstract class AttackQueueElement
     {
@@ -287,7 +292,7 @@ namespace CharacterSystem.Attacks
     }
     
     [Serializable]
-    public sealed class Push : AttackQueueElement
+    public sealed class Push : AttackQueueElement, Charger.IChargeListener
     {
         [Header("Events")]
         
@@ -301,7 +306,7 @@ namespace CharacterSystem.Attacks
         }
         public IEnumerator ChargedAttackPipeline(DamageSource source, float chargeValue, bool flexibleCollider, bool flexibleDamage)
         {            
-            source.Invoker.Push(source.Invoker.transform.rotation * CastPushDirection);
+            source.Invoker.Push(source.Invoker.transform.rotation * CastPushDirection * chargeValue);
 
             yield break;
         }
@@ -311,6 +316,7 @@ namespace CharacterSystem.Attacks
 
         }
     }
+    
     [Serializable]
     public sealed class Event : AttackQueueElement
     {
@@ -538,11 +544,20 @@ namespace CharacterSystem.Attacks
         [SerializeField, SerializeReference, SubclassSelector]
         private AttackQueueElement queueElement;
 
+        [SerializeField, Range(0, 100)]
+        private int RepeatLimit = 0;
+
         public override IEnumerator AttackPipeline(DamageSource source)
         {
-            while (source.IsPressed)
+            int repeats = 0;
+            while (repeats <= RepeatLimit && source.IsPressed)
             {
                 yield return queueElement.AttackPipeline(source);
+                
+                if (RepeatLimit > 0)
+                {
+                    repeats++;
+                }
             }
         }
 
@@ -565,6 +580,31 @@ namespace CharacterSystem.Attacks
             source.Invoker.permissions = Permissions;
             
             yield return new WaitForSeconds(WaitTime);
+        }
+        
+        public override void OnDrawGizmos(Transform transform)
+        {
+            
+        }
+    }
+    [Serializable]
+    public sealed class WaitForGroudpound : AttackQueueElement
+    {        
+        [SerializeField]
+        private CharacterPermission Permissions = CharacterPermission.Default;
+
+        public override IEnumerator AttackPipeline(DamageSource source)
+        {
+            source.Invoker.permissions = Permissions;
+            
+            yield return new WaitUntil(() => {
+                if (source.Invoker.gameObject.TryGetComponent<CharacterController>(out var character))
+                {
+                    return character.isGrounded;
+                }
+                
+                return true;
+            });
         }
         
         public override void OnDrawGizmos(Transform transform)
@@ -881,4 +921,5 @@ namespace CharacterSystem.Attacks
             maxDistance *= multiplyer;
         }
     }
+#endregion
 }

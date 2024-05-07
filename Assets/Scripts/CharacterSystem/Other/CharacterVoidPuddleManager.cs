@@ -39,6 +39,9 @@ public class CharacterVoidPuddleManager : NetworkBehaviour
     [SerializeField]
     private GameObject publePrefab;
 
+    [SerializeField, Range(0, 25)]
+    private int puddleLimit = 12;
+
     [SerializeField]
     private bool emmitPubles = true;
 
@@ -53,17 +56,39 @@ public class CharacterVoidPuddleManager : NetworkBehaviour
 
     private List<GameObject> publeInstances = new();
 
-
+    public void SetPuddle()
+    {
+        if (IsServer)
+        {
+            if (Physics.Raycast(transform.position + Vector3.up + new Vector3(UnityEngine.Random.Range(-0.65f, 0.65f), 0, UnityEngine.Random.Range(-0.65f, 0.65f)), Vector3.down, out var hit, 5))
+            {
+                SetPuddle(hit.point, -hit.normal, emmitSize);   
+            }
+        }
+    }
+    public void SetPuddle(DamageDeliveryReport damageDeliveryReport)
+    {
+        if (IsServer)
+        {
+            if (Physics.Raycast(damageDeliveryReport.target.transform.position + Vector3.up + new Vector3(UnityEngine.Random.Range(-0.65f, 0.65f), 0, UnityEngine.Random.Range(-0.65f, 0.65f)), Vector3.down, out var hit, 5))
+            {
+                SetPuddle(hit.point, -hit.normal, emmitSize);   
+            }
+        }
+    }
     public void SetPuddle(Vector3 position, Vector3 normal, float size)
     {
         if (IsServer)
         {
-            puddleDatas.Add(new PuddleData()
+            if (puddleDatas.Count < puddleLimit)
             {
-                position = position,
-                normal = normal,
-                size = size,
-            });
+                puddleDatas.Add(new PuddleData()
+                {
+                    position = position,
+                    normal = normal,
+                    size = size,
+                });
+            }
         }
     }
 
@@ -227,10 +252,7 @@ public class CharacterVoidPuddleManager : NetworkBehaviour
         {
             yield return new WaitForSeconds(emmitDelay);
 
-            if (Physics.Raycast(transform.position + Vector3.up + new Vector3(UnityEngine.Random.Range(-0.65f, 0.65f), 0, UnityEngine.Random.Range(-0.65f, 0.65f)), Vector3.down, out var hit, 5))
-            {
-                SetPuddle(hit.point, -hit.normal, emmitSize);   
-            }
+            SetPuddle();
         }
     }
 
