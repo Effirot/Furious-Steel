@@ -20,6 +20,8 @@ public class SpeedBoostEffect : CharacterEffect
     public override void Start()
     {
         effectsHolder.character.Speed += 10;
+
+        effectsHolder.AddGlowing(this, Color.blue * 3, 1);
     }
     public override void Remove()
     {

@@ -69,7 +69,7 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "Dash",
+                    "name": "Jump",
                     "type": "Button",
                     "id": "10131ecb-0edb-471f-b420-38e888c8eb5c",
                     "expectedControlType": "Button",
@@ -81,6 +81,15 @@
                     "name": "KillBind",
                     "type": "Button",
                     "id": "06730403-7aad-41f5-b21d-7fa169041c94",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "VoiceChat",
+                    "type": "Button",
+                    "id": "d4f041c2-407f-4248-b95e-3d0c076d9360",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -112,22 +121,22 @@
                 },
                 {
                     "name": "",
-                    "id": "fc914cc7-42b2-4f47-b043-90e8aea5fb7a",
-                    "path": "<Gamepad>/leftShoulder",
+                    "id": "de53f97f-4b4d-4777-ba54-a8976656a8e9",
+                    "path": "<Keyboard>/v",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Gamepad;Joystick",
+                    "groups": "Keyboard&Mouse",
                     "action": "Block",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "32849004-3b51-4c53-ae99-e51dc76f818e",
-                    "path": "<Keyboard>/space",
+                    "id": "fc914cc7-42b2-4f47-b043-90e8aea5fb7a",
+                    "path": "<Gamepad>/leftShoulder",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Keyboard&Mouse",
+                    "groups": "Gamepad;Joystick",
                     "action": "Block",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -321,23 +330,23 @@
                 },
                 {
                     "name": "",
-                    "id": "de53f97f-4b4d-4777-ba54-a8976656a8e9",
-                    "path": "<Keyboard>/leftShift",
+                    "id": "32849004-3b51-4c53-ae99-e51dc76f818e",
+                    "path": "<Keyboard>/space",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "Dash",
+                    "action": "Jump",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
                     "id": "3ee17b2d-7368-4c16-ab00-db6f31f2fe8d",
-                    "path": "<Gamepad>/leftStickPress",
+                    "path": "<Gamepad>/rightStickPress",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
-                    "action": "Dash",
+                    "action": "Jump",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -393,6 +402,17 @@
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "KillBind",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e3b4bb87-cce0-426a-9457-4584b3a7e9f2",
+                    "path": "<Keyboard>/leftAlt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "VoiceChat",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -28,11 +28,11 @@ public class ExplodeMagicTrinketUltimate : UltimateDamageSource
 
     private void OnDamageDelivered_event(DamageDeliveryReport report)
     {
-        if (report.damage.type != CharacterSystem.DamageMath.Damage.Type.Effect)
+        if (report.damage.type != CharacterSystem.DamageMath.Damage.Type.Effect && !report.target.IsUnityNull())
         {
             var deliveryReport = Damage.Deliver(report.target, new Damage(0, Invoker, 0, Vector3.zero, Damage.Type.Effect, burnEffect));
-        
-            burnEffects.AddRange(deliveryReport.RecievedEffects.Where(effect => effect is BurnEffect).Select(effect => (BurnEffect)effect));
+            
+            burnEffects.AddRange(deliveryReport?.RecievedEffects?.Where(effect => effect is BurnEffect).Select(effect => (BurnEffect)effect));
         }
     }
 
@@ -47,7 +47,7 @@ public class ExplodeMagicTrinketUltimate : UltimateDamageSource
             ExplodeAll();
         }
 
-        base.StartAttack();
+        // base.StartAttack();
     }
 
     private async void ExplodeAll()
@@ -92,7 +92,9 @@ public class ExplodeMagicTrinketUltimate : UltimateDamageSource
                     Damage.Deliver(collider.gameObject, damage);
                 }
 
-                await UniTask.WaitForSeconds(0.3f);
+                DeliveredDamage = 0;
+
+                await UniTask.WaitForSeconds(0.2f);
             }
         }
 

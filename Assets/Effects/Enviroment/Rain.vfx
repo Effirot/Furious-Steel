@@ -52,7 +52,7 @@ MonoBehaviour:
   - {fileID: 114986932069951040}
   - {fileID: 114963171269329408}
   m_UIPosition: {x: 0, y: 0}
-  m_UICollapsed: 1
+  m_UICollapsed: 0
   m_UISuperCollapsed: 0
   m_MasterSlot: {fileID: 114307113894698210}
   m_MasterData:
@@ -69,8 +69,7 @@ MonoBehaviour:
       m_SerializableType: UnityEditor.VFX.AABox, Unity.VisualEffectGraph.Editor,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
   m_Direction: 0
-  m_LinkedSlots:
-  - {fileID: 8926484042661614540}
+  m_LinkedSlots: []
 --- !u!114 &114340500867371532
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -589,7 +588,8 @@ MonoBehaviour:
       m_SerializableType: UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
   m_Direction: 0
-  m_LinkedSlots: []
+  m_LinkedSlots:
+  - {fileID: 8926484042661614545}
 --- !u!114 &114986932069951040
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -846,11 +846,12 @@ MonoBehaviour:
   m_Nodes:
   - m_Id: 0
     linkedSlots:
-    - outputSlot: {fileID: 8926484042661614540}
-      inputSlot: {fileID: 114307113894698210}
-    position: {x: 476.8, y: -62.4}
-    expandedSlots: []
-    expanded: 0
+    - outputSlot: {fileID: 8926484042661614545}
+      inputSlot: {fileID: 114963171269329408}
+    position: {x: 505, y: -188}
+    expandedSlots:
+    - {fileID: 8926484042661614540}
+    expanded: 1
   - m_Id: 1
     linkedSlots:
     - outputSlot: {fileID: 8926484042661614547}
@@ -874,19 +875,6 @@ MonoBehaviour:
     expandedSlots:
     - {fileID: 8926484042661614540}
     - {fileID: 8926484042661614545}
-    - {fileID: 8926484042661614541}
-    expanded: 1
-  - m_Id: 3
-    linkedSlots:
-    - outputSlot: {fileID: 8926484042661614542}
-      inputSlot: {fileID: 8926484042661614714}
-    - outputSlot: {fileID: 8926484042661614543}
-      inputSlot: {fileID: 8926484042661614715}
-    - outputSlot: {fileID: 8926484042661614544}
-      inputSlot: {fileID: 8926484042661614716}
-    position: {x: 366, y: 455}
-    expandedSlots:
-    - {fileID: 8926484042661614540}
     - {fileID: 8926484042661614541}
     expanded: 1
 --- !u!114 &8926484042661614540
@@ -924,8 +912,7 @@ MonoBehaviour:
       m_SerializableType: UnityEditor.VFX.AABox, Unity.VisualEffectGraph.Editor,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
   m_Direction: 1
-  m_LinkedSlots:
-  - {fileID: 114307113894698210}
+  m_LinkedSlots: []
 --- !u!114 &8926484042661614541
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -994,8 +981,7 @@ MonoBehaviour:
       m_SerializableType: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
         PublicKeyToken=b77a5c561934e089
   m_Direction: 1
-  m_LinkedSlots:
-  - {fileID: 8926484042661614714}
+  m_LinkedSlots: []
 --- !u!114 &8926484042661614543
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1030,7 +1016,6 @@ MonoBehaviour:
   m_Direction: 1
   m_LinkedSlots:
   - {fileID: 8926484042661614640}
-  - {fileID: 8926484042661614715}
 --- !u!114 &8926484042661614544
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1063,8 +1048,7 @@ MonoBehaviour:
       m_SerializableType: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
         PublicKeyToken=b77a5c561934e089
   m_Direction: 1
-  m_LinkedSlots:
-  - {fileID: 8926484042661614716}
+  m_LinkedSlots: []
 --- !u!114 &8926484042661614545
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1100,7 +1084,8 @@ MonoBehaviour:
       m_SerializableType: UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
   m_Direction: 1
-  m_LinkedSlots: []
+  m_LinkedSlots:
+  - {fileID: 114963171269329408}
 --- !u!114 &8926484042661614546
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4512,8 +4497,7 @@ MonoBehaviour:
       m_SerializableType: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
         PublicKeyToken=b77a5c561934e089
   m_Direction: 0
-  m_LinkedSlots:
-  - {fileID: 8926484042661614542}
+  m_LinkedSlots: []
 --- !u!114 &8926484042661614715
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4546,8 +4530,7 @@ MonoBehaviour:
       m_SerializableType: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
         PublicKeyToken=b77a5c561934e089
   m_Direction: 0
-  m_LinkedSlots:
-  - {fileID: 8926484042661614543}
+  m_LinkedSlots: []
 --- !u!114 &8926484042661614716
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4580,8 +4563,7 @@ MonoBehaviour:
       m_SerializableType: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
         PublicKeyToken=b77a5c561934e089
   m_Direction: 0
-  m_LinkedSlots:
-  - {fileID: 8926484042661614544}
+  m_LinkedSlots: []
 --- !u!114 &8926484042661614717
 MonoBehaviour:
   m_ObjectHideFlags: 0

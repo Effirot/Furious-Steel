@@ -15,12 +15,6 @@ using System.Linq;
 using Unity.VisualScripting;
 using Effiry.Items;
 
-
-
-
-
-
-
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -293,6 +287,11 @@ public class RoomManager : NetworkBehaviour
         });
 
         await UniTask.WaitUntil(() => NetworkManager.IsListening); 
+        
+        if (ID != 0)
+        {
+            await UniTask.WaitForSeconds(0.3f); 
+        }
         
         playersData.Add(new()
         {

@@ -19,6 +19,34 @@ using UnityEditor;
 [RequireComponent(typeof(NetworkCharacter))]
 public class CharacterEffectsHolder : NetworkBehaviour
 {
+    private class CharacterGlowing
+    {
+        private int materialInstanceID;
+        private SkinnedMeshRenderer renderer;
+
+        public CharacterGlowing (Color color, float power, Shader glowingShader, SkinnedMeshRenderer renderer)
+        {
+            this.renderer = renderer;
+
+            var material = new Material(glowingShader);
+
+            material.name = material.GetInstanceID().ToString();
+            material.renderQueue = 3050;
+            material.SetColor("_Color", color);
+            
+            materialInstanceID = material.GetInstanceID();
+
+            renderer.sharedMaterials = renderer.sharedMaterials.Append(material).ToArray();
+        }
+
+        public void Remove()
+        {
+            renderer.sharedMaterials = renderer.sharedMaterials.Where(material => material.name != materialInstanceID + " (Instance)" ).ToArray();
+        
+        }
+        
+    } 
+
     private struct NetworkCharacterEffectData : 
         INetworkSerializable, 
         IEquatable<NetworkCharacterEffectData>
@@ -90,8 +118,8 @@ public class CharacterEffectsHolder : NetworkBehaviour
 
     private NetworkList<NetworkCharacterEffectData> characterEffectIds_network;
     private List<CharacterEffect> characterEffects = new();
-
-    private Material materialLink;
+    
+    private Dictionary<CharacterEffect, List<CharacterGlowing>> characterGlowings = new();
 
     public bool AddEffect (CharacterEffect effect)
     {
@@ -123,6 +151,27 @@ public class CharacterEffectsHolder : NetworkBehaviour
         }
 
         return false;
+    }
+
+    public void AddGlowing(CharacterEffect bindingEffect, Color color, float power)
+    {
+        if (!characterGlowings.ContainsKey(bindingEffect))
+        {
+            characterGlowings.Add(bindingEffect, new());
+        }
+
+        characterGlowings[bindingEffect].Add(new CharacterGlowing(color, power, GlowingShader, characterSkinnedMeshRenderer));
+    }
+    private void RemoveAllGlowings(CharacterEffect bindingEffect)
+    {
+        if (characterGlowings.ContainsKey(bindingEffect))
+        {
+            var list = characterGlowings[bindingEffect];
+            list.ForEach(a => a.Remove());
+            list.Clear();
+
+            characterGlowings.Remove(bindingEffect);
+        }
     }
 
     public override void OnNetworkSpawn ()
@@ -167,6 +216,8 @@ public class CharacterEffectsHolder : NetworkBehaviour
             {
                 if (!characterEffects[i].Existance)
                 {
+                    RemoveAllGlowings(characterEffects[i]);
+
                     characterEffects[i].IsValid = false;
                     characterEffects[i].Remove();
                     characterEffects.RemoveAt(i);
@@ -207,6 +258,8 @@ public class CharacterEffectsHolder : NetworkBehaviour
 
             case NetworkListEvent<CharacterEffectsHolder.NetworkCharacterEffectData>.EventType.Remove:
                 var effect = characterEffects[index];
+
+                RemoveAllGlowings(effect);
                 effect.IsValid = false;
                 effect.Remove();
                 
@@ -247,6 +300,8 @@ public class CharacterEffectsHolder : NetworkBehaviour
     {
         foreach (var item in characterEffects)
         {
+            RemoveAllGlowings(item);
+
             item.IsValid = false;
             item.Remove();
         }

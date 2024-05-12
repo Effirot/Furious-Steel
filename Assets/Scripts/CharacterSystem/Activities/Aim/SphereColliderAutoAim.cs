@@ -5,6 +5,7 @@ using System.Linq;
 using CharacterSystem.DamageMath;
 using CharacterSystem.Objects;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
@@ -32,9 +33,39 @@ public class SphereColliderAutoAim : NetworkBehaviour
     private Transform followPoint;
 
     [SerializeField]
-    private LockState lockState = LockState.None;
+    private LayerMask layer;
 
-    private IEnumerable<Collider> colliders;
+
+    [SerializeField]
+    private LockState _lockState = LockState.None;
+
+
+    public LockState lockState
+    {
+        get => _lockState;
+        set {
+            _lockState = value;
+
+            switch (value)
+            {
+                case LockState.LockOnPosition:
+                    lockedFollowPosition = followPosition.Value;
+                    break;
+            
+                case LockState.LockOnTarget:
+                    lockedTarget = target;
+                    break;
+            }
+        }
+    }
+
+    [NonSerialized]
+    public NetworkVariable<Vector3> followPosition = new NetworkVariable<Vector3>(Vector3.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+
+    private Transform target;
+
+    private Vector3 lockedFollowPosition;
+    private Transform lockedTarget;
 
     public void SetLockState(int lockStateIndex)
     {
@@ -55,28 +86,23 @@ public class SphereColliderAutoAim : NetworkBehaviour
     }
 
     private void FixedUpdate()
-    {
-        Collider targetCollider = null;
-        float minDistance = 1000000;
-
-        foreach (var item in colliders)
+    {    
+        if (IsServer)
         {
-            var distance = Vector3.Distance(item.transform.position, transform.position);
-            if (distance < minDistance)
+            if (target != null)
             {
-                targetCollider = item;
-                minDistance = distance;
-            } 
+                followPosition.Value = followPoint.InverseTransformPoint(target.transform.position + (transform.rotation * AdditivePosition));
+            }    
+            else 
+            {
+                followPosition.Value = Vector3.zero;
+            }
         }
-
-        if (targetCollider != null)
-        {
-            followPoint.position = targetCollider.transform.position + (transform.rotation * AdditivePosition);
-        }    
-        else 
-        {
-            followPoint.localPosition = Vector3.zero;
-        }
+        
+    }
+    private void LateUpdate()
+    {
+        followPoint.localPosition = Vector3.Lerp(followPoint.localPosition, followPosition.Value, 25f * Time.deltaTime);
     }
     private void OnDrawGizmosSelected()
     {
@@ -91,11 +117,25 @@ public class SphereColliderAutoAim : NetworkBehaviour
 
         while (true)
         {
-            colliders = Physics.OverlapSphere(transform.position + (transform.rotation * SearchSpherePoint), SearchRadius)
+            var colliders = Physics.OverlapSphere(transform.position + (transform.rotation * SearchSpherePoint), SearchRadius, layer)
                 .Where(collider => collider != null && collider.gameObject.TryGetComponent<IDamagable>(out _));
+            
+            Collider targetCollider = null;
+            float minDistance = 1000000;
+
+            foreach (var collider in colliders) {
+                
+                var distance = Vector3.Distance(collider.transform.position, transform.position);
+                if (distance < minDistance)
+                {
+                    targetCollider = collider;
+                    minDistance = distance;
+                } 
+            }
+
+            target = targetCollider.transform;
 
             yield return wait;
         }
     } 
-
 }

@@ -107,7 +107,7 @@ namespace CharacterSystem.Objects
 
         public override bool Hit(Damage damage)
         {
-            var isBlocked = Blocker != null && Blocker.Block(ref damage) || base.Hit(damage);            
+            var isBlocked = Blocker != null && Blocker.Block(ref damage) || base.Hit(damage);
 
             if (isBlocked)
             {
@@ -121,7 +121,6 @@ namespace CharacterSystem.Objects
                 OnHitImpulseSource?.GenerateImpulse(damage.value / 10f);
             }
 
-
             return isBlocked;
         }
 
@@ -129,6 +128,7 @@ namespace CharacterSystem.Objects
         {
             if (IsServer)
             {
+                if (report.damage.type is not Damage.Type.Effect)
                 Combo += 1;
 
                 var data = ClientData;

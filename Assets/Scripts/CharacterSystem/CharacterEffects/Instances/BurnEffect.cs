@@ -2,6 +2,7 @@
 using CharacterSystem.DamageMath;
 using CharacterSystem.Objects;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [System.Serializable]
@@ -15,6 +16,9 @@ public class BurnEffect : CharacterEffect
     [SerializeField, Range(0, 120)]
     public float damagePerSecond = 5;
 
+    [SerializeField, ColorUsageAttribute(false, true)]
+    public Color color = Color.yellow * 5;
+
     public BurnEffect() { }
     public BurnEffect(float Time, float damagePerSecond)
     {
@@ -24,20 +28,26 @@ public class BurnEffect : CharacterEffect
 
     public override void Start()
     {
-        
+        effectsHolder.AddGlowing(this, color, 1);
     }
     public override void Update()
     {
         time -= Time.fixedDeltaTime;
 
-        Damage.Deliver(
-            effectsHolder.character, 
-            new Damage(
-                damagePerSecond * Time.fixedDeltaTime, 
-                effectsSource, 
-                0, 
-                Vector3.zero, 
-                Damage.Type.Effect));
+        var report = 
+            Damage.Deliver(
+                effectsHolder.character, 
+                new Damage(
+                    damagePerSecond * Time.fixedDeltaTime, 
+                    effectsSource, 
+                    0, 
+                    Vector3.zero, 
+                    Damage.Type.Effect));
+
+        if (!effectsSource.IsUnityNull())
+        {
+            effectsSource.DamageDelivered(report);
+        }
     }
     public override void Remove()
     {

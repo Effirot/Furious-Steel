@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CharacterSystem.DamageMath;
 using CharacterSystem.Objects;
+using Cysharp.Threading.Tasks;
 using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -40,8 +41,13 @@ namespace CharacterSystem.Attacks
             AfterAttack,
         }
 
-        [SerializeField]
-        private bool StartOnInitialize = false;
+        [Flags]
+        public enum AdditiveExecutingConditions
+        {
+            OnInitialize,
+            OnHit,
+            OnDespawn,
+        }
 
         [SerializeField]
         private bool IsPerformingAsDefault = false;
@@ -94,6 +100,8 @@ namespace CharacterSystem.Attacks
         {
             if (Invoker.IsServer)
             {
+                Invoker.permissions &= ~CharacterPermission.AllowBlocking | ~CharacterPermission.AllowAttacking;
+
                 if (IsAttacking)
                 {
                     EndAttack_ClientRpc();
@@ -112,7 +120,8 @@ namespace CharacterSystem.Attacks
             if (!Invoker.isStunned && 
                 Invoker.permissions.HasFlag(CharacterPermission.AllowAttacking) &&
                 IsPerforming &&
-                !IsAttacking)
+                !IsAttacking &&
+                !HasOverrides())
             {
                 StartAttackForced();
             }            
@@ -152,8 +161,11 @@ namespace CharacterSystem.Attacks
         {
             if (IsServer && IsInterruptOnHit)
             {
-                Invoker.onDamageRecieved += delegate { 
-                    EndAttack(); 
+                Invoker.onDamageRecieved += (damage) => { 
+                    if (damage.type != Damage.Type.Effect)
+                    {
+                        EndAttack(); 
+                    }
                 };
             }
         }
@@ -250,16 +262,15 @@ namespace CharacterSystem.Attacks
         {
             if (IsAttacking)
             {
-                Invoker.Speed += SpeedReducing;
-                Invoker.permissions = CharacterPermission.Default;
-                
                 StopCoroutine(attackProcess);
                 attackProcess = null;
                 StopAllCoroutines();
-                
-                OnAttackEnded.Invoke();
+
+                Invoker.Speed += SpeedReducing;
+                Invoker.permissions = CharacterPermission.Default;
                 
                 currentAttackDamageReport = null;
+                OnAttackEnded.Invoke();
             }
         }
     }
@@ -456,11 +467,16 @@ namespace CharacterSystem.Attacks
         } 
     }
     [Serializable]
-    public sealed class ProjectileShooter : AttackQueueElement
+    public sealed class ProjectileShooter : AttackQueueElement, Charger.IChargeListener
     {
         public GameObject projectilePrefab;
 
         public override IEnumerator AttackPipeline(DamageSource source)
+        {
+            yield return ChargedAttackPipeline(source, 1, false, false);
+        }
+
+        public IEnumerator ChargedAttackPipeline(DamageSource source, float chargeValue, bool flexibleCollider, bool flexibleDamage)
         {
             if (source.IsServer)
             {
@@ -473,6 +489,7 @@ namespace CharacterSystem.Attacks
 
                 var projectileObject = GameObject.Instantiate(projectilePrefab, source.transform.position, Quaternion.identity);
                 projectileObject.SetActive(true);
+                projectileObject.GetComponent<NetworkObject>().Spawn();
 
                 var projectile = projectileObject.GetComponent<Projectile>();
                 
@@ -482,9 +499,13 @@ namespace CharacterSystem.Attacks
 
                     yield break;
                 }
-
-                projectile.NetworkObject.Spawn();
                 projectile.Initialize(source.transform.forward, source.Invoker);
+
+                projectile.speed *= chargeValue;
+                if (flexibleDamage)
+                {
+                    projectile.damage *= chargeValue;
+                }
             }
         }
 
@@ -592,6 +613,9 @@ namespace CharacterSystem.Attacks
     {        
         [SerializeField]
         private CharacterPermission Permissions = CharacterPermission.Default;
+        
+        [SerializeField]
+        private bool Reverse = false;
 
         public override IEnumerator AttackPipeline(DamageSource source)
         {
@@ -600,7 +624,7 @@ namespace CharacterSystem.Attacks
             yield return new WaitUntil(() => {
                 if (source.Invoker.gameObject.TryGetComponent<CharacterController>(out var character))
                 {
-                    return character.isGrounded;
+                    return Reverse ? character.isGrounded : !character.isGrounded;
                 }
                 
                 return true;

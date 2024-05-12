@@ -176,8 +176,9 @@ MonoBehaviour:
   inputAction: {fileID: 2243838571553120747, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 2
   IsPerformingAsDefault: 1
-  IsInterruptable: 0
   IsInterruptableWhenBlocked: 0
+  IsInterruptOnHit: 0
+  RestartWhenHolding: 1
   SpeedReducing: 5
   attackQueue:
   - rid: 8630937699458744406
@@ -213,36 +214,18 @@ MonoBehaviour:
           m_PersistentCalls:
             m_Calls: []
         chargeListener:
-          rid: 8630937699458744407
+          rid: 8630937820481192015
         FullyChargeQueue:
           queue: []
-    - rid: 8630937699458744407
-      type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        casters:
-        - rid: 8630937699458744408
-        CastPushDirection: {x: 0, y: 0, z: -0.1}
-        OnCast:
-          m_PersistentCalls:
-            m_Calls: []
-    - rid: 8630937699458744408
-      type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        damage:
-          value: 30
-          type: 2
-          stunlock: 0.5
-          pushDirection: {x: 0, y: 0, z: 0.6}
-          RechargeUltimate: 1
-          Effects: []
-        position: {x: 0, y: 0, z: 5.08}
-        size: {x: 1, y: 2.2, z: 6.08}
-        angle: {x: 0, y: 0, z: 0}
     - rid: 8630937699458744409
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         WaitTime: 0.5
         Permissions: 34048
+    - rid: 8630937820481192015
+      type: {class: ProjectileShooter, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        projectilePrefab: {fileID: 6845969276890429663, guid: 0cc0d49f8f3db3b4aa08d29839ee1ea3, type: 3}
 --- !u!1 &1517727645108543378
 GameObject:
   m_ObjectHideFlags: 0
@@ -295,7 +278,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2588788656
+  GlobalObjectIdHash: 2510098111
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -315,7 +298,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e02cc2139c0c4704ca305884101e1c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TargetParentPath: Armor/Armor_Armature/SpineCenter/Spine.001/Spine.002/Shoulder.L/Hand.001.L/Hand.002.L/Palm.L
+  TargetParentPath: 
   origin: {fileID: 0}
 --- !u!114 &5633976333175869961
 MonoBehaviour:

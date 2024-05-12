@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using CharacterSystem.Attacks;
 using CharacterSystem.Objects;
 using Unity.Netcode;
@@ -24,56 +25,103 @@ namespace CharacterSystem.DamageMath
             Effect = 32,
         }
 
+        public delegate void OnDamageDeliveredDelegate(DamageDeliveryReport damage);
+        
+        public static event OnDamageDeliveredDelegate damageDeliveryPipeline;
+
+
         public static DamageDeliveryReport Deliver(GameObject gameObject, Damage damage)
         {
             if (!gameObject.TryGetComponent<IDamagable>(out var target)) 
+            {
+                if (gameObject.TryGetComponent<Rigidbody>(out var rb))
+                {
+                    rb.AddForce((damage.pushDirection + Vector3.up / 2) * 1000);
+                }
+
                 return new();
+            }
+
+            return Deliver(target, damage);
+        }
+        public static DamageDeliveryReport Deliver(Transform transform, Damage damage)
+        {
+            if (!transform.gameObject.TryGetComponent<IDamagable>(out var target)) 
+            {
+                if (transform.gameObject.TryGetComponent<Rigidbody>(out var rb))
+                {
+                    rb.AddForce((damage.pushDirection + Vector3.up / 2) * 1000);
+                }
+
+                return new();
+            }
 
             return Deliver(target, damage);
         }
         public static DamageDeliveryReport Deliver(IDamagable target, Damage damage)
         {
             var report = new DamageDeliveryReport();
+            report.target = target;
+            report.damage = damage;
 
             if (target.IsUnityNull() || target == damage.sender)
                 return report;
 
+            report.isDelivered = DeliverEffects();
+
             if (ITeammate.IsAlly(target, damage.sender))
-                return report;
-
-            report.target = target;
-            report.damage = damage;
-            report.isDelivered = true;
-            
-            if (damage.value >= 0)
             {
-                report.isBlocked = target.Hit(damage);
-                report.isLethal = target.health <= 0;
-            }         
-            else
-            {
-                report.isBlocked = target.Heal(damage);
-            }
+                report.isDelivered = target.Heal(damage);
 
-            if (target.gameObject.TryGetComponent<CharacterEffectsHolder>(out var effectHolder) && damage.Effects != null)
-            {
-                List<CharacterEffect> addedEffect = new();
-
-                foreach (var effect in damage.Effects)
+                if (report.isDelivered)
                 {
-                    var effectClone = effect.Clone();
-
-                    if (effectHolder.AddEffect(effectClone))
-                    {
-                        addedEffect.Add(effectClone);
-                    }
+                    damageDeliveryPipeline?.Invoke(report);
                 }
 
-                report.RecievedEffects = addedEffect.ToArray();
+                return report;
+            }
+            
+            try {
+                if (damage.value >= 0)
+                {
+                    report.isDelivered = true;
+                    
+                    report.isBlocked = target.Hit(damage);
+                    report.isLethal = target.health <= 0;
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
             }
 
+            damageDeliveryPipeline?.Invoke(report);
             return report;
+
+            bool DeliverEffects()
+            {
+                if (target.gameObject.TryGetComponent<CharacterEffectsHolder>(out var effectHolder) && damage.Effects != null)
+                {
+                    List<CharacterEffect> addedEffect = new();
+
+                    foreach (var effect in damage.Effects)
+                    {
+                        var effectClone = effect.Clone();
+
+                        if (effectHolder.AddEffect(effectClone))
+                        {
+                            addedEffect.Add(effectClone);
+                        }
+                    }
+
+                    report.RecievedEffects = addedEffect.ToArray();
+                    return report.RecievedEffects.Any();
+                }
+
+                return false;
+            }
         }
+
 
         [SerializeField, Range(-50, 300)]
         public float value;

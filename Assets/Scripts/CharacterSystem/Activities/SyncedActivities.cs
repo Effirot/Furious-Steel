@@ -66,16 +66,28 @@ public abstract class SyncedActivities : NetworkBehaviour
     private NetworkVariable<bool> network_isPressed = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     
     private ISyncedActivitiesSource m_invoker;
+    private SyncedActivities syncedActivityOverrider;
 
 
     public bool HasOverrides()
     {
-        return !regsitredSyncedActivities.Find(activity => activity.inputAction == this.inputAction && activity.Priority > this.Priority).IsUnityNull();
+        if (!syncedActivityOverrider.IsUnityNull())
+        {
+            syncedActivityOverrider = regsitredSyncedActivities.Find(
+                activity => 
+                    activity.inputAction == this.inputAction && 
+                    activity.Priority > this.Priority &&
+                    activity.Invoker == this.Invoker);
+        }
+
+        return !syncedActivityOverrider.IsUnityNull();
     }
     
     public override void OnNetworkSpawn ()
     {
         base.OnNetworkSpawn();
+
+        Register();
 
         Subscribe();
     }
@@ -86,10 +98,6 @@ public abstract class SyncedActivities : NetworkBehaviour
         Unsubscribe();
     }
 
-    public virtual void Awake()
-    {
-        Register();
-    }
     public override void OnDestroy()
     {
         base.OnDestroy();
@@ -117,8 +125,6 @@ public abstract class SyncedActivities : NetworkBehaviour
     }
     private void Subscribe ()
     {
-        if (HasOverrides()) return;  
-
         network_isPressed.OnValueChanged += InvokeStateChangedFunction_Event;
         
         if (IsOwner && inputAction != null)
@@ -148,6 +154,8 @@ public abstract class SyncedActivities : NetworkBehaviour
     }
     private void InvokeStateChangedFunction_Event(bool Old, bool New)
     {
+        if (HasOverrides()) return;
+
         OnStateChanged(New);
     }
 }

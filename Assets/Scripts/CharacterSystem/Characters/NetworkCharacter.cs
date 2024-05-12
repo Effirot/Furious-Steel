@@ -282,7 +282,7 @@ namespace CharacterSystem.Objects
         }
         public void Push (Vector3 direction)
         {
-            if (velocity.magnitude < direction.magnitude)
+            if (velocity.magnitude < direction.magnitude && direction.magnitude > 0)
             {
                 speed_acceleration_multipliyer = Vector2.zero;
                 gravity_acceleration = Vector3.zero;
@@ -485,7 +485,7 @@ namespace CharacterSystem.Objects
             }   
             else
             {
-                gravity_acceleration = Vector3.Lerp(gravity_acceleration, permissions.HasFlag(CharacterPermission.AllowGravity) && !IsGrounded ? Physics.gravity : Vector3.zero, 0.001f);
+                gravity_acceleration = Vector3.Lerp(gravity_acceleration, permissions.HasFlag(CharacterPermission.AllowGravity) ? Physics.gravity : Vector3.zero, 0.001f);
             }         
             
             return velocity + gravity_acceleration;
@@ -630,7 +630,7 @@ namespace CharacterSystem.Objects
             }
         }
 
-        [ClientRpc]
+        [ClientRpc] 
         private void OnHit_ClientRpc(Damage damage)
         {
             OnHitReaction(damage);

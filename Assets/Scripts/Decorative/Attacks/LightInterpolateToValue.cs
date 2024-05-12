@@ -5,21 +5,23 @@ using UnityEngine;
 [RequireComponent(typeof(Light))]
 public class LightInterpolateToValue : MonoBehaviour
 {
+#if !UNITY_SERVER || UNITY_EDITOR
     [SerializeField]
     private float speed = 0.1f;
     
     [SerializeField]
     private float targetValue = 0;
 
-    private new Light light;
+    private Light m_light;
     
     private void Awake()
     {
-        light = GetComponent<Light>();
+        m_light = GetComponent<Light>();
     }
 
     private void Update()
     {
-        light.intensity = Mathf.Lerp(light.intensity, targetValue, speed);
+        m_light.intensity = Mathf.Lerp(m_light.intensity, targetValue, speed);
     }
+#endif
 }

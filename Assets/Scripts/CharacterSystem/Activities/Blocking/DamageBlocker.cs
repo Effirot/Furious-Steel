@@ -114,7 +114,7 @@ namespace CharacterSystem.Blocking
                 }
                 damage *= 1f - DamageReducing;
 
-                return damage.value == 0;
+                return true;
             }
 
             return false;

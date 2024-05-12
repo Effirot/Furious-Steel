@@ -5,6 +5,7 @@ using UnityEngine;
 [RequireComponent(typeof(AudioSource))]
 public class BlockPitchIncrieser : MonoBehaviour
 {
+#if !UNITY_SERVER || UNITY_EDITOR
     [SerializeField, Range(0.5f, 2)]
     private float MinPicth = 0.7f;
 
@@ -29,7 +30,6 @@ public class BlockPitchIncrieser : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
     }
 
-#if !UNITY_SERVER || UNITY_EDITOR
     private void Update()
     {
         audioSource.pitch = Mathf.Clamp(audioSource.pitch - PitchReducingPerSecond * Time.deltaTime, MinPicth, MaxPicth);

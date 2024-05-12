@@ -9,19 +9,19 @@ public class CharacterLatern : MonoBehaviour
     [SerializeField]
     private CharacterStealthGraphicHider stealth;
 
-    new private Light light;
+    private Light Light;
 
     private float intensity;
 
     private void Awake()
     {
-        light = GetComponent<Light>();
-        intensity = light.intensity;
+        Light = GetComponent<Light>();
+        intensity = Light.intensity;
     }
     private void LateUpdate()
     {
-        light.intensity = Mathf.Lerp (
-            light.intensity, 
+        Light.intensity = Mathf.Lerp (
+            Light.intensity, 
             WeatherManager.Singleton.LaternsEnabled ? 
                 (stealth != null && stealth.IsHidden ? (stealth.IsOwner ? intensity / 3 : 0) : intensity) : 0, 
             3 * Time.deltaTime);

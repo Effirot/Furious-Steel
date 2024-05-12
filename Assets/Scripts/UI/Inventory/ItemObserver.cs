@@ -11,8 +11,11 @@ using UnityEngine.InputSystem;
 
 public class ItemObserver : MonoBehaviour
 {
+    
+#if !UNITY_SERVER || UNITY_EDITOR
     [SerializeField]
     private bool FollowSlot = false;
+#endif
 
     [Space]
     [SerializeField]
@@ -66,7 +69,7 @@ Creation time: {value.CreationTime.ToLongTimeString()}");
     }
 
 #if !UNITY_SERVER || UNITY_EDITOR
-    private void FixedUpdate()
+    private void LateUpdate()
     {
         PointerEventData eventData = new(EventSystem.current);
         eventData.position = Mouse.current.position.value;
@@ -89,7 +92,7 @@ Creation time: {value.CreationTime.ToLongTimeString()}");
         {
             if (target != null)
             {
-                transform.position = Vector2.Lerp(transform.position, target.transform.position, 0.1f);
+                transform.position = Vector2.Lerp(transform.position, target.transform.position, 10 * Time.deltaTime);
             }
         }
     }

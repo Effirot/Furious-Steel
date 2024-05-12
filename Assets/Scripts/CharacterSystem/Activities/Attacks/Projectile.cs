@@ -1,6 +1,7 @@
 using System;
 using CharacterSystem.Attacks;
 using CharacterSystem.DamageMath;
+using Cinemachine;
 using Cysharp.Threading.Tasks;
 using Unity.Netcode;
 using Unity.VisualScripting;
@@ -13,23 +14,30 @@ public class Projectile : NetworkBehaviour,
     ITeammate
 {
     [field : SerializeField, Range (0.1f, 100)]
-    private float speed = 1;
+    public float speed = 1;
+
+    [field : SerializeField, Range (0.95f, 1.05f)]
+    private float speedTimeIncreacing = 1;
 
     [field : SerializeField, Range (0.1f, 10)]
     private float lifetime = 3;
 
     [field : SerializeField]
-    public VisualEffectAsset OnDestroyEffect { get; private set; }
+    public GameObject OnDestroyPrefab { get; private set; }
+  
+    [field : SerializeField]
+    public bool DamageOnHit { get; private set; }
     
     [field : SerializeField]
-    public VisualEffect OnHitEffect { get; private set; }
+    public bool AllowDeflecting { get; private set; }
 
     [SerializeField]
     public UnityEvent onDespawnEvent = new UnityEvent();
 
     [SerializeField]
-    private Damage damage;
+    public Damage damage;
     
+
     public Vector3 MoveDirection 
     {
         get => network_moveDirection.Value;
@@ -45,16 +53,33 @@ public class Projectile : NetworkBehaviour,
     public float health { get => 0; set { return; } }
     public float stunlock { get => 0; set { return; } }
 
-    public IDamageSource Summoner { get; private set; }
+    public IDamageSource Summoner {
+        get {
+            if (network_SummonerId.Value != ulong.MinValue)
+            {
+                var dictionary = NetworkManager.Singleton.SpawnManager.SpawnedObjects;
+
+                if (dictionary.ContainsKey(network_SummonerId.Value) && dictionary[network_SummonerId.Value].TryGetComponent<IDamageSource>(out var component))
+                {
+                    return component;
+                }
+            }
+
+            return null;
+        }
+        private set {
+            network_SummonerId.Value = value?.gameObject?.GetComponent<NetworkObject>()?.NetworkObjectId ?? ulong.MinValue;
+        } 
+    }
 
     public event Action<Damage> onDamageRecieved;
 
     public int TeamIndex => Summoner.TeamIndex;
 
 
+    private NetworkVariable<ulong> network_SummonerId = new NetworkVariable<ulong> (0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     private NetworkVariable<Vector3> network_position = new NetworkVariable<Vector3> (Vector3.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     private NetworkVariable<Vector3> network_moveDirection = new NetworkVariable<Vector3> (Vector3.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-
 
 
     public void Initialize (Vector3 direction, IDamageSource summoner)
@@ -84,11 +109,13 @@ public class Projectile : NetworkBehaviour,
         MoveDirection = direction;
     }
 
-    public void Kill ()
+    public virtual void Kill ()
     {
+        GenerateOnDestroyPrefab();
+
         if (IsSpawned && IsServer)
         {
-            NetworkObject.Despawn();
+            Destroy(NetworkObject.gameObject);
         }
     }
 
@@ -107,7 +134,10 @@ public class Projectile : NetworkBehaviour,
 
         await UniTask.WaitForSeconds(lifetime);
 
-        Kill ();
+        if (!this.IsUnityNull())
+        {
+            Kill ();
+        }
     }
     public override void OnNetworkDespawn ()
     {
@@ -119,6 +149,8 @@ public class Projectile : NetworkBehaviour,
     private void FixedUpdate ()
     {
         if (!IsSpawned) return;
+
+        speed *= speedTimeIncreacing;
 
         if (IsServer)
         {
@@ -141,6 +173,7 @@ public class Projectile : NetworkBehaviour,
     private void OnTriggerEnter (Collider other)
     {
         if (!IsSpawned) return;
+        if (!DamageOnHit) return;
 
         var damage = this.damage;
         damage.pushDirection = transform.rotation * damage.pushDirection;
@@ -152,22 +185,36 @@ public class Projectile : NetworkBehaviour,
         {
             if (report.isDelivered)
             {
-                if (report.isBlocked)
+                Summoner.DamageDelivered(report);
+                if (report.isBlocked && AllowDeflecting)
                 {
                     Push(other.transform.forward);
 
-                    speed *= 2f;
+                    speed *= 1.5f;
+                    lifetime += 5;
 
                     if (other.TryGetComponent<IDamageSource>(out var source))
                     {
                         Summoner = source;
                     }
+
+                    return;
                 }
                 else
                 {
                     Kill();
                 }
             }
+        }
+    }
+    private void GenerateOnDestroyPrefab()
+    {
+        if (OnDestroyPrefab != null)
+        {
+            var Object = Instantiate(OnDestroyPrefab, transform.position, transform.rotation);
+            Object.SetActive(true);
+            Object.GetComponent<CinemachineImpulseSource>()?.GenerateImpulse();
+            Destroy(Object, 4);
         }
     }
 

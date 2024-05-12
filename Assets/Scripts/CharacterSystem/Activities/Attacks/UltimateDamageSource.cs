@@ -55,7 +55,8 @@ public class UltimateDamageSource : DamageSource
             Invoker.permissions.HasFlag(CharacterPermission.AllowAttacking) &&
             !Invoker.isStunned && 
             IsPerforming &&
-            !IsAttacking)
+            !IsAttacking && 
+            !HasOverrides())
         {
             if (ClearCharge)
             {
@@ -67,9 +68,7 @@ public class UltimateDamageSource : DamageSource
     }
 
     protected virtual void Start()
-    {
-        if (HasOverrides()) return;
-        
+    {        
         network_delivereDamageValue.OnValueChanged += ExecuteOnValueChangedEvent;
         Invoker.onDamageDelivered += OnDamageDelivered_Event;
     }
