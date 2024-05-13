@@ -110,9 +110,7 @@ namespace CharacterSystem.Objects
             var isBlocked = Blocker != null && Blocker.Block(ref damage) || base.Hit(damage);
 
             if (isBlocked)
-            {
-                RechargeDodge();
-                
+            {                
                 Combo += 5;
             }
 
@@ -220,8 +218,8 @@ namespace CharacterSystem.Objects
                     var action = dashInput.action;
                     action.Enable();
 
-                    action.performed += OnDash;
-                    action.canceled += OnDash;
+                    action.performed += OnJump;
+                    action.canceled += OnJump;
                 }
 
                 if (killBindInput != null) {
@@ -270,8 +268,8 @@ namespace CharacterSystem.Objects
                 {
                     var action = dashInput.action;
 
-                    action.performed -= OnDash;
-                    action.canceled -= OnDash;
+                    action.performed -= OnJump;
+                    action.canceled -= OnJump;
                 }
 
                 {
@@ -384,12 +382,9 @@ namespace CharacterSystem.Objects
                 lookVector = value;
             }
         }
-        private void OnDash(CallbackContext input)
+        private void OnJump(CallbackContext input)
         {
-            if (movementVector.magnitude > 0 && input.ReadValueAsButton())
-            {
-                Dash(movementVector);
-            }
+            Jump(movementVector);
         }
 
         private void KillBind(CallbackContext input)

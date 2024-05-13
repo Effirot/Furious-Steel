@@ -31,7 +31,7 @@ namespace CharacterSystem.Objects
         AllowMove           = 0b_0000_0001_0000_0000,
         AllowRotate         = 0b_0000_0010_0000_0000,
         AllowGravity        = 0b_0000_0100_0000_0000,
-        AllowDash           = 0b_0000_1000_0000_0000,
+        AllowJump           = 0b_0000_1000_0000_0000,
         
         AllowAttacking      = 0b_0001_0000_0000_0000,
         AllowBlocking       = 0b_0010_0000_0000_0000,
@@ -77,24 +77,12 @@ namespace CharacterSystem.Objects
         [SerializeField]
         public VisualEffect OnHitEffect;
 
-        [Header("Dodge")]
+        [Header("Jump")]
         [SerializeField]
-        [Range(0, 20)]
-        private float DodgePushForce = 2;
-
-        [SerializeField]
-        [Range(0, 10)]
-        private float DodgePushTime = 1;
-
-        [SerializeField]
-        [Range(0, 400)]
-        private float DodgeRechargeTime = 2f;
+        private float JumpForce = 1;
 
         [SerializeField]
         private VisualEffect DodgeEffect;
-
-        [SerializeField]
-        private AudioSource DodgeSound;
 
         [field : Space]
         [field : Header("Team")]
@@ -133,7 +121,7 @@ namespace CharacterSystem.Objects
             }
         }
 
-        public float health 
+        public float health
         { 
             get => network_health.Value; 
             set 
@@ -154,7 +142,7 @@ namespace CharacterSystem.Objects
                 }
             } 
         }
-        public Vector2 movementVector 
+        public Vector2 movementVector
         { 
             get => network_movementVector.Value.normalized;
             set
@@ -165,7 +153,7 @@ namespace CharacterSystem.Objects
                 }
             }
         }      
-        public Vector2 lookVector 
+        public Vector2 lookVector
         { 
             get => network_lookVector.Value.normalized;
             set 
@@ -220,9 +208,7 @@ namespace CharacterSystem.Objects
         private Coroutine regenerationCoroutine;
 
         private Vector2 speed_acceleration_multipliyer = Vector2.zero;
-        private Vector3 gravity_acceleration = Vector3.zero;
 
-        private Coroutine dodgeRoutine = null;
 
         public virtual void Kill ()
         {
@@ -282,10 +268,11 @@ namespace CharacterSystem.Objects
         }
         public void Push (Vector3 direction)
         {
-            if (velocity.magnitude < direction.magnitude && direction.magnitude > 0)
+            if (direction.magnitude > 0)
             {
+                direction /= 2;
+
                 speed_acceleration_multipliyer = Vector2.zero;
-                gravity_acceleration = Vector3.zero;
                 velocity = direction;
             }
         }
@@ -331,21 +318,12 @@ namespace CharacterSystem.Objects
                 SetPosition_ClientRpc(position);
             }
         }
-        public void Dash(Vector2 direction)
+        public void Jump(Vector2 direction)
         {
             if (IsOwner)
             {
-                Dash_ServerRpc(direction);
+                Jump_ServerRpc(direction);
             }
-        }
-        public void RechargeDodge()
-        {
-            if (dodgeRoutine != null)
-            {
-                StopCoroutine(dodgeRoutine);
-            }
-
-            dodgeRoutine = null;
         }
 
         protected virtual void OnHitReaction(Damage damage) 
@@ -397,8 +375,9 @@ namespace CharacterSystem.Objects
                     stunlock = 0;
                 }
             }
-
-            CharacterMove(CalculateMovement(Time.fixedDeltaTime / 2) + CalculatePhysicsSimulation()); 
+            
+            CalculatePhysicsSimulation();
+            CharacterMove(CalculateMovement(Time.fixedDeltaTime / 2)); 
 
             if (!isStunned)
             {
@@ -463,10 +442,7 @@ namespace CharacterSystem.Objects
                     Speed <= 0 ? Vector2.zero : movementVector * Mathf.Max(0, Speed) * (characterController.isGrounded ? 1f : 0.3f), 
                     38  * TimeScale);
 
-                if (IsServer)
-                {
-                    characterMovement = isStunned ? Vector3.zero : new Vector3(speed_acceleration_multipliyer.x, 0, speed_acceleration_multipliyer.y) * TimeScale;
-                }
+                characterMovement = isStunned ? Vector3.zero : new Vector3(speed_acceleration_multipliyer.x, 0, speed_acceleration_multipliyer.y) * TimeScale;
             }
             else
             {
@@ -475,20 +451,19 @@ namespace CharacterSystem.Objects
 
             return characterMovement;
         }
-        private Vector3 CalculatePhysicsSimulation ()
+        private void CalculatePhysicsSimulation ()
         {
-            velocity = Vector3.Lerp(velocity, Vector3.zero, (IsGrounded ? 0.15f : 0.06f) * Mass);
-            
-            if (isDashing)
-            {
-                gravity_acceleration = Vector3.zero;
-            }   
-            else
-            {
-                gravity_acceleration = Vector3.Lerp(gravity_acceleration, permissions.HasFlag(CharacterPermission.AllowGravity) ? Physics.gravity : Vector3.zero, 0.001f);
-            }         
-            
-            return velocity + gravity_acceleration;
+            var velocity = this.velocity;
+
+            velocity.x =  Mathf.Lerp(velocity.x, 0, InterpolateSpeed());
+            velocity.y =  permissions.HasFlag(CharacterPermission.AllowGravity) ? 
+                            Mathf.Lerp(velocity.y, IsGrounded ? -0.1f : Physics.gravity.y, 0.00085f) : 
+                            Mathf.Lerp(velocity.y, 0, 0.12f);
+            velocity.z =  Mathf.Lerp(velocity.z, 0, InterpolateSpeed());
+
+            this.velocity = velocity;
+
+            float InterpolateSpeed() => (IsGrounded ? 0.12f : 0.025f) * Mass;
         }
         private void CharacterMove (Vector3 vector)
         {
@@ -501,7 +476,7 @@ namespace CharacterSystem.Objects
 
                 if (Vector3.Distance(network_position.Value, transform.position) < 1.4f)
                 {
-                    characterController.Move(vector);
+                    characterController.Move(vector + velocity);
                 }
                 else
                 {
@@ -544,7 +519,7 @@ namespace CharacterSystem.Objects
 
                 animator.SetFloat("Walk_Speed_X", vector.x);
                 animator.SetFloat("Walk_Speed_Y", vector.z);
-                animator.SetFloat("Falling_Speed", gravity_acceleration.y);
+                animator.SetFloat("Falling_Speed", velocity.y);
 
                 animator.SetBool("IsGrounded", characterController.isGrounded);
                 animator.SetBool("IsStunned", isStunned);
@@ -569,65 +544,39 @@ namespace CharacterSystem.Objects
             regenerationCoroutine = null;
         }
 
-        private IEnumerator DodgeRoutine(Vector3 Direction)
-        {
-            Direction.Normalize();
-
-            permissions = CharacterPermission.Untouchable | CharacterPermission.AllowRotate;
-
-            isDashing = true;
-
-            for (float timer = 0f; timer < DodgePushTime; timer += Time.fixedDeltaTime)
-            {
-                characterController.Move(Direction * Time.fixedDeltaTime * DodgePushForce);
-
-                yield return new WaitForFixedUpdate();
-            } 
-
-            isDashing = false;
-
-            permissions = CharacterPermission.Default;
-            animator.SetBool("Dodge", false);
-
-            yield return new WaitForSeconds(DodgeRechargeTime);
-
-            RechargeDodge();
-        }
-
         [ClientRpc]
-        private void Dash_ClientRpc(Vector2 direction)
+        private void Jump_ClientRpc(Vector2 direction)
         {      
             if (!IsServer)
             {
-                Dash_Internal(direction);
+                Jump_Internal(direction);
             }    
         }
         [ServerRpc]
-        private void Dash_ServerRpc(Vector2 direction)
+        private void Jump_ServerRpc(Vector2 direction)
         {
             direction.Normalize();
+            direction *= Mathf.Max(0, Speed) * Time.fixedDeltaTime * 3f;
 
-            if (IsServer && !isStunned && dodgeRoutine == null && permissions.HasFlag(CharacterPermission.AllowDash))
+            if (!isStunned && IsGrounded && permissions.HasFlag(CharacterPermission.AllowJump))
             {
-                Dash_ClientRpc(direction);
-                Dash_Internal(direction);
+                Jump_ClientRpc(direction);
+                Jump_Internal(direction);
             }
         }
-        private void Dash_Internal(Vector2 direction)
-        {           
-            if (dodgeRoutine == null && permissions.HasFlag(CharacterPermission.AllowDash))
-            {
-                var V3direction = new Vector3(direction.x, 0, direction.y);
-
-                dodgeRoutine = StartCoroutine(DodgeRoutine(V3direction));
-                
-                if (IsClient && DodgeEffect != null) {
-                    DodgeEffect.SetVector3("Direction", V3direction);
-                    DodgeEffect.Play();
-
-                    DodgeSound?.Play();
-                }
+        private void Jump_Internal(Vector2 direction)
+        {     
+            var V3direction = new Vector3(direction.x, 0, direction.y);
+            
+            if (IsClient && DodgeEffect != null) {
+                DodgeEffect.SetVector3("Direction", V3direction);
+                DodgeEffect.Play();
             }
+
+            V3direction.y = JumpForce;
+
+            Push(V3direction);
+
         }
 
         [ClientRpc] 

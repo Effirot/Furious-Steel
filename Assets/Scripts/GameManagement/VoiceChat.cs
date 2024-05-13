@@ -104,7 +104,7 @@ public sealed class VoiceChat : NetworkBehaviour
 
     private void PlayAudioClipDataLocaly(float[] data)
     {
-        m_AudioSource.clip ??= AudioClip.Create("Microphone", 512, 1, Frequency, false);
+        m_AudioSource.clip ??= AudioClip.Create("Microphone", 512, 1, Frequency, true, );
 
         m_AudioSource.clip.SetData(data, 0);
         
