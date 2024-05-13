@@ -37,6 +37,8 @@ public class BonePlayerNetworkCharacter : PlayerNetworkCharacter
             {
                 var ID = component.NetworkObjectId;
 
+                recievedDamage = 0;
+
                 SplashAttack_ClientRpc(ID);
 
                 if (!IsClient)
@@ -51,7 +53,6 @@ public class BonePlayerNetworkCharacter : PlayerNetworkCharacter
 
     private async void SplashAttack(ulong targetID)
     {
-
         var dictionary = NetworkManager.Singleton.SpawnManager.SpawnedObjects;
         
         if (!dictionary.ContainsKey(targetID)) return;
@@ -62,7 +63,6 @@ public class BonePlayerNetworkCharacter : PlayerNetworkCharacter
                 
         if (target == null || this == null || !IsSpawned) return;
 
-        recievedDamage = 0;
         damage.sender = this;
 
         var vector = target.transform.position - transform.position;

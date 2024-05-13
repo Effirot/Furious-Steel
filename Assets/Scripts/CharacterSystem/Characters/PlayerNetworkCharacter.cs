@@ -384,7 +384,10 @@ namespace CharacterSystem.Objects
         }
         private void OnJump(CallbackContext input)
         {
-            Jump(movementVector);
+            if (input.ReadValueAsButton())
+            {
+                Jump(movementVector);
+            }
         }
 
         private void KillBind(CallbackContext input)

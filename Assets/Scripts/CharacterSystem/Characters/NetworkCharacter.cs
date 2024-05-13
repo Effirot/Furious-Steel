@@ -12,6 +12,9 @@ using UnityEngine.AI;
 using UnityEngine.Events;
 using UnityEngine.TextCore.Text;
 using UnityEngine.VFX;
+using UnityEngine.Rendering.Universal;
+
+
 
 
 #if UNITY_EDITOR
@@ -54,6 +57,7 @@ namespace CharacterSystem.Objects
         public const float ServerPositionInterpolationTime = 0.07f;
         public const float VelocityReducingMultipliyer = 0.85f;
 
+#region Stats
         [Header("Stats")]
         [SerializeField, Range (1, 1000)]
         public float maxHealth = 150;
@@ -82,17 +86,24 @@ namespace CharacterSystem.Objects
         private float JumpForce = 1;
 
         [SerializeField]
-        private VisualEffect DodgeEffect;
+        private int JumpCount = 1;
+
+        [SerializeField]
+        private VisualEffect JumpEffect;
 
         [field : Space]
         [field : Header("Team")]
         [field : SerializeField]
         public virtual int TeamIndex { get; private set; }
-
+#endregion
         
+        [SerializeField]
+        private DecalProjector shadow;
+
         public event Action<Damage> onDamageRecieved = delegate { };
         public event Action<float> onHealthChanged = delegate { };
         public event Action<bool> isGroundedEvent = delegate { };
+        public event Action onJumpEvent = delegate { };
 
         public bool IsGrounded => characterController.isGrounded;
         public bool isDashing { get; private set; } = false;
@@ -207,12 +218,15 @@ namespace CharacterSystem.Objects
         
         private Coroutine regenerationCoroutine;
 
+        private int completeJumpCount = 0;
+
+        private bool isGroundedDeltaState = false;
         private Vector2 speed_acceleration_multipliyer = Vector2.zero;
 
 
         public virtual void Kill ()
         {
-            if (IsServer && IsSpawned)
+            if (IsServer)
             {
                 Dead_ClientRpc();
 
@@ -297,6 +311,8 @@ namespace CharacterSystem.Objects
             network_permissions.OnValueChanged -= OnPermissionsChanged;
             
             StopAllCoroutines();
+            
+            SpawnCorpse();
         }
 
         public void SetAngle (float angle)
@@ -379,6 +395,26 @@ namespace CharacterSystem.Objects
             CalculatePhysicsSimulation();
             CharacterMove(CalculateMovement(Time.fixedDeltaTime / 2)); 
 
+            if (isGroundedDeltaState != IsGrounded)
+            {
+                isGroundedEvent.Invoke(IsGrounded);
+            }
+            isGroundedDeltaState = IsGrounded;
+
+            if (shadow != null)
+            {
+                if (Physics.Raycast(transform.position, Vector3.down, out var hit, LayerMask.GetMask("Ground")))
+                {
+                    shadow.transform.position = hit.point + Vector3.up * 0.1f;
+                }
+                else
+                {
+                    shadow.transform.position = transform.position;
+                }      
+
+                shadow.fadeFactor = 1 / Vector3.Distance(shadow.transform.position, transform.position);
+            }
+
             if (!isStunned)
             {
                 RotateCharacter(Time.fixedDeltaTime);
@@ -410,25 +446,7 @@ namespace CharacterSystem.Objects
             }
         }
         
-        protected virtual void Dead () 
-        { 
-            if (IsClient && CorpsePrefab != null)
-            {
-                var corpseObject = Instantiate(CorpsePrefab, transform.position, transform.rotation);
-                corpseObject.transform.localScale = transform.localScale;
-
-                foreach (var rigidbody in corpseObject.GetComponentsInChildren<Rigidbody>())
-                {
-                    rigidbody.AddForce(velocity * 1750 * UnityEngine.Random.Range(0.5f, 1.5f) + Vector3.up * 500 * UnityEngine.Random.Range(0.5f, 1.5f));
-                    rigidbody.AddTorque(
-                        Vector3.right * 4000 * UnityEngine.Random.Range(0.5f, 2f) + 
-                        Vector3.up * 4000 * UnityEngine.Random.Range(0.5f, 2f) + 
-                        Vector3.left * 4000 * UnityEngine.Random.Range(0.5f, 2f));
-                }
-
-                Destroy(corpseObject, 10);
-            }
-        }
+        protected virtual void Dead () { }
         protected virtual void Spawn () { }
 
         private Vector3 CalculateMovement (float TimeScale)
@@ -529,6 +547,26 @@ namespace CharacterSystem.Objects
             }
         }
 
+        private void SpawnCorpse()
+        {
+            if (IsClient && CorpsePrefab != null)
+            {
+                var corpseObject = Instantiate(CorpsePrefab, transform.position, transform.rotation);
+                corpseObject.transform.localScale = transform.localScale;
+
+                foreach (var rigidbody in corpseObject.GetComponentsInChildren<Rigidbody>())
+                {
+                    rigidbody.AddForce(velocity * 3000 * UnityEngine.Random.Range(0.5f, 1.5f) + Vector3.up * 500 * UnityEngine.Random.Range(0.5f, 1.5f));
+                    rigidbody.AddTorque(
+                        Vector3.right * 4000 * UnityEngine.Random.Range(0.5f, 2f) + 
+                        Vector3.up * 4000 * UnityEngine.Random.Range(0.5f, 2f) + 
+                        Vector3.left * 4000 * UnityEngine.Random.Range(0.5f, 2f));
+                }
+
+                Destroy(corpseObject, 10);
+            }
+        }
+
         private IEnumerator Regeneration ()
         {
             yield return new WaitForSeconds(7f);
@@ -544,6 +582,27 @@ namespace CharacterSystem.Objects
             regenerationCoroutine = null;
         }
 
+        [ServerRpc]
+        private void Jump_ServerRpc(Vector2 direction)
+        {
+            direction.Normalize();
+            direction *= Mathf.Max(0, Speed) * Time.fixedDeltaTime * 3f;
+
+            if (!isStunned && (IsGrounded || completeJumpCount < JumpCount) && permissions.HasFlag(CharacterPermission.AllowJump))
+            {
+                if (IsGrounded)
+                {
+                    completeJumpCount = 1;
+                }
+                else
+                {
+                    completeJumpCount++;
+                }
+
+                Jump_ClientRpc(direction);
+                Jump_Internal(direction);
+            }
+        }
         [ClientRpc]
         private void Jump_ClientRpc(Vector2 direction)
         {      
@@ -552,31 +611,20 @@ namespace CharacterSystem.Objects
                 Jump_Internal(direction);
             }    
         }
-        [ServerRpc]
-        private void Jump_ServerRpc(Vector2 direction)
-        {
-            direction.Normalize();
-            direction *= Mathf.Max(0, Speed) * Time.fixedDeltaTime * 3f;
-
-            if (!isStunned && IsGrounded && permissions.HasFlag(CharacterPermission.AllowJump))
-            {
-                Jump_ClientRpc(direction);
-                Jump_Internal(direction);
-            }
-        }
         private void Jump_Internal(Vector2 direction)
         {     
             var V3direction = new Vector3(direction.x, 0, direction.y);
             
-            if (IsClient && DodgeEffect != null) {
-                DodgeEffect.SetVector3("Direction", V3direction);
-                DodgeEffect.Play();
+            if (IsClient && JumpEffect != null) {
+                JumpEffect.SetVector3("Direction", V3direction);
+                JumpEffect.Play();
             }
 
             V3direction.y = JumpForce;
 
             Push(V3direction);
 
+            onJumpEvent.Invoke();
         }
 
         [ClientRpc] 

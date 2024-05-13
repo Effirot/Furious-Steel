@@ -11,7 +11,18 @@ using static UnityEngine.InputSystem.InputAction;
 [RequireComponent(typeof(AudioSource))]
 public sealed class VoiceChat : NetworkBehaviour
 {
+    public sealed class VoiceChatConfig 
+    {   
+        public string microphone = null;
+        public float sense = 0.15f;
+
+        internal VoiceChatConfig() { }
+    }
+
     public const int Frequency = 6000;
+
+    public static VoiceChatConfig Config { get; private set; } = new VoiceChatConfig();
+
 
     public InputActionReference inputAction;
 
@@ -26,6 +37,10 @@ public sealed class VoiceChat : NetworkBehaviour
 
     private AudioSource m_AudioSource;
     private int lastSamplePosition;
+
+    private AudioClip microphoneClip;
+
+    private float[] audioData;
 
     public override void OnNetworkSpawn()
     {
@@ -43,8 +58,16 @@ public sealed class VoiceChat : NetworkBehaviour
 
         if (IsOwner)
         {
-            m_AudioSource.clip = Microphone.Start(Microphone.devices[0], true, 1, Frequency);
+            microphoneClip = Microphone.Start(Config.microphone, true, 1, Frequency);
         }
+        else
+        {
+            m_AudioSource.clip = AudioClip.Create("Microphone", Frequency, 1, Frequency, true, PCMReaderCallback);
+            m_AudioSource.loop = true;
+            m_AudioSource.Play();
+        }
+
+        
     }
     public override void OnNetworkDespawn()
     {
@@ -64,10 +87,13 @@ public sealed class VoiceChat : NetworkBehaviour
 
     public void FixedUpdate()
     {
+
         if (IsActive && IsOwner)
         {
-            float[] samples = new float[m_AudioSource.clip.samples * m_AudioSource.clip.channels];
-                
+            float[] samples = new float[microphoneClip.samples];
+            var time = Microphone.GetPosition(Config.microphone);
+            microphoneClip.GetData(samples, time);
+            
             SendAudioClipData_ServerRpc(samples);
         }
     }
@@ -79,39 +105,39 @@ public sealed class VoiceChat : NetworkBehaviour
     private void OnActiveStateChanged_Event(bool OldValue, bool NewValue)
     {
         OnActiveStateChanged.Invoke(NewValue);
-
-        if (!NewValue && !IsOwner)
-        {
-            m_AudioSource.Stop();
-        }
     }
 
     [ServerRpc]
     private void SendAudioClipData_ServerRpc(float[] data, ServerRpcParams rpcSendParams = default)
     {
-        SendAudioClipData_ClientRpc(data, new ClientRpcParams() {
-            Send = new () {
-                TargetClientIds = NetworkManager.ConnectedClientsIds.Where(id => id != rpcSendParams.Receive.SenderClientId).ToList()
+        SendAudioClipData_ClientRpc(data,
+            new ClientRpcParams() {
+                Send = new () {
+                    TargetClientIds = NetworkManager.ConnectedClientsIds.Where(id => id != rpcSendParams.Receive.SenderClientId).ToList()
+                }
             }
-        });
+        );
     }
     [ClientRpc]
     private void SendAudioClipData_ClientRpc(float[] data, ClientRpcParams rpcSendParams = default)
     {
-        PlayAudioClipDataLocaly(data);
+        audioData = data;
     }
 
-
-    private void PlayAudioClipDataLocaly(float[] data)
+    private void PCMReaderCallback(float[] data)
     {
-        m_AudioSource.clip ??= AudioClip.Create("Microphone", 512, 1, Frequency, true, );
+        if (audioData == null) return;
 
-        m_AudioSource.clip.SetData(data, 0);
+        var arrayLength = Mathf.Min(data.Length, audioData.Length);
         
-        if (!m_AudioSource.isPlaying)
+        for (int i = 0; i < arrayLength; i++)
         {
-            m_AudioSource.timeSamples = 0;
-            m_AudioSource.Play();
-        } 
+            data[i] = audioData[i];
+            
+            if (!IsActive)
+            {
+                audioData[i] = 0;
+            }
+        }
     }
 }

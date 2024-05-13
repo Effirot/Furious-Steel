@@ -917,15 +917,13 @@ MonoBehaviour:
   maxHealth: 110
   regenerationPerSecond: 10
   <Speed>k__BackingField: 10
-  Mass: 1
+  Mass: 0.92
   CorpsePrefab: {fileID: 1051950103688114299, guid: 4620480bdbc230f4fab6609ccb8d5dbd, type: 3}
   OnHitSound: {fileID: 0}
   OnHitEffect: {fileID: 0}
-  DodgePushForce: 14
-  DodgePushTime: 0.3
-  DodgeRechargeTime: 1.1
+  JumpForce: 0.35
+  JumpCount: 1
   DodgeEffect: {fileID: 8562367368173100923}
-  DodgeSound: {fileID: 7661303531023154292}
   <TeamIndex>k__BackingField: 0
   moveInput: {fileID: -3797342247120088548, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   lookInput: {fileID: 9093183501225965390, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
@@ -946,11 +944,6 @@ MonoBehaviour:
   references:
     version: 2
     RefIds: []
---- !u!82 &7661303531023154292 stripped
-AudioSource:
-  m_CorrespondingSourceObject: {fileID: 5866190622722593410, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
-  m_PrefabInstance: {fileID: 4267881592209223414}
-  m_PrefabAsset: {fileID: 0}
 --- !u!2083052967 &8562367368173100923 stripped
 VisualEffect:
   m_CorrespondingSourceObject: {fileID: 5614067285868523917, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}

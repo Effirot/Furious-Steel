@@ -26,7 +26,7 @@ public class ExplodeProjectile : Projectile
 
     private void Explode()
     {
-        if (Summoner.IsUnityNull()) 
+        if (!IsOwner && Summoner.IsUnityNull()) 
             return;
 
         foreach (var collider in Physics.OverlapSphere(transform.position, Range))

@@ -133,7 +133,11 @@ public class SphereColliderAutoAim : NetworkBehaviour
                 } 
             }
 
-            target = targetCollider.transform;
+            if (targetCollider != null)
+            {
+                target = targetCollider.transform;
+            }
+
 
             yield return wait;
         }

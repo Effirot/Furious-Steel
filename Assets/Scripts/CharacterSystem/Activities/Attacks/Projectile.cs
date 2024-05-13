@@ -115,7 +115,7 @@ public class Projectile : NetworkBehaviour,
 
         if (IsSpawned && IsServer)
         {
-            Destroy(NetworkObject.gameObject);
+            NetworkObject.Despawn();
         }
     }
 

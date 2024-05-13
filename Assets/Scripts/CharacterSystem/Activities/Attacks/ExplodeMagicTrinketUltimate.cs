@@ -32,7 +32,12 @@ public class ExplodeMagicTrinketUltimate : UltimateDamageSource
         {
             var deliveryReport = Damage.Deliver(report.target, new Damage(0, Invoker, 0, Vector3.zero, Damage.Type.Effect, burnEffect));
             
-            burnEffects.AddRange(deliveryReport?.RecievedEffects?.Where(effect => effect is BurnEffect).Select(effect => (BurnEffect)effect));
+            var collection = deliveryReport?.RecievedEffects?.Where(effect => effect is BurnEffect).Select(effect => (BurnEffect)effect);
+
+            if (collection.Any())
+            {
+                burnEffects.AddRange(collection);
+            }
         }
     }
 

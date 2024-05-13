@@ -79,7 +79,7 @@ namespace CharacterSystem.Blocking
 
         public virtual bool Block(ref Damage damage)
         {
-            if (damage.type == Damage.Type.Parrying || damage.type == Damage.Type.Unblockable) 
+            if (damage.type == Damage.Type.Parrying || damage.type == Damage.Type.Unblockable || damage.type == Damage.Type.Effect) 
                 return false;
 
             if (IsBlockInProcess)
@@ -155,6 +155,12 @@ namespace CharacterSystem.Blocking
         private void StartBlockProcess()
         {
             if (!Invoker.permissions.HasFlag(CharacterPermission.AllowBlocking))
+                return;
+
+            if (HasOverrides())
+                return;
+
+            if (Invoker.isStunned)
                 return;
 
             StopBlockProcess();

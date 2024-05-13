@@ -270,7 +270,11 @@ namespace CharacterSystem.Attacks
                 Invoker.permissions = CharacterPermission.Default;
                 
                 currentAttackDamageReport = null;
-                OnAttackEnded.Invoke();
+                
+                if (gameObject.activeInHierarchy)
+                {
+                    OnAttackEnded.Invoke();
+                }
             }
         }
     }

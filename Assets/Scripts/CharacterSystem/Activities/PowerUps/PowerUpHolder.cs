@@ -81,10 +81,9 @@ namespace CharacterSystem.PowerUps
 
         protected override void OnStateChanged(bool IsPressed)
         {
-            if (IsServer && powerUp != null && Invoker.permissions.HasFlag(CharacterPermission.AllowPowerUps))
+            if (IsPressed && IsServer && !HasOverrides() && powerUp != null && Invoker.permissions.HasFlag(CharacterPermission.AllowPowerUps))
             {
                 Activate_ClientRpc(Id);
-
                 if (!IsClient)
                 {
                     Activate_Internal(Id);
@@ -104,7 +103,6 @@ namespace CharacterSystem.PowerUps
         {
             Activate_Internal(Id);
         }
-
         private void Activate_Internal(int Id)
         {
             if (Id >= 0 && Id < PowerUp.AllPowerUps.Length) 
