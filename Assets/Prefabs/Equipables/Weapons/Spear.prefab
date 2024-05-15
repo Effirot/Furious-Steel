@@ -483,7 +483,7 @@ MonoBehaviour:
   IsInterruptableWhenBlocked: 0
   IsInterruptOnHit: 0
   RestartWhenHolding: 1
-  SpeedReducing: 3
+  SpeedReducing: 1
   attackQueue:
   - rid: 868177009411096655
   - rid: 8630937662073602138
@@ -505,18 +505,18 @@ MonoBehaviour:
         WaitTime: 0.3
         MinWaitTime: 0.01
         ReducingByHit: 0.08
-        Permissions: 1792
+        Permissions: 12032
     - rid: 868177009411096656
       type: {class: InterruptableWait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         WaitTime: 0.2
         LastHitRequireSeconds: 0.1
-        Permissions: 5376
+        Permissions: 15616
     - rid: 2961813231421882370
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         WaitTime: 0.2
-        Permissions: 5888
+        Permissions: 16128
     - rid: 2961813231421882371
       type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
@@ -751,7 +751,7 @@ MonoBehaviour:
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         WaitTime: 0.1
-        Permissions: 1024
+        Permissions: 0
     - rid: 868176906250092653
       type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
@@ -999,8 +999,7 @@ MonoBehaviour:
   SpeedReducing: 5
   attackQueue:
   - rid: 5691645226531684433
-  - rid: 5691645226531684437
-  - rid: 6352953082370064458
+  - rid: 8630937930187669693
   - rid: 8630937662073602139
   - rid: 2961813231421882371
   - rid: 5691645198379778129
@@ -1063,32 +1062,29 @@ MonoBehaviour:
     - rid: 5691645198379778129
       type: {class: InterruptableWait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        WaitTime: 0.6
+        WaitTime: 0.2
         LastHitRequireSeconds: 0.1
-        Permissions: 5888
+        Permissions: 13056
     - rid: 5691645198379778176
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         WaitTime: 0.1
-        Permissions: 5888
+        Permissions: 13056
     - rid: 5691645226531684433
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         WaitTime: 0.1
         Permissions: 65280
-    - rid: 5691645226531684437
-      type: {class: Push, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        CastPushDirection: {x: 0, y: 0, z: 0.8}
-    - rid: 6352953082370064458
-      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        WaitTime: 0.2
-        Permissions: 256
     - rid: 8630937662073602139
       type: {class: PlayAnimation, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         AnimationName: Torso.Attack1
+    - rid: 8630937930187669693
+      type: {class: Move, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        MoveDirection: {x: 0, y: 0, z: 35}
+        time: 0.1
+        permission: 0
 --- !u!1 &7324458738964129770
 GameObject:
   m_ObjectHideFlags: 0

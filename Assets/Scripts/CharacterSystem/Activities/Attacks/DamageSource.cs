@@ -331,6 +331,52 @@ namespace CharacterSystem.Attacks
 
         }
     }
+    [Serializable]
+    public sealed class Move : AttackQueueElement, Charger.IChargeListener
+    {
+        [Header("Events")]
+        
+        [Space]
+        [SerializeField]
+        private Vector3 MoveDirection = Vector3.forward * 30;
+
+        [SerializeField, Range(0, 10)]
+        private float time = 0.2f;
+
+        [SerializeField]
+        private CharacterPermission permission = CharacterPermission.None;
+        
+        public override IEnumerator AttackPipeline(DamageSource source)
+        {
+            yield return ChargedAttackPipeline(source, 1, false, false);
+        }
+        public IEnumerator ChargedAttackPipeline(DamageSource source, float chargeValue, bool flexibleCollider, bool flexibleDamage)
+        {            
+            if (source.Invoker.gameObject.TryGetComponent<CharacterController>(out var component))
+            {
+                source.Invoker.permissions = permission;
+
+                var waitForFixedUpdate = new WaitForFixedUpdate();
+                var wasteTime = 0f;
+
+                while (wasteTime < time * chargeValue)
+                {
+                    component.Move(source.transform.rotation * MoveDirection * Time.fixedDeltaTime);
+
+                    yield return waitForFixedUpdate;
+
+                    wasteTime += Time.fixedDeltaTime;
+                }
+            }
+
+            yield break;
+        }
+
+        public override void OnDrawGizmos(Transform transform)
+        {
+
+        }
+    }
     
     [Serializable]
     public sealed class Event : AttackQueueElement
@@ -473,7 +519,11 @@ namespace CharacterSystem.Attacks
     [Serializable]
     public sealed class ProjectileShooter : AttackQueueElement, Charger.IChargeListener
     {
+        [SerializeField]
         public GameObject projectilePrefab;
+
+        [SerializeField]
+        public Vector3 direction = Vector3.forward;        
 
         public override IEnumerator AttackPipeline(DamageSource source)
         {
@@ -503,7 +553,7 @@ namespace CharacterSystem.Attacks
 
                     yield break;
                 }
-                projectile.Initialize(source.transform.forward, source.Invoker);
+                projectile.Initialize(source.transform.rotation * direction, source.Invoker);
 
                 projectile.speed *= chargeValue;
                 if (flexibleDamage)
@@ -628,7 +678,7 @@ namespace CharacterSystem.Attacks
             yield return new WaitUntil(() => {
                 if (source.Invoker.gameObject.TryGetComponent<CharacterController>(out var character))
                 {
-                    return Reverse ? character.isGrounded : !character.isGrounded;
+                    return Reverse ? !character.isGrounded : character.isGrounded;
                 }
                 
                 return true;

@@ -27,9 +27,12 @@ public class Projectile : NetworkBehaviour,
   
     [field : SerializeField]
     public bool DamageOnHit { get; private set; }
-    
+
     [field : SerializeField]
     public bool AllowDeflecting { get; private set; }
+
+    [field : SerializeField, Range(0, 0.1f)]
+    public float Gravity { get; private set; } = 0;
 
     [SerializeField]
     public UnityEvent onDespawnEvent = new UnityEvent();
@@ -155,6 +158,9 @@ public class Projectile : NetworkBehaviour,
         if (IsServer)
         {
             transform.position += MoveDirection * Time.fixedDeltaTime * speed;
+
+            MoveDirection = Vector3.Lerp(MoveDirection, Physics.gravity, Gravity);
+            
 
             network_position.Value = transform.position;
 

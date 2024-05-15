@@ -305,12 +305,11 @@ MonoBehaviour:
   IsPerformingAsDefault: 1
   IsInterruptableWhenBlocked: 0
   IsInterruptOnHit: 1
+  RestartWhenHolding: 1
   SpeedReducing: 2
   attackQueue:
   - rid: 6352953245085466719
-  - rid: 6352953245085466701
-  - rid: 868176997118902382
-  - rid: 6352953245085466721
+  - rid: 8630937930187669694
   - rid: 6352953245085466705
   - rid: 868176997118902345
   - rid: 6352953245085466709
@@ -352,21 +351,7 @@ MonoBehaviour:
       data:
         WaitTime: 0.7
         LastHitRequireSeconds: 0.1
-        Permissions: 5376
-    - rid: 868176997118902382
-      type: {class: Push, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        CastPushDirection: {x: 0, y: 0, z: 0.7}
-    - rid: 6352953245085466701
-      type: {class: HoldRepeat, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        queueElement:
-          rid: 6352953245085466703
-    - rid: 6352953245085466703
-      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        WaitTime: 0.1
-        Permissions: 1792
+        Permissions: 65280
     - rid: 6352953245085466705
       type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
@@ -404,7 +389,7 @@ MonoBehaviour:
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         WaitTime: 0.5
-        Permissions: 5888
+        Permissions: 65280
     - rid: 6352953245085466713
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
@@ -422,12 +407,13 @@ MonoBehaviour:
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         WaitTime: 0.2
-        Permissions: 1792
-    - rid: 6352953245085466721
-      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+        Permissions: 12032
+    - rid: 8630937930187669694
+      type: {class: Move, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        WaitTime: 0.3
-        Permissions: 1792
+        MoveDirection: {x: 0, y: 0, z: 30}
+        time: 0.1
+        permission: 10240
 --- !u!1 &2720063402213980406
 GameObject:
   m_ObjectHideFlags: 0
@@ -478,10 +464,10 @@ MonoBehaviour:
   IsPerformingAsDefault: 0
   IsInterruptableWhenBlocked: 0
   IsInterruptOnHit: 1
+  RestartWhenHolding: 1
   SpeedReducing: 1
   attackQueue:
   - rid: 6352953245085466718
-  - rid: 6352953245085466700
   - rid: 6352953245085466720
   - rid: 6352953245085466704
   - rid: 868176997118902380
@@ -549,23 +535,13 @@ MonoBehaviour:
         WaitTime: 0.4
         MinWaitTime: 0.1
         ReducingByHit: 0.07
-        Permissions: 1280
+        Permissions: 9472
     - rid: 6352953245085466698
       type: {class: InterruptableWait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         WaitTime: 0.3
         LastHitRequireSeconds: 0.6
-        Permissions: 1792
-    - rid: 6352953245085466700
-      type: {class: HoldRepeat, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        queueElement:
-          rid: 6352953245085466702
-    - rid: 6352953245085466702
-      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        WaitTime: 0.05
-        Permissions: 1792
+        Permissions: 12032
     - rid: 6352953245085466704
       type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
@@ -644,12 +620,12 @@ MonoBehaviour:
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         WaitTime: 0.11
-        Permissions: 1792
+        Permissions: 12032
     - rid: 6352953245085466720
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         WaitTime: 0.05
-        Permissions: 1280
+        Permissions: 11520
 --- !u!1 &3064985464026961555
 GameObject:
   m_ObjectHideFlags: 0
@@ -1601,6 +1577,7 @@ MonoBehaviour:
   IsPerformingAsDefault: 1
   IsInterruptableWhenBlocked: 0
   IsInterruptOnHit: 1
+  RestartWhenHolding: 1
   SpeedReducing: 3
   attackQueue:
   - rid: 868176997118902383
@@ -1648,13 +1625,13 @@ MonoBehaviour:
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         WaitTime: 0.2
-        Permissions: 1280
+        Permissions: 2304
     - rid: 868176997118902384
       type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         casters:
         - rid: 868176997118902385
-        CastPushDirection: {x: 0, y: 0, z: 0.5}
+        CastPushDirection: {x: 0, y: 0.3, z: -0.4}
         OnCast:
           m_PersistentCalls:
             m_Calls:
@@ -1722,7 +1699,7 @@ MonoBehaviour:
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         WaitTime: 0.2
-        Permissions: 1280
+        Permissions: 64256
 --- !u!1 &8459401213791337542
 GameObject:
   m_ObjectHideFlags: 0
@@ -1773,10 +1750,10 @@ MonoBehaviour:
   IsPerformingAsDefault: 1
   IsInterruptableWhenBlocked: 0
   IsInterruptOnHit: 1
+  RestartWhenHolding: 1
   SpeedReducing: 1
   attackQueue:
   - rid: 6352953245085466719
-  - rid: 6352953245085466701
   - rid: 6352953245085466721
   - rid: 6352953245085466705
   - rid: 868176997118902381
@@ -1844,23 +1821,13 @@ MonoBehaviour:
         WaitTime: 0.4
         MinWaitTime: 0.1
         ReducingByHit: 0.07
-        Permissions: 1280
+        Permissions: 9472
     - rid: 6352953245085466699
       type: {class: InterruptableWait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         WaitTime: 0.3
         LastHitRequireSeconds: 0.6
-        Permissions: 1792
-    - rid: 6352953245085466701
-      type: {class: HoldRepeat, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        queueElement:
-          rid: 6352953245085466703
-    - rid: 6352953245085466703
-      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        WaitTime: 0.05
-        Permissions: 1792
+        Permissions: 12032
     - rid: 6352953245085466705
       type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
@@ -1939,12 +1906,12 @@ MonoBehaviour:
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         WaitTime: 0.11
-        Permissions: 1792
+        Permissions: 12032
     - rid: 6352953245085466721
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         WaitTime: 0.05
-        Permissions: 1280
+        Permissions: 11520
 --- !u!1 &9175946607756572356
 GameObject:
   m_ObjectHideFlags: 0

@@ -220,6 +220,13 @@ namespace CharacterSystem.Objects
 
                     action.performed += OnJump;
                     action.canceled += OnJump;
+
+                    isGroundedEvent += isGrounded => {
+                        if (action.IsPressed() && isGrounded)
+                        {
+                            Jump(movementVector);
+                        }
+                    };
                 }
 
                 if (killBindInput != null) {

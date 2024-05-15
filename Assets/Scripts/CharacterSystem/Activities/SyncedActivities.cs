@@ -71,7 +71,7 @@ public abstract class SyncedActivities : NetworkBehaviour
 
     public bool HasOverrides()
     {
-        if (!syncedActivityOverrider.IsUnityNull())
+        if (syncedActivityOverrider.IsUnityNull())
         {
             syncedActivityOverrider = regsitredSyncedActivities.Find(
                 activity => 

@@ -24,7 +24,13 @@ public class ExplodePowerUp : PowerUp
                 var VectorToTarget = holder.transform.position - collider.transform.position;
                 VectorToTarget.Normalize();
 
-                Damage.Deliver(collider.gameObject, new Damage()
+                holder.Character.Push(new Vector3(
+                    holder.Character.movementVector.x,
+                    0.8f,
+                    holder.Character.movementVector.y
+                ));
+
+                var report = Damage.Deliver(collider.gameObject, new Damage()
                 {
                     value = 50,
                     stunlock = 0.8f,
@@ -32,6 +38,13 @@ public class ExplodePowerUp : PowerUp
                     type = Damage.Type.Unblockable,
                     sender = holder.Invoker
                 });
+
+                if (holder.Character is PlayerNetworkCharacter)
+                {
+                    var playerCharacter = (PlayerNetworkCharacter)holder.Character;
+
+                    playerCharacter.DamageDelivered(report);
+                }
             }
         }
 

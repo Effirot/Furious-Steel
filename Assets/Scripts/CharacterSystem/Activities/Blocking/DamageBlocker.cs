@@ -163,6 +163,14 @@ namespace CharacterSystem.Blocking
             if (Invoker.isStunned)
                 return;
 
+            if (IsServer)
+            {
+                foreach (var attacks in Invoker.gameObject.GetComponentsInChildren<DamageSource>())
+                {
+                    attacks.EndAttack();
+                }
+            }
+
             StopBlockProcess();
 
             Invoker.Blocker = this;

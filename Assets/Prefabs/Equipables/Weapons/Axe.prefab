@@ -101,12 +101,12 @@ MonoBehaviour:
         WaitTime: 0.15
         MinWaitTime: 0.03
         ReducingByHit: 0.055
-        Permissions: 3840
+        Permissions: 12032
     - rid: 2961813231421882370
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         WaitTime: 0.03
-        Permissions: 7424
+        Permissions: 11520
     - rid: 2961813231421882371
       type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
@@ -499,15 +499,6 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 868177009411096657
-      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        WaitTime: 0.15
-        Permissions: 1792
-    - rid: 868177009411096658
-      type: {class: Push, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        CastPushDirection: {x: 0, y: 0, z: 0.6}
     - rid: 868177088022052937
       type: {class: PlayAnimation, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
@@ -520,7 +511,7 @@ MonoBehaviour:
     - rid: 2961813231421882470
       type: {class: Charger, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Permissions: 3840
+        Permissions: 12032
         MaxChargingTime: 0.25
         MinChargeValue: 0.4
         MaxChargeValue: 1
@@ -554,14 +545,13 @@ MonoBehaviour:
           rid: 2961813231421882471
         FullyChargeQueue:
           queue:
-          - rid: 868177009411096658
-          - rid: 868177009411096657
+          - rid: 8630937930187669689
     - rid: 2961813231421882471
       type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         casters:
         - rid: 2961813231421882472
-        CastPushDirection: {x: 0, y: 0, z: 0.2}
+        CastPushDirection: {x: 0, y: 0.3, z: 0.39}
         OnCast:
           m_PersistentCalls:
             m_Calls:
@@ -619,6 +609,12 @@ MonoBehaviour:
       data:
         WaitTime: 0.2
         Permissions: 65280
+    - rid: 8630937930187669689
+      type: {class: Move, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        MoveDirection: {x: 0, y: 0, z: 45}
+        time: 0.1
+        permission: 0
 --- !u!1 &1850735933972790135
 GameObject:
   m_ObjectHideFlags: 0
@@ -1095,6 +1091,8 @@ MonoBehaviour:
   RestartWhenHolding: 1
   SpeedReducing: 3
   attackQueue:
+  - rid: 8630937930187669690
+  - rid: 8630937930187669691
   - rid: 868176906250092643
   OnDamageReport:
     m_PersistentCalls:
@@ -1115,7 +1113,7 @@ MonoBehaviour:
       data:
         casters:
         - rid: 868176906250092644
-        CastPushDirection: {x: 0, y: 0, z: 0.2}
+        CastPushDirection: {x: 0, y: 0.41, z: 0.2}
         OnCast:
           m_PersistentCalls:
             m_Calls:
@@ -1180,6 +1178,15 @@ MonoBehaviour:
         position: {x: 0, y: 0, z: 1.76}
         size: {x: 0.67, y: 1, z: 1}
         angle: {x: 0, y: 0, z: 0}
+    - rid: 8630937930187669690
+      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        WaitTime: 0.1
+        Permissions: 0
+    - rid: 8630937930187669691
+      type: {class: PlayAnimation, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        AnimationName: Torso.Attack1
 --- !u!1 &4748355354840485092
 GameObject:
   m_ObjectHideFlags: 0
@@ -1712,12 +1719,12 @@ MonoBehaviour:
         WaitTime: 0.15
         MinWaitTime: 0.03
         ReducingByHit: 0.055
-        Permissions: 3840
+        Permissions: 12032
     - rid: 2961813231421882370
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         WaitTime: 0.03
-        Permissions: 7424
+        Permissions: 11520
     - rid: 2961813231421882371
       type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:

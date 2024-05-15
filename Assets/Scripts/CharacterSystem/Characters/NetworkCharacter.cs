@@ -303,6 +303,17 @@ namespace CharacterSystem.Objects
 
                 Spawn_ClientRpc();
             }
+
+            if (IsClient)
+            {
+                isGroundedEvent += (isGrounded) => 
+                {
+                    if (isGrounded)
+                    {
+                        JumpEffect.Play();
+                    }
+                };
+            }
         }
         public override void OnNetworkDespawn ()
         {
@@ -616,7 +627,6 @@ namespace CharacterSystem.Objects
             var V3direction = new Vector3(direction.x, 0, direction.y);
             
             if (IsClient && JumpEffect != null) {
-                JumpEffect.SetVector3("Direction", V3direction);
                 JumpEffect.Play();
             }
 
