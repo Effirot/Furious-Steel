@@ -16,17 +16,46 @@ public class ExplodeProjectile : Projectile
     [SerializeField]
     private Damage explodeDamage;
 
+    [field : SerializeField]
+    public GameObject OnExplodePrefab { get; private set; }
+
+    [SerializeField, Range(0, 5)]
+    private float PereodicExplodeDelay = 0;
+
+    private float explodeTimer = 0;
 
     public override void OnNetworkDespawn()
     {
         base.OnNetworkDespawn();
 
-        Explode();
+        Explode_ClientRpc();
     }
 
+    protected override void FixedUpdate()
+    {
+        base.FixedUpdate();
+
+        if (PereodicExplodeDelay > 0)
+        {
+            explodeTimer += Time.fixedDeltaTime;
+
+            if (explodeTimer > PereodicExplodeDelay)
+            {
+                Explode_ClientRpc();
+
+                explodeTimer = 0;
+            }
+        }
+    }
+
+    [ClientRpc]
+    private void Explode_ClientRpc()
+    {
+        Explode();
+    }
     private void Explode()
     {
-        if (!IsOwner && Summoner.IsUnityNull()) 
+        if (Summoner.IsUnityNull()) 
             return;
 
         foreach (var collider in Physics.OverlapSphere(transform.position, Range))
@@ -36,7 +65,18 @@ public class ExplodeProjectile : Projectile
             explodeDamage.pushDirection.Normalize();
             explodeDamage.pushDirection *= PushForce;
 
-            Summoner.DamageDelivered(Damage.Deliver(collider.gameObject, explodeDamage));
+            var report = Damage.Deliver(collider.gameObject, explodeDamage);
+            
+            onDamageDeliveryReport?.Invoke(report);
+        }
+
+        if (!OnExplodePrefab.IsUnityNull())
+        {
+            var gameObject = Instantiate(OnExplodePrefab, transform.position, transform.rotation);
+
+            gameObject.SetActive(true);
+
+            Destroy(gameObject, 4);
         }
     }
 

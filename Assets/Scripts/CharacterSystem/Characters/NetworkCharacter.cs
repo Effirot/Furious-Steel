@@ -460,6 +460,38 @@ namespace CharacterSystem.Objects
         protected virtual void Dead () { }
         protected virtual void Spawn () { }
 
+        protected virtual GameObject SpawnCorpse()
+        {
+            if (IsClient && CorpsePrefab != null)
+            {
+                var corpseObject = Instantiate(CorpsePrefab, transform.position, transform.rotation);
+
+                corpseObject.SetActive(true);
+                corpseObject.transform.localScale = transform.localScale;
+                
+                if (corpseObject.TryGetComponent<AudioSource>(out var audio))
+                {
+                    audio.enabled = true;
+                    audio.Play();
+                }
+
+                foreach (var rigidbody in corpseObject.GetComponentsInChildren<Rigidbody>())
+                {
+                    rigidbody.AddForce(velocity * 3000 * UnityEngine.Random.Range(0.5f, 1.5f) + Vector3.up * 500 * UnityEngine.Random.Range(0.5f, 1.5f));
+                    rigidbody.AddTorque(
+                        Vector3.right * 4000 * UnityEngine.Random.Range(0.5f, 2f) + 
+                        Vector3.up * 4000 * UnityEngine.Random.Range(0.5f, 2f) + 
+                        Vector3.left * 4000 * UnityEngine.Random.Range(0.5f, 2f));
+                }
+
+                Destroy(corpseObject, 10);
+
+                return corpseObject;
+            }
+
+            return null;
+        }
+
         private Vector3 CalculateMovement (float TimeScale)
         {
             var characterMovement = Vector3.zero;
@@ -555,26 +587,6 @@ namespace CharacterSystem.Objects
 
                 animator.SetBool("Dodge", isDashing);
                 
-            }
-        }
-
-        private void SpawnCorpse()
-        {
-            if (IsClient && CorpsePrefab != null)
-            {
-                var corpseObject = Instantiate(CorpsePrefab, transform.position, transform.rotation);
-                corpseObject.transform.localScale = transform.localScale;
-
-                foreach (var rigidbody in corpseObject.GetComponentsInChildren<Rigidbody>())
-                {
-                    rigidbody.AddForce(velocity * 3000 * UnityEngine.Random.Range(0.5f, 1.5f) + Vector3.up * 500 * UnityEngine.Random.Range(0.5f, 1.5f));
-                    rigidbody.AddTorque(
-                        Vector3.right * 4000 * UnityEngine.Random.Range(0.5f, 2f) + 
-                        Vector3.up * 4000 * UnityEngine.Random.Range(0.5f, 2f) + 
-                        Vector3.left * 4000 * UnityEngine.Random.Range(0.5f, 2f));
-                }
-
-                Destroy(corpseObject, 10);
             }
         }
 

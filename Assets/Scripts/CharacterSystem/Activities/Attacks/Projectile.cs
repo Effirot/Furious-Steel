@@ -13,6 +13,8 @@ public class Projectile : NetworkBehaviour,
     IDamagable,
     ITeammate
 {
+    public delegate void OnDamageDeliveryReport(DamageDeliveryReport damageDeliveryReport);
+
     [field : SerializeField, Range (0.1f, 100)]
     public float speed = 1;
 
@@ -21,9 +23,6 @@ public class Projectile : NetworkBehaviour,
 
     [field : SerializeField, Range (0.1f, 10)]
     private float lifetime = 3;
-
-    [field : SerializeField]
-    public GameObject OnDestroyPrefab { get; private set; }
   
     [field : SerializeField]
     public bool DamageOnHit { get; private set; }
@@ -39,6 +38,8 @@ public class Projectile : NetworkBehaviour,
 
     [SerializeField]
     public Damage damage;
+
+    public OnDamageDeliveryReport onDamageDeliveryReport;
     
 
     public Vector3 MoveDirection 
@@ -85,11 +86,18 @@ public class Projectile : NetworkBehaviour,
     private NetworkVariable<Vector3> network_moveDirection = new NetworkVariable<Vector3> (Vector3.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
 
-    public void Initialize (Vector3 direction, IDamageSource summoner)
+    public void Initialize (Vector3 direction, IDamageSource summoner, OnDamageDeliveryReport onDamageDeliveryReport = null)
     {
+        if (!IsSpawned)
+        {
+            NetworkObject.Spawn();
+        }
+
         Push (direction);
 
         Summoner = summoner;
+
+        this.onDamageDeliveryReport = onDamageDeliveryReport;
     }
 
     public bool Hit (Damage damage)
@@ -114,8 +122,6 @@ public class Projectile : NetworkBehaviour,
 
     public virtual void Kill ()
     {
-        GenerateOnDestroyPrefab();
-
         if (IsSpawned && IsServer)
         {
             NetworkObject.Despawn();
@@ -149,7 +155,7 @@ public class Projectile : NetworkBehaviour,
         onDespawnEvent.Invoke();
     }
 
-    private void FixedUpdate ()
+    protected virtual void FixedUpdate ()
     {
         if (!IsSpawned) return;
 
@@ -176,7 +182,7 @@ public class Projectile : NetworkBehaviour,
             transform.rotation = Quaternion.LookRotation(network_moveDirection.Value);
         }
     }
-    private void OnTriggerEnter (Collider other)
+    protected virtual void OnTriggerEnter (Collider other)
     {
         if (!IsSpawned) return;
         if (!DamageOnHit) return;
@@ -191,7 +197,6 @@ public class Projectile : NetworkBehaviour,
         {
             if (report.isDelivered)
             {
-                Summoner.DamageDelivered(report);
                 if (report.isBlocked && AllowDeflecting)
                 {
                     Push(other.transform.forward);
@@ -212,16 +217,8 @@ public class Projectile : NetworkBehaviour,
                 }
             }
         }
-    }
-    private void GenerateOnDestroyPrefab()
-    {
-        if (OnDestroyPrefab != null)
-        {
-            var Object = Instantiate(OnDestroyPrefab, transform.position, transform.rotation);
-            Object.SetActive(true);
-            Object.GetComponent<CinemachineImpulseSource>()?.GenerateImpulse();
-            Destroy(Object, 4);
-        }
+
+        onDamageDeliveryReport?.Invoke(report);
     }
 
     private void CheckGroundCollision()

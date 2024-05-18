@@ -553,7 +553,7 @@ namespace CharacterSystem.Attacks
 
                     yield break;
                 }
-                projectile.Initialize(source.transform.rotation * direction, source.Invoker);
+                projectile.Initialize(source.transform.rotation * direction, source.Invoker, source.HandleDamageReport);
 
                 projectile.speed *= chargeValue;
                 if (flexibleDamage)

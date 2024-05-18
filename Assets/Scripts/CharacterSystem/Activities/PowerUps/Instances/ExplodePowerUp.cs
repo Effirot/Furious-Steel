@@ -24,11 +24,7 @@ public class ExplodePowerUp : PowerUp
                 var VectorToTarget = holder.transform.position - collider.transform.position;
                 VectorToTarget.Normalize();
 
-                holder.Character.Push(new Vector3(
-                    holder.Character.movementVector.x,
-                    0.8f,
-                    holder.Character.movementVector.y
-                ));
+                holder.Invoker.Push(Vector3.up * 0.6f + holder.Invoker.transform.forward);
 
                 var report = Damage.Deliver(collider.gameObject, new Damage()
                 {
@@ -39,12 +35,7 @@ public class ExplodePowerUp : PowerUp
                     sender = holder.Invoker
                 });
 
-                if (holder.Character is PlayerNetworkCharacter)
-                {
-                    var playerCharacter = (PlayerNetworkCharacter)holder.Character;
-
-                    playerCharacter.DamageDelivered(report);
-                }
+                holder.Invoker.DamageDelivered(report);
             }
         }
 
@@ -52,5 +43,10 @@ public class ExplodePowerUp : PowerUp
         GameObject.Destroy(explodeEffectObject, 5);
 
         explodeEffectObject.GetComponent<CinemachineImpulseSource>()?.GenerateImpulse();   
+    }
+
+    public override bool IsValid(PowerUpHolder holder)
+    {
+        return holder is not BagPowerUpHolder;
     }
 }

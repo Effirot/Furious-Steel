@@ -213,6 +213,7 @@ MonoBehaviour:
       type: {class: ProjectileShooter, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         projectilePrefab: {fileID: 6845969276890429663, guid: e693aee615084e94296a94df13b4fc19, type: 3}
+        direction: {x: 0, y: 0, z: 1}
     - rid: 8630937770391502933
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
@@ -667,6 +668,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6056542105741424838}
+  - component: {fileID: 963998028711503832}
   m_Layer: 6
   m_Name: Ultimate
   m_TagString: Untagged
@@ -689,6 +691,46 @@ Transform:
   m_Children: []
   m_Father: {fileID: 6939889687448814556}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &963998028711503832
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4599782399667057845}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d66bbf5c70176ad4f93959db1bbb4fb9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  inputAction: {fileID: -697749738134341483, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
+  Priority: 2
+  IsPerformingAsDefault: 1
+  IsInterruptableWhenBlocked: 0
+  IsInterruptOnHit: 1
+  RestartWhenHolding: 1
+  SpeedReducing: 3
+  attackQueue:
+  - rid: 8630937973846966352
+  OnDamageReport:
+    m_PersistentCalls:
+      m_Calls: []
+  OnAttackEnded:
+    m_PersistentCalls:
+      m_Calls: []
+  RequireDamage: 130
+  ClearCharge: 1
+  OnUltimateReady:
+    m_PersistentCalls:
+      m_Calls: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 8630937973846966352
+      type: {class: ProjectileShooter, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        projectilePrefab: {fileID: 9105060519269508590, guid: 3c631cf22d06a164e8c0edbb131fcd81, type: 3}
+        direction: {x: 0, y: 0, z: 1}
 --- !u!1 &4748355354840485092
 GameObject:
   m_ObjectHideFlags: 0
@@ -966,7 +1008,7 @@ MonoBehaviour:
     - rid: 3189152335008104539
       type: {class: WaitForGroudpound, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Permissions: 0
+        Permissions: 1024
         Reverse: 0
     - rid: 3189152335008104540
       type: {class: Push, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}

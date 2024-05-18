@@ -290,19 +290,6 @@ namespace CharacterSystem.Objects
 
         protected override void Dead()
         {
-            if (IsClient && CorpsePrefab != null)
-            {
-                var corpseObject = Instantiate(CorpsePrefab, transform.position, transform.rotation);
-                corpseObject.transform.localScale = transform.localScale;
-
-                Destroy(corpseObject, 10);
-
-                if (IsOwner)
-                {
-                    CharacterUIObserver.Singleton.observingTransform = corpseObject.transform;
-                }    
-            }
-
             OnPlayerCharacterDead.Invoke(this);
 
             if (IsOwner)
@@ -315,6 +302,18 @@ namespace CharacterSystem.Objects
             base.Spawn();
 
             OnPlayerCharacterSpawn.Invoke(this);
+        }
+
+        protected override GameObject SpawnCorpse()
+        {
+            var gameObject = base.SpawnCorpse();
+
+            if (IsOwner && !gameObject.IsUnityNull())
+            {
+                CharacterUIObserver.Singleton.observingTransform = gameObject.transform;
+            }
+
+            return gameObject;
         }
 
         protected virtual void OnOwnerPlayerDataChanged(NetworkListEvent<RoomManager.PublicClientData> changeEvent)

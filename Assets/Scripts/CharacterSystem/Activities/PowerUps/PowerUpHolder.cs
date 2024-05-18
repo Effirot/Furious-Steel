@@ -26,12 +26,8 @@ namespace CharacterSystem.PowerUps
 
     }
 
-    [RequireComponent(typeof(NetworkCharacter))]
     public class PowerUpHolder : SyncedActivities<IPowerUpActivator>
-    {   
-        [HideInInspector]
-        public NetworkCharacter Character;
-
+    {
         public PowerUp powerUp => Id < 0 || Id >= PowerUp.AllPowerUps.Length ? null : PowerUp.AllPowerUps[Id];
 
         public int Id => network_powerUpId.Value;
@@ -79,9 +75,36 @@ namespace CharacterSystem.PowerUps
             }
         }
 
+        protected virtual void OnTriggerStay(Collider other)
+        {
+            if (IsServer && powerUp == null && !HasOverrides() && other.TryGetComponent<PowerUpContainer>(out var container))
+            {
+                if (container.powerUp.IsValid(this))
+                {
+                    network_powerUpId.Value = container.Id;
+                    
+                    powerUp.OnPick(this);
+                }
+                else
+                {
+                    container.powerUp.Activate(this);
+                }
+
+                container.NetworkObject.Despawn();
+            }
+        }
+
         protected override void OnStateChanged(bool IsPressed)
         {
-            if (IsPressed && IsServer && !HasOverrides() && powerUp != null && Invoker.permissions.HasFlag(CharacterPermission.AllowPowerUps))
+            if (IsPressed && !HasOverrides() && powerUp != null && Invoker.permissions.HasFlag(CharacterPermission.AllowPowerUps))
+            {
+                Activate();
+            }
+        }
+
+        public void Activate()
+        {
+            if (IsServer)
             {
                 Activate_ClientRpc(Id);
                 if (!IsClient)
@@ -91,11 +114,6 @@ namespace CharacterSystem.PowerUps
                 
                 network_powerUpId.Value = -1;
             }
-        }
-
-        private void Awake()
-        {            
-            Character = GetComponent<NetworkCharacter>();
         }
 
         [ClientRpc]
@@ -110,21 +128,6 @@ namespace CharacterSystem.PowerUps
                 var powerUp = PowerUp.AllPowerUps[Id];
                 
                 powerUp.Activate(this);
-            }
-        }
-
-        private void OnTriggerStay(Collider other)
-        {
-            if (IsServer && powerUp == null)
-            {
-                if (other.TryGetComponent<PowerUpContainer>(out var container))
-                {
-                    network_powerUpId.Value = container.Id;
-                    
-                    container.NetworkObject.Despawn();
-
-                    powerUp?.OnPick(this);
-                }
             }
         }
 

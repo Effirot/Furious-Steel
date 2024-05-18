@@ -31,10 +31,8 @@ public class CharacterMiniUI : MonoBehaviour
     private Slider UltimateField;
 
     
-    private async void Start()
+    private void Start()
     {
-        await UniTask.WaitUntil(() => networkCharacter.IsSpawned);
-
         if (networkCharacter.IsOwner)
         {
             transform.localScale = Vector3.one * 1.3f;
@@ -96,6 +94,8 @@ public class CharacterMiniUI : MonoBehaviour
 
     private void SubscribeToHolders()
     {
+        holders = transform.parent.GetComponentsInChildren<PowerUpHolder>().Where(holder => !holder.HasOverrides()).ToArray();
+
         for (int i = 0; i < drawers.Length; i++)
         {
             if (i < holders.Length)

@@ -13,12 +13,18 @@ namespace CharacterSystem.PowerUps
         {
             if (holder.IsServer)
             {
-                foreach (var ultimate in holder.Character.GetComponentsInChildren<UltimateDamageSource>())
+                foreach (var ultimate in holder.Invoker.gameObject.GetComponentsInChildren<UltimateDamageSource>())
                 {
                     ultimate.DeliveredDamage = ultimate.RequireDamage;
                 }
             }
         }
+
+        public override bool IsValid(PowerUpHolder holder)
+        {
+            return holder is BagPowerUpHolder;
+        }
+
 
         public override void OnPick(PowerUpHolder holder)
         {

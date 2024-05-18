@@ -11,10 +11,12 @@ namespace CharacterSystem.PowerUps
     {
         public override void Activate(PowerUpHolder holder)
         {
-            holder.Character.Heal (new Damage() 
-            {
-                value = holder.Character.maxHealth / 2
-            });
+            holder.Invoker.Heal(new Damage(70, null, 0, Vector3.zero, Damage.Type.Unblockable));
+        }
+        
+        public override bool IsValid(PowerUpHolder holder)
+        {
+            return holder is BagPowerUpHolder;
         }
 
         public override void OnPick(PowerUpHolder holder)

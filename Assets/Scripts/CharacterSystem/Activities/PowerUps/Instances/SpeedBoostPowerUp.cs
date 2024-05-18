@@ -13,11 +13,16 @@ namespace CharacterSystem.PowerUps
         {
             if (holder.IsServer)
             {
-                foreach (var effects in holder.Character.GetComponentsInChildren<CharacterEffectsHolder>())
+                foreach (var effects in holder.Invoker.gameObject.GetComponentsInChildren<CharacterEffectsHolder>())
                 {
-                    effects.AddEffect(new SpeedBoostEffect(5));
+                    effects.AddEffect(new SpeedBoostEffect(10));
                 }
             }
+        }
+
+        public override bool IsValid(PowerUpHolder holder)
+        {
+            return holder is BagPowerUpHolder;
         }
 
         public override void OnPick(PowerUpHolder holder)
