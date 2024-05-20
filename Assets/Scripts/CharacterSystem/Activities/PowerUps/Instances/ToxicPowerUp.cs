@@ -15,19 +15,22 @@ public class ToxicPowerUp : PowerUp
     
     public override void Activate(PowerUpHolder holder)
     {
-        var projectileEffectObject = GameObject.Instantiate(projectilePrefab, holder.transform.position, holder.transform.rotation);
-
-        IDamageSource damageSource = holder.Invoker;
-
-        if (projectileEffectObject.TryGetComponent<Projectile>(out var projectile))
+        if (holder.IsServer)
         {
-            if (damageSource != null)
+            var projectileEffectObject = GameObject.Instantiate(projectilePrefab, holder.transform.position, holder.transform.rotation);
+
+            IDamageSource damageSource = holder.Invoker;
+
+            if (projectileEffectObject.TryGetComponent<Projectile>(out var projectile))
             {
-                projectile.Initialize(holder.transform.forward, damageSource, damageSource.DamageDelivered);
-            }
-            else
-            {
-                projectile.Initialize(holder.transform.forward, null);
+                if (damageSource != null)
+                {
+                    projectile.Initialize(holder.transform.forward, damageSource, damageSource.DamageDelivered);
+                }
+                else
+                {
+                    projectile.Initialize(holder.transform.forward, null);
+                }
             }
         }
     }

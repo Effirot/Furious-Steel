@@ -354,7 +354,19 @@ MonoBehaviour:
       m_Calls: []
   OnAttackEnded:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 7749770091516303091}
+        m_TargetAssemblyTypeName: UnityEngine.VFX.VisualEffect, UnityEngine
+        m_MethodName: Stop
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   references:
     version: 2
     RefIds:
@@ -1065,7 +1077,7 @@ MonoBehaviour:
         damage:
           value: 40
           type: 4
-          stunlock: 1
+          stunlock: 0
           pushDirection: {x: 0, y: 0.4, z: 0.5}
           RechargeUltimate: 1
           Effects: []

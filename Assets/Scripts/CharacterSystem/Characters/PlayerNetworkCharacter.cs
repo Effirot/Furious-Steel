@@ -101,7 +101,7 @@ namespace CharacterSystem.Objects
         private NetworkVariable<int> network_combo = new (0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
         public event Action<DamageDeliveryReport> onDamageDelivered;
-        public event Action<int> OnComboChanged;
+        public event Action<int> onComboChanged;
 
         private Coroutine comboResetTimer = null;
 
@@ -111,7 +111,7 @@ namespace CharacterSystem.Objects
 
             if (isBlocked)
             {                
-                Combo += 5;
+                Combo += 5;               
             }
 
             if (IsOwner && damage.type is not Damage.Type.Effect)
@@ -127,7 +127,16 @@ namespace CharacterSystem.Objects
             if (IsServer)
             {
                 if (report.damage.type is not Damage.Type.Effect)
-                Combo += 1;
+                {
+                    if (report.isBlocked)
+                    {
+                        Combo = 1;
+                    }
+                    else
+                    {
+                        Combo += 1;
+                    }
+                }
 
                 var data = ClientData;
                 data.statistics.DeliveredDamage += report.damage.value;
@@ -182,7 +191,7 @@ namespace CharacterSystem.Objects
             RoomManager.Singleton.playersData.OnListChanged += OnOwnerPlayerDataChanged_event;
 
             network_combo.OnValueChanged += (Old, New) => {
-                OnComboChanged?.Invoke(New);
+                onComboChanged?.Invoke(New);
 
                 if (New < 20)
                 {
@@ -346,12 +355,12 @@ namespace CharacterSystem.Objects
         {
             yield return new WaitForSeconds(0.5f);
 
-            var recudeTimeout = 0.1f;
+            var recudeTimeout = 0.2f;
             while (network_combo.Value > 0)
             {
                 yield return new WaitForSeconds(recudeTimeout);
 
-                recudeTimeout -= 0.005f;
+                recudeTimeout -= 0.002f;
                 
                 network_combo.Value -= 1;
             }

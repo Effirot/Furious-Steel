@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using CharacterSystem.Attacks;
 using CharacterSystem.Objects;
 using CharacterSystem.PowerUps;
 using Cysharp.Threading.Tasks;
@@ -20,6 +21,9 @@ public class CharacterMiniUI : MonoBehaviour
     
     [SerializeField]
     private Slider HealthField;
+    
+    [SerializeField]
+    private TMP_Text ComboField;
 
     [SerializeField]
     private PowerUpDrawer[] drawers;
@@ -39,7 +43,8 @@ public class CharacterMiniUI : MonoBehaviour
         }
 
         SetNickname();
-
+        
+        SubscribeToCombo();
         SubscribeToHealthBar();
         SubscribeToHolders();
         SubscribeToUltimate();
@@ -50,6 +55,7 @@ public class CharacterMiniUI : MonoBehaviour
     }
     private void OnDestroy()
     {
+        UnsubscribeToCombo();
         UnsubscribeToHolders();
         UnsubscribeToHealthBar();
     }
@@ -65,6 +71,11 @@ public class CharacterMiniUI : MonoBehaviour
         HealthField.value = value;
     }
 
+    private void SetComboValue_Event(int value)
+    {
+        ComboField.text = value.ToString();
+    }
+
 
     private void SetNickname()
     {
@@ -75,6 +86,27 @@ public class CharacterMiniUI : MonoBehaviour
             NicknameField.text = player.ClientData.Name.ToString();
         }
     }
+
+    private void SubscribeToCombo()
+    {
+        if (HealthField != null && networkCharacter is IDamageSource)
+        {
+            var damager = networkCharacter as IDamageSource; 
+
+            SetComboValue_Event(damager.Combo);
+            damager.onComboChanged += SetComboValue_Event;
+        }
+    }
+    private void UnsubscribeToCombo()
+    {
+        if (HealthField != null && networkCharacter is IDamageSource)
+        {
+            var damager = networkCharacter as IDamageSource; 
+
+            damager.onComboChanged -= SetComboValue_Event;
+        }
+    }
+
 
     private void SubscribeToHealthBar()
     {

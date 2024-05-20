@@ -114,7 +114,7 @@ SkinnedMeshRenderer:
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
   m_SkinnedMotionVectors: 1
-  m_Mesh: {fileID: -4787119038829713828, guid: eb101eb5ba008aa4fad4497ac79afc31, type: 3}
+  m_Mesh: {fileID: -4787119038829713828, guid: 4732144334366d94ca21cb0a55a89fdf, type: 3}
   m_Bones: []
   m_BlendShapeWeights: []
   m_RootBone: {fileID: 0}
@@ -174,7 +174,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 646616531
+  GlobalObjectIdHash: 4172186589
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -196,7 +196,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   overrides:
   - Name: Holding_Default
-    Clip: {fileID: 7662952167444732223, guid: eb101eb5ba008aa4fad4497ac79afc31, type: 3}
+    Clip: {fileID: 5492995897347519377, guid: 2a7203fbdd0ff454689fc8c1e198ad7a, type: 3}
+  - Name: Attack1
+    Clip: {fileID: 6240583513438823314, guid: be1c18233e86a2c4ab758b9ac5a9a0a4, type: 3}
+  - Name: Attack2
+    Clip: {fileID: -4594244577245916917, guid: be1c18233e86a2c4ab758b9ac5a9a0a4, type: 3}
 --- !u!114 &7367302898406761560
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -209,7 +213,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e02cc2139c0c4704ca305884101e1c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TargetParentPath: Armor/Armor_Armature/SpineCenter
+  TargetParentPath: ArmorModels/Armor_Armature/SpineCenter
   origin: {fileID: 5756781166153586538}
 --- !u!114 &7554306889337461902
 MonoBehaviour:
@@ -400,8 +404,8 @@ MonoBehaviour:
           pushDirection: {x: 0, y: 0.9, z: 0.1}
           RechargeUltimate: 1
           Effects: []
-        position: {x: 0, y: 0, z: 3.75}
-        size: {x: 1.18, y: 1.83, z: 2.06}
+        position: {x: 0, y: 0, z: 3.03}
+        size: {x: 1.18, y: 1.83, z: 2.52}
         angle: {x: 0, y: 0, z: 0}
     - rid: 6352953245085466719
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
@@ -413,6 +417,7 @@ MonoBehaviour:
       data:
         MoveDirection: {x: 0, y: 0, z: 30}
         time: 0.1
+        CheckColision: 1
         permission: 10240
 --- !u!1 &2720063402213980406
 GameObject:
@@ -470,6 +475,7 @@ MonoBehaviour:
   - rid: 6352953245085466718
   - rid: 6352953245085466720
   - rid: 6352953245085466704
+  - rid: 8630938024131166297
   - rid: 868176997118902380
   - rid: 6352953245085466698
   OnDamageReport:
@@ -533,7 +539,7 @@ MonoBehaviour:
       type: {class: ReducableWait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         WaitTime: 0.4
-        MinWaitTime: 0.1
+        MinWaitTime: 0.2
         ReducingByHit: 0.07
         Permissions: 9472
     - rid: 6352953245085466698
@@ -549,6 +555,7 @@ MonoBehaviour:
         - rid: 6352953245085466712
         - rid: 6352953245085466714
         - rid: 6352953245085466716
+        - rid: 8630937996126060735
         CastPushDirection: {x: 0, y: 0, z: 0}
         OnCast:
           m_PersistentCalls:
@@ -581,9 +588,9 @@ MonoBehaviour:
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          value: 40
+          value: 35
           type: 1
-          stunlock: 0.2
+          stunlock: 0.1
           pushDirection: {x: 0.33, y: 0, z: 0.1}
           RechargeUltimate: 1
           Effects: []
@@ -626,6 +633,23 @@ MonoBehaviour:
       data:
         WaitTime: 0.05
         Permissions: 11520
+    - rid: 8630937996126060735
+      type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        damage:
+          value: 10
+          type: 1
+          stunlock: 0
+          pushDirection: {x: 0, y: 0, z: 0}
+          RechargeUltimate: 1
+          Effects: []
+        position: {x: 0, y: 0, z: 1.79}
+        size: {x: 2.73, y: 1, z: 1}
+        angle: {x: 0, y: 0, z: 0}
+    - rid: 8630938024131166297
+      type: {class: PlayAnimation, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        AnimationName: Torso.Attack2
 --- !u!1 &3064985464026961555
 GameObject:
   m_ObjectHideFlags: 0
@@ -1613,7 +1637,7 @@ MonoBehaviour:
   OnAttackEnded:
     m_PersistentCalls:
       m_Calls: []
-  RequireDamage: 200
+  RequireDamage: 120
   ClearCharge: 1
   OnUltimateReady:
     m_PersistentCalls:
@@ -1689,12 +1713,12 @@ MonoBehaviour:
         damage:
           value: 70
           type: 8
-          stunlock: 1.4
+          stunlock: 0.64
           pushDirection: {x: 0, y: 0.66, z: 1.21}
           RechargeUltimate: 0
           Effects: []
         position: {x: 0, y: 0, z: 3.94}
-        radius: 1.91
+        radius: 3.04
     - rid: 868176997118902386
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
@@ -1756,6 +1780,7 @@ MonoBehaviour:
   - rid: 6352953245085466719
   - rid: 6352953245085466721
   - rid: 6352953245085466705
+  - rid: 8630938024131166298
   - rid: 868176997118902381
   - rid: 6352953245085466699
   OnDamageReport:
@@ -1819,7 +1844,7 @@ MonoBehaviour:
       type: {class: ReducableWait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         WaitTime: 0.4
-        MinWaitTime: 0.1
+        MinWaitTime: 0.2
         ReducingByHit: 0.07
         Permissions: 9472
     - rid: 6352953245085466699
@@ -1835,6 +1860,7 @@ MonoBehaviour:
         - rid: 6352953245085466713
         - rid: 6352953245085466715
         - rid: 6352953245085466717
+        - rid: 8630937996126060736
         CastPushDirection: {x: 0, y: 0, z: 0}
         OnCast:
           m_PersistentCalls:
@@ -1867,9 +1893,9 @@ MonoBehaviour:
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          value: 40
+          value: 35
           type: 1
-          stunlock: 0.2
+          stunlock: 0.1
           pushDirection: {x: -0.33, y: 0, z: 0.1}
           RechargeUltimate: 1
           Effects: []
@@ -1912,6 +1938,23 @@ MonoBehaviour:
       data:
         WaitTime: 0.05
         Permissions: 11520
+    - rid: 8630937996126060736
+      type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        damage:
+          value: 10
+          type: 1
+          stunlock: 0
+          pushDirection: {x: 0, y: 0, z: 0}
+          RechargeUltimate: 1
+          Effects: []
+        position: {x: 0, y: 0, z: 1.79}
+        size: {x: 2.73, y: 1, z: 1}
+        angle: {x: 0, y: 0, z: 0}
+    - rid: 8630938024131166298
+      type: {class: PlayAnimation, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        AnimationName: Torso.Attack1
 --- !u!1 &9175946607756572356
 GameObject:
   m_ObjectHideFlags: 0

@@ -26,6 +26,7 @@ namespace CharacterSystem.Attacks
         int Combo { get; }
 
         event Action<DamageDeliveryReport> onDamageDelivered;
+        event Action<int> onComboChanged;
 
         void SetPosition (Vector3 position);
         void DamageDelivered(DamageDeliveryReport report);
@@ -178,10 +179,6 @@ namespace CharacterSystem.Attacks
                 {                    
                     StartAttack();
                 }   
-            }
-            else
-            {
-                EndAttack();
             }
         }
         protected override void OnStateChanged(bool value)
@@ -344,6 +341,9 @@ namespace CharacterSystem.Attacks
         private float time = 0.2f;
 
         [SerializeField]
+        private bool CheckColision = true;
+
+        [SerializeField]
         private CharacterPermission permission = CharacterPermission.None;
         
         public override IEnumerator AttackPipeline(DamageSource source)
@@ -361,7 +361,21 @@ namespace CharacterSystem.Attacks
 
                 while (wasteTime < time * chargeValue)
                 {
-                    component.Move(source.transform.rotation * MoveDirection * Time.fixedDeltaTime);
+                    var direction = source.transform.rotation * MoveDirection * Time.fixedDeltaTime;
+                    
+                    if (CheckColision)
+                    {
+                        if (Physics.OverlapCapsule(
+                            component.transform.position + component.center + direction * 3 - Vector3.up * component.height / 3f, 
+                            component.transform.position + component.center + direction * 3 + Vector3.up * component.height / 3f, 
+                            component.radius / 1.85f,
+                            LayerMask.GetMask("Character", "Ground")).Where(collider => collider != component).Any())
+                        {
+                            yield break;
+                        }
+                    }
+
+                    component.Move(direction);
 
                     yield return waitForFixedUpdate;
 

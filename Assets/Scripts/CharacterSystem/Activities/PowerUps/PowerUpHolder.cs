@@ -38,6 +38,8 @@ namespace CharacterSystem.PowerUps
 
         public void Drop(bool DestroyWithoutGround = true)
         {
+            if (HasOverrides()) return;
+
             Vector3 position = transform.position;
             
             if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, LayerMask.GetMask("Ground")))
@@ -77,7 +79,9 @@ namespace CharacterSystem.PowerUps
 
         protected virtual void OnTriggerStay(Collider other)
         {
-            if (IsServer && powerUp == null && !HasOverrides() && other.TryGetComponent<PowerUpContainer>(out var container))
+            if (HasOverrides()) return;
+
+            if (IsServer && powerUp == null && other.TryGetComponent<PowerUpContainer>(out var container))
             {
                 if (container.powerUp.IsValid(this))
                 {
@@ -96,7 +100,7 @@ namespace CharacterSystem.PowerUps
 
         protected override void OnStateChanged(bool IsPressed)
         {
-            if (IsPressed && !HasOverrides() && powerUp != null && Invoker.permissions.HasFlag(CharacterPermission.AllowPowerUps))
+            if (IsPressed && powerUp != null && Invoker.permissions.HasFlag(CharacterPermission.AllowPowerUps))
             {
                 Activate();
             }

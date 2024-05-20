@@ -67,10 +67,10 @@ namespace CharacterSystem.DamageMath
             if (target.IsUnityNull() || target == damage.sender)
                 return report;
 
-            report.isDelivered = DeliverEffects();
 
             if (ITeammate.IsAlly(target, damage.sender))
             {
+                report.isDelivered = DeliverEffects();
                 report.isDelivered = target.Heal(damage);
 
                 if (report.isDelivered)
@@ -85,9 +85,13 @@ namespace CharacterSystem.DamageMath
                 if (damage.value >= 0)
                 {
                     report.isDelivered = true;
-                    
                     report.isBlocked = target.Hit(damage);
                     report.isLethal = target.health <= 0;
+
+                    if (!report.isBlocked)
+                    {
+                        DeliverEffects();
+                    }
                 }
             }
             catch (Exception e)
@@ -208,7 +212,7 @@ namespace CharacterSystem.DamageMath
         {
             damage.value *= multipliyer;
             damage.stunlock *= multipliyer;
-            damage.pushDirection *= multipliyer;
+            // damage.pushDirection *= multipliyer;
 
             return damage;
         }
@@ -216,7 +220,7 @@ namespace CharacterSystem.DamageMath
         {
             damage.value /= multipliyer;
             damage.stunlock /= multipliyer;
-            damage.pushDirection /= multipliyer;
+            // damage.pushDirection /= multipliyer;
 
             return damage;
         }

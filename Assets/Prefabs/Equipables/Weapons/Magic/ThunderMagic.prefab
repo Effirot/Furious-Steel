@@ -332,6 +332,10 @@ MonoBehaviour:
   SearchSpherePoint: {x: 0, y: 0, z: 0}
   AdditivePosition: {x: 0, y: 1, z: 0}
   followPoint: {fileID: 6823387815018172437}
+  layer:
+    serializedVersion: 2
+    m_Bits: 0
+  _lockState: 0
 --- !u!1 &1517727645108543378
 GameObject:
   m_ObjectHideFlags: 0
@@ -435,6 +439,10 @@ MonoBehaviour:
   SearchSpherePoint: {x: 0, y: 0, z: 0}
   AdditivePosition: {x: 0, y: 1, z: 0}
   followPoint: {fileID: 4511964577994829457}
+  layer:
+    serializedVersion: 2
+    m_Bits: 0
+  _lockState: 0
 --- !u!1 &2264843534275818021
 GameObject:
   m_ObjectHideFlags: 0
@@ -1026,6 +1034,10 @@ MonoBehaviour:
   SearchSpherePoint: {x: 0, y: 0, z: 0}
   AdditivePosition: {x: 0, y: 1, z: 0}
   followPoint: {fileID: 3927181639931471979}
+  layer:
+    serializedVersion: 2
+    m_Bits: 0
+  _lockState: 0
 --- !u!1 &2816166336934835084
 GameObject:
   m_ObjectHideFlags: 0
@@ -1872,6 +1884,10 @@ MonoBehaviour:
   SearchSpherePoint: {x: 0, y: 0, z: 0}
   AdditivePosition: {x: 0, y: 1, z: 0}
   followPoint: {fileID: 3191779301174295649}
+  layer:
+    serializedVersion: 2
+    m_Bits: 0
+  _lockState: 0
 --- !u!1 &4185961092530681878
 GameObject:
   m_ObjectHideFlags: 0
@@ -1950,9 +1966,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: 5277666054227158027, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
+  Priority: 2
   IsPerformingAsDefault: 1
-  IsInterruptable: 0
   IsInterruptableWhenBlocked: 0
+  IsInterruptOnHit: 1
+  RestartWhenHolding: 1
   SpeedReducing: 0
   attackQueue:
   - rid: 868177009411096674
@@ -1972,7 +1990,7 @@ MonoBehaviour:
     - rid: 868177009411096672
       type: {class: Teleport, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        TeleportRelativeDirectionDirection: {x: 0, y: 0, z: 6}
+        TeleportRelativeDirection: {x: 0, y: 0, z: 3}
     - rid: 868177009411096674
       type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
@@ -2020,6 +2038,7 @@ MonoBehaviour:
           stunlock: 0.5
           pushDirection: {x: 0, y: 0.2, z: 0.2}
           RechargeUltimate: 1
+          Effects: []
         position: {x: 0, y: 0, z: 4.52}
         size: {x: 1, y: 1.61, z: 4}
         angle: {x: 0, y: 0, z: 0}
@@ -2201,9 +2220,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: 4628471853980608337, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
+  Priority: 2
   IsPerformingAsDefault: 1
-  IsInterruptable: 0
   IsInterruptableWhenBlocked: 1
+  IsInterruptOnHit: 1
+  RestartWhenHolding: 1
   SpeedReducing: 5
   attackQueue:
   - rid: 868177009411096680
@@ -2306,6 +2327,7 @@ MonoBehaviour:
           stunlock: 0.3
           pushDirection: {x: 0, y: 0, z: 0.5}
           RechargeUltimate: 1
+          Effects: []
         origin: {x: 0, y: 0, z: 0}
         target: {fileID: 4511964577994829457}
         maxDistance: 50.2
@@ -2644,6 +2666,10 @@ MonoBehaviour:
   SearchSpherePoint: {x: 0, y: 0, z: 0}
   AdditivePosition: {x: 0, y: 1, z: 0}
   followPoint: {fileID: 3472960674384853248}
+  layer:
+    serializedVersion: 2
+    m_Bits: 0
+  _lockState: 0
 --- !u!1 &5960329579177357631
 GameObject:
   m_ObjectHideFlags: 0
@@ -3052,9 +3078,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: -697749738134341483, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
+  Priority: 2
   IsPerformingAsDefault: 1
-  IsInterruptable: 0
   IsInterruptableWhenBlocked: 0
+  IsInterruptOnHit: 1
+  RestartWhenHolding: 1
   SpeedReducing: 3
   attackQueue:
   - rid: 868177009411096685
@@ -3205,6 +3233,7 @@ MonoBehaviour:
           stunlock: 0.9
           pushDirection: {x: 0, y: 0.4, z: 0}
           RechargeUltimate: 0
+          Effects: []
         position: {x: 0, y: 0, z: 0}
         radius: 1.83
     - rid: 868177009411096688
@@ -3397,9 +3426,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: 2243838571553120747, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
+  Priority: 2
   IsPerformingAsDefault: 1
-  IsInterruptable: 0
   IsInterruptableWhenBlocked: 1
+  IsInterruptOnHit: 1
+  RestartWhenHolding: 0
   SpeedReducing: 4
   attackQueue:
   - rid: 868177009411096691
@@ -3418,6 +3449,7 @@ MonoBehaviour:
       data:
         queueElement:
           rid: 868177009411096668
+        RepeatLimit: 0
     - rid: 868177009411096668
       type: {class: Queue, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
@@ -3492,11 +3524,12 @@ MonoBehaviour:
       type: {class: TargetRaycastCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          value: 3
+          value: 5
           type: 4
           stunlock: 0
           pushDirection: {x: 0, y: 0, z: 0}
           RechargeUltimate: 1
+          Effects: []
         origin: {x: 0, y: 0, z: 0}
         target: {fileID: 3927181639931471979}
         maxDistance: 15
@@ -3509,6 +3542,7 @@ MonoBehaviour:
           stunlock: 0
           pushDirection: {x: 0, y: 0, z: 0}
           RechargeUltimate: 1
+          Effects: []
         origin: {x: 0, y: 0, z: 0}
         target: {fileID: 6823387815018172437}
         maxDistance: 15
@@ -3521,6 +3555,7 @@ MonoBehaviour:
           stunlock: 0
           pushDirection: {x: 0, y: 0, z: 0}
           RechargeUltimate: 1
+          Effects: []
         origin: {x: 0, y: 0, z: 0}
         target: {fileID: 3191779301174295649}
         maxDistance: 15

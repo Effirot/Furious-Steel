@@ -104,6 +104,7 @@ namespace CharacterSystem.Objects
         public event Action<float> onHealthChanged = delegate { };
         public event Action<bool> isGroundedEvent = delegate { };
         public event Action onJumpEvent = delegate { };
+        public event Action<bool> onStunStateChanged = delegate { };
 
         public bool IsGrounded => characterController.isGrounded;
         public bool isDashing { get; private set; } = false;
@@ -395,11 +396,20 @@ namespace CharacterSystem.Objects
 
             if (isStunned)
             {
-                stunlock -= Time.fixedDeltaTime;
+                var stunnedState = isStunned;
 
-                if (stunlock < 0)
+                if (isStunned)
+                {
+                    stunlock -= Time.fixedDeltaTime;
+                }
+                else
                 {
                     stunlock = 0;
+                }
+
+                if (isStunned != stunnedState)
+                {
+                    onStunStateChanged.Invoke(isStunned);
                 }
             }
             
@@ -583,10 +593,7 @@ namespace CharacterSystem.Objects
                 animator.SetFloat("Falling_Speed", velocity.y);
 
                 animator.SetBool("IsGrounded", characterController.isGrounded);
-                animator.SetBool("IsStunned", isStunned);
-
-                animator.SetBool("Dodge", isDashing);
-                
+                animator.SetBool("IsStunned", isStunned);               
             }
         }
 

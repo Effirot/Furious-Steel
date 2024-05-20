@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using CharacterSystem.Attacks;
@@ -17,6 +18,8 @@ namespace CharacterSystem.Blocking
         IDamageSource
     {
         DamageBlocker Blocker { set; }
+
+        public event Action<bool> onStunStateChanged;
     }
 
     public class DamageBlocker : SyncedActivities<IDamageBlocker>
@@ -104,10 +107,10 @@ namespace CharacterSystem.Blocking
                     }
                 }
 
-                if (damage.sender != null && damage.type != Damage.Type.Magical)
+                if (damage.sender != null && damage.type != Damage.Type.Magical && damage.type != Damage.Type.Balistic)
                 {                    
                     backDamage.sender = Invoker;
-                    backDamage.pushDirection = -damage.pushDirection.normalized * PushForce;
+                    backDamage.pushDirection = Vector3.up * 0.3f + -damage.pushDirection.normalized * PushForce;
                     backDamage.type = Damage.Type.Parrying;
 
                     Damage.Deliver(damage.sender, backDamage);
@@ -120,6 +123,53 @@ namespace CharacterSystem.Blocking
             return false;
         } 
 
+        public void StartBlockProcess()
+        {
+            if (!Invoker.permissions.HasFlag(CharacterPermission.AllowBlocking))
+                return;
+
+            if (HasOverrides())
+                return;
+
+            if (Invoker.isStunned)
+                return;
+
+            if (IsServer)
+            {
+                Invoker.Push(Vector3.up * 0.01f);
+
+                foreach (var attacks in Invoker.gameObject.GetComponentsInChildren<DamageSource>())
+                {
+                    attacks.EndAttack();
+                }
+            }
+
+            StopBlockProcess();
+
+            Invoker.Blocker = this;
+
+            BlockProcessRoutine = StartCoroutine(BlockProcess());
+
+            Invoker.Speed -= SpeedReducing;
+            Invoker.permissions = BeforeBlockCharacterPermissions;
+        }
+        public void StopBlockProcess()
+        {
+            if (BlockProcessRoutine != null)
+            {
+                StopCoroutine(BlockProcessRoutine);
+                
+                Invoker.animator.SetBool("Blocking", false);
+
+                BlockProcessRoutine = null;
+            
+                Invoker.Speed += SpeedReducing;
+                Invoker.permissions = CharacterPermission.Default;
+            
+                IsBlockInProcess = false;
+            }
+        }
+
         private IEnumerator BlockProcess()
         {
             OnBeforeBlockingEvent.Invoke();
@@ -129,6 +179,8 @@ namespace CharacterSystem.Blocking
             IsBlockInProcess = true;
             Invoker.permissions = BlockCharacterPermissions;
             OnBlockingEvent.Invoke();
+
+            Invoker.animator.SetBool("Blocking", true);
 
             if (HoldMode)
             {
@@ -144,6 +196,9 @@ namespace CharacterSystem.Blocking
                 yield return new WaitForSeconds(BlockProcessTime);
             }
 
+            Invoker.animator.SetBool("Blocking", false);
+
+
             IsBlockInProcess = false;
             Invoker.permissions = AfterBlockCharacterPermissions;
             OnAfterBlockingEvent.Invoke();
@@ -151,50 +206,6 @@ namespace CharacterSystem.Blocking
             yield return new WaitForSeconds(AfterBlockTime);
 
             StopBlockProcess();
-        }
-        private void StartBlockProcess()
-        {
-            if (!Invoker.permissions.HasFlag(CharacterPermission.AllowBlocking))
-                return;
-
-            if (HasOverrides())
-                return;
-
-            if (Invoker.isStunned)
-                return;
-
-            if (IsServer)
-            {
-                foreach (var attacks in Invoker.gameObject.GetComponentsInChildren<DamageSource>())
-                {
-                    attacks.EndAttack();
-                }
-            }
-
-            StopBlockProcess();
-
-            Invoker.Blocker = this;
-
-            BlockProcessRoutine = StartCoroutine(BlockProcess());
-
-            Invoker.animator.SetBool("Blocking", true);
-            Invoker.Speed -= SpeedReducing;
-            Invoker.permissions = BeforeBlockCharacterPermissions;
-        }
-        private void StopBlockProcess()
-        {
-            if (BlockProcessRoutine != null)
-            {
-                StopCoroutine(BlockProcessRoutine);
-                
-                BlockProcessRoutine = null;
-            
-                Invoker.animator.SetBool("Blocking", false);
-                Invoker.Speed += SpeedReducing;
-                Invoker.permissions = CharacterPermission.Default;
-            
-                IsBlockInProcess = false;
-            }
         }
 
         protected override void OnStateChanged(bool IsPressed)

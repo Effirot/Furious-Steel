@@ -367,7 +367,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2882981284
+  GlobalObjectIdHash: 713631324
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -387,7 +387,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e02cc2139c0c4704ca305884101e1c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TargetParentPath: Armor/Armor_Armature/SpineCenter
+  TargetParentPath: ArmorModels/Armor_Armature/SpineCenter
   origin: {fileID: 2359737243416969426}
 --- !u!114 &5633976333175869961
 MonoBehaviour:
@@ -403,11 +403,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   overrides:
   - Name: Holding_Default
-    Clip: {fileID: -4470652782877245180, guid: eb101eb5ba008aa4fad4497ac79afc31, type: 3}
+    Clip: {fileID: -4470652782877245180, guid: be1c18233e86a2c4ab758b9ac5a9a0a4, type: 3}
   - Name: Attack1
-    Clip: {fileID: 6240583513438823314, guid: eb101eb5ba008aa4fad4497ac79afc31, type: 3}
+    Clip: {fileID: 6240583513438823314, guid: be1c18233e86a2c4ab758b9ac5a9a0a4, type: 3}
   - Name: Attack2
-    Clip: {fileID: -4594244577245916917, guid: eb101eb5ba008aa4fad4497ac79afc31, type: 3}
+    Clip: {fileID: -4594244577245916917, guid: be1c18233e86a2c4ab758b9ac5a9a0a4, type: 3}
 --- !u!114 &7669626182777078651
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -614,6 +614,7 @@ MonoBehaviour:
       data:
         MoveDirection: {x: 0, y: 0, z: 45}
         time: 0.1
+        CheckColision: 1
         permission: 0
 --- !u!1 &1850735933972790135
 GameObject:
@@ -1585,7 +1586,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 2100000, guid: 4cde90ee6d36ebd41b2880f92114afa5, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1610,7 +1611,7 @@ SkinnedMeshRenderer:
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
   m_SkinnedMotionVectors: 1
-  m_Mesh: {fileID: -8287839383430266118, guid: eb101eb5ba008aa4fad4497ac79afc31, type: 3}
+  m_Mesh: {fileID: -8287839383430266118, guid: 4732144334366d94ca21cb0a55a89fdf, type: 3}
   m_Bones: []
   m_BlendShapeWeights: []
   m_RootBone: {fileID: 0}

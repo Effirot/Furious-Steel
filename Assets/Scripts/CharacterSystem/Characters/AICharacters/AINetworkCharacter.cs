@@ -29,7 +29,7 @@ namespace CharacterSystem.Objects.AI
 
 
         public event Action<DamageDeliveryReport> onDamageDelivered;
-
+        public event Action<int> onComboChanged;
 
         public void DamageDelivered(DamageDeliveryReport report)
         {

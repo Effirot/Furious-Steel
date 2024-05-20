@@ -919,7 +919,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 2.79
+  m_Radius: 0.93
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!82 &1021237605104187023
 AudioSource:
@@ -1041,7 +1041,7 @@ MonoBehaviour:
       m_Calls: []
   damage:
     value: 15
-    type: 4
+    type: 2
     stunlock: 0
     pushDirection: {x: 0, y: 0.5, z: 0.3}
     RechargeUltimate: 1
@@ -1051,7 +1051,7 @@ MonoBehaviour:
   PushForce: 0.6
   explodeDamage:
     value: 10
-    type: 4
+    type: 2
     stunlock: 0
     pushDirection: {x: 0, y: 0, z: 0}
     RechargeUltimate: 1
@@ -1066,7 +1066,7 @@ MonoBehaviour:
       type: {class: BurnEffect, ns: , asm: Assembly-CSharp}
       data:
         time: 2
-        damagePerSecond: 5
+        damagePerSecond: 2.5
         color: {r: 26.465235, g: 11.541775, b: 271.87302, a: 1}
     - rid: 8630937820481192014
       type: {class: BurnEffect, ns: , asm: Assembly-CSharp}
@@ -1086,7 +1086,7 @@ Light:
   m_Type: 2
   m_Color: {r: 0.44535017, g: 0, b: 1, a: 1}
   m_Intensity: 28.3
-  m_Range: 50.47
+  m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10

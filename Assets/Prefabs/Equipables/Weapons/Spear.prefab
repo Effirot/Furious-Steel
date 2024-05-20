@@ -381,7 +381,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 896179055
+  GlobalObjectIdHash: 3399537582
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -403,9 +403,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   overrides:
   - Name: Holding_Default
-    Clip: {fileID: -3005454521810875173, guid: eb101eb5ba008aa4fad4497ac79afc31, type: 3}
+    Clip: {fileID: -3005454521810875173, guid: 2b71f654ae7e9624a88e4952e90a85f5, type: 3}
   - Name: Attack1
-    Clip: {fileID: -41055732848757815, guid: eb101eb5ba008aa4fad4497ac79afc31, type: 3}
+    Clip: {fileID: -41055732848757815, guid: 2b71f654ae7e9624a88e4952e90a85f5, type: 3}
 --- !u!114 &3849626912261458713
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -430,7 +430,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e02cc2139c0c4704ca305884101e1c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TargetParentPath: Armor/Armor_Armature/SpineCenter
+  TargetParentPath: ArmorModels/Armor_Armature/SpineCenter
   origin: {fileID: 4230450402353312103}
 --- !u!1 &1901328450275216932
 GameObject:
@@ -881,7 +881,7 @@ SkinnedMeshRenderer:
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
   m_SkinnedMotionVectors: 1
-  m_Mesh: {fileID: -6280669117017369944, guid: eb101eb5ba008aa4fad4497ac79afc31, type: 3}
+  m_Mesh: {fileID: -6280669117017369944, guid: 4732144334366d94ca21cb0a55a89fdf, type: 3}
   m_Bones:
   - {fileID: 0}
   - {fileID: 0}
@@ -1003,7 +1003,7 @@ MonoBehaviour:
   - rid: 8630937662073602139
   - rid: 2961813231421882371
   - rid: 5691645198379778129
-  - rid: 5691645198379778176
+  - rid: 8630938024131166299
   OnDamageReport:
     m_PersistentCalls:
       m_Calls: []
@@ -1065,11 +1065,6 @@ MonoBehaviour:
         WaitTime: 0.2
         LastHitRequireSeconds: 0.1
         Permissions: 13056
-    - rid: 5691645198379778176
-      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        WaitTime: 0.1
-        Permissions: 13056
     - rid: 5691645226531684433
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
@@ -1084,7 +1079,13 @@ MonoBehaviour:
       data:
         MoveDirection: {x: 0, y: 0, z: 35}
         time: 0.1
+        CheckColision: 1
         permission: 0
+    - rid: 8630938024131166299
+      type: {class: WaitForGroudpound, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        Permissions: 14080
+        Reverse: 0
 --- !u!1 &7324458738964129770
 GameObject:
   m_ObjectHideFlags: 0

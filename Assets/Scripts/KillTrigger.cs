@@ -5,11 +5,17 @@ using UnityEngine;
 
 public class KillTrigger : MonoBehaviour
 {
+    [SerializeField]
+    private string IgnoreTag;
+
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.TryGetComponent<IDamagable>(out var damagable))
+        if (other.tag != IgnoreTag)
         {
-            damagable.Kill();
+            if (other.gameObject.TryGetComponent<IDamagable>(out var damagable))
+            {
+                damagable.Kill();
+            }
         }
     }
 }
