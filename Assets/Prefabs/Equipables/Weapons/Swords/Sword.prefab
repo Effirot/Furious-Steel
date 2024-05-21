@@ -516,7 +516,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1073628644
+  GlobalObjectIdHash: 2910448633
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -1498,6 +1498,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7450366921895863354}
   - component: {fileID: 2394801123767968783}
+  - component: {fileID: 4908696291788395169}
   m_Layer: 0
   m_Name: Ultimate
   m_TagString: Untagged
@@ -1562,11 +1563,8 @@ MonoBehaviour:
   OnAttackEnded:
     m_PersistentCalls:
       m_Calls: []
-  RequireDamage: 120
   ClearCharge: 1
-  OnUltimateReady:
-    m_PersistentCalls:
-      m_Calls: []
+  chargeValue: {fileID: 0}
   references:
     version: 2
     RefIds:
@@ -1717,6 +1715,25 @@ MonoBehaviour:
         time: 0.05
         CheckColision: 0
         permission: 10496
+--- !u!114 &4908696291788395169
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5339950106092455815}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7833ff246d1754459595b40d8d6c25c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DefaultValue: 30
+  MaxValue: 120
+  color: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  fullChargeColor: {r: 1, g: 0, b: 0, a: 1}
+  OnValueChanged:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &5540470622902852002
 GameObject:
   m_ObjectHideFlags: 0
@@ -1917,7 +1934,7 @@ MonoBehaviour:
       data:
         WaitTime: 0.6
         LastHitRequireSeconds: 0.1
-        Permissions: 57088
+        Permissions: 65280
     - rid: 8630937930187669643
       type: {class: Move, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
@@ -1934,7 +1951,7 @@ MonoBehaviour:
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         WaitTime: 0.4
-        Permissions: 57088
+        Permissions: 65280
 --- !u!1 &5714871639485273240
 GameObject:
   m_ObjectHideFlags: 0

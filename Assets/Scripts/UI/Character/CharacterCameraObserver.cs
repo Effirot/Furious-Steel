@@ -6,9 +6,9 @@ using Cinemachine;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CharacterUIObserver : MonoBehaviour
+public class CharacterCameraObserver : MonoBehaviour
 {
-    public static CharacterUIObserver Singleton { get; private set; }
+    public static CharacterCameraObserver Singleton { get; private set; }
 
     public Transform observingTransform
     {
@@ -21,14 +21,6 @@ public class CharacterUIObserver : MonoBehaviour
             {
                 // Camera drawer
                 virtualCamera.Follow = value.transform;
-                
-                {
-                    controllers?.SetActive(value.gameObject.TryGetComponent<PlayerNetworkCharacter>(out var character) && character.IsOwner);
-                }
-            }
-            else
-            {                
-                controllers?.SetActive(false);
             }
 
             StopAllCoroutines();
@@ -46,9 +38,6 @@ public class CharacterUIObserver : MonoBehaviour
     private Transform _observingCharacter = null;
 
     [SerializeField]
-    private GameObject controllers;
-
-    [SerializeField]
     private CinemachineVirtualCamera virtualCamera; 
 
     private void Awake()
@@ -56,13 +45,6 @@ public class CharacterUIObserver : MonoBehaviour
         Singleton = this;
         observingTransform = null;
     
-#if !UNITY_ANDROID 
-        Destroy(controllers);
-
-        controllers = null; 
-#endif
-
-
         PlayerNetworkCharacter.OnPlayerCharacterSpawn += ObserveRandomCharacterCharacter_Event;
         PlayerNetworkCharacter.OnOwnerPlayerCharacterDead += ResetObserver_Event;
         PlayerNetworkCharacter.OnOwnerPlayerCharacterSpawn += ObserveCharacter_Event;

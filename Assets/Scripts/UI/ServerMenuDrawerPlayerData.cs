@@ -9,13 +9,7 @@ public class ServerMenuDrawerPlayerData : MonoBehaviour
     [SerializeField]
     public TMP_Text NameField;
     
-    [SerializeField]
-    public Image ColorField;
     
-    [SerializeField]
-    public Image SecondColorField;
-
-
     [SerializeField]
     public TMP_Text KillstreakField;
 

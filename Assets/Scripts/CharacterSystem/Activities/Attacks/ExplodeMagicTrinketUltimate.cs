@@ -43,7 +43,7 @@ public class ExplodeMagicTrinketUltimate : UltimateDamageSource
 
     public override void StartAttack()
     {
-        if (DeliveredDamage >= RequireDamage && 
+        if (chargeValue.MaxValue <= chargeValue.Value && 
             Invoker.permissions.HasFlag(CharacterPermission.AllowAttacking) &&
             !Invoker.isStunned && 
             IsPerforming &&
@@ -97,7 +97,7 @@ public class ExplodeMagicTrinketUltimate : UltimateDamageSource
                     Damage.Deliver(collider.gameObject, damage);
                 }
 
-                DeliveredDamage = 0;
+                chargeValue.Value = 0;
 
                 await UniTask.WaitForSeconds(0.2f);
             }
@@ -122,8 +122,6 @@ public class ExplodeMagicTrinketUltimate : UltimateDamageSource
 
     protected override void Start()
     {
-        base.Start();
-
         Invoker.onDamageDelivered += OnDamageDelivered_event;
     }
 }

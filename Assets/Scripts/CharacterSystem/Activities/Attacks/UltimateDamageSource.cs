@@ -10,38 +10,22 @@ using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using static UnityEngine.InputSystem.InputAction;
 
+[RequireComponent(typeof(CustomProperty))]
 public class UltimateDamageSource : DamageSource
 {
-    [SerializeField, Range(0, 2000)]
-    public float RequireDamage = 500;
-
     [SerializeField]
-    public bool ClearCharge = true;
+    private bool ClearCharge = true; 
 
-    public UnityEvent OnUltimateReady = new();
+    [HideInInspector]
+    public CustomProperty chargeValue; 
 
-    public event Action<float> OnValueChanged = delegate { };
-
-    public float DeliveredDamage
+    public override void OnNetworkSpawn()
     {
-        get => network_delivereDamageValue.Value;
-        set 
-        {
-            if (IsServer)
-            {
-                network_delivereDamageValue.Value = value;
-            }
-        }
+        chargeValue = GetComponent<CustomProperty>();
     }
-
-    private NetworkVariable<float> network_delivereDamageValue = new (0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-
-
     public override void OnNetworkDespawn()
     {
         base.OnNetworkDespawn();
-
-        network_delivereDamageValue.OnValueChanged -= ExecuteOnValueChangedEvent;
         
         if (Invoker != null)
         {
@@ -51,7 +35,7 @@ public class UltimateDamageSource : DamageSource
 
     public override void StartAttack()
     {
-        if (DeliveredDamage >= RequireDamage && 
+        if (chargeValue.MaxValue <= chargeValue.Value && 
             Invoker.permissions.HasFlag(CharacterPermission.AllowAttacking) &&
             !Invoker.isStunned && 
             IsPerforming &&
@@ -60,35 +44,24 @@ public class UltimateDamageSource : DamageSource
         {
             if (ClearCharge)
             {
-                DeliveredDamage = 0;
+                chargeValue.Value = 0;
             }
 
             base.StartAttackForced();
         }
     }
 
+    
     protected virtual void Start()
     {        
-        network_delivereDamageValue.OnValueChanged += ExecuteOnValueChangedEvent;
         Invoker.onDamageDelivered += OnDamageDelivered_Event;
     }
 
     private void OnDamageDelivered_Event(DamageDeliveryReport report)
     {
-        if (IsServer && report.damage.RechargeUltimate)
+        if (IsServer && report.isDelivered && report.damage.RechargeUltimate)
         {
-            var newValue = Mathf.Clamp(DeliveredDamage + report.damage.value, 0, RequireDamage);
-            
-            if (DeliveredDamage != newValue)
-            {
-                OnUltimateReady.Invoke();
-
-                DeliveredDamage = Mathf.Clamp(DeliveredDamage + report.damage.value, 0, RequireDamage);
-            }
+            chargeValue.AddValue(report);
         }
-    }
-    private void ExecuteOnValueChangedEvent(float Old, float New)
-    {
-        OnValueChanged?.Invoke(New);
     }
 }

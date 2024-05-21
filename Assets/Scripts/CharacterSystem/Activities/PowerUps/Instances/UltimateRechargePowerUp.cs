@@ -15,7 +15,7 @@ namespace CharacterSystem.PowerUps
             {
                 foreach (var ultimate in holder.Invoker.gameObject.GetComponentsInChildren<UltimateDamageSource>())
                 {
-                    ultimate.DeliveredDamage = ultimate.RequireDamage;
+                    ultimate.chargeValue.Value = ultimate.chargeValue.MaxValue;
                 }
             }
         }

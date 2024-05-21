@@ -111,26 +111,25 @@ namespace CharacterSystem.Objects
 
             if (isBlocked)
             {                
-                Combo += 5;               
+                Combo += 10;               
             }
 
             if (IsOwner && damage.type is not Damage.Type.Effect)
             {
-                OnHitImpulseSource?.GenerateImpulse(damage.value / 10f);
+                OnHitImpulseSource?.GenerateImpulse(damage.value / 8f);
             }
 
             return isBlocked;
         }
-
         public virtual void DamageDelivered(DamageDeliveryReport report)
         {
-            if (IsServer)
+            if (IsServer && report.isDelivered)
             {
                 if (report.damage.type is not Damage.Type.Effect)
                 {
                     if (report.isBlocked)
                     {
-                        Combo = 1;
+                        Combo = 0;
                     }
                     else
                     {
@@ -153,9 +152,9 @@ namespace CharacterSystem.Objects
                 {
                     component.AddEffect(new ChampionModeEffect());
                 }   
+                
+                onDamageDelivered?.Invoke(report);
             }
-
-            onDamageDelivered?.Invoke(report);
         }
         
 
@@ -245,7 +244,7 @@ namespace CharacterSystem.Objects
                     action.performed += KillBind;
                     action.canceled += KillBind;
                 }
-            
+
                 OnOwnerPlayerCharacterSpawn.Invoke(this);
             }
             if (IsServer)
@@ -319,7 +318,7 @@ namespace CharacterSystem.Objects
 
             if (IsOwner && !gameObject.IsUnityNull())
             {
-                CharacterUIObserver.Singleton.observingTransform = gameObject.transform;
+                CharacterCameraObserver.Singleton.observingTransform = gameObject.transform;
             }
 
             return gameObject;
@@ -346,24 +345,26 @@ namespace CharacterSystem.Objects
         {
             try 
             {
-                gameObject.name = name = $"Player({ClientData.Name.Value})";
+                gameObject.name = name = ClientData.Name.Value;
             }
             catch { }
         }
 
         private IEnumerator ComboResetTimer()
         {
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(1f);
 
-            var recudeTimeout = 0.2f;
-            while (network_combo.Value > 0)
+            var recudeTimeout = 0.6f;
+            while (Combo > 0)
             {
                 yield return new WaitForSeconds(recudeTimeout);
 
-                recudeTimeout -= 0.002f;
+                recudeTimeout -= 0.001f;
                 
-                network_combo.Value -= 1;
+                Combo -= 1;
             }
+
+            Combo = 0;
 
             comboResetTimer = null;
         }
@@ -414,8 +415,6 @@ namespace CharacterSystem.Objects
         [ServerRpc]
         private void KillBind_ServerRpc()
         {
-            // await UniTask.WaitForSeconds(3);
-
             if (!this.IsUnityNull())
             {
                 Kill(true);

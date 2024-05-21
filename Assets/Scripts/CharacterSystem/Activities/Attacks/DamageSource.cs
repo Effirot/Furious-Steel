@@ -32,6 +32,7 @@ namespace CharacterSystem.Attacks
         void DamageDelivered(DamageDeliveryReport report);
     }
 
+    [DisallowMultipleComponent]
     public class DamageSource : SyncedActivities<IDamageSource>
     {
         public enum AttackTimingStatement

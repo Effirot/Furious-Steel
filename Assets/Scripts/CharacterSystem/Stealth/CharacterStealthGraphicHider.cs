@@ -85,7 +85,7 @@ public class CharacterStealthGraphicHider : NetworkBehaviour
     private void LateUpdate()
     {
         var IsObservableInHideObject = stealthObjects.Exists(
-            stealthObject => stealthObject.characterSteathers.Exists(item => item != null && item.transform == CharacterUIObserver.Singleton.observingTransform));
+            stealthObject => stealthObject.characterSteathers.Exists(item => item != null && item.transform == CharacterCameraObserver.Singleton.observingTransform));
         
         var hideStatus = !IsHidden || IsObservableInHideObject;
         
