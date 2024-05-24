@@ -60,12 +60,15 @@ public class ExplodeProjectile : Projectile
 
         foreach (var collider in Physics.OverlapSphere(transform.position, Range))
         {
-            explodeDamage.sender = Summoner;
-            explodeDamage.pushDirection = collider.transform.position - transform.position + Vector3.up;
-            explodeDamage.pushDirection.Normalize();
-            explodeDamage.pushDirection *= PushForce;
+            var damage = explodeDamage;
 
-            var report = Damage.Deliver(collider.gameObject, explodeDamage);
+            damage.sender = Summoner;
+            damage.pushDirection = collider.transform.position - transform.position + Vector3.up;
+            damage.pushDirection.Normalize();
+            damage.pushDirection *= PushForce;
+            damage.pushDirection += transform.rotation * explodeDamage.pushDirection;
+
+            var report = Damage.Deliver(collider.gameObject, damage);
             
             onDamageDeliveryReport?.Invoke(report);
         }

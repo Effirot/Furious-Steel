@@ -4,6 +4,7 @@ using CharacterSystem.Objects;
 using CharacterSystem.PowerUps;
 using Unity.Collections;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -11,8 +12,11 @@ public class PowerUpDrawer : MonoBehaviour
 {
     private Transform instance;
 
+    private PowerUpHolder powerUpHolder;
+
     public void Draw(PowerUp powerUp)
     {
+        
         Destroy(instance?.gameObject);
         instance = null;
         
@@ -34,6 +38,22 @@ public class PowerUpDrawer : MonoBehaviour
             {
                 Destroy(container);
             }
+        }
+    }
+
+    public void Initialize(PowerUpHolder powerUpHolder)
+    {
+        this.powerUpHolder = powerUpHolder;
+        
+        Draw(powerUpHolder.powerUp);
+        powerUpHolder.OnPowerUpChanged.AddListener(Draw);
+    }
+
+    private void OnDestroy()
+    {
+        if (!powerUpHolder.IsUnityNull())
+        {
+            powerUpHolder.OnPowerUpChanged.RemoveListener(Draw);
         }
     }
 }

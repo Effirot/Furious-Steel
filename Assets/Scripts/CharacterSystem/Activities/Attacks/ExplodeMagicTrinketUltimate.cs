@@ -43,16 +43,16 @@ public class ExplodeMagicTrinketUltimate : UltimateDamageSource
 
     public override void StartAttack()
     {
-        if (chargeValue.MaxValue <= chargeValue.Value && 
+        if (chargeValue.Value >= chargeValue.MaxValue && 
             Invoker.permissions.HasFlag(CharacterPermission.AllowAttacking) &&
             !Invoker.isStunned && 
             IsPerforming &&
             !IsAttacking)
         {
             ExplodeAll();
-        }
 
-        // base.StartAttack();
+            base.StartAttackForced();
+        }
     }
 
     private async void ExplodeAll()
@@ -122,6 +122,8 @@ public class ExplodeMagicTrinketUltimate : UltimateDamageSource
 
     protected override void Start()
     {
+        base.Start();
+
         Invoker.onDamageDelivered += OnDamageDelivered_event;
     }
 }

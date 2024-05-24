@@ -80,9 +80,9 @@ namespace CharacterSystem.Objects
             private set {
                 if (IsServer)
                 {
-                    if (network_combo.Value != value && value > 0)
+                    if (value > network_combo.Value)
                     {
-                        if (comboResetTimer != null)
+                        if (comboResetTimer != null && !this.IsUnityNull())
                         {
                             StopCoroutine(comboResetTimer);
                             comboResetTimer = null;
@@ -354,13 +354,13 @@ namespace CharacterSystem.Objects
         {
             yield return new WaitForSeconds(1f);
 
-            var recudeTimeout = 0.6f;
+            var reduceTimeout = 0.6f;
+
             while (Combo > 0)
             {
-                yield return new WaitForSeconds(recudeTimeout);
+                yield return new WaitForSeconds(reduceTimeout);
 
-                recudeTimeout -= 0.001f;
-                
+                reduceTimeout *= 0.92f;    
                 Combo -= 1;
             }
 

@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2682705565289463711}
   - component: {fileID: 4043005819161963949}
+  - component: {fileID: 4868943474249717089}
   m_Layer: 6
   m_Name: Pistol
   m_TagString: Weapon
@@ -32,7 +33,6 @@ Transform:
   m_Children:
   - {fileID: 2627995231964690509}
   - {fileID: 4884045045746518388}
-  - {fileID: 3277942340086084770}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4043005819161963949
@@ -55,6 +55,23 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
+--- !u!114 &4868943474249717089
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1517727645108543378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91b59a25b78b63442bfa85d494b70054, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  overrides:
+  - Name: Trinket_Holding_Default
+    Clip: {fileID: -8742961236503954806, guid: badcb3bbdec5cc341b4e3c375120cd60, type: 3}
+  - Name: Trinket_Attack1
+    Clip: {fileID: 3262201019511805127, guid: badcb3bbdec5cc341b4e3c375120cd60, type: 3}
 --- !u!1 &2429100434997788893
 GameObject:
   m_ObjectHideFlags: 0
@@ -149,7 +166,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3277942340086084770}
-  - component: {fileID: 7047459863001544008}
   - component: {fileID: 5549077959865848722}
   m_Layer: 6
   m_Name: Reloading
@@ -166,100 +182,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6006310243709756935}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.93, z: 0.95}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2682705565289463711}
+  m_Father: {fileID: 4884045045746518388}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7047459863001544008
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6006310243709756935}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a8ecdfc990da94647995780684bb1166, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  inputAction: {fileID: 5277666054227158027, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
-  Priority: 3
-  IsPerformingAsDefault: 0
-  IsInterruptableWhenBlocked: 0
-  IsInterruptOnHit: 1
-  RestartWhenHolding: 0
-  SpeedReducing: 7
-  attackQueue:
-  - rid: 8630937996126060737
-  - rid: 8630938024131166484
-  - rid: 8630938024131166474
-  OnDamageReport:
-    m_PersistentCalls:
-      m_Calls: []
-  OnAttackEnded:
-    m_PersistentCalls:
-      m_Calls: []
-  references:
-    version: 2
-    RefIds:
-    - rid: 8630937996126060737
-      type: {class: Event, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        Function:
-          m_PersistentCalls:
-            m_Calls:
-            - m_Target: {fileID: 5549077959865848722}
-              m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
-              m_MethodName: Play
-              m_Mode: 1
-              m_Arguments:
-                m_ObjectArgument: {fileID: 0}
-                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-                m_IntArgument: 0
-                m_FloatArgument: 0
-                m_StringArgument: 
-                m_BoolArgument: 0
-              m_CallState: 2
-    - rid: 8630938024131166474
-      type: {class: Event, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        Function:
-          m_PersistentCalls:
-            m_Calls:
-            - m_Target: {fileID: 8244864192221163568}
-              m_TargetAssemblyTypeName: CharacterSystem.Attacks.DamageSource, Assembly-CSharp
-              m_MethodName: set_IsPerforming
-              m_Mode: 6
-              m_Arguments:
-                m_ObjectArgument: {fileID: 0}
-                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-                m_IntArgument: 0
-                m_FloatArgument: 0
-                m_StringArgument: 
-                m_BoolArgument: 1
-              m_CallState: 2
-            - m_Target: {fileID: 7047459863001544008}
-              m_TargetAssemblyTypeName: CharacterSystem.Attacks.DamageSource, Assembly-CSharp
-              m_MethodName: set_IsPerforming
-              m_Mode: 6
-              m_Arguments:
-                m_ObjectArgument: {fileID: 0}
-                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-                m_IntArgument: 0
-                m_FloatArgument: 0
-                m_StringArgument: 
-                m_BoolArgument: 0
-              m_CallState: 2
-    - rid: 8630938024131166484
-      type: {class: ReducableWait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        WaitTime: 1.5
-        MinWaitTime: 0.5
-        ReducingByHit: 0.03
-        Permissions: 36608
 --- !u!82 &5549077959865848722
 AudioSource:
   m_ObjectHideFlags: 0
@@ -273,7 +202,7 @@ AudioSource:
   m_audioClip: {fileID: 8300000, guid: 5e7ba4a93a820c74f8a1c783180aba27, type: 3}
   m_Resource: {fileID: 8300000, guid: 5e7ba4a93a820c74f8a1c783180aba27, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 0.756
+  m_Volume: 0.426
   m_Pitch: 0.75
   Loop: 0
   Mute: 0
@@ -399,8 +328,8 @@ VisualEffect:
   m_GameObject: {fileID: 7149925382423067994}
   m_Enabled: 1
   m_Asset: {fileID: 8926484042661614526, guid: d7b0fd3a919b47e4a9a8ee7dd4e0e644, type: 3}
-  m_InitialEventName: OnPlay
-  m_InitialEventNameOverriden: 0
+  m_InitialEventName: 
+  m_InitialEventNameOverriden: 1
   m_StartSeed: 0
   m_ResetSeedOnPlay: 1
   m_AllowInstancing: 1
@@ -485,8 +414,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4884045045746518388}
-  - component: {fileID: 8244864192221163568}
   - component: {fileID: 3921214951932420571}
+  - component: {fileID: 202029226355961849}
+  - component: {fileID: 5395013121845886819}
   m_Layer: 6
   m_Name: Source
   m_TagString: Untagged
@@ -508,126 +438,9 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3544942781631555159}
+  - {fileID: 3277942340086084770}
   m_Father: {fileID: 2682705565289463711}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8244864192221163568
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9137448914675107588}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a8ecdfc990da94647995780684bb1166, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  inputAction: {fileID: 5277666054227158027, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
-  Priority: 3
-  IsPerformingAsDefault: 1
-  IsInterruptableWhenBlocked: 0
-  IsInterruptOnHit: 0
-  RestartWhenHolding: 0
-  SpeedReducing: 0
-  attackQueue:
-  - rid: 8630937699458744397
-  - rid: 868177009411096674
-  OnDamageReport:
-    m_PersistentCalls:
-      m_Calls: []
-  OnAttackEnded:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 8244864192221163568}
-        m_TargetAssemblyTypeName: CharacterSystem.Attacks.DamageSource, Assembly-CSharp
-        m_MethodName: set_IsPerforming
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 7047459863001544008}
-        m_TargetAssemblyTypeName: CharacterSystem.Attacks.DamageSource, Assembly-CSharp
-        m_MethodName: set_IsPerforming
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
-  references:
-    version: 2
-    RefIds:
-    - rid: 868177009411096674
-      type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        casters:
-        - rid: 868177009411096676
-        CastPushDirection: {x: 0, y: 0.09, z: -0.54}
-        OnCast:
-          m_PersistentCalls:
-            m_Calls:
-            - m_Target: {fileID: 3921214951932420571}
-              m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
-              m_MethodName: Play
-              m_Mode: 1
-              m_Arguments:
-                m_ObjectArgument: {fileID: 0}
-                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-                m_IntArgument: 0
-                m_FloatArgument: 0
-                m_StringArgument: 
-                m_BoolArgument: 0
-              m_CallState: 2
-            - m_Target: {fileID: 7978201010539674158}
-              m_TargetAssemblyTypeName: Cinemachine.CinemachineImpulseSource, Cinemachine
-              m_MethodName: GenerateImpulse
-              m_Mode: 1
-              m_Arguments:
-                m_ObjectArgument: {fileID: 0}
-                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-                m_IntArgument: 0
-                m_FloatArgument: 0
-                m_StringArgument: 
-                m_BoolArgument: 0
-              m_CallState: 2
-            - m_Target: {fileID: 4482898792900756674}
-              m_TargetAssemblyTypeName: UnityEngine.VFX.VisualEffect, UnityEngine
-              m_MethodName: Play
-              m_Mode: 1
-              m_Arguments:
-                m_ObjectArgument: {fileID: 0}
-                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-                m_IntArgument: 0
-                m_FloatArgument: 0
-                m_StringArgument: 
-                m_BoolArgument: 0
-              m_CallState: 2
-    - rid: 868177009411096676
-      type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        damage:
-          value: 32
-          type: 2
-          stunlock: 0.5
-          pushDirection: {x: 0, y: 0.2, z: 0.43}
-          RechargeUltimate: 1
-          Effects: []
-        position: {x: 0, y: 0, z: 7.68}
-        size: {x: 1.48, y: 2.16, z: 6.7}
-        angle: {x: 0, y: 0, z: 0}
-    - rid: 8630937699458744397
-      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        WaitTime: 0.2
-        Permissions: 36608
 --- !u!82 &3921214951932420571
 AudioSource:
   m_ObjectHideFlags: 0
@@ -641,7 +454,7 @@ AudioSource:
   m_audioClip: {fileID: 8300000, guid: 8cc9c262a0b0bd044966ee31c7e5bc79, type: 3}
   m_Resource: {fileID: 8300000, guid: 8cc9c262a0b0bd044966ee31c7e5bc79, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 0.62
+  m_Volume: 0.422
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -725,3 +538,172 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &202029226355961849
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9137448914675107588}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7833ff246d1754459595b40d8d6c25c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DefaultValue: 3
+  MaxValue: 3
+  color: {r: 1, g: 0.54877096, b: 0.015686274, a: 1}
+  fullChargeColor: {r: 1, g: 0.54901963, b: 0.015686275, a: 1}
+  OnValueChanged:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &5395013121845886819
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9137448914675107588}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0902c8092743d294c9e1e585f998fde4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  inputAction: {fileID: 5277666054227158027, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
+  Priority: 3
+  IsPerformingAsDefault: 1
+  IsInterruptableWhenBlocked: 0
+  IsInterruptOnHit: 0
+  RestartWhenHolding: 0
+  SpeedReducing: 2
+  attackQueue:
+  - rid: 8630938087521517666
+  - rid: 8630938117248647245
+  - rid: 8630938087521517646
+  - rid: 8630938087521517667
+  - rid: 8630938109234118734
+  OnDamageReport:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 202029226355961849}
+        m_TargetAssemblyTypeName: CustomProperty, Assembly-CSharp
+        m_MethodName: AddValue
+        m_Mode: 4
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0.5
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  OnAttackEnded:
+    m_PersistentCalls:
+      m_Calls: []
+  MinRequiredValue: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: 8630938087521517646
+      type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        casters:
+        - rid: 8630938087521517647
+        CastPushDirection: {x: 0, y: 0.16, z: -0.3}
+        OnCast:
+          m_PersistentCalls:
+            m_Calls:
+            - m_Target: {fileID: 202029226355961849}
+              m_TargetAssemblyTypeName: CustomProperty, Assembly-CSharp
+              m_MethodName: SubtractValue
+              m_Mode: 4
+              m_Arguments:
+                m_ObjectArgument: {fileID: 0}
+                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+                m_IntArgument: 0
+                m_FloatArgument: 1
+                m_StringArgument: 
+                m_BoolArgument: 0
+              m_CallState: 2
+            - m_Target: {fileID: 7978201010539674158}
+              m_TargetAssemblyTypeName: Cinemachine.CinemachineImpulseSource, Cinemachine
+              m_MethodName: GenerateImpulse
+              m_Mode: 1
+              m_Arguments:
+                m_ObjectArgument: {fileID: 0}
+                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+                m_IntArgument: 0
+                m_FloatArgument: 0
+                m_StringArgument: 
+                m_BoolArgument: 0
+              m_CallState: 2
+            - m_Target: {fileID: 3921214951932420571}
+              m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
+              m_MethodName: Play
+              m_Mode: 1
+              m_Arguments:
+                m_ObjectArgument: {fileID: 0}
+                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+                m_IntArgument: 0
+                m_FloatArgument: 0
+                m_StringArgument: 
+                m_BoolArgument: 0
+              m_CallState: 2
+            - m_Target: {fileID: 4482898792900756674}
+              m_TargetAssemblyTypeName: UnityEngine.VFX.VisualEffect, UnityEngine
+              m_MethodName: Play
+              m_Mode: 1
+              m_Arguments:
+                m_ObjectArgument: {fileID: 0}
+                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+                m_IntArgument: 0
+                m_FloatArgument: 0
+                m_StringArgument: 
+                m_BoolArgument: 0
+              m_CallState: 2
+    - rid: 8630938087521517647
+      type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        damage:
+          value: 30
+          type: 2
+          stunlock: 0.5
+          pushDirection: {x: 0, y: 0.2, z: 0.43}
+          RechargeUltimate: 1
+          Effects: []
+        position: {x: 0, y: 0, z: 7.68}
+        size: {x: 1.48, y: 2.16, z: 6.7}
+        angle: {x: 0, y: 0, z: 0}
+    - rid: 8630938087521517666
+      type: {class: Event, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        Function:
+          m_PersistentCalls:
+            m_Calls:
+            - m_Target: {fileID: 5549077959865848722}
+              m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
+              m_MethodName: Play
+              m_Mode: 1
+              m_Arguments:
+                m_ObjectArgument: {fileID: 0}
+                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+                m_IntArgument: 0
+                m_FloatArgument: 0
+                m_StringArgument: 
+                m_BoolArgument: 0
+              m_CallState: 2
+    - rid: 8630938087521517667
+      type: {class: PlayAnimation, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        AnimationName: Trinket.Attack1
+    - rid: 8630938109234118734
+      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        WaitTime: 0.2
+        Permissions: 34560
+    - rid: 8630938117248647245
+      type: {class: InterruptableWait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        WaitTime: 0.5
+        LastHitRequireSeconds: 0.3
+        Permissions: 34560

@@ -35,14 +35,6 @@ namespace CharacterSystem.Attacks
     [DisallowMultipleComponent]
     public class DamageSource : SyncedActivities<IDamageSource>
     {
-        public enum AttackTimingStatement
-        {
-            Waiting,
-            BeforeAttack,
-            Attack,
-            AfterAttack,
-        }
-
         [Flags]
         public enum AdditiveExecutingConditions
         {
@@ -76,7 +68,6 @@ namespace CharacterSystem.Attacks
         public UnityEvent OnAttackEnded = new ();
 
 
-        public AttackTimingStatement currentAttackStatement { get; protected set; }
         public DamageDeliveryReport currentAttackDamageReport { get; protected set; }
 
         public bool IsPerforming 
@@ -102,12 +93,7 @@ namespace CharacterSystem.Attacks
         {
             if (Invoker.IsServer)
             {
-                Invoker.permissions &= ~CharacterPermission.AllowBlocking | ~CharacterPermission.AllowAttacking;
-
-                if (IsAttacking)
-                {
-                    EndAttack_ClientRpc();
-                }
+                Invoker.permissions = CharacterPermission.AllowJump | CharacterPermission.AllowMove | CharacterPermission.AllowRotate | CharacterPermission.AllowGravity;
 
                 StartAttack_ClientRpc();
 
@@ -120,8 +106,7 @@ namespace CharacterSystem.Attacks
         public virtual void StartAttack()
         {
             if (!Invoker.isStunned && 
-                Invoker.permissions.HasFlag(CharacterPermission.AllowAttacking) &&
-                IsPerforming &&
+                IsActive &&
                 !IsAttacking &&
                 !HasOverrides())
             {
@@ -130,7 +115,7 @@ namespace CharacterSystem.Attacks
         }
         public virtual void EndAttack()
         {
-            if (IsServer && IsAttacking)
+            if (IsServer)
             {
                 EndAttack_ClientRpc();
                 
@@ -140,13 +125,12 @@ namespace CharacterSystem.Attacks
                 }
             }
         }
+        public void EndAttackLocaly() => EndAttack_Internal();
 
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
-            
-            network_isPerforming.OnValueChanged += OnPerformStateChanged;
-            
+                        
             if (IsServer)
             {
                 network_isPerforming.Value = IsPerformingAsDefault;
@@ -172,16 +156,6 @@ namespace CharacterSystem.Attacks
             }
         }
 
-        protected virtual void OnPerformStateChanged(bool OldValue, bool NewValue)
-        {
-            if (NewValue)
-            {
-                if (IsPressed)
-                {                    
-                    StartAttack();
-                }   
-            }
-        }
         protected override void OnStateChanged(bool value)
         {
             if (value)
@@ -262,17 +236,13 @@ namespace CharacterSystem.Attacks
             {
                 StopCoroutine(attackProcess);
                 attackProcess = null;
-                StopAllCoroutines();
 
                 Invoker.Speed += SpeedReducing;
                 Invoker.permissions = CharacterPermission.Default;
                 
                 currentAttackDamageReport = null;
-                
-                if (gameObject.activeInHierarchy)
-                {
-                    OnAttackEnded.Invoke();
-                }
+
+                OnAttackEnded.Invoke();
             }
         }
     }

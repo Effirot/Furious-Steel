@@ -5,6 +5,10 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Events;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 public class CustomProperty : NetworkBehaviour
 {
     [Space]
@@ -84,4 +88,19 @@ public class CustomProperty : NetworkBehaviour
     {
         base.OnNetworkDespawn();
     }
+
+#if UNITY_EDITOR
+    [CustomEditor(typeof(CustomProperty), true)]
+    public class CustomProperty_Editor : Editor
+    {
+        private new CustomProperty target => base.target as CustomProperty;
+
+        public override void OnInspectorGUI()
+        {
+            base.OnInspectorGUI();
+
+            EditorGUILayout.LabelField(target.Value.ToString());
+        }
+    } 
+#endif
 }

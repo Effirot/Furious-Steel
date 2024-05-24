@@ -21,7 +21,7 @@ public class MagmaSinMovement : MonoBehaviour
     {
         if (NetworkManager.Singleton.IsServer)
         {
-            height = (Mathf.Sin(Time.time / 10f) + 0.6f) * 2.2f;
+            height = (Mathf.Sin(Time.time / 12f) + 0.6f) * 2.9f;
 
             transform.position = Vector3.Lerp(transform.position, resultPosition, 0.05f);
         }

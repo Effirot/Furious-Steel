@@ -24,29 +24,38 @@ public class AnimatorOverrider : NetworkBehaviour
     {
         ClearAnimationOverrides();
 
-        if (parentNetworkObject != null)
+        if (parentNetworkObject == null) 
+            return;
+        
+        var animator = parentNetworkObject.GetComponentInChildren<Animator>();
+        if (animator != null)
         {
-            var animator = parentNetworkObject.GetComponentInChildren<Animator>();
-            if (animator != null)
+            if (animator.runtimeAnimatorController is AnimatorOverrideController)
             {
-
-                localOverrider = new AnimatorOverrideController(animator.runtimeAnimatorController);
-                
-                List<KeyValuePair<AnimationClip, AnimationClip>> result = new List<KeyValuePair<AnimationClip, AnimationClip>>();
-                foreach (var Value in overrides)
-                {
-                    var clip = Array.Find(localOverrider.animationClips, clip => clip.name == Value.Name);
-                
-                    if (clip != null)
-                    {
-                        result.Add(new (clip, Value.Clip));
-                    }
-                }
-                localOverrider.ApplyOverrides(result);
-
-                lastAnimator = animator;
-                animator.runtimeAnimatorController = localOverrider;
+                localOverrider = animator.runtimeAnimatorController as AnimatorOverrideController;
+                localOverrider.name += " (" + gameObject.name + ")";
             }
+            else
+            {
+                localOverrider = new AnimatorOverrideController(animator.runtimeAnimatorController);
+                localOverrider.name = "AnimationOverride (" + gameObject.name + ")";
+            }
+
+            
+            List<KeyValuePair<AnimationClip, AnimationClip>> result = new List<KeyValuePair<AnimationClip, AnimationClip>>();
+            foreach (var Value in overrides)
+            {
+                var clip = Array.Find(localOverrider.animationClips, clip => clip.name == Value.Name);
+            
+                if (clip != null)
+                {
+                    result.Add(new (clip, Value.Clip));
+                }
+            }
+            localOverrider.ApplyOverrides(result);
+
+            lastAnimator = animator;
+            animator.runtimeAnimatorController = localOverrider;
         }
     }
     public override void OnNetworkDespawn()

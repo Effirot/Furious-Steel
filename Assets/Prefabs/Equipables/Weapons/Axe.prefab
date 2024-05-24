@@ -367,7 +367,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 713631324
+  GlobalObjectIdHash: 2882981284
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -469,10 +469,10 @@ MonoBehaviour:
   inputAction: {fileID: 5277666054227158027, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 2
   IsPerformingAsDefault: 1
-  IsInterruptableWhenBlocked: 1
+  IsInterruptableWhenBlocked: 0
   IsInterruptOnHit: 0
   RestartWhenHolding: 1
-  SpeedReducing: 3
+  SpeedReducing: 0
   attackQueue:
   - rid: 2961813231421882469
   - rid: 2961813231421882470
@@ -1048,6 +1048,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6056542105741424838}
   - component: {fileID: 5322431394780339528}
+  - component: {fileID: 1594928545550114486}
   m_Layer: 6
   m_Name: Ultimate
   m_TagString: Untagged
@@ -1101,11 +1102,8 @@ MonoBehaviour:
   OnAttackEnded:
     m_PersistentCalls:
       m_Calls: []
-  RequireDamage: 100
   ClearCharge: 1
-  OnUltimateReady:
-    m_PersistentCalls:
-      m_Calls: []
+  chargeValue: {fileID: 0}
   references:
     version: 2
     RefIds:
@@ -1188,6 +1186,25 @@ MonoBehaviour:
       type: {class: PlayAnimation, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         AnimationName: Torso.Attack1
+--- !u!114 &1594928545550114486
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4599782399667057845}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7833ff246d1754459595b40d8d6c25c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DefaultValue: 0
+  MaxValue: 70
+  color: {r: 0, g: 1, b: 0.94148946, a: 1}
+  fullChargeColor: {r: 0.11485406, g: 0.8396226, b: 0.360811, a: 1}
+  OnValueChanged:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &4748355354840485092
 GameObject:
   m_ObjectHideFlags: 0
@@ -2085,10 +2102,6 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
-      propertyPath: AfterBlockCharacterPermissions
-      value: 54272
-      objectReference: {fileID: 0}
-    - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
       propertyPath: OnSuccesfulBlockingEvent.m_PersistentCalls.m_Calls.Array.size
       value: 4
       objectReference: {fileID: 0}
@@ -2099,18 +2112,18 @@ PrefabInstance:
     - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
       propertyPath: OnSuccesfulBlockingEvent.m_PersistentCalls.m_Calls.Array.data[3].m_Target
       value: 
-      objectReference: {fileID: 5322431394780339528}
+      objectReference: {fileID: 1594928545550114486}
     - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
       propertyPath: OnSuccesfulBlockingEvent.m_PersistentCalls.m_Calls.Array.data[3].m_CallState
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
       propertyPath: OnSuccesfulBlockingEvent.m_PersistentCalls.m_Calls.Array.data[3].m_MethodName
-      value: set_DeliveredDamage
+      value: set_Value
       objectReference: {fileID: 0}
     - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
       propertyPath: OnSuccesfulBlockingEvent.m_PersistentCalls.m_Calls.Array.data[3].m_TargetAssemblyTypeName
-      value: UltimateDamageSource, Assembly-CSharp
+      value: CustomProperty, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
       propertyPath: OnSuccesfulBlockingEvent.m_PersistentCalls.m_Calls.Array.data[3].m_Arguments.m_FloatArgument

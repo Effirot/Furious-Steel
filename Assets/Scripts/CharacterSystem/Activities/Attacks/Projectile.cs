@@ -104,10 +104,7 @@ public class Projectile : NetworkBehaviour,
     {
         onDamageRecieved?.Invoke(damage);
 
-        if (IsServer)
-        {
-            MoveDirection = damage.pushDirection;
-        }
+        Kill();
 
         return false;
     }
@@ -193,28 +190,26 @@ public class Projectile : NetworkBehaviour,
 
         var report = Damage.Deliver(other.gameObject, damage);
 
-        if (IsServer)
+
+        if (report.isDelivered)
         {
-            if (report.isDelivered)
+            if (report.isBlocked && AllowDeflecting)
             {
-                if (report.isBlocked && AllowDeflecting)
+                Push(other.transform.forward);
+
+                speed *= 1.5f;
+                lifetime += 5;
+
+                if (other.TryGetComponent<IDamageSource>(out var source))
                 {
-                    Push(other.transform.forward);
-
-                    speed *= 1.5f;
-                    lifetime += 5;
-
-                    if (other.TryGetComponent<IDamageSource>(out var source))
-                    {
-                        Summoner = source;
-                    }
-
-                    return;
+                    Summoner = source;
                 }
-                else
-                {
-                    Kill();
-                }
+
+                return;
+            }
+            else
+            {
+                Kill();
             }
         }
 

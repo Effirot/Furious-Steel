@@ -22,12 +22,12 @@ public class InventoryDrawer : MonoBehaviour
             new HeavySword(), new Rapier(), new Bow(), null, new LeatherJacket(),
             
             new VoidMagic(), new ExplodeMagic(), null, null, null, 
-            new CurseFlameMagic(), null, null, null, null, 
+            new FlameMagic(), null, null, null, null, 
             new ThunderMagic(), null, null, null, null,
 
             new Bag(), new Pistol(), null, null, null, 
             new Buckler(), new Shield(), null, null, null, 
-            new ThunderMagic(), null, null, null, null
+            new Mortar(), null, null, null, null
         }
     };
     
@@ -59,17 +59,17 @@ public class InventoryDrawer : MonoBehaviour
             slot_intances.RemoveAt(0);
         }
     }
-    public async void Refresh()
+    public void Refresh()
     {
         Clear();
      
-        if (File.Exists(inventoryBufferPath))
-        {
-            var bytes = await File.ReadAllBytesAsync(inventoryBufferPath);
-            LocalInventoryInstance.LoadFromString(Encoding.UTF8.GetString(bytes));
+        // if (File.Exists(inventoryBufferPath))
+        // {
+        //     var bytes = await File.ReadAllBytesAsync(inventoryBufferPath);
+        //     LocalInventoryInstance.LoadFromString(Encoding.UTF8.GetString(bytes));
             
-            Debug.Log($"Inventory was succesfully loaded from \"{inventoryBufferPath}\"!");
-        }
+        //     Debug.Log($"Inventory was succesfully loaded from \"{inventoryBufferPath}\"!");
+        // }
 
         for (int i = 0; i < LocalInventoryInstance.MaxSize; i++)
         {
@@ -93,10 +93,10 @@ public class InventoryDrawer : MonoBehaviour
     {   
         Refresh();
     }
-    private async void OnDisable()
+    private void OnDisable()
     {
-        var bytes = Encoding.UTF8.GetBytes(LocalInventoryInstance.SaveToString());
-        await File.WriteAllBytesAsync(inventoryBufferPath, bytes);
+        // var bytes = Encoding.UTF8.GetBytes(LocalInventoryInstance.SaveToString());
+        // await File.WriteAllBytesAsync(inventoryBufferPath, bytes);
 
         Clear();
     }

@@ -381,7 +381,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3399537582
+  GlobalObjectIdHash: 896179055
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -676,6 +676,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7450366921895863354}
   - component: {fileID: 2394801123767968783}
+  - component: {fileID: 4908696291788395169}
   m_Layer: 0
   m_Name: Ultimate
   m_TagString: Untagged
@@ -726,11 +727,8 @@ MonoBehaviour:
   OnAttackEnded:
     m_PersistentCalls:
       m_Calls: []
-  RequireDamage: 200
   ClearCharge: 1
-  OnUltimateReady:
-    m_PersistentCalls:
-      m_Calls: []
+  chargeValue: {fileID: 0}
   references:
     version: 2
     RefIds:
@@ -802,6 +800,25 @@ MonoBehaviour:
       type: {class: PlayAnimation, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         AnimationName: Torso.Attack1
+--- !u!114 &4908696291788395169
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5339950106092455815}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7833ff246d1754459595b40d8d6c25c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DefaultValue: 0
+  MaxValue: 140
+  color: {r: 0, g: 1, b: 0.94148946, a: 1}
+  fullChargeColor: {r: 0.11485406, g: 0.8396226, b: 0.360811, a: 1}
+  OnValueChanged:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &6389387997060165717
 GameObject:
   m_ObjectHideFlags: 0

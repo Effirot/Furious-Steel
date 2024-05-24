@@ -13,9 +13,9 @@ namespace CharacterSystem.PowerUps
         {
             if (holder.IsServer)
             {
-                foreach (var ultimate in holder.Invoker.gameObject.GetComponentsInChildren<UltimateDamageSource>())
+                foreach (var property in holder.Invoker.gameObject.GetComponentsInChildren<CustomProperty>())
                 {
-                    ultimate.chargeValue.Value = ultimate.chargeValue.MaxValue;
+                    property.Value = property.MaxValue;
                 }
             }
         }

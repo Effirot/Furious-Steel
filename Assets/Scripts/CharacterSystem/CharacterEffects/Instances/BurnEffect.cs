@@ -57,6 +57,6 @@ public class BurnEffect : CharacterEffect
     public override void AddDublicate(CharacterEffect effect)
     {
         time = ((BurnEffect)effect).time;
-        damagePerSecond += ((BurnEffect)effect).damagePerSecond;
+        damagePerSecond = Mathf.Max(damagePerSecond, ((BurnEffect)effect).damagePerSecond);
     }
 }

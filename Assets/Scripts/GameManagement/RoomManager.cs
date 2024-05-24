@@ -309,18 +309,16 @@ public class RoomManager : NetworkBehaviour
     public void OnAuthorizedPlayerDisconnected(ulong ID)
     {
         var publicDataIndex = IndexOfPlayerData(data => data.ID == ID);
-        
-        // if (privateClientsData[ID].networkCharacter != null)
-        // {
-        //     privateClientsData[ID].networkCharacter.Kill();
-        // }
 
-        playersData?.RemoveAt(publicDataIndex);
-        
-        if (privatePlayersData.ContainsKey(ID))
+        if (playersData != null)
         {
-            privatePlayersData[ID].Dispose();
-            privatePlayersData.Remove(ID);
+            playersData?.RemoveAt(publicDataIndex);
+            
+            if (privatePlayersData.ContainsKey(ID))
+            {
+                privatePlayersData[ID].Dispose();
+                privatePlayersData.Remove(ID);
+            }
         }
     }
 

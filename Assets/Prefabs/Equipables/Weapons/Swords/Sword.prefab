@@ -1727,10 +1727,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7833ff246d1754459595b40d8d6c25c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DefaultValue: 30
+  DefaultValue: 0
   MaxValue: 120
-  color: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  fullChargeColor: {r: 1, g: 0, b: 0, a: 1}
+  color: {r: 0, g: 1, b: 0.94148946, a: 1}
+  fullChargeColor: {r: 0.11485406, g: 0.8396226, b: 0.360811, a: 1}
   OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1939,7 +1939,7 @@ MonoBehaviour:
       type: {class: Move, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         MoveDirection: {x: 0, y: 0, z: 40}
-        time: 0.15
+        time: 0.11
         CheckColision: 1
         permission: 0
     - rid: 8630937996126060644

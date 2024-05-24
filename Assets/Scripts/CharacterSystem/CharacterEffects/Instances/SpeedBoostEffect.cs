@@ -35,6 +35,11 @@ public class SpeedBoostEffect : CharacterEffect
         }
     }
 
+    public override void AddDublicate(CharacterEffect effect)
+    {
+        time = ((SpeedBoostEffect)effect).time;
+    }
+
     public override string ToString()
     {
         return base.ToString() + " - " + time;

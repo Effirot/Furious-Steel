@@ -34,11 +34,6 @@ namespace CharacterSystem.DamageMath
         {
             if (!gameObject.TryGetComponent<IDamagable>(out var target)) 
             {
-                if (gameObject.TryGetComponent<Rigidbody>(out var rb))
-                {
-                    rb.AddForce((damage.pushDirection + Vector3.up / 2) * 1000);
-                }
-
                 return new();
             }
 
@@ -48,11 +43,6 @@ namespace CharacterSystem.DamageMath
         {
             if (!transform.gameObject.TryGetComponent<IDamagable>(out var target)) 
             {
-                if (transform.gameObject.TryGetComponent<Rigidbody>(out var rb))
-                {
-                    rb.AddForce((damage.pushDirection + Vector3.up / 2) * 1000);
-                }
-
                 return new();
             }
 
@@ -64,35 +54,34 @@ namespace CharacterSystem.DamageMath
             report.target = target;
             report.damage = damage;
 
-            if (target.IsUnityNull() || target == damage.sender)
+            if (target.IsUnityNull())
                 return report;
-
-
-            if (ITeammate.IsAlly(target, damage.sender))
-            {
-                report.isDelivered = DeliverEffects();
-                report.isDelivered = target.Heal(damage);
-
-                if (report.isDelivered)
-                {
-                    damageDeliveryPipeline?.Invoke(report);
-                }
-
+                
+            if (target.health <= 0)
                 return report;
-            }
             
             try {
+
                 if (damage.value >= 0)
                 {
-                    report.isDelivered = true;
-                    report.isBlocked = target.Hit(damage);
-                    report.isLethal = target.health <= 0;
-
-                    if (!report.isBlocked)
+                    if (target != damage.sender || (damage.SelfDamageUltimate !&& target == damage.sender))
                     {
-                        DeliverEffects();
+                        report.isBlocked = target.Hit(damage);
+                        report.isDelivered = true;
                     }
                 }
+                else
+                {
+                    report.isBlocked = target.Heal(damage);
+                    report.isDelivered = true;
+                }
+
+                if (!report.isBlocked)
+                {
+                    DeliverEffects();
+                }
+
+                report.isLethal = target.health <= 0;
             }
             catch (Exception e)
             {
@@ -142,6 +131,9 @@ namespace CharacterSystem.DamageMath
         [SerializeField]
         public bool RechargeUltimate;
 
+        [SerializeField]
+        public bool SelfDamageUltimate;
+
         [SerializeField, SubclassSelector, SerializeReference]
         public CharacterEffect[] Effects;
 
@@ -177,6 +169,7 @@ namespace CharacterSystem.DamageMath
             this.type = type;
             this.Effects = effects;
             this.RechargeUltimate = true;   
+            this.SelfDamageUltimate = false;   
         }
         public Damage(float value, IDamageSource sender, float stunlock, Vector3 pushDirection, Type type, params CharacterEffect[] effects)
         {
@@ -188,6 +181,7 @@ namespace CharacterSystem.DamageMath
             this.type = type;
             this.Effects = effects;
             this.RechargeUltimate = true;
+            this.SelfDamageUltimate = false;   
             
             this.sender = sender;
         }
@@ -237,11 +231,31 @@ namespace CharacterSystem.DamageMath
         public bool isBlocked = false;
         public bool isLethal = false;
 
-        public IDamagable target = null;
-
         public DateTime time = DateTime.Now;
 
         public CharacterEffect[] RecievedEffects;
+        
+        public ulong TargetID;
+
+        public IDamagable target {
+            get {
+                if (TargetID != ulong.MinValue)
+                {
+                    var dictionary = NetworkManager.Singleton.SpawnManager.SpawnedObjects;
+
+                    if (dictionary.ContainsKey(TargetID) && dictionary[TargetID].TryGetComponent<IDamageSource>(out var component))
+                    {
+                        return component;
+                    }
+                }
+
+                return null;
+            }
+            set{
+                TargetID = value?.gameObject?.GetComponent<NetworkObject>()?.NetworkObjectId ?? ulong.MinValue;
+            } 
+        }
+
 
         public void Dispose()
         {
@@ -255,29 +269,7 @@ namespace CharacterSystem.DamageMath
             serializer.SerializeValue(ref isBlocked);
             serializer.SerializeValue(ref isLethal);
             serializer.SerializeValue(ref time);
-
-            var objectID = ulong.MinValue;
-            if (!target.IsUnityNull() && target.gameObject.TryGetComponent<NetworkObject>(out var networkObject))
-            {
-                objectID = networkObject.NetworkObjectId;
-            }
-
-            serializer.SerializeValue(ref objectID);
-
-            if (serializer.IsReader)
-            {
-                var dictionary = NetworkManager.Singleton.SpawnManager.SpawnedObjects;
-
-                if (dictionary.ContainsKey(objectID))
-                {
-                    target = dictionary[objectID].GetComponent<IDamagable>();
-                }
-                else
-                {
-                    target = null;
-                }
-
-            }
+            serializer.SerializeValue(ref TargetID);
         }
     }
 }

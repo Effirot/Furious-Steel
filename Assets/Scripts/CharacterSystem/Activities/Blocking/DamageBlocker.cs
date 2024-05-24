@@ -134,14 +134,12 @@ namespace CharacterSystem.Blocking
             if (Invoker.isStunned)
                 return;
 
-            if (IsServer)
-            {
-                Invoker.Push(Vector3.up * 0.01f);
 
-                foreach (var attacks in Invoker.gameObject.GetComponentsInChildren<DamageSource>())
-                {
-                    attacks.EndAttack();
-                }
+            Invoker.Push(Vector3.up * 0.01f);
+
+            foreach (var attacks in Invoker.gameObject.GetComponentsInChildren<DamageSource>())
+            {
+                attacks.EndAttackLocaly();
             }
 
             StopBlockProcess();
@@ -149,9 +147,6 @@ namespace CharacterSystem.Blocking
             Invoker.Blocker = this;
 
             BlockProcessRoutine = StartCoroutine(BlockProcess());
-
-            Invoker.Speed -= SpeedReducing;
-            Invoker.permissions = BeforeBlockCharacterPermissions;
         }
         public void StopBlockProcess()
         {
@@ -160,18 +155,20 @@ namespace CharacterSystem.Blocking
                 StopCoroutine(BlockProcessRoutine);
                 
                 Invoker.animator.SetBool("Blocking", false);
-
-                BlockProcessRoutine = null;
-            
                 Invoker.Speed += SpeedReducing;
                 Invoker.permissions = CharacterPermission.Default;
             
                 IsBlockInProcess = false;
             }
+            
+            BlockProcessRoutine = null;
         }
 
         private IEnumerator BlockProcess()
         {
+            Invoker.Speed -= SpeedReducing;
+            Invoker.permissions = BeforeBlockCharacterPermissions;
+
             OnBeforeBlockingEvent.Invoke();
 
             yield return new WaitForSeconds(BeforeBlockTime);

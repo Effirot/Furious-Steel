@@ -77,7 +77,8 @@ public abstract class SyncedActivities : NetworkBehaviour
                 activity => 
                     activity.inputAction == this.inputAction && 
                     activity.Priority > this.Priority &&
-                    activity.Invoker == this.Invoker);
+                    activity.Invoker == this.Invoker &&
+                    !this.Invoker.IsUnityNull() );
         }
 
         return !syncedActivityOverrider.IsUnityNull();

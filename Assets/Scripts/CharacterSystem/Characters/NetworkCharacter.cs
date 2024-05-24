@@ -224,6 +224,7 @@ namespace CharacterSystem.Objects
         private bool isGroundedDeltaState = false;
         private Vector2 speed_acceleration_multipliyer = Vector2.zero;
 
+        private Vector3 resultMovePosition;
 
         public virtual void Kill ()
         {

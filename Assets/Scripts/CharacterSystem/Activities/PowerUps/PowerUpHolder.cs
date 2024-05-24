@@ -8,6 +8,9 @@ using CharacterSystem.Attacks;
 using CharacterSystem.DamageMath;
 using CharacterSystem.Blocking;
 using Unity.VisualScripting;
+using UnityEngine.Events;
+
+
 
 
 
@@ -32,7 +35,7 @@ namespace CharacterSystem.PowerUps
 
         public int Id => network_powerUpId.Value;
 
-        public event Action<PowerUp> OnPowerUpChanged = delegate { };
+        public UnityEvent<PowerUp> OnPowerUpChanged = new();
 
         private NetworkVariable<int> network_powerUpId = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 

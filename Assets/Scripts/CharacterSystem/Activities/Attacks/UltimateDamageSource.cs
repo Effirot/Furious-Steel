@@ -19,14 +19,10 @@ public class UltimateDamageSource : DamageSource
     [HideInInspector]
     public CustomProperty chargeValue; 
 
-    public override void OnNetworkSpawn()
-    {
-        chargeValue = GetComponent<CustomProperty>();
-    }
     public override void OnNetworkDespawn()
     {
         base.OnNetworkDespawn();
-        
+
         if (Invoker != null)
         {
             Invoker.onDamageDelivered -= OnDamageDelivered_Event;
@@ -35,11 +31,10 @@ public class UltimateDamageSource : DamageSource
 
     public override void StartAttack()
     {
-        if (chargeValue.MaxValue <= chargeValue.Value && 
+        if (chargeValue.Value >= chargeValue.MaxValue &&  
             Invoker.permissions.HasFlag(CharacterPermission.AllowAttacking) &&
-            !Invoker.isStunned && 
             IsPerforming &&
-            !IsAttacking && 
+            !IsAttacking &&
             !HasOverrides())
         {
             if (ClearCharge)
@@ -51,9 +46,10 @@ public class UltimateDamageSource : DamageSource
         }
     }
 
-    
     protected virtual void Start()
     {        
+        chargeValue = GetComponent<CustomProperty>();
+
         Invoker.onDamageDelivered += OnDamageDelivered_Event;
     }
 
