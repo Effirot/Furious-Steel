@@ -82,11 +82,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inputAction: {fileID: 2243838571553120747, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 2
+  SpeedChange: 0
   IsPerformingAsDefault: 0
   IsInterruptableWhenBlocked: 1
   IsInterruptOnHit: 1
   RestartWhenHolding: 1
-  SpeedReducing: 2.5
   attackQueue:
   - rid: 2961813231421882370
   - rid: 868176892238758009
@@ -196,6 +196,7 @@ MonoBehaviour:
           stunlock: 0
           pushDirection: {x: 0.05, y: 0, z: 0.1}
           RechargeUltimate: 1
+          SelfDamageUltimate: 0
           Effects: []
         position: {x: 0, y: 0, z: 1.71}
         size: {x: 1.54, y: 1.36, z: 1}
@@ -616,11 +617,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inputAction: {fileID: 2243838571553120747, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 2
+  SpeedChange: 0
   IsPerformingAsDefault: 1
   IsInterruptableWhenBlocked: 1
   IsInterruptOnHit: 1
   RestartWhenHolding: 1
-  SpeedReducing: 2.5
   attackQueue:
   - rid: 2961813231421882370
   - rid: 868176892238758004
@@ -730,6 +731,7 @@ MonoBehaviour:
           stunlock: 0
           pushDirection: {x: -0.05, y: 0, z: 0.1}
           RechargeUltimate: 1
+          SelfDamageUltimate: 0
           Effects: []
         position: {x: 0, y: 0, z: 1.71}
         size: {x: 1.54, y: 1.36, z: 1}
@@ -1538,11 +1540,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inputAction: {fileID: -697749738134341483, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 2
+  SpeedChange: 0
   IsPerformingAsDefault: 1
   IsInterruptableWhenBlocked: 0
   IsInterruptOnHit: 0
   RestartWhenHolding: 1
-  SpeedReducing: 6
   attackQueue:
   - rid: 868176906250092631
   OnDamageReport:
@@ -1691,6 +1693,7 @@ MonoBehaviour:
           stunlock: 0.3
           pushDirection: {x: 0, y: 0, z: 0.22}
           RechargeUltimate: 0
+          SelfDamageUltimate: 0
           Effects: []
         position: {x: 0, y: 0, z: 1.71}
         size: {x: 1.54, y: 1.36, z: 1}
@@ -1704,6 +1707,7 @@ MonoBehaviour:
           stunlock: 0.5
           pushDirection: {x: 0, y: 0, z: 0.1}
           RechargeUltimate: 0
+          SelfDamageUltimate: 0
           Effects: []
         position: {x: 0, y: 0, z: 1.71}
         size: {x: 1.54, y: 1.36, z: 1}
@@ -1782,11 +1786,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inputAction: {fileID: 5277666054227158027, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 2
+  SpeedChange: 0
   IsPerformingAsDefault: 1
   IsInterruptableWhenBlocked: 1
   IsInterruptOnHit: 0
   RestartWhenHolding: 1
-  SpeedReducing: 0
   attackQueue:
   - rid: 5691645226531684433
   - rid: 8630937930187669643
@@ -1869,6 +1873,7 @@ MonoBehaviour:
           stunlock: 0.1
           pushDirection: {x: 0, y: 0, z: 0.1}
           RechargeUltimate: 1
+          SelfDamageUltimate: 0
           Effects: []
         position: {x: 0, y: 0, z: 2.05}
         size: {x: 0.97, y: 1.36, z: 1.77}
@@ -1925,6 +1930,7 @@ MonoBehaviour:
           stunlock: 0.1
           pushDirection: {x: 0, y: 0, z: 0.1}
           RechargeUltimate: 1
+          SelfDamageUltimate: 0
           Effects: []
         position: {x: 0, y: 0, z: 2.05}
         size: {x: 0.97, y: 1.36, z: 1.77}
@@ -2273,11 +2279,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inputAction: {fileID: 0}
   Priority: 2
+  SpeedChange: 0
   IsPerformingAsDefault: 1
   IsInterruptableWhenBlocked: 0
   IsInterruptOnHit: 1
   RestartWhenHolding: 1
-  SpeedReducing: 1
   attackQueue:
   - rid: 4973655737326895174
   - rid: 2961813231421882371
@@ -2350,6 +2356,7 @@ MonoBehaviour:
           stunlock: 0.5
           pushDirection: {x: 0, y: 0, z: 0.7}
           RechargeUltimate: 1
+          SelfDamageUltimate: 0
           Effects: []
         position: {x: 0, y: 0, z: 1.71}
         size: {x: 1.54, y: 1.36, z: 1}
@@ -2722,7 +2729,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
       propertyPath: OnSuccesfulBlockingEvent.m_PersistentCalls.m_Calls.Array.data[3].m_MethodName
-      value: StartAttackForced
+      value: PlayForced
       objectReference: {fileID: 0}
     - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
       propertyPath: OnSuccesfulBlockingEvent.m_PersistentCalls.m_Calls.Array.data[3].m_TargetAssemblyTypeName

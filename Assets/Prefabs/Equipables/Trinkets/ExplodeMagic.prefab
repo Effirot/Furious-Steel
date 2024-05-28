@@ -237,8 +237,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4884045045746518388}
-  - component: {fileID: 6859952002960962119}
   - component: {fileID: 5044196085474087914}
+  - component: {fileID: 6859952002960962119}
   m_Layer: 6
   m_Name: Source
   m_TagString: Untagged
@@ -262,6 +262,25 @@ Transform:
   - {fileID: 2843136272768622462}
   m_Father: {fileID: 2682705565289463711}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5044196085474087914
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9137448914675107588}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7833ff246d1754459595b40d8d6c25c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DefaultValue: 0
+  MaxValue: 60
+  color: {r: 0, g: 1, b: 0.94148946, a: 1}
+  fullChargeColor: {r: 0.11485406, g: 0.8396226, b: 0.360811, a: 1}
+  OnValueChanged:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &6859952002960962119
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -276,11 +295,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inputAction: {fileID: -697749738134341483, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 3
+  SpeedChange: 0
   IsPerformingAsDefault: 1
   IsInterruptableWhenBlocked: 0
-  IsInterruptOnHit: 1
-  RestartWhenHolding: 1
-  SpeedReducing: 0
+  IsInterruptOnHit: 0
+  RestartWhenHolding: 0
   attackQueue:
   - rid: 8630938087521517668
   OnDamageReport:
@@ -302,6 +321,7 @@ MonoBehaviour:
     stunlock: 1
     pushDirection: {x: 0, y: 0.84, z: 0}
     RechargeUltimate: 0
+    SelfDamageUltimate: 0
     Effects: []
   references:
     version: 2
@@ -310,25 +330,6 @@ MonoBehaviour:
       type: {class: PlayAnimation, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         AnimationName: Trinket.Attack1
---- !u!114 &5044196085474087914
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9137448914675107588}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f7833ff246d1754459595b40d8d6c25c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  DefaultValue: 10
-  MaxValue: 10
-  color: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  fullChargeColor: {r: 1, g: 0, b: 0, a: 1}
-  OnValueChanged:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!1001 &4591135739258195996
 PrefabInstance:
   m_ObjectHideFlags: 0

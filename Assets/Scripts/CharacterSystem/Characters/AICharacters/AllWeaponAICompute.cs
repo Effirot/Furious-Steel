@@ -93,7 +93,7 @@ namespace CharacterSystem.Objects.AI
             selectedDamageSource.IsPressed = true;
             
             await UniTask.WhenAny(UniTask.WaitUntil(
-                () => selectedDamageSource.IsAttacking), 
+                () => selectedDamageSource.IsInProcess), 
                 UniTask.Delay(1000));
 
             selectedDamageSource.IsPressed = false;

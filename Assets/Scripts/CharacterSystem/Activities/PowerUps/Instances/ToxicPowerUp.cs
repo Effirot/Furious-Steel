@@ -34,9 +34,4 @@ public class ToxicPowerUp : PowerUp
             }
         }
     }
-
-    public override bool IsValid(PowerUpHolder holder)
-    {
-        return holder is not BagPowerUpHolder;
-    }
 }

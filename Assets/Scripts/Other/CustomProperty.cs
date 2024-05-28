@@ -30,16 +30,26 @@ public class CustomProperty : NetworkBehaviour
 
 
     public float Value {
-        get => network_value.Value;
+        get => IsActive ? network_value.Value : 0;
         set {
-            if (IsServer)
+            if (IsServer && IsActive)
             {
                 network_value.Value = Mathf.Clamp(value, 0, MaxValue);
             }
         }
     }
+    public bool IsActive {
+        get => network_IsActive.Value;
+        set {
+            if (IsServer)
+            {
+                network_IsActive.Value = value;
+            }
+        }
+    }
 
     private NetworkVariable<float> network_value = new(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    private NetworkVariable<bool> network_IsActive = new(true, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
 
     public void AddValue(float value)
@@ -75,6 +85,13 @@ public class CustomProperty : NetworkBehaviour
         Value /= value;
     }
 
+    public void RefillOnKill(DamageDeliveryReport report)
+    {
+        if (report.isLethal)
+        {
+            Value = MaxValue;
+        }
+    }
 
     public override void OnNetworkSpawn()
     {

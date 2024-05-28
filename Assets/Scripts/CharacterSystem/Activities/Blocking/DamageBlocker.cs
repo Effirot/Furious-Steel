@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using CharacterSystem.Attacks;
 using CharacterSystem.DamageMath;
 using CharacterSystem.Objects;
@@ -22,8 +23,11 @@ namespace CharacterSystem.Blocking
         public event Action<bool> onStunStateChanged;
     }
 
-    public class DamageBlocker : SyncedActivities<IDamageBlocker>
+    public class DamageBlocker : SyncedActivity<IDamageBlocker>
     {
+        [SerializeField]
+        private bool IsActiveAsDefault = true;
+
         [Space]
         [Header("Stun")]
         [SerializeField]
@@ -47,11 +51,6 @@ namespace CharacterSystem.Blocking
         [SerializeField, Range(0f, 9f)]
         private float PushForce = 0.5f;
 
-
-        [Space]
-        [SerializeField, Range(0f, 9f)]
-        private float SpeedReducing = 4;
-
         [SerializeField]
         private bool InterruptOnHit = true;
 
@@ -74,29 +73,34 @@ namespace CharacterSystem.Blocking
         [SerializeField]
         private UnityEvent OnSuccesfulBlockingEvent = new();
 
+        public bool IsPerforming {
+            get => network_isPerforming.Value;
+            set {
+                if (IsServer)
+                {
+                    network_isPerforming.Value = value;
+                }
+            }
+        }
 
-        public bool IsBlockInProcess { get; private set; }
+        public bool IsBlockActive { get; private set; }
 
-        private Coroutine BlockProcessRoutine = null;
+        private NetworkVariable<bool> network_isPerforming = new NetworkVariable<bool>(true, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
+        public override void OnNetworkSpawn()
+        {
+            base.OnNetworkSpawn();
+
+            network_isPerforming.Value = IsActiveAsDefault;
+        }
 
         public virtual bool Block(ref Damage damage)
-        {
+        {            
             if (damage.type == Damage.Type.Parrying || damage.type == Damage.Type.Unblockable || damage.type == Damage.Type.Effect) 
                 return false;
 
-            if (IsBlockInProcess)
+            if (IsBlockActive)
             {
-                if (InterruptOnHit)
-                {
-                    StopBlock_ClientRpc();
-
-                    if (!IsClient)
-                    {
-                        StopBlockProcess();
-                    }
-                }
-                
                 if (IsServer)
                 {
                     ExecuteSuccesfullyBlockEvent_ClientRpc();
@@ -117,64 +121,61 @@ namespace CharacterSystem.Blocking
                 }
                 damage *= 1f - DamageReducing;
 
+                if (InterruptOnHit)
+                {
+                    Stop();
+                }
+
                 return true;
             }
 
             return false;
         } 
 
-        public void StartBlockProcess()
+        public override void Play()
         {
             if (!Invoker.permissions.HasFlag(CharacterPermission.AllowBlocking))
                 return;
 
-            if (HasOverrides())
+            if (Invoker.isStunned || !IsPerforming)
                 return;
 
-            if (Invoker.isStunned)
-                return;
-
-
-            Invoker.Push(Vector3.up * 0.01f);
-
-            foreach (var attacks in Invoker.gameObject.GetComponentsInChildren<DamageSource>())
-            {
-                attacks.EndAttackLocaly();
-            }
-
-            StopBlockProcess();
-
-            Invoker.Blocker = this;
-
-            BlockProcessRoutine = StartCoroutine(BlockProcess());
+            base.Play();
         }
-        public void StopBlockProcess()
+        public override void Stop()
         {
-            if (BlockProcessRoutine != null)
-            {
-                StopCoroutine(BlockProcessRoutine);
-                
+            if (IsInProcess)
+            {                                
+                Permissions = CharacterPermission.Default;
+            
                 Invoker.animator.SetBool("Blocking", false);
-                Invoker.Speed += SpeedReducing;
-                Invoker.permissions = CharacterPermission.Default;
-            
-                IsBlockInProcess = false;
+                IsBlockActive = false;
+                
+                base.Stop();
             }
-            
-            BlockProcessRoutine = null;
         }
-
-        private IEnumerator BlockProcess()
+        
+        public override IEnumerator Process()
         {
-            Invoker.Speed -= SpeedReducing;
-            Invoker.permissions = BeforeBlockCharacterPermissions;
+            Permissions = BeforeBlockCharacterPermissions;
+            Invoker.Blocker = this;
+            Invoker.Push(Vector3.up * 0.01f);
+            
+            var array = Invoker.activities;
+            for (int i = 0; i < array.Count(); i++)
+            {
+                if (array[i] is DamageSource)
+                {
+                    array[i].Stop();
+                }
+            }
 
             OnBeforeBlockingEvent.Invoke();
 
             yield return new WaitForSeconds(BeforeBlockTime);
 
-            IsBlockInProcess = true;
-            Invoker.permissions = BlockCharacterPermissions;
+            IsBlockActive = true;
+            Permissions = BlockCharacterPermissions;
             OnBlockingEvent.Invoke();
 
             Invoker.animator.SetBool("Blocking", true);
@@ -196,27 +197,11 @@ namespace CharacterSystem.Blocking
             Invoker.animator.SetBool("Blocking", false);
 
 
-            IsBlockInProcess = false;
-            Invoker.permissions = AfterBlockCharacterPermissions;
+            IsBlockActive = false;
+            Permissions = AfterBlockCharacterPermissions;
             OnAfterBlockingEvent.Invoke();
 
             yield return new WaitForSeconds(AfterBlockTime);
-
-            StopBlockProcess();
-        }
-
-        protected override void OnStateChanged(bool IsPressed)
-        {
-            if (IsPressed && BlockProcessRoutine == null)
-            {   
-                StartBlockProcess();
-            }
-        }
-
-        [ClientRpc]
-        private void StopBlock_ClientRpc()
-        {
-            StopBlockProcess();
         }
 
         [ClientRpc]

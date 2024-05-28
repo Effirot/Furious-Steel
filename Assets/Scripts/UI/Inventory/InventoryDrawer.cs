@@ -26,7 +26,7 @@ public class InventoryDrawer : MonoBehaviour
             new ThunderMagic(), null, null, null, null,
 
             new Bag(), new Pistol(), null, null, null, 
-            new Buckler(), new Shield(), null, null, null, 
+            new Buckler(), new Shield(), new Deflector(), null, null, 
             new Mortar(), null, null, null, null
         }
     };

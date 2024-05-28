@@ -5,17 +5,17 @@ using UnityEngine;
 public class InstantiatePrefabOnDestroy : MonoBehaviour
 {
     [SerializeField]
-    private GameObject Object;
+    private GameObject targetObject;
 
     [SerializeField, Range(0, 20)]
     private float removeObjectAfter = 5;
 
-    private void OnDestroy()
+    private void OnDisable()
     {
-        var gameObject = Instantiate(Object, transform.position, transform.rotation);
+        var spawnedObject = GameObject.Instantiate(targetObject, transform.position, transform.rotation);
 
-        gameObject.SetActive(true);
+        spawnedObject.SetActive(true);
         
-        Destroy(gameObject, removeObjectAfter);
+        Destroy(spawnedObject, removeObjectAfter);
     }
 }

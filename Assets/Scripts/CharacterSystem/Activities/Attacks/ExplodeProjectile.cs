@@ -63,7 +63,7 @@ public class ExplodeProjectile : Projectile
             var damage = explodeDamage;
 
             damage.sender = Summoner;
-            damage.pushDirection = collider.transform.position - transform.position + Vector3.up;
+            damage.pushDirection = collider.transform.position - transform.position;
             damage.pushDirection.Normalize();
             damage.pushDirection *= PushForce;
             damage.pushDirection += transform.rotation * explodeDamage.pushDirection;

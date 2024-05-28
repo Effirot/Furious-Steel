@@ -155,6 +155,12 @@ namespace CharacterSystem.Objects
                 
                 onDamageDelivered?.Invoke(report);
             }
+
+            
+            if (IsOwner && report.damage.type is not Damage.Type.Effect)
+            {
+                OnHitImpulseSource?.GenerateImpulse(report.damage.value / 12f);
+            }
         }
         
 
@@ -170,15 +176,6 @@ namespace CharacterSystem.Objects
                 data.statistics.AssistsStreak = 0;
 
                 ClientData = data;
-            }
-        }
-        public void Kill(bool IsSuicide)
-        {
-            this.Kill();
-
-            if (IsSuicide && IsServer && IsSpawned)
-            {
-                OnSuicide_ClientRpc();
             }
         }
 
@@ -417,7 +414,12 @@ namespace CharacterSystem.Objects
         {
             if (!this.IsUnityNull())
             {
-                Kill(true);
+                if (IsServer && IsSpawned)
+                {
+                    OnSuicide_ClientRpc();
+                }
+            
+                Damage.Deliver(this, new Damage(maxHealth, null, 100, Vector3.up, Damage.Type.Unblockable));
             }
         } 
 
@@ -426,7 +428,11 @@ namespace CharacterSystem.Objects
         {
             if (suicideCorpsePrefab != null)
             {
-                Destroy(Instantiate(suicideCorpsePrefab, transform.position, transform.rotation), 5);
+                var corpse = Instantiate(suicideCorpsePrefab, transform.position, transform.rotation);
+                
+                corpse.SetActive(true); 
+                
+                Destroy(corpse, 5);
             }
         }
     }

@@ -19,14 +19,19 @@ namespace CharacterSystem.PowerUps
     {
         protected override void OnTriggerStay(Collider other)
         {
-            if (HasOverrides()) 
-                return;
+            if (HasOverrides()) return;
 
-            if (IsServer && other.TryGetComponent<PowerUpContainer>(out var container))
+            if (other.TryGetComponent<PowerUpContainer>(out var container) && IsServer)
             {
-                if (container.powerUp.IsValid(this))
+                if (container.powerUp.IsOneshot)
                 {
-                    base.OnTriggerStay(other);
+                    if (powerUp == null)
+                    {
+                        powerUp = container.powerUp;
+                        
+                        container.powerUp.OnPick(this);
+                        container.NetworkObject.Despawn();
+                    }
                 }
             }
         }

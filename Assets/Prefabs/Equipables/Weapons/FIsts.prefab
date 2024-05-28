@@ -206,7 +206,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1209201349
+  GlobalObjectIdHash: 460847712
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -309,6 +309,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7450366921895863354}
   - component: {fileID: 2394801123767968783}
+  - component: {fileID: 4908696291788395169}
   m_Layer: 0
   m_Name: Ultimate
   m_TagString: Untagged
@@ -346,11 +347,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inputAction: {fileID: -697749738134341483, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 2
+  SpeedChange: 0
   IsPerformingAsDefault: 1
   IsInterruptableWhenBlocked: 0
   IsInterruptOnHit: 0
   RestartWhenHolding: 1
-  SpeedReducing: 6
   attackQueue:
   - rid: 868176906250092645
   OnDamageReport:
@@ -359,11 +360,8 @@ MonoBehaviour:
   OnAttackEnded:
     m_PersistentCalls:
       m_Calls: []
-  RequireDamage: 150
   ClearCharge: 1
-  OnUltimateReady:
-    m_PersistentCalls:
-      m_Calls: []
+  chargeValue: {fileID: 0}
   references:
     version: 2
     RefIds:
@@ -402,10 +400,30 @@ MonoBehaviour:
           stunlock: 0.2
           pushDirection: {x: 0, y: 0, z: 2}
           RechargeUltimate: 1
+          SelfDamageUltimate: 0
           Effects: []
         position: {x: 0, y: 0, z: 1.53}
         size: {x: 0.76, y: 1.59, z: 1}
         angle: {x: 0, y: 0, z: 0}
+--- !u!114 &4908696291788395169
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5339950106092455815}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7833ff246d1754459595b40d8d6c25c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DefaultValue: 10
+  MaxValue: 10
+  color: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  fullChargeColor: {r: 1, g: 0, b: 0, a: 1}
+  OnValueChanged:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &7465451157433083536
 GameObject:
   m_ObjectHideFlags: 0
@@ -453,11 +471,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inputAction: {fileID: 2243838571553120747, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 2
+  SpeedChange: 0
   IsPerformingAsDefault: 1
   IsInterruptableWhenBlocked: 0
   IsInterruptOnHit: 0
   RestartWhenHolding: 1
-  SpeedReducing: 6
   attackQueue:
   - rid: 4973655737326895185
   - rid: 3712309818128859208
@@ -507,6 +525,7 @@ MonoBehaviour:
           stunlock: 0.2
           pushDirection: {x: 0, y: 0, z: 0.29}
           RechargeUltimate: 1
+          SelfDamageUltimate: 0
           Effects: []
         position: {x: 0, y: 0, z: 1.53}
         size: {x: 0.76, y: 1.59, z: 1}
@@ -529,6 +548,7 @@ MonoBehaviour:
           stunlock: 0.2
           pushDirection: {x: 0, y: 0, z: 0.29}
           RechargeUltimate: 1
+          SelfDamageUltimate: 0
           Effects: []
         position: {x: 0, y: 0, z: 1.53}
         size: {x: 0.76, y: 1.59, z: 1}
@@ -713,11 +733,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inputAction: {fileID: 0}
   Priority: 2
+  SpeedChange: 0
   IsPerformingAsDefault: 1
   IsInterruptableWhenBlocked: 0
   IsInterruptOnHit: 0
   RestartWhenHolding: 1
-  SpeedReducing: 5
   attackQueue:
   - rid: 4973655737326895185
   - rid: 5691645133460602957
@@ -795,6 +815,7 @@ MonoBehaviour:
           stunlock: 0.5
           pushDirection: {x: 0, y: 0, z: 0.2}
           RechargeUltimate: 1
+          SelfDamageUltimate: 0
           Effects: []
         position: {x: 0, y: 0, z: 1.3}
         size: {x: 0.88, y: 1.45, z: 0.73}

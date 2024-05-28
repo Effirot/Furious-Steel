@@ -1092,6 +1092,11 @@ PrefabInstance:
       insertIndex: 3
       addedObject: {fileID: 2438935365494957672}
   m_SourcePrefab: {fileID: 100100000, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
+--- !u!1 &95016300665387997 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4209492775328486699, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
+  m_PrefabInstance: {fileID: 4267881592209223414}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &3087705141772529430 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1288931942115344864, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
@@ -1136,7 +1141,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8ac5c2e3d6b8e74ab52e2156f8572a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 130
+  <maxHealth>k__BackingField: 130
   regenerationPerSecond: 10
   <Speed>k__BackingField: 10
   Mass: 0.92
@@ -1153,13 +1158,14 @@ MonoBehaviour:
   dashInput: {fileID: 3350768162098237311, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   killBindInput: {fileID: 7880830833157163440, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   OnHitImpulseSource: {fileID: 6518801678340056005}
-  suicideCorpsePrefab: {fileID: 0}
+  suicideCorpsePrefab: {fileID: 95016300665387997}
   damage:
     value: 20
     type: 8
     stunlock: 0
     pushDirection: {x: 0, y: 0.2, z: 0}
     RechargeUltimate: 1
+    SelfDamageUltimate: 0
     Effects: []
   splashAttackRecievedDamage: 70
   splashAttackRange: 3.57

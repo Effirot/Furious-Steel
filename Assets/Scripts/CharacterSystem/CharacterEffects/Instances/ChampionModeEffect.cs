@@ -10,10 +10,10 @@ public class ChampionModeEffect : CharacterEffect
 
     public override void Start()
     {
-        effectsHolder.character.Speed += 5;
+        effectsHolder.character.Speed += 3;
     }
     public override void Remove()
     {
-        effectsHolder.character.Speed -= 5;
+        effectsHolder.character.Speed -= 3;
     }
 }

@@ -101,6 +101,9 @@ public class CharacterUI : MonoBehaviour
             {
                 foreach (var property in NetworkCharacter.gameObject.GetComponentsInChildren<CustomProperty>())
                 {                
+                    if (!property.IsActive)
+                        continue;
+                        
                     var CustomPropertyDrawerObject = Instantiate(CustomPropertyDrawerPrefab, CustomPropertyDrawerPrefab.transform.parent);
 
                     CustomPropertyDrawerObject.SetActive(true);
@@ -148,7 +151,7 @@ public class CharacterUI : MonoBehaviour
                 }
             }
 
-            var holders = NetworkCharacter.gameObject.GetComponentsInChildren<PowerUpHolder>().Where(holder => !holder.HasOverrides()).ToArray();
+            var holders = NetworkCharacter.gameObject.GetComponentsInChildren<PowerUpHolder>().Where(holder => !holder.HasOverrides()).Reverse().ToArray();
             for (int i = 0; i < Mathf.Min(holders.Length, powerUpDrawers.Count()); i++)
             {
                 powerUpDrawers[i].Initialize(holders[i]);

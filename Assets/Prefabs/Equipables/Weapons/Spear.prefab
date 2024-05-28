@@ -479,11 +479,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inputAction: {fileID: 2243838571553120747, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 2
+  SpeedChange: 0
   IsPerformingAsDefault: 1
   IsInterruptableWhenBlocked: 0
   IsInterruptOnHit: 0
   RestartWhenHolding: 1
-  SpeedReducing: 1
   attackQueue:
   - rid: 868177009411096655
   - rid: 8630937662073602138
@@ -502,8 +502,8 @@ MonoBehaviour:
     - rid: 868177009411096655
       type: {class: ReducableWait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        WaitTime: 0.3
-        MinWaitTime: 0.01
+        WaitTime: 0.15
+        MinWaitTime: 0.04
         ReducingByHit: 0.08
         Permissions: 12032
     - rid: 868177009411096656
@@ -515,7 +515,7 @@ MonoBehaviour:
     - rid: 2961813231421882370
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        WaitTime: 0.2
+        WaitTime: 0.1
         Permissions: 16128
     - rid: 2961813231421882371
       type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
@@ -555,11 +555,12 @@ MonoBehaviour:
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          value: 20
+          value: 15
           type: 1
-          stunlock: 0.2
-          pushDirection: {x: 0, y: 0, z: 0.2}
+          stunlock: 0
+          pushDirection: {x: 0, y: 0.06, z: 0.2}
           RechargeUltimate: 1
+          SelfDamageUltimate: 0
           Effects: []
         position: {x: 0, y: 0, z: 4.7}
         size: {x: 0.92, y: 1.77, z: 1}
@@ -568,11 +569,12 @@ MonoBehaviour:
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          value: 10
+          value: 5
           type: 1
-          stunlock: 0.3
-          pushDirection: {x: 0, y: 0, z: 0.6}
+          stunlock: 0
+          pushDirection: {x: 0, y: 0.08, z: 0.6}
           RechargeUltimate: 1
+          SelfDamageUltimate: 0
           Effects: []
         position: {x: 0, y: 0, z: 2.55}
         size: {x: 0.3, y: 1.37, z: 2.09}
@@ -714,11 +716,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inputAction: {fileID: -697749738134341483, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 2
+  SpeedChange: 0
   IsPerformingAsDefault: 1
   IsInterruptableWhenBlocked: 0
   IsInterruptOnHit: 0
   RestartWhenHolding: 1
-  SpeedReducing: 6
   attackQueue:
   - rid: 868176906250092650
   OnDamageReport:
@@ -792,6 +794,7 @@ MonoBehaviour:
           stunlock: 0.5
           pushDirection: {x: 0, y: 0, z: 0.06}
           RechargeUltimate: 1
+          SelfDamageUltimate: 0
           Effects: []
         position: {x: 0, y: 0, z: 4.16}
         size: {x: 0.92, y: 1.88, z: 1.52}
@@ -1009,11 +1012,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inputAction: {fileID: 5277666054227158027, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 2
+  SpeedChange: 0
   IsPerformingAsDefault: 1
   IsInterruptableWhenBlocked: 1
   IsInterruptOnHit: 0
   RestartWhenHolding: 1
-  SpeedReducing: 5
   attackQueue:
   - rid: 5691645226531684433
   - rid: 8630937930187669693
@@ -1021,6 +1024,7 @@ MonoBehaviour:
   - rid: 2961813231421882371
   - rid: 5691645198379778129
   - rid: 8630938024131166299
+  - rid: 8630938177782939742
   OnDamageReport:
     m_PersistentCalls:
       m_Calls: []
@@ -1051,7 +1055,7 @@ MonoBehaviour:
                 m_StringArgument: 
                 m_BoolArgument: 0
               m_CallState: 2
-            - m_Target: {fileID: 0}
+            - m_Target: {fileID: 3487500842407008031}
               m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
               m_MethodName: Play
               m_Mode: 1
@@ -1069,9 +1073,10 @@ MonoBehaviour:
         damage:
           value: 30
           type: 1
-          stunlock: 0.4
+          stunlock: 0
           pushDirection: {x: 0, y: 0, z: 0.1}
           RechargeUltimate: 1
+          SelfDamageUltimate: 0
           Effects: []
         position: {x: 0, y: 0, z: 2.9}
         size: {x: 0.97, y: 2.76, z: 1.71}
@@ -1095,7 +1100,7 @@ MonoBehaviour:
       type: {class: Move, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         MoveDirection: {x: 0, y: 0, z: 35}
-        time: 0.1
+        time: 0.14
         CheckColision: 1
         permission: 0
     - rid: 8630938024131166299
@@ -1103,6 +1108,11 @@ MonoBehaviour:
       data:
         Permissions: 14080
         Reverse: 0
+    - rid: 8630938177782939742
+      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        WaitTime: 1
+        Permissions: 65280
 --- !u!1 &7324458738964129770
 GameObject:
   m_ObjectHideFlags: 0

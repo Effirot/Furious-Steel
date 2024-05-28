@@ -8,12 +8,12 @@ using UnityEngine;
 [System.Serializable]
 public class BurnEffect : CharacterEffect
 {
-    public override bool Existance => time > 0;
+    public override bool Existance => time > 0 && !ITeammate.IsAlly(effectsSource, effectsHolder.character);
 
     [SerializeField, Range(0, 120)]
     public float time = 0;
 
-    [SerializeField, Range(0, 120)]
+    [SerializeField, Range(0, 20)]
     public float damagePerSecond = 5;
 
     [SerializeField, ColorUsageAttribute(false, true)]
@@ -56,7 +56,11 @@ public class BurnEffect : CharacterEffect
 
     public override void AddDublicate(CharacterEffect effect)
     {
-        time = ((BurnEffect)effect).time;
-        damagePerSecond = Mathf.Max(damagePerSecond, ((BurnEffect)effect).damagePerSecond);
+        var burn = (BurnEffect)effect;
+
+        time = burn.time;
+        damagePerSecond = Mathf.Max(damagePerSecond, burn.damagePerSecond);
+
+        effectsHolder.EditGlowing(this, burn.color);
     }
 }

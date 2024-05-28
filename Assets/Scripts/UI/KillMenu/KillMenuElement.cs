@@ -14,30 +14,29 @@ public class KillsMenuElement : MonoBehaviour
 {
 
     [SerializeField]
-    private TMP_Text KillerNameField;
+    private TMP_Text killerNameField;
 
     [SerializeField]
-    private TMP_Text KilledNameField;
+    private TMP_Text killedNameField;
 
     [SerializeField]
-    private float Lifetime = 1;
+    private float lifetime = 1;
     
     [SerializeField]
     private Color ownerColor = Color.yellow;
 
     [SerializeField, Range(0, 1)]
-    private float LerpForce = 0.1f;
-
-
+    private float lerpForce = 0.1f;
 
     private Image image => GetComponent<Image>();
 
     public void Initialize(DamageDeliveryReport report)
     {
-        KillerNameField.text = report.damage.sender.gameObject.name;
-        KilledNameField.text = report.target.gameObject.name;
+        killerNameField.SetText(report.damage.sender?.gameObject.name ?? "");
+        killedNameField.SetText(report.target.gameObject.name);
 
-        if (report.damage.sender.IsOwner || (report.target.gameObject.TryGetComponent<NetworkObject>(out var net) && net.IsOwner))
+        if ((report.damage.sender != null && report.damage.sender.IsOwner) || 
+            (report.target.gameObject.TryGetComponent<NetworkObject>(out var net) && net.IsOwner))
         {
             image.color = ownerColor;
         }
@@ -45,15 +44,24 @@ public class KillsMenuElement : MonoBehaviour
 
     private async void Start()
     {
-        await UniTask.WaitForSeconds(Lifetime);
-        
-        Destroy(gameObject, 3);
-
-        while (!this.IsUnityNull())
+        foreach (var fit in GetComponentsInChildren<ContentSizeFitter>())
         {
-            transform.localScale = Vector3.Lerp(transform.localScale, new Vector3(transform.localScale.x, 0, transform.localScale.z), LerpForce);
+            fit.SetLayoutVertical();
+            fit.SetLayoutHorizontal();
+        }
+
+
+        await UniTask.WaitForSeconds(lifetime);
+
+        while (transform.localScale.y > 0.02f)
+        {
+            transform.localScale = Vector3.Lerp(transform.localScale, new Vector3(transform.localScale.x, 0, transform.localScale.z), lerpForce);
 
             await UniTask.WaitForEndOfFrame();
         }
+
+        transform.localScale = new Vector3(transform.localScale.x, 0, transform.localScale.z);
+
+        Destroy(gameObject, 0.2f);
     }
 }

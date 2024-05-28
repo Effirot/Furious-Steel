@@ -29,9 +29,21 @@ namespace CharacterSystem.PowerUps
 
     }
 
-    public class PowerUpHolder : SyncedActivities<IPowerUpActivator>
+    public class PowerUpHolder : SyncedActivity<IPowerUpActivator>
     {
-        public PowerUp powerUp => Id < 0 || Id >= PowerUp.AllPowerUps.Length ? null : PowerUp.AllPowerUps[Id];
+        public PowerUp powerUp {
+            get => Id < 0 || Id >= PowerUp.AllPowerUps.Length ? null : PowerUp.AllPowerUps[Id];
+            set {
+                if (value.IsUnityNull())
+                {
+                    network_powerUpId.Value = -1;
+                }
+                else
+                {
+                    network_powerUpId.Value = Array.IndexOf(PowerUp.AllPowerUps, value);
+                }
+            }
+        }
 
         public int Id => network_powerUpId.Value;
 
@@ -84,28 +96,23 @@ namespace CharacterSystem.PowerUps
         {
             if (HasOverrides()) return;
 
-            if (IsServer && powerUp == null && other.TryGetComponent<PowerUpContainer>(out var container))
+            if (other.TryGetComponent<PowerUpContainer>(out var container) && IsServer)
             {
-                if (container.powerUp.IsValid(this))
+                if (!container.powerUp.IsOneshot)
                 {
-                    network_powerUpId.Value = container.Id;
-                    
-                    powerUp.OnPick(this);
+                    if (powerUp == null)
+                    {
+                        network_powerUpId.Value = container.Id;
+                        
+                        container.powerUp.OnPick(this);
+                        container.NetworkObject.Despawn();
+                    }
                 }
                 else
                 {
                     container.powerUp.Activate(this);
+                    container.NetworkObject.Despawn();
                 }
-
-                container.NetworkObject.Despawn();
-            }
-        }
-
-        protected override void OnStateChanged(bool IsPressed)
-        {
-            if (IsPressed && powerUp != null && Invoker.permissions.HasFlag(CharacterPermission.AllowPowerUps))
-            {
-                Activate();
             }
         }
 
@@ -121,6 +128,16 @@ namespace CharacterSystem.PowerUps
                 
                 network_powerUpId.Value = -1;
             }
+        }
+        
+        public override IEnumerator Process()
+        {
+            if (IsPressed && powerUp != null && Invoker.permissions.HasFlag(CharacterPermission.AllowPowerUps))
+            {
+                Activate();
+            }
+
+            yield break;
         }
 
         [ClientRpc]
@@ -139,6 +156,7 @@ namespace CharacterSystem.PowerUps
         }
 
 #if UNITY_EDITOR
+
 
         [CustomEditor(typeof(PowerUpHolder), true)]
         public class PowerUpHolder_Editor : Editor

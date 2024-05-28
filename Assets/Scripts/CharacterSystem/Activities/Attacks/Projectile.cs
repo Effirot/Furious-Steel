@@ -54,6 +54,9 @@ public class Projectile : NetworkBehaviour,
         }
     }
 
+    public Damage lastRecievedDamage { get; set; }
+
+    public float maxHealth { get => 0; }
     public float health { get => 0; set { return; } }
     public float stunlock { get => 0; set { return; } }
 

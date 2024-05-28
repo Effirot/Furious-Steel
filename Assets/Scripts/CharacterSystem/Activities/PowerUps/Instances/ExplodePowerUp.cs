@@ -44,9 +44,4 @@ public class ExplodePowerUp : PowerUp
 
         explodeEffectObject.GetComponent<CinemachineImpulseSource>()?.GenerateImpulse();   
     }
-
-    public override bool IsValid(PowerUpHolder holder)
-    {
-        return holder is not BagPowerUpHolder;
-    }
 }

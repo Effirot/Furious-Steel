@@ -48,7 +48,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 841343833
+  GlobalObjectIdHash: 1515375929
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -565,11 +565,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inputAction: {fileID: 4628471853980608337, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 3
+  SpeedChange: 0
   IsPerformingAsDefault: 1
   IsInterruptableWhenBlocked: 0
   IsInterruptOnHit: 0
   RestartWhenHolding: 0
-  SpeedReducing: 0
   attackQueue:
   - rid: 868177009411096674
   - rid: 868177009411096678
@@ -625,17 +625,18 @@ MonoBehaviour:
     - rid: 868177009411096675
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        WaitTime: 0.5
+        WaitTime: 0.3
         Permissions: 64256
     - rid: 868177009411096676
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          value: 25
+          value: 10
           type: 4
-          stunlock: 0.5
-          pushDirection: {x: 0, y: 0.2, z: 0.2}
+          stunlock: 0
+          pushDirection: {x: 0, y: 0.21, z: 0.5}
           RechargeUltimate: 1
+          SelfDamageUltimate: 0
           Effects: []
         position: {x: 0, y: 0, z: 4.52}
         size: {x: 1, y: 1.61, z: 4}
@@ -648,5 +649,5 @@ MonoBehaviour:
     - rid: 8630937699458744397
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        WaitTime: 1
+        WaitTime: 1.5
         Permissions: 65280

@@ -28,7 +28,7 @@ public class KillsMenu : NetworkBehaviour
 
         if (!report.isLethal) 
             return;
-        if (report.target.IsUnityNull() || report.damage.sender.IsUnityNull()) 
+        if (report.target.IsUnityNull()) 
             return;
 
         Draw_ClientRpc(report);
@@ -37,9 +37,8 @@ public class KillsMenu : NetworkBehaviour
     [ClientRpc]
     private void Draw_ClientRpc(DamageDeliveryReport report)
     {
-    
         var obj = Instantiate(killPrefab, transform);
-        obj.SetActive(true);
         obj.GetComponent<KillsMenuElement>().Initialize(report);
+        obj.SetActive(true);
     }
 }

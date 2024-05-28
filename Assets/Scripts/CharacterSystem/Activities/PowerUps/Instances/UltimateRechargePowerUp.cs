@@ -9,6 +9,8 @@ namespace CharacterSystem.PowerUps
 {
     public class UltimateRechargePowerUp : PowerUp
     {
+        public override bool IsOneshot => true;
+        
         public override void Activate(PowerUpHolder holder)
         {
             if (holder.IsServer)
@@ -19,12 +21,6 @@ namespace CharacterSystem.PowerUps
                 }
             }
         }
-
-        public override bool IsValid(PowerUpHolder holder)
-        {
-            return holder is BagPowerUpHolder;
-        }
-
 
         public override void OnPick(PowerUpHolder holder)
         {

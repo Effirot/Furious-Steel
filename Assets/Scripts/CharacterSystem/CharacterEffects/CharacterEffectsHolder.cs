@@ -8,6 +8,9 @@ using UnityEngine.Events;
 using System.Linq;
 using CharacterSystem.Attacks;
 using Unity.Collections;
+using Cysharp.Threading.Tasks;
+
+
 
 
 
@@ -24,6 +27,12 @@ public class CharacterEffectsHolder : NetworkBehaviour
         private int materialInstanceID;
         private SkinnedMeshRenderer renderer;
 
+        private Material material {
+            get {
+                return Array.Find(renderer.sharedMaterials, material => material.name == materialInstanceID + " (Instance)");
+            }
+        }
+
         public CharacterGlowing (Color color, float power, Shader glowingShader, SkinnedMeshRenderer renderer)
         {
             this.renderer = renderer;
@@ -33,16 +42,37 @@ public class CharacterEffectsHolder : NetworkBehaviour
             material.name = material.GetInstanceID().ToString();
             material.renderQueue = 3050;
             material.SetColor("_Color", color);
+            material.SetFloat("_Power", power);
             
             materialInstanceID = material.GetInstanceID();
 
             renderer.sharedMaterials = renderer.sharedMaterials.Append(material).ToArray();
         }
 
-        public void Remove()
+        public void EditColor (Color color)
         {
+            material.SetColor("_Color", color);
+        }
+        public void EditPower (float power)
+        {
+            material.SetFloat("_Power", power);
+        }
+
+        public async void Remove()
+        {
+            var materialLink = material;
+            var color = materialLink.GetColor("_Color");
+
+            while (materialLink != null && color.a > 0.05f)
+            {
+                color.a -= Time.deltaTime * 10; 
+
+                materialLink.SetColor("_Color", color);
+
+                await UniTask.WaitForEndOfFrame();
+            }
+
             renderer.sharedMaterials = renderer.sharedMaterials.Where(material => material.name != materialInstanceID + " (Instance)" ).ToArray();
-        
         }
         
     } 
@@ -109,7 +139,7 @@ public class CharacterEffectsHolder : NetworkBehaviour
     }
 
     [SerializeField]
-    private SkinnedMeshRenderer characterSkinnedMeshRenderer;
+    public SkinnedMeshRenderer characterSkinnedMeshRenderer;
 
     [SerializeField]
     private Shader GlowingShader;
@@ -119,7 +149,7 @@ public class CharacterEffectsHolder : NetworkBehaviour
     private NetworkList<NetworkCharacterEffectData> characterEffectIds_network;
     private List<CharacterEffect> characterEffects = new();
     
-    private Dictionary<CharacterEffect, List<CharacterGlowing>> characterGlowings = new();
+    private Dictionary<CharacterEffect, CharacterGlowing> characterGlowings = new();
 
     public bool AddEffect (CharacterEffect effect)
     {
@@ -128,6 +158,7 @@ public class CharacterEffectsHolder : NetworkBehaviour
             var dublicate = characterEffects.Find(e => e.GetType() == effect.GetType());
             if (dublicate != null) 
             {
+                dublicate.effectsSource = effect.effectsSource;
                 dublicate.AddDublicate(effect);
 
                 return false;
@@ -157,22 +188,25 @@ public class CharacterEffectsHolder : NetworkBehaviour
     {
         if (!characterGlowings.ContainsKey(bindingEffect))
         {
-            characterGlowings.Add(bindingEffect, new());
+            characterGlowings.Add(bindingEffect, new CharacterGlowing(color, power, GlowingShader, characterSkinnedMeshRenderer));
         }
-
-        characterGlowings[bindingEffect].Add(new CharacterGlowing(color, power, GlowingShader, characterSkinnedMeshRenderer));
     }
-    private void RemoveAllGlowings(CharacterEffect bindingEffect)
+    public void EditGlowing(CharacterEffect bindingEffect, Color color)
     {
         if (characterGlowings.ContainsKey(bindingEffect))
         {
-            var list = characterGlowings[bindingEffect];
-            list.ForEach(a => a.Remove());
-            list.Clear();
-
+            characterGlowings[bindingEffect].EditColor(color);
+        }
+    }
+    public void RemoveGlowing(CharacterEffect bindingEffect)
+    {
+        if (characterGlowings.ContainsKey(bindingEffect))
+        {
+            characterGlowings[bindingEffect].Remove();
             characterGlowings.Remove(bindingEffect);
         }
     }
+
 
     public override void OnNetworkSpawn ()
     {
@@ -195,13 +229,6 @@ public class CharacterEffectsHolder : NetworkBehaviour
 
     private void Awake ()
     {
-        // materialLink = new Material(GlowingShader);
-        // characterSkinnedMeshRenderer.materials = characterSkinnedMeshRenderer.materials.Append(materialLink).ToArray();
-        // materialLink.SetVector("Color", new Color(0, 0, 0, 0));
-        // materialLink.SetFloat("Power", 10);
-
-        // materialLink.renderQueue = 3050;
-
         character = GetComponent<NetworkCharacter>();
 
         characterEffectIds_network = new NetworkList<NetworkCharacterEffectData>(Array.Empty<NetworkCharacterEffectData>(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
@@ -216,7 +243,7 @@ public class CharacterEffectsHolder : NetworkBehaviour
             {
                 if (!characterEffects[i].Existance)
                 {
-                    RemoveAllGlowings(characterEffects[i]);
+                    RemoveGlowing(characterEffects[i]);
 
                     characterEffects[i].IsValid = false;
                     characterEffects[i].Remove();
@@ -229,12 +256,6 @@ public class CharacterEffectsHolder : NetworkBehaviour
             }
         }
     }
-#if !UNITY_SERVER || UNITY_EDITOR
-    private void Update()
-    {
-
-    }
-#endif
 
     private void OnListChanged_event (NetworkListEvent<CharacterEffectsHolder.NetworkCharacterEffectData> networkListEvent)
     {
@@ -259,7 +280,7 @@ public class CharacterEffectsHolder : NetworkBehaviour
             case NetworkListEvent<CharacterEffectsHolder.NetworkCharacterEffectData>.EventType.Remove:
                 var effect = characterEffects[index];
 
-                RemoveAllGlowings(effect);
+                RemoveGlowing(effect);
                 effect.IsValid = false;
                 effect.Remove();
                 
@@ -300,7 +321,7 @@ public class CharacterEffectsHolder : NetworkBehaviour
     {
         foreach (var item in characterEffects)
         {
-            RemoveAllGlowings(item);
+            RemoveGlowing(item);
 
             item.IsValid = false;
             item.Remove();

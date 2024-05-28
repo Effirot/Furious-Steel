@@ -14,9 +14,6 @@ using UnityEngine.TextCore.Text;
 using UnityEngine.VFX;
 using UnityEngine.Rendering.Universal;
 
-
-
-
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -45,7 +42,8 @@ namespace CharacterSystem.Objects
     [RequireComponent(typeof(CharacterController))]
     public abstract class NetworkCharacter : NetworkBehaviour,
         IDamagable,
-        ITeammate
+        ITeammate,
+        ISyncedActivitiesSource
     {
         public delegate void OnCharacterStateChangedDelegate (NetworkCharacter character);
         public delegate void OnCharacterSendDamageDelegate (NetworkCharacter character, Damage damage);
@@ -58,9 +56,9 @@ namespace CharacterSystem.Objects
         public const float VelocityReducingMultipliyer = 0.85f;
 
 #region Stats
-        [Header("Stats")]
-        [SerializeField, Range (1, 1000)]
-        public float maxHealth = 150;
+        [field : Header("Stats")]
+        [field : SerializeField, Range (1, 1000)]
+        public float maxHealth { get; set; } = 150;
         
         [SerializeField, Range (1, 100)]
         public float regenerationPerSecond = 9;
@@ -109,6 +107,7 @@ namespace CharacterSystem.Objects
         public bool IsGrounded => characterController.isGrounded;
         public bool isDashing { get; private set; } = false;
 
+        public Damage lastRecievedDamage { get; set; }
         public Animator animator { get; private set; }
         public CharacterController characterController { get; private set; }
 
@@ -205,7 +204,9 @@ namespace CharacterSystem.Objects
                 }
             }
         }
-        
+
+        public SyncedActivitiesList activities { get; private set; } = new();
+
 
         private NetworkVariable<Vector3> network_position = new NetworkVariable<Vector3>(Vector3.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);    
         private NetworkVariable<Vector2> network_movementVector = new NetworkVariable<Vector2>(Vector2.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
@@ -297,6 +298,8 @@ namespace CharacterSystem.Objects
         {
             base.OnNetworkSpawn();
 
+            activities.onSyncedActivityListChanged += HandleActivitiesChanges_Event;
+
             SetPosition(transform.position);
 
             if (IsServer)
@@ -321,6 +324,7 @@ namespace CharacterSystem.Objects
         {
             base.OnNetworkDespawn();
 
+            activities.onSyncedActivityListChanged -= HandleActivitiesChanges_Event;
             network_permissions.OnValueChanged -= OnPermissionsChanged;
             
             StopAllCoroutines();
@@ -342,7 +346,7 @@ namespace CharacterSystem.Objects
             if (IsServer)
             {
                 network_position.Value = position;
-                characterController.Move(position - transform.position);
+                transform.position = position;
 
                 SetPosition_ClientRpc(position);
             }
@@ -501,6 +505,28 @@ namespace CharacterSystem.Objects
             }
 
             return null;
+        }
+
+        private void HandleActivitiesChanges_Event(SyncedActivitiesList.EventType type, SyncedActivity syncedActivity)
+        {
+            switch (type)
+            {
+                case SyncedActivitiesList.EventType.Add:
+                    permissions = activities.CalculatePermissions();
+                    syncedActivity.onPermissionsChanged += HandlePermissionsChanged_Event;
+                    Speed -= syncedActivity.SpeedChange;
+                    break;
+                
+                case SyncedActivitiesList.EventType.Remove:
+                    permissions = activities.CalculatePermissions();
+                    syncedActivity.onPermissionsChanged -= HandlePermissionsChanged_Event;
+                    Speed += syncedActivity.SpeedChange;
+                    break;
+            }
+        }
+        private void HandlePermissionsChanged_Event(CharacterPermission characterPermission)
+        {
+            permissions = activities.CalculatePermissions();
         }
 
         private Vector3 CalculateMovement (float TimeScale)
@@ -691,7 +717,7 @@ namespace CharacterSystem.Objects
         [ClientRpc]
         private void SetPosition_ClientRpc (Vector3 position, ClientRpcParams rpcParams = default)
         {
-            characterController.Move(position - transform.position);
+            transform.position = position;
         }
     }
 

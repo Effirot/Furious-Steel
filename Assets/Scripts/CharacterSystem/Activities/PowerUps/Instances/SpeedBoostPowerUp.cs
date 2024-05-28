@@ -9,6 +9,8 @@ namespace CharacterSystem.PowerUps
 {
     public class SpeedBoostPowerUp : PowerUp
     {
+        public override bool IsOneshot => true;
+        
         public override void Activate(PowerUpHolder holder)
         {
             if (holder.IsServer)
@@ -18,11 +20,6 @@ namespace CharacterSystem.PowerUps
                     effects.AddEffect(new SpeedBoostEffect(10));
                 }
             }
-        }
-
-        public override bool IsValid(PowerUpHolder holder)
-        {
-            return holder is BagPowerUpHolder;
         }
 
         public override void OnPick(PowerUpHolder holder)

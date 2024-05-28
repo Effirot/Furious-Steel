@@ -8,6 +8,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
+
 using static UnityEngine.InputSystem.InputAction;
 
 [RequireComponent(typeof(CustomProperty))]
@@ -19,9 +20,17 @@ public class UltimateDamageSource : DamageSource
     [HideInInspector]
     public CustomProperty chargeValue; 
 
+    public override void OnNetworkSpawn()
+    {
+        base.OnNetworkSpawn();
+
+        chargeValue = GetComponent<CustomProperty>();
+        chargeValue.IsActive = !HasOverrides();
+    }
     public override void OnNetworkDespawn()
     {
         base.OnNetworkDespawn();
+
 
         if (Invoker != null)
         {
@@ -29,33 +38,32 @@ public class UltimateDamageSource : DamageSource
         }
     }
 
-    public override void StartAttack()
-    {
-        if (chargeValue.Value >= chargeValue.MaxValue &&  
-            Invoker.permissions.HasFlag(CharacterPermission.AllowAttacking) &&
-            IsPerforming &&
-            !IsAttacking &&
-            !HasOverrides())
+    public override void Play()
+    {        
+        if (chargeValue.Value >= chargeValue.MaxValue && IsActive)
         {
             if (ClearCharge)
             {
                 chargeValue.Value = 0;
             }
 
-            base.StartAttackForced();
+            base.Play();
         }
     }
 
-    protected virtual void Start()
-    {        
-        chargeValue = GetComponent<CustomProperty>();
-
+    protected override void Start()
+    {
+        base.Start();
+        
         Invoker.onDamageDelivered += OnDamageDelivered_Event;
     }
 
     private void OnDamageDelivered_Event(DamageDeliveryReport report)
     {
-        if (IsServer && report.isDelivered && report.damage.RechargeUltimate)
+        if (report.isDelivered && 
+            !report.isBlocked && 
+            report.damage.RechargeUltimate && 
+            report.damage.sender != Invoker)
         {
             chargeValue.AddValue(report);
         }

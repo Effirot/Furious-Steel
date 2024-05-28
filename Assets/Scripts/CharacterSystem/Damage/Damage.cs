@@ -66,8 +66,15 @@ namespace CharacterSystem.DamageMath
                 {
                     if (target != damage.sender || (damage.SelfDamageUltimate !&& target == damage.sender))
                     {
+                        if (damage.sender.IsUnityNull() && !target.lastRecievedDamage.sender.IsUnityNull())
+                        {
+                            damage.sender = target.lastRecievedDamage.sender;
+                        }
+
                         report.isBlocked = target.Hit(damage);
                         report.isDelivered = true;
+
+                        target.lastRecievedDamage = damage;
                     }
                 }
                 else
@@ -75,8 +82,8 @@ namespace CharacterSystem.DamageMath
                     report.isBlocked = target.Heal(damage);
                     report.isDelivered = true;
                 }
-
-                if (!report.isBlocked)
+ 
+                if (!report.isBlocked && report.isDelivered)
                 {
                     DeliverEffects();
                 }
@@ -100,6 +107,7 @@ namespace CharacterSystem.DamageMath
                     foreach (var effect in damage.Effects)
                     {
                         var effectClone = effect.Clone();
+                        effectClone.effectsSource = damage.sender;
 
                         if (effectHolder.AddEffect(effectClone))
                         {
@@ -155,7 +163,23 @@ namespace CharacterSystem.DamageMath
                 return null;
             }
             set{
-                senderID = value?.gameObject?.GetComponent<NetworkObject>()?.NetworkObjectId ?? ulong.MinValue;
+                
+                if (value.IsUnityNull())
+                {
+                    senderID = ulong.MinValue; 
+                    return;
+                }
+
+                var gObj = value.gameObject;
+
+                if (gObj.IsUnityNull())
+                {
+                    senderID = ulong.MinValue; 
+                    return;
+                }
+
+                if (gObj.TryGetComponent<NetworkObject>(out var netObj))
+                    senderID = netObj.NetworkObjectId;
             } 
         }
 
@@ -185,6 +209,7 @@ namespace CharacterSystem.DamageMath
             
             this.sender = sender;
         }
+        public Damage(params CharacterEffect[] effects) : this (0, null, 0, Vector3.zero, Type.Effect, effects) { }
 
         public override string ToString()
         {

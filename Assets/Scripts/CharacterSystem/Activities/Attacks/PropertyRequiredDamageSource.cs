@@ -3,24 +3,19 @@
 using CharacterSystem.Attacks;
 using UnityEngine;
 
-[RequireComponent(typeof(CustomProperty))]
 public class PropertyRequiredDamageSource : DamageSource
 {
     [SerializeField, Range(0, 500)]
     private float MinRequiredValue = 0;
 
+    [SerializeField]
     private CustomProperty customProperty;
 
-    private void Awake()
-    {
-        customProperty = GetComponent<CustomProperty>();
-    }
-
-    public override void StartAttack()
+    public override void Play()
     {
         if (customProperty.Value >= MinRequiredValue)
         {
-            base.StartAttack();
+            base.Play();
         }
     }
 }

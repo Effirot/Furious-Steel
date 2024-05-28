@@ -178,11 +178,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inputAction: {fileID: 0}
   Priority: 2
+  SpeedChange: 0
   IsPerformingAsDefault: 1
   IsInterruptableWhenBlocked: 0
   IsInterruptOnHit: 1
   RestartWhenHolding: 1
-  SpeedReducing: 1
   attackQueue:
   - rid: 2961813231421882371
   OnDamageReport:
@@ -219,11 +219,12 @@ MonoBehaviour:
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          value: 35
+          value: 25
           type: 16
           stunlock: 0.5
           pushDirection: {x: 0, y: 0, z: 0.7}
           RechargeUltimate: 1
+          SelfDamageUltimate: 0
           Effects: []
         position: {x: 0, y: 0, z: 3.67}
         size: {x: 1.21, y: 1.07, z: 2.52}
@@ -456,6 +457,10 @@ PrefabInstance:
       value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
+      propertyPath: BeforeBlockCharacterPermissions
+      value: 256
+      objectReference: {fileID: 0}
+    - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
       propertyPath: OnSuccesfulBlockingEvent.m_PersistentCalls.m_Calls.Array.size
       value: 4
       objectReference: {fileID: 0}
@@ -473,7 +478,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
       propertyPath: OnSuccesfulBlockingEvent.m_PersistentCalls.m_Calls.Array.data[3].m_MethodName
-      value: StartAttackForced
+      value: PlayForced
       objectReference: {fileID: 0}
     - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
       propertyPath: OnSuccesfulBlockingEvent.m_PersistentCalls.m_Calls.Array.data[3].m_TargetAssemblyTypeName
@@ -525,7 +530,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1452336904
+  GlobalObjectIdHash: 1170201868
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0

@@ -33,12 +33,14 @@ namespace CharacterSystem.PowerUps
 
         public virtual bool Undestroyable => false;
 
+        public virtual bool IsOneshot => false;
 
         public virtual GameObject prefab => Resources.Load<GameObject>($"PowerUps/{this.GetType().Name}");
 
-        public abstract bool IsValid(PowerUpHolder holder);
         public abstract void Activate(PowerUpHolder holder);
         
+        public virtual bool CanPick(PowerUpHolder holder) => true;
+
         public virtual void OnPick(PowerUpHolder holder) { }
         public virtual void OnLost(PowerUpHolder holder) { }
 

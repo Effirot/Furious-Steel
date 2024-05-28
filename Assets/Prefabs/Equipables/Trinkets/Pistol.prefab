@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2682705565289463711}
   - component: {fileID: 4043005819161963949}
   - component: {fileID: 4868943474249717089}
+  - component: {fileID: 3382474808171941762}
   m_Layer: 6
   m_Name: Pistol
   m_TagString: Weapon
@@ -72,6 +73,25 @@ MonoBehaviour:
     Clip: {fileID: -8742961236503954806, guid: badcb3bbdec5cc341b4e3c375120cd60, type: 3}
   - Name: Trinket_Attack1
     Clip: {fileID: 3262201019511805127, guid: badcb3bbdec5cc341b4e3c375120cd60, type: 3}
+--- !u!114 &3382474808171941762
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1517727645108543378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7833ff246d1754459595b40d8d6c25c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DefaultValue: 2
+  MaxValue: 2
+  color: {r: 1, g: 0.54877096, b: 0.015686274, a: 1}
+  fullChargeColor: {r: 1, g: 0.54901963, b: 0.015686275, a: 1}
+  OnValueChanged:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &2429100434997788893
 GameObject:
   m_ObjectHideFlags: 0
@@ -415,7 +435,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4884045045746518388}
   - component: {fileID: 3921214951932420571}
-  - component: {fileID: 202029226355961849}
   - component: {fileID: 5395013121845886819}
   m_Layer: 6
   m_Name: Source
@@ -538,25 +557,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &202029226355961849
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9137448914675107588}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f7833ff246d1754459595b40d8d6c25c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  DefaultValue: 3
-  MaxValue: 3
-  color: {r: 1, g: 0.54877096, b: 0.015686274, a: 1}
-  fullChargeColor: {r: 1, g: 0.54901963, b: 0.015686275, a: 1}
-  OnValueChanged:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!114 &5395013121845886819
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -571,11 +571,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inputAction: {fileID: 5277666054227158027, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 3
+  SpeedChange: 0
   IsPerformingAsDefault: 1
   IsInterruptableWhenBlocked: 0
   IsInterruptOnHit: 0
   RestartWhenHolding: 0
-  SpeedReducing: 2
   attackQueue:
   - rid: 8630938087521517666
   - rid: 8630938117248647245
@@ -585,7 +585,7 @@ MonoBehaviour:
   OnDamageReport:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 202029226355961849}
+      - m_Target: {fileID: 3382474808171941762}
         m_TargetAssemblyTypeName: CustomProperty, Assembly-CSharp
         m_MethodName: AddValue
         m_Mode: 4
@@ -597,10 +597,35 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 3382474808171941762}
+        m_TargetAssemblyTypeName: CustomProperty, Assembly-CSharp
+        m_MethodName: RefillOnKill
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   OnAttackEnded:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 5549077959865848722}
+        m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
+        m_MethodName: Stop
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   MinRequiredValue: 1
+  customProperty: {fileID: 3382474808171941762}
   references:
     version: 2
     RefIds:
@@ -613,7 +638,7 @@ MonoBehaviour:
         OnCast:
           m_PersistentCalls:
             m_Calls:
-            - m_Target: {fileID: 202029226355961849}
+            - m_Target: {fileID: 3382474808171941762}
               m_TargetAssemblyTypeName: CustomProperty, Assembly-CSharp
               m_MethodName: SubtractValue
               m_Mode: 4
@@ -670,6 +695,7 @@ MonoBehaviour:
           stunlock: 0.5
           pushDirection: {x: 0, y: 0.2, z: 0.43}
           RechargeUltimate: 1
+          SelfDamageUltimate: 0
           Effects: []
         position: {x: 0, y: 0, z: 7.68}
         size: {x: 1.48, y: 2.16, z: 6.7}

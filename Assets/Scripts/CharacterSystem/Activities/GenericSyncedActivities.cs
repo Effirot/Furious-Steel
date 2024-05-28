@@ -9,7 +9,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using static UnityEngine.InputSystem.InputAction;
 
-public abstract class SyncedActivities<T> : SyncedActivities where T : ISyncedActivitiesSource
+public abstract class SyncedActivity<T> : SyncedActivity where T : ISyncedActivitiesSource
 {
     public new T Invoker { 
         get 

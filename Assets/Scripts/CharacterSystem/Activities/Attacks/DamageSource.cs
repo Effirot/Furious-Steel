@@ -19,8 +19,6 @@ namespace CharacterSystem.Attacks
         ISyncedActivitiesSource,
         IDamagable
     {
-        float Speed { get; set; }
-
         DamageDeliveryReport lastReport { get; set; }
 
         int Combo { get; }
@@ -33,7 +31,7 @@ namespace CharacterSystem.Attacks
     }
 
     [DisallowMultipleComponent]
-    public class DamageSource : SyncedActivities<IDamageSource>
+    public class DamageSource : SyncedActivity<IDamageSource>
     {
         [Flags]
         public enum AdditiveExecutingConditions
@@ -44,7 +42,7 @@ namespace CharacterSystem.Attacks
         }
 
         [SerializeField]
-        private bool IsPerformingAsDefault = false;
+        private bool IsPerformingAsDefault = true;
 
         [SerializeField]
         private bool IsInterruptableWhenBlocked = false;
@@ -54,9 +52,6 @@ namespace CharacterSystem.Attacks
 
         [SerializeField]
         private bool RestartWhenHolding = true;
-
-        [SerializeField, Range(-4, 10)]
-        public float SpeedReducing = 3;
         
         [SerializeField, SerializeReference, SubclassSelector]
         public AttackQueueElement[] attackQueue;
@@ -81,51 +76,11 @@ namespace CharacterSystem.Attacks
                 }
             } 
         }
-        public bool IsAttacking => attackProcess != null;
 
-        public virtual bool IsActive => Invoker.permissions.HasFlag(CharacterPermission.AllowAttacking) && IsPerforming; 
+        public virtual bool IsActive => !IsInProcess && !HasOverrides() && !Invoker.isStunned && Invoker.permissions.HasFlag(CharacterPermission.AllowAttacking) && IsPerforming; 
 
         private NetworkVariable<bool> network_isPerforming = new NetworkVariable<bool>(true, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
-        private Coroutine attackProcess = null;
-
-        public void StartAttackForced()
-        {
-            if (Invoker.IsServer)
-            {
-                Invoker.permissions = CharacterPermission.AllowJump | CharacterPermission.AllowMove | CharacterPermission.AllowRotate | CharacterPermission.AllowGravity;
-
-                StartAttack_ClientRpc();
-
-                if (!IsClient)
-                {
-                    StartAttack_Internal();
-                }
-            }
-        }
-        public virtual void StartAttack()
-        {
-            if (!Invoker.isStunned && 
-                IsActive &&
-                !IsAttacking &&
-                !HasOverrides())
-            {
-                StartAttackForced();
-            }            
-        }
-        public virtual void EndAttack()
-        {
-            if (IsServer)
-            {
-                EndAttack_ClientRpc();
-                
-                if (!IsClient)
-                {
-                    EndAttack_Internal();
-                }
-            }
-        }
-        public void EndAttackLocaly() => EndAttack_Internal();
 
         public override void OnNetworkSpawn()
         {
@@ -140,35 +95,63 @@ namespace CharacterSystem.Attacks
         {
             base.OnNetworkDespawn();
 
-            EndAttack();
+            Stop();
         }
 
-        private void Start()
+        public void PlayForced()
+        {
+            if (!HasOverrides())
+            {
+                base.Play();
+            }
+        }
+        public override void Play()
+        {            
+            if (IsActive)
+            {
+                PlayForced();                
+            }    
+        }
+        public override void Stop()
+        {
+            if (IsInProcess)
+            {
+                Permissions = CharacterPermission.Default;
+                
+                currentAttackDamageReport = null;
+
+                OnAttackEnded.Invoke();
+            }
+
+            base.Stop();
+        }
+        
+        public override IEnumerator Process()
+        {            
+            foreach (var item in attackQueue)
+            {
+                yield return item.AttackPipeline(this);
+            }
+        }
+
+        protected virtual void Start()
         {
             if (IsServer && IsInterruptOnHit)
             {
                 Invoker.onDamageRecieved += (damage) => { 
                     if (damage.type != Damage.Type.Effect)
                     {
-                        EndAttack(); 
+                        Stop();
                     }
                 };
             }
         }
 
-        protected override void OnStateChanged(bool value)
-        {
-            if (value)
-            {
-                StartAttack();
-            }
-        }
-
         protected virtual void FixedUpdate()
         {
-            if (IsServer && IsPressed && RestartWhenHolding)
+            if (IsPressed && RestartWhenHolding)
             {
-                StartAttack();
+                Play();
             }
         }
 
@@ -176,12 +159,14 @@ namespace CharacterSystem.Attacks
         {
             if (report.isDelivered)
             {
-                OnDamageReport.Invoke(report);
-
                 if (report.isBlocked && IsInterruptableWhenBlocked)
                 {
-                    EndAttack();
+                    Stop();
+
+                    Permissions = CharacterPermission.Default;
                 }
+
+                OnDamageReport.Invoke(report);
 
                 currentAttackDamageReport = report;
 
@@ -197,62 +182,17 @@ namespace CharacterSystem.Attacks
                 item?.OnDrawGizmos(transform);
             }
         }
-
-        private IEnumerator AttackSubprocess()
-        {
-            foreach (var item in attackQueue)
-            {
-                yield return item.AttackPipeline(this);
-            }
-
-            EndAttack_Internal();
-        }
-
-        [ClientRpc]
-        private void StartAttack_ClientRpc()
-        {
-            StartAttack_Internal();
-        }
-        private void StartAttack_Internal()
-        {
-            EndAttack_Internal();
-
-            if (attackQueue.Any())
-            {
-                Invoker.Speed -= SpeedReducing;
-
-                attackProcess = StartCoroutine(AttackSubprocess());
-            }
-        }
-
-        [ClientRpc]
-        private void EndAttack_ClientRpc()
-        {
-            EndAttack_Internal();
-        }
-        private void EndAttack_Internal()
-        {
-            if (IsAttacking)
-            {
-                StopCoroutine(attackProcess);
-                attackProcess = null;
-
-                Invoker.Speed += SpeedReducing;
-                Invoker.permissions = CharacterPermission.Default;
-                
-                currentAttackDamageReport = null;
-
-                OnAttackEnded.Invoke();
-            }
-        }
     }
 
 #region Queue elements
     [Serializable]
     public abstract class AttackQueueElement
     {
-        protected void Execute(IEnumerable<Caster> casters, IDamageSource source, DamageSource damageSource)
+        protected void Execute(IEnumerable<Caster> casters, DamageSource damageSource)
         {
+            var impactPushVector = Vector3.zero;
+            var impactsCount = 0; 
+
             foreach (var cast in casters)
             {
                 foreach (var collider in cast.CastCollider(damageSource.transform))
@@ -261,12 +201,22 @@ namespace CharacterSystem.Attacks
                         continue;
 
                     var damage = cast.damage;
-                    damage.pushDirection = source.transform.rotation * cast.damage.pushDirection;
-                    damage.sender = source;
+                    damage.pushDirection = damageSource.Invoker.transform.rotation * cast.damage.pushDirection;
+                    damage.sender = damageSource.Invoker;
 
-                    damageSource.HandleDamageReport(Damage.Deliver(collider.gameObject, damage));
+                    var report = Damage.Deliver(collider.gameObject, damage);
+
+                    if (report.isDelivered)
+                    {
+                        impactsCount++;
+                        impactPushVector += -report.damage.pushDirection / 1.2f;
+                    }
+
+                    damageSource.HandleDamageReport(report);
                 }
             }
+
+            damageSource.Invoker.Push(impactPushVector / impactsCount);
         }
     
         public abstract IEnumerator AttackPipeline(DamageSource source);
@@ -276,9 +226,7 @@ namespace CharacterSystem.Attacks
     
     [Serializable]
     public sealed class Push : AttackQueueElement, Charger.IChargeListener
-    {
-        [Header("Events")]
-        
+    {        
         [Space]
         [SerializeField]
         private Vector3 CastPushDirection = Vector3.forward / 2; 
@@ -301,9 +249,7 @@ namespace CharacterSystem.Attacks
     }
     [Serializable]
     public sealed class Move : AttackQueueElement, Charger.IChargeListener
-    {
-        [Header("Events")]
-        
+    {        
         [Space]
         [SerializeField]
         private Vector3 MoveDirection = Vector3.forward * 30;
@@ -325,7 +271,7 @@ namespace CharacterSystem.Attacks
         {            
             if (source.Invoker.gameObject.TryGetComponent<CharacterController>(out var component))
             {
-                source.Invoker.permissions = permission;
+                source.Permissions = permission;
 
                 var waitForFixedUpdate = new WaitForFixedUpdate();
                 var wasteTime = 0f;
@@ -353,6 +299,25 @@ namespace CharacterSystem.Attacks
                     wasteTime += Time.fixedDeltaTime;
                 }
             }
+
+            yield break;
+        }
+
+        public override void OnDrawGizmos(Transform transform)
+        {
+
+        }
+    }
+    [Serializable]
+    public sealed class SelfDamage : AttackQueueElement
+    {        
+        [Space]
+        [SerializeField]
+        private Damage damage = new Damage();
+        
+        public override IEnumerator AttackPipeline(DamageSource source)
+        {
+            Damage.Deliver(source.Invoker, damage);
 
             yield break;
         }
@@ -469,11 +434,11 @@ namespace CharacterSystem.Attacks
 
             var newCasters = CopyArray(flexibleCollider ? chargeValue : 1, flexibleDamage ? chargeValue : 1);
 
-
             OnCast.Invoke();
+
             invoker.Push(invoker.transform.rotation * CastPushDirection);
 
-            Execute(newCasters, invoker, source);
+            Execute(newCasters, source);
 
             yield break;
         }
@@ -637,7 +602,7 @@ namespace CharacterSystem.Attacks
 
         public override IEnumerator AttackPipeline(DamageSource source)
         {
-            source.Invoker.permissions = Permissions;
+            source.Permissions = Permissions;
             
             yield return new WaitForSeconds(WaitTime);
         }
@@ -658,7 +623,7 @@ namespace CharacterSystem.Attacks
 
         public override IEnumerator AttackPipeline(DamageSource source)
         {
-            source.Invoker.permissions = Permissions;
+            source.Permissions = Permissions;
             
             yield return new WaitUntil(() => {
                 if (source.Invoker.gameObject.TryGetComponent<CharacterController>(out var character))
@@ -692,7 +657,7 @@ namespace CharacterSystem.Attacks
 
         public override IEnumerator AttackPipeline(DamageSource source)
         {
-            source.Invoker.permissions = Permissions;
+            source.Permissions = Permissions;
             
             yield return new WaitForSeconds(Mathf.Clamp(WaitTime - source.Invoker.Combo * ReducingByHit, MinWaitTime, WaitTime));
         }
@@ -716,7 +681,7 @@ namespace CharacterSystem.Attacks
 
         public override IEnumerator AttackPipeline(DamageSource source)
         {
-            source.Invoker.permissions = Permissions;
+            source.Permissions = Permissions;
 
             var deltaTime = DateTime.Now - (source.Invoker.lastReport?.time ?? DateTime.MinValue);
                         
@@ -800,7 +765,7 @@ namespace CharacterSystem.Attacks
         public override IEnumerator AttackPipeline (DamageSource source)
         {
             OnStart.Invoke();
-            source.Invoker.permissions = Permissions;
+            source.Permissions = Permissions;
 
             var waitForFixedUpdate = new WaitForFixedUpdate();
             var waitedTime = 0f;

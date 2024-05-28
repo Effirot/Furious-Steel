@@ -1,4 +1,5 @@
 using System;
+using CharacterSystem.Attacks;
 using CharacterSystem.Objects;
 using UnityEngine;
 using UnityEngine.VFX;
@@ -9,9 +10,12 @@ namespace CharacterSystem.DamageMath
         IGameObjectLink, 
         ITeammate
     {
+        float maxHealth { get; }
         float health { get; set; }
 
         float stunlock { get; set; }
+
+        Damage lastRecievedDamage { get; set; }
 
         bool Hit(Damage damage);
         bool Heal(Damage damage);

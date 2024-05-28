@@ -9,16 +9,13 @@ namespace CharacterSystem.PowerUps
 {
     public class HealPowerUp : PowerUp
     {
+        public override bool IsOneshot => true;
+
         public override void Activate(PowerUpHolder holder)
         {
-            holder.Invoker.Heal(new Damage(70, null, 0, Vector3.zero, Damage.Type.Unblockable));
+            Damage.Deliver(holder.Invoker, new Damage(new RegenerationEffect(7, holder.Invoker.maxHealth / 7f)));
         }
         
-        public override bool IsValid(PowerUpHolder holder)
-        {
-            return holder is BagPowerUpHolder;
-        }
-
         public override void OnPick(PowerUpHolder holder)
         {
             

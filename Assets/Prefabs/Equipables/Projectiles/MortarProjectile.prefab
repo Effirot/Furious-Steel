@@ -51,7 +51,7 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 1
+      - m_Value: 1.39
         m_Name: Size
         m_Overridden: 1
     m_Vector2f:
@@ -284,8 +284,6 @@ GameObject:
   - component: {fileID: -706647796989416874}
   - component: {fileID: 1021237605104187023}
   - component: {fileID: 6161998684848566748}
-  - component: {fileID: 3616613392026446311}
-  - component: {fileID: 1934634030814871915}
   m_Layer: 9
   m_Name: MortarProjectile
   m_TagString: Untagged
@@ -309,6 +307,7 @@ Transform:
   - {fileID: 7727501760193108799}
   - {fileID: 3733290632038327404}
   - {fileID: 8759228739670189285}
+  - {fileID: 2177171835186725508}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8766839339822984711
@@ -498,20 +497,20 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   damage:
-    value: 10
+    value: 20
     type: 2
     stunlock: 0
-    pushDirection: {x: 0, y: 4.03, z: 0.36}
+    pushDirection: {x: 0, y: 0.33, z: 0.36}
     RechargeUltimate: 1
     SelfDamageUltimate: 0
     Effects: []
-  Range: 2
-  PushForce: 0.91
+  Range: 2.31
+  PushForce: 0.19
   explodeDamage:
-    value: 25
+    value: 15
     type: 2
     stunlock: 0
-    pushDirection: {x: 0, y: 0.7, z: 0}
+    pushDirection: {x: 0, y: 0.6, z: 0}
     RechargeUltimate: 1
     SelfDamageUltimate: 1
     Effects: []
@@ -520,21 +519,46 @@ MonoBehaviour:
   references:
     version: 2
     RefIds: []
---- !u!33 &3616613392026446311
-MeshFilter:
+--- !u!1 &7518531386733493784
+GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6845969276890429663}
-  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &1934634030814871915
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2177171835186725508}
+  - component: {fileID: 5901704956396388718}
+  - component: {fileID: 7863650008210782298}
+  m_Layer: 9
+  m_Name: Mesh
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2177171835186725508
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7518531386733493784}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.56, y: 0.56, z: 0.56}
+  m_ConstrainProportionsScale: 1
+  m_Children: []
+  m_Father: {fileID: 520601800893309648}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!23 &5901704956396388718
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6845969276890429663}
+  m_GameObject: {fileID: 7518531386733493784}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -572,6 +596,14 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &7863650008210782298
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7518531386733493784}
+  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1001 &8358607419596018781
 PrefabInstance:
   m_ObjectHideFlags: 0

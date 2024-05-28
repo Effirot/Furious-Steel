@@ -51,6 +51,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inputAction: {fileID: 4628471853980608337, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 2
+  SpeedChange: 0
+  IsActiveAsDefault: 1
   BeforeBlockCharacterPermissions: 0
   BeforeBlockTime: 0
   BlockCharacterPermissions: 256
@@ -59,14 +61,14 @@ MonoBehaviour:
   AfterBlockCharacterPermissions: 24320
   AfterBlockTime: 1.5
   PushForce: 0.51
-  SpeedReducing: 3
   InterruptOnHit: 1
   backDamage:
     value: 0
     type: 16
-    stunlock: 0.5
+    stunlock: 0.75
     pushDirection: {x: 0, y: 0, z: 0}
     RechargeUltimate: 1
+    SelfDamageUltimate: 0
     Effects: []
   DamageReducing: 1
   OnBeforeBlockingEvent:
@@ -86,19 +88,7 @@ MonoBehaviour:
         m_CallState: 2
   OnAfterBlockingEvent:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 8475503555171346588}
-        m_TargetAssemblyTypeName: UnityEngine.VFX.VisualEffect, UnityEngine
-        m_MethodName: Play
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   OnBlockingEvent:
     m_PersistentCalls:
       m_Calls:

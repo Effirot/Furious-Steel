@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using CharacterSystem.DamageMath;
 using CharacterSystem.Objects;
@@ -15,13 +17,15 @@ public interface ISyncedActivitiesSource : IGameObjectLink
 
     Animator animator { get; }
 
+    SyncedActivitiesList activities { get; }
+
     CharacterPermission permissions { get; set; }
     
     public bool IsServer => NetworkManager.Singleton.IsServer;
     public bool IsOwner => NetworkObject.IsOwner;
 }
 
-public abstract class SyncedActivities : NetworkBehaviour
+public abstract class SyncedActivity : NetworkBehaviour
 {
     public enum SyncedActivityPriority : byte
     {
@@ -32,7 +36,7 @@ public abstract class SyncedActivities : NetworkBehaviour
         Unoverridable = 5,
     }
 
-    private static List<SyncedActivities> regsitredSyncedActivities = new ();
+    private static List<SyncedActivity> regsitredSyncedActivities = new ();
 
     [Space]
     [Header("Input")]
@@ -41,6 +45,24 @@ public abstract class SyncedActivities : NetworkBehaviour
 
     [SerializeField]
     private SyncedActivityPriority Priority = SyncedActivityPriority.Normal;
+
+    [SerializeField, Range(-4, 10)]
+    public float SpeedChange = 0;   
+    
+    public CharacterPermission Permissions { 
+        get => permissions;
+        set {
+            permissions = value;
+
+            onPermissionsChanged?.Invoke(value);
+        }
+    }  
+
+    public event Action<CharacterPermission> onPermissionsChanged;
+
+    private CharacterPermission permissions = CharacterPermission.Default;  
+
+    
 
     public ISyncedActivitiesSource Invoker { 
         get 
@@ -62,11 +84,14 @@ public abstract class SyncedActivities : NetworkBehaviour
         }
     }
 
+    public bool IsInProcess => process != null;
 
     private NetworkVariable<bool> network_isPressed = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     
     private ISyncedActivitiesSource m_invoker;
-    private SyncedActivities syncedActivityOverrider;
+    private SyncedActivity syncedActivityOverrider;
+
+    private Coroutine process = null;
 
 
     public bool HasOverrides()
@@ -78,7 +103,7 @@ public abstract class SyncedActivities : NetworkBehaviour
                     activity.inputAction == this.inputAction && 
                     activity.Priority > this.Priority &&
                     activity.Invoker == this.Invoker &&
-                    !this.Invoker.IsUnityNull() );
+                    !this.Invoker.IsUnityNull());
         }
 
         return !syncedActivityOverrider.IsUnityNull();
@@ -104,9 +129,53 @@ public abstract class SyncedActivities : NetworkBehaviour
         base.OnDestroy();
 
         regsitredSyncedActivities.Remove(this);
+
+        Stop();
     }
 
-    protected abstract void OnStateChanged(bool IsPressed);
+
+    public virtual void Play()
+    {
+        if (!HasOverrides() && IsServer && !IsInProcess)
+        {
+            process = StartCoroutine(ProcessRoutine());
+            Invoker.activities.Add(this);
+            
+            Play_ClientRpc();
+        }
+    }
+    public virtual void Stop() 
+    {
+        if (IsInProcess)
+        {
+            StopCoroutine(process);
+            Invoker.activities.Remove(this);
+        }
+
+        process = null;
+
+        if (IsServer)
+        {
+            Stop_ClientRpc();
+        }
+    }
+
+    public abstract IEnumerator Process();
+
+    protected virtual void OnStateChanged(bool IsPressed)
+    {
+        if (IsPressed)
+        {
+            Play();
+        }
+    }
+
+    private IEnumerator ProcessRoutine()
+    {
+        yield return StartCoroutine(Process());
+
+        Stop();
+    }
 
     private void Register()
     {
@@ -149,6 +218,26 @@ public abstract class SyncedActivities : NetworkBehaviour
         }
     }
 
+    [ClientRpc]
+    private void Play_ClientRpc()
+    {
+        if (!IsServer)
+        {
+            process = StartCoroutine(ProcessRoutine());
+            Invoker.activities.Add(this);
+
+            Play();
+        }
+    }
+    [ClientRpc]
+    private void Stop_ClientRpc()
+    {
+        if (!IsServer)
+        {
+            Stop();
+        }
+    }
+
     private void OnInputPressStateChanged_Event(CallbackContext callback)
     {
         IsPressed = callback.ReadValueAsButton();
@@ -159,4 +248,58 @@ public abstract class SyncedActivities : NetworkBehaviour
 
         OnStateChanged(New);
     }
+}
+
+public sealed class SyncedActivitiesList : 
+    IEnumerable<SyncedActivity>
+{
+    public delegate void OnSyncedActivityListChangedDelegate(EventType type, SyncedActivity syncedActivity);
+
+    public enum EventType {
+        Add,
+        Remove
+    }
+    
+
+    public event OnSyncedActivityListChangedDelegate onSyncedActivityListChanged;
+
+    public ReadOnlyCollection<SyncedActivity> SyncedActivities => syncedActivities.AsReadOnly();
+
+    public SyncedActivity this [int index] => syncedActivities[index];
+
+    private List<SyncedActivity> syncedActivities = new();
+
+    public CharacterPermission CalculatePermissions()
+    {
+        var result = CharacterPermission.Default;
+
+        foreach (var activity in this)
+        {
+            result &= activity.Permissions;
+        }
+
+        return result;
+    }
+
+    public void Add(SyncedActivity syncedActivity)
+    {
+        if (syncedActivity != null)
+        {
+            syncedActivities.Add(syncedActivity);
+
+            onSyncedActivityListChanged?.Invoke(EventType.Add, syncedActivity);
+        }
+    }
+    public void Remove(SyncedActivity syncedActivity)
+    {
+        if (syncedActivity != null)
+        {
+            syncedActivities.Remove(syncedActivity);
+
+            onSyncedActivityListChanged?.Invoke(EventType.Remove, syncedActivity);
+        }
+    }
+
+    public IEnumerator<SyncedActivity> GetEnumerator() => syncedActivities.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => syncedActivities.GetEnumerator();
 }

@@ -204,12 +204,8 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
-      propertyPath: PushForce
-      value: 1.05
-      objectReference: {fileID: 0}
-    - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
       propertyPath: SpeedReducing
-      value: 9
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
       propertyPath: AfterBlockTime
@@ -217,7 +213,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
       propertyPath: DamageReducing
-      value: 0.9
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
       propertyPath: InterruptOnHit
@@ -225,27 +221,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
       propertyPath: BeforeBlockTime
-      value: 0.05
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
       propertyPath: BlockProcessTime
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
-      propertyPath: backDamage.value
-      value: 15
-      objectReference: {fileID: 0}
-    - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
-      propertyPath: backDamage.stunlock
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
       propertyPath: BlockCharacterPermissions
-      value: 1280
+      value: 1792
       objectReference: {fileID: 0}
     - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
-      propertyPath: backDamage.RechargeUltimate
-      value: 0
+      propertyPath: backDamage.pushDirection.y
+      value: 0.28
       objectReference: {fileID: 0}
     - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
       propertyPath: BeforeBlockCharacterPermissions
@@ -290,7 +278,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1151841602
+  GlobalObjectIdHash: 99592729
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
