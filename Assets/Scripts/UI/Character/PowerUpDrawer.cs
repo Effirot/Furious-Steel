@@ -12,8 +12,6 @@ public class PowerUpDrawer : MonoBehaviour
 {
     private Transform instance;
 
-    private PowerUpHolder powerUpHolder;
-
     public void Draw(PowerUp powerUp)
     {
         
@@ -41,19 +39,9 @@ public class PowerUpDrawer : MonoBehaviour
         }
     }
 
-    public void Initialize(PowerUpHolder powerUpHolder)
-    {
-        this.powerUpHolder = powerUpHolder;
-        
-        Draw(powerUpHolder.powerUp);
-        powerUpHolder.OnPowerUpChanged.AddListener(Draw);
-    }
-
-    private void OnDestroy()
-    {
-        if (!powerUpHolder.IsUnityNull())
-        {
-            powerUpHolder.OnPowerUpChanged.RemoveListener(Draw);
-        }
+    public void Initialize(IPowerUpActivator activator)
+    {        
+        Draw(activator.PowerUp);
+        activator.onPowerUpChanged.AddListener(Draw);
     }
 }

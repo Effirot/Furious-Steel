@@ -36,7 +36,7 @@ public class CharacterUI : MonoBehaviour
     private TMP_Text ComboField;
 
     [SerializeField]
-    private List<PowerUpDrawer> powerUpDrawers = new();
+    private PowerUpDrawer powerUpDrawer;
 
 
     private List<GameObject> additiveInstantiatedUIGameObjects = new();
@@ -84,12 +84,11 @@ public class CharacterUI : MonoBehaviour
     }
 #endif
 
-
     private async void UpdateValue()
     {
         RemoveAllAdditiveUI();
 
-        await UniTask.WaitForSeconds(0.1f);
+        await UniTask.WaitForSeconds(0.01f);
         
         if (NetworkCharacter == null) 
         {
@@ -151,10 +150,9 @@ public class CharacterUI : MonoBehaviour
                 }
             }
 
-            var holders = NetworkCharacter.gameObject.GetComponentsInChildren<PowerUpHolder>().Where(holder => !holder.HasOverrides()).Reverse().ToArray();
-            for (int i = 0; i < Mathf.Min(holders.Length, powerUpDrawers.Count()); i++)
-            {
-                powerUpDrawers[i].Initialize(holders[i]);
+            if (powerUpDrawer != null && NetworkCharacter is IPowerUpActivator)
+            {                
+                powerUpDrawer.Initialize(NetworkCharacter as IPowerUpActivator);
             }
         }
     }

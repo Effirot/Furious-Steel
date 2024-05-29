@@ -100,20 +100,20 @@ public abstract class SyncedActivity : NetworkBehaviour
         {
             syncedActivityOverrider = regsitredSyncedActivities.Find(
                 activity => 
-                    activity.inputAction == this.inputAction && 
-                    activity.Priority > this.Priority &&
-                    activity.Invoker == this.Invoker &&
-                    !this.Invoker.IsUnityNull());
+                    activity.inputAction == inputAction && 
+                    activity.Priority > Priority &&
+                    activity.Invoker == Invoker &&
+                    !Invoker.IsUnityNull());
         }
 
         return !syncedActivityOverrider.IsUnityNull();
     }
     
+
+
     public override void OnNetworkSpawn ()
     {
         base.OnNetworkSpawn();
-
-        Register();
 
         Subscribe();
     }
@@ -132,7 +132,11 @@ public abstract class SyncedActivity : NetworkBehaviour
 
         Stop();
     }
-
+    
+    protected virtual void Awake()
+    {
+        Register();
+    }
 
     public virtual void Play()
     {

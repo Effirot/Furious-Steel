@@ -10,6 +10,7 @@ using Unity.Collections;
 using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Interactions;
 using UnityEngine.InputSystem.XInput;
@@ -96,10 +97,24 @@ namespace CharacterSystem.Objects
             }
         }
 
+        public int PowerUpId { 
+            get => network_powerUpId.Value; 
+            set {
+                if (IsServer)
+                {
+                    network_powerUpId.Value = value;
+                    Debug.Log(value);
+                }
+            }
+        }
+
+
+        private NetworkVariable<int> network_powerUpId = new (-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
         private NetworkVariable<DamageDeliveryReport> network_lastReport = new (new(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
         private NetworkVariable<ulong> network_serverClientId = new (0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
         private NetworkVariable<int> network_combo = new (0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
+        public UnityEvent<PowerUp> onPowerUpChanged { get; } = new();
         public event Action<DamageDeliveryReport> onDamageDelivered;
         public event Action<int> onComboChanged;
 
@@ -163,7 +178,6 @@ namespace CharacterSystem.Objects
             }
         }
         
-
         public override void Kill()
         {
             base.Kill();
@@ -185,6 +199,9 @@ namespace CharacterSystem.Objects
         public override void OnNetworkSpawn()
         {
             RoomManager.Singleton.playersData.OnListChanged += OnOwnerPlayerDataChanged_event;
+            network_powerUpId.OnValueChanged += (Old, New) => onPowerUpChanged.Invoke(PowerUp.IdToPowerUpLink(New));
+            network_powerUpId.OnValueChanged += (Old, New) => Debug.Log(New);
+            onPowerUpChanged.AddListener(Debug.Log);
 
             network_combo.OnValueChanged += (Old, New) => {
                 onComboChanged?.Invoke(New);

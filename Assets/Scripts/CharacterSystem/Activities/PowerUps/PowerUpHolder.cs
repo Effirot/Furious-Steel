@@ -11,9 +11,6 @@ using Unity.VisualScripting;
 using UnityEngine.Events;
 
 
-
-
-
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -26,30 +23,38 @@ namespace CharacterSystem.PowerUps
         IDamageSource,
         IDamagable
     {
+        UnityEvent<PowerUp> onPowerUpChanged { get; } 
 
+        int PowerUpId { get; set; }
+        
+        public PowerUp PowerUp {
+            get => PowerUp.IdToPowerUpLink(PowerUpId);
+            set {
+                if (value.IsUnityNull())
+                {
+                    PowerUpId = -1;
+                }
+                else
+                {
+                    PowerUpId = Array.IndexOf(PowerUp.AllPowerUps, value);
+                }
+            }
+        }
     }
 
     public class PowerUpHolder : SyncedActivity<IPowerUpActivator>
     {
         public PowerUp powerUp {
-            get => Id < 0 || Id >= PowerUp.AllPowerUps.Length ? null : PowerUp.AllPowerUps[Id];
-            set {
-                if (value.IsUnityNull())
-                {
-                    network_powerUpId.Value = -1;
-                }
-                else
-                {
-                    network_powerUpId.Value = Array.IndexOf(PowerUp.AllPowerUps, value);
-                }
-            }
+            get => Invoker.PowerUp;
+            set => Invoker.PowerUp = value;
         }
 
-        public int Id => network_powerUpId.Value;
+        public int Id {
+            get => Invoker.PowerUpId;
+            set => Invoker.PowerUpId = value;
+        }
 
         public UnityEvent<PowerUp> OnPowerUpChanged = new();
-
-        private NetworkVariable<int> network_powerUpId = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
         public void Drop(bool DestroyWithoutGround = true)
         {
@@ -76,20 +81,9 @@ namespace CharacterSystem.PowerUps
             }
         }
 
-        public override void OnNetworkSpawn()
-        {
-            base.OnNetworkSpawn();
-
-            network_powerUpId.OnValueChanged += (Old, New) => OnPowerUpChanged.Invoke(powerUp);
-        }
         public override void OnNetworkDespawn()
         {
             base.OnNetworkDespawn();
-
-            if (IsServer && powerUp != null)
-            {
-                Drop();
-            }
         }
 
         protected virtual void OnTriggerStay(Collider other)
@@ -102,7 +96,7 @@ namespace CharacterSystem.PowerUps
                 {
                     if (powerUp == null)
                     {
-                        network_powerUpId.Value = container.Id;
+                        Invoker.PowerUpId = container.Id;
                         
                         container.powerUp.OnPick(this);
                         container.NetworkObject.Despawn();
@@ -126,7 +120,7 @@ namespace CharacterSystem.PowerUps
                     Activate_Internal(Id);
                 }
                 
-                network_powerUpId.Value = -1;
+                Invoker.PowerUpId = -1;
             }
         }
         

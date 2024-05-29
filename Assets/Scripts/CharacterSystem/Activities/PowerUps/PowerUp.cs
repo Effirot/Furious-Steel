@@ -18,6 +18,11 @@ namespace CharacterSystem.PowerUps
             return Array.IndexOf(AllPowerUps, typeof(T));
         }
 
+        public static PowerUp IdToPowerUpLink(int PowerUpId)
+        {
+            return PowerUpId < 0 || PowerUpId >= PowerUp.AllPowerUps.Length ? null : PowerUp.AllPowerUps[PowerUpId];
+        } 
+
         private static PowerUp[] GetAllTypes()
         {
             var types = typeof(PowerUp).Assembly.GetTypes();
