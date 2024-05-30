@@ -20,7 +20,25 @@ namespace CharacterSystem.PowerUps
 
         public static PowerUp IdToPowerUpLink(int PowerUpId)
         {
-            return PowerUpId < 0 || PowerUpId >= PowerUp.AllPowerUps.Length ? null : PowerUp.AllPowerUps[PowerUpId];
+            if (PowerUpId < 0 || PowerUpId >= PowerUp.AllPowerUps.Length)
+            {
+                return null;
+            }
+            else
+            {
+                return PowerUp.AllPowerUps[PowerUpId];
+            }
+        } 
+        public static int PowerUpLinkToID(PowerUp powerUp)
+        {
+            if (powerUp == null)
+            {
+                return -1;
+            }
+            else
+            {
+                return Array.IndexOf(PowerUp.AllPowerUps, powerUp);
+            }
         } 
 
         private static PowerUp[] GetAllTypes()

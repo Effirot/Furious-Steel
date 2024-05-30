@@ -92,7 +92,7 @@ namespace CharacterSystem.Objects
                         comboResetTimer = StartCoroutine(ComboResetTimer());
                     }
 
-                    network_combo.Value = value;
+                    network_combo.Value = Mathf.Clamp(value, 0, 30);
                 }
             }
         }
@@ -103,7 +103,6 @@ namespace CharacterSystem.Objects
                 if (IsServer)
                 {
                     network_powerUpId.Value = value;
-                    Debug.Log(value);
                 }
             }
         }
@@ -200,16 +199,11 @@ namespace CharacterSystem.Objects
         {
             RoomManager.Singleton.playersData.OnListChanged += OnOwnerPlayerDataChanged_event;
             network_powerUpId.OnValueChanged += (Old, New) => onPowerUpChanged.Invoke(PowerUp.IdToPowerUpLink(New));
-            network_powerUpId.OnValueChanged += (Old, New) => Debug.Log(New);
-            onPowerUpChanged.AddListener(Debug.Log);
 
             network_combo.OnValueChanged += (Old, New) => {
                 onComboChanged?.Invoke(New);
 
-                if (New < 20)
-                {
-                    Speed += (New - Old) / 5f;
-                }
+                Speed += (New - Old) / 6f;
             };
             
             Players.Add(this);

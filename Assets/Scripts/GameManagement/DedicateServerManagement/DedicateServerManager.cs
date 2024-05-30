@@ -25,7 +25,7 @@ public class DedicateServerManager : MonoBehaviour
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
     private static void OnStartClient()
     {
-        Application.targetFrameRate = 120;
+        Application.targetFrameRate = 240;
         QualitySettings.vSyncCount = 0; 
 
         GameObject.DontDestroyOnLoad(GameObject.Instantiate(Resources.Load<GameObject>("NetworkManager")));

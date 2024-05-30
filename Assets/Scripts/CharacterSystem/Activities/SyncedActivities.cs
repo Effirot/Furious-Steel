@@ -101,9 +101,8 @@ public abstract class SyncedActivity : NetworkBehaviour
             syncedActivityOverrider = regsitredSyncedActivities.Find(
                 activity => 
                     activity.inputAction == inputAction && 
-                    activity.Priority > Priority &&
-                    activity.Invoker == Invoker &&
-                    !Invoker.IsUnityNull());
+                    (int)activity.Priority > (int)Priority &&
+                    activity.Invoker == Invoker);
         }
 
         return !syncedActivityOverrider.IsUnityNull();

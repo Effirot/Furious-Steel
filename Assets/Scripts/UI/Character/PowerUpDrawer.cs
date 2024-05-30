@@ -40,7 +40,7 @@ public class PowerUpDrawer : MonoBehaviour
     }
 
     public void Initialize(IPowerUpActivator activator)
-    {        
+    {
         Draw(activator.PowerUp);
         activator.onPowerUpChanged.AddListener(Draw);
     }

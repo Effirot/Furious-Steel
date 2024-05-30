@@ -1,6 +1,7 @@
 
 
 using CharacterSystem.DamageMath;
+using Cinemachine;
 using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -78,6 +79,8 @@ public class ExplodeProjectile : Projectile
             var gameObject = Instantiate(OnExplodePrefab, transform.position, transform.rotation);
 
             gameObject.SetActive(true);
+
+            gameObject.GetComponent<CinemachineImpulseSource>()?.GenerateImpulse();
 
             Destroy(gameObject, 4);
         }

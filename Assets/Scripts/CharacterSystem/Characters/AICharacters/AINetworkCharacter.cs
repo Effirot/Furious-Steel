@@ -53,6 +53,8 @@ namespace CharacterSystem.Objects.AI
         }
         public override void OnNetworkDespawn()
         {
+            base.OnNetworkDespawn();
+            
             ClearAICompute();
         }
         

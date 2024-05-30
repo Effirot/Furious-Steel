@@ -29,49 +29,15 @@ namespace CharacterSystem.PowerUps
         
         public PowerUp PowerUp {
             get => PowerUp.IdToPowerUpLink(PowerUpId);
-            set {
-                if (value.IsUnityNull())
-                {
-                    PowerUpId = -1;
-                }
-                else
-                {
-                    PowerUpId = Array.IndexOf(PowerUp.AllPowerUps, value);
-                }
-            }
+            set => PowerUpId = PowerUp.PowerUpLinkToID(value);
         }
     }
 
     public class PowerUpHolder : SyncedActivity<IPowerUpActivator>
     {
-        public PowerUp powerUp {
-            get => Invoker.PowerUp;
-            set => Invoker.PowerUp = value;
-        }
-
-        public int Id {
-            get => Invoker.PowerUpId;
-            set => Invoker.PowerUpId = value;
-        }
-
-        public UnityEvent<PowerUp> OnPowerUpChanged = new();
-
-        public void Drop(bool DestroyWithoutGround = true)
+        public void Drop(PowerUp powerUp)
         {
-            if (HasOverrides()) return;
-
-            Vector3 position = transform.position;
-            
-            if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, LayerMask.GetMask("Ground")))
-            {
-                position = hit.point + Vector3.up * 2;
-            }
-            else
-            {
-                if (DestroyWithoutGround) return;
-            }
-
-            var powerupGameObject = Instantiate(powerUp.prefab, position, Quaternion.identity);
+            var powerupGameObject = Instantiate(Invoker.PowerUp.prefab, transform.position, Quaternion.identity);
         
             powerupGameObject.GetComponent<NetworkObject>().Spawn();
 
@@ -80,10 +46,20 @@ namespace CharacterSystem.PowerUps
                 Destroy(powerupGameObject, 10);
             }
         }
-
-        public override void OnNetworkDespawn()
+        
+        public override IEnumerator Process()
         {
-            base.OnNetworkDespawn();
+            if (Invoker.permissions.HasFlag(CharacterPermission.AllowPowerUps))
+            {
+                Invoker.PowerUp?.Activate(this);
+
+                if (IsServer)
+                {
+                    Invoker.PowerUp = null;
+                }
+            }
+
+            yield break;
         }
 
         protected virtual void OnTriggerStay(Collider other)
@@ -92,15 +68,12 @@ namespace CharacterSystem.PowerUps
 
             if (other.TryGetComponent<PowerUpContainer>(out var container) && IsServer)
             {
-                if (!container.powerUp.IsOneshot)
+                if (!container.powerUp.IsOneshot && Invoker.PowerUp == null)
                 {
-                    if (powerUp == null)
-                    {
-                        Invoker.PowerUpId = container.Id;
-                        
-                        container.powerUp.OnPick(this);
-                        container.NetworkObject.Despawn();
-                    }
+                    Invoker.PowerUpId = container.Id;
+                    
+                    container.powerUp.OnPick(this);
+                    container.NetworkObject.Despawn();
                 }
                 else
                 {
@@ -110,47 +83,7 @@ namespace CharacterSystem.PowerUps
             }
         }
 
-        public void Activate()
-        {
-            if (IsServer)
-            {
-                Activate_ClientRpc(Id);
-                if (!IsClient)
-                {
-                    Activate_Internal(Id);
-                }
-                
-                Invoker.PowerUpId = -1;
-            }
-        }
-        
-        public override IEnumerator Process()
-        {
-            if (IsPressed && powerUp != null && Invoker.permissions.HasFlag(CharacterPermission.AllowPowerUps))
-            {
-                Activate();
-            }
-
-            yield break;
-        }
-
-        [ClientRpc]
-        private void Activate_ClientRpc(int Id)
-        {
-            Activate_Internal(Id);
-        }
-        private void Activate_Internal(int Id)
-        {
-            if (Id >= 0 && Id < PowerUp.AllPowerUps.Length) 
-            { 
-                var powerUp = PowerUp.AllPowerUps[Id];
-                
-                powerUp.Activate(this);
-            }
-        }
-
 #if UNITY_EDITOR
-
 
         [CustomEditor(typeof(PowerUpHolder), true)]
         public class PowerUpHolder_Editor : Editor
@@ -161,7 +94,7 @@ namespace CharacterSystem.PowerUps
             {
                 base.OnInspectorGUI();
 
-                GUILayout.Label(target.powerUp?.GetType().Name ?? "None");
+                GUILayout.Label(target.Invoker?.PowerUp?.GetType().Name ?? "None");
             }
         }
 

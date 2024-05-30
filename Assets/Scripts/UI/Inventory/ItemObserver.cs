@@ -12,10 +12,8 @@ using UnityEngine.InputSystem;
 public class ItemObserver : MonoBehaviour
 {
     
-#if !UNITY_SERVER || UNITY_EDITOR
     [SerializeField]
     private bool FollowSlot = false;
-#endif
 
     [Space]
     [SerializeField]
@@ -24,7 +22,7 @@ public class ItemObserver : MonoBehaviour
     private TMP_Text DescriptionField;
     [SerializeField]
     private TMP_Text ArgumentsField;
-
+    
 
     private List<RaycastResult> eventDataRaycastResult = new();
     private GameObject target;
@@ -33,31 +31,35 @@ public class ItemObserver : MonoBehaviour
     {
         get => _selectedItem;
         set {
-            _selectedItem = value;
             
             foreach(Transform item in transform)
             {
                 item.gameObject.SetActive(value != null);
             }
-
-            if (value != null)
+            
+            if (_selectedItem != value)
             {
-                NameField?.SetText(value.GetType().Name + (value.Name.Any() ? "(" + value.Name + ")" : ""));
-                DescriptionField?.SetText(@$"
-{value.GetType().Name}
+                if (value != null)
+                {
+                    NameField?.SetText(value.GetType().Name + (value.Name.Any() ? "(" + value.Name + ")" : ""));
+                    DescriptionField?.SetText(@$"
+{value.GetType().BaseType.Name}
 {string.Join("\n", value.GetType().GetInterfaces().Select(i => i.Name))}
 
 Last modification time: {value.LastModificationTime.ToLongTimeString()}
 Creation time: {value.CreationTime.ToLongTimeString()}");
 
                 ArgumentsField?.SetText(string.Join("\n", value.Args.Select(arg => " - " + arg)));
+                }
+                else
+                {
+                    NameField?.SetText("");
+                    DescriptionField?.SetText("");
+                    ArgumentsField?.SetText("");
+                }
             }
-            else
-            {
-                NameField?.SetText("");
-                DescriptionField?.SetText("");
-                ArgumentsField?.SetText("");
-            }
+
+            _selectedItem = value;
 
         }
     }
@@ -68,7 +70,6 @@ Creation time: {value.CreationTime.ToLongTimeString()}");
         SelectedItem = null;
     }
 
-#if !UNITY_SERVER || UNITY_EDITOR
     private void LateUpdate()
     {
         PointerEventData eventData = new(EventSystem.current);
@@ -92,9 +93,8 @@ Creation time: {value.CreationTime.ToLongTimeString()}");
         {
             if (target != null)
             {
-                transform.position = Vector2.Lerp(transform.position, target.transform.position, 10 * Time.deltaTime);
+                transform.position = Vector3.Lerp(transform.position, target.transform.position, 20 * Time.deltaTime);
             }
         }
     }
-#endif
 }

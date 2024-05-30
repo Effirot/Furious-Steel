@@ -34,20 +34,20 @@ public class NetworkConnect : MonoBehaviour
     {        
         if (NetworkManager.StartClient())
         {
-            await UniTask.WhenAny( 
-                UniTask.WaitUntil(() => NetworkManager.IsConnectedClient), 
-                UniTask.WaitForSeconds(10));
+            await UniTask.WaitUntil(() => NetworkManager.IsConnectedClient);
 
-            if (!NetworkManager.IsConnectedClient)
+            if (NetworkManager.IsConnectedClient)
+            {
+                OnSuccesfullyConnect.Invoke();
+
+                NetworkManager.OnClientDisconnectCallback += OnCharacterDisconnected_Event;
+            }
+            else
             {
                 OnUnsuccesfullyConnect.Invoke();
 
                 NetworkManager.Shutdown();
             }
-
-            OnSuccesfullyConnect.Invoke();
-
-            NetworkManager.OnClientDisconnectCallback += OnCharacterDisconnected_Event;
         }
         else
         {

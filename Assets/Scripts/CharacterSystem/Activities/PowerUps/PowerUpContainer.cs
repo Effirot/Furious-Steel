@@ -14,13 +14,20 @@ public class PowerUpContainer : NetworkBehaviour
     [field : SerializeField]
     public int Id { get; set; }
 
-    public PowerUp powerUp => Id < 0 || Id >= PowerUp.AllPowerUps.Length ? null : PowerUp.AllPowerUps[Id];
+    public PowerUp powerUp => PowerUp.IdToPowerUpLink(Id);
 
     public override void OnNetworkSpawn()
     {
         if (IsServer)
         {
-            SetPosition_ClientRpc(transform.position);
+            if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, LayerMask.GetMask("Ground")))
+            {
+                SetPosition_ClientRpc(hit.point + Vector3.up * 1);
+            }
+            else
+            {
+                SetPosition_ClientRpc(transform.position);
+            }
         }
     }
 
