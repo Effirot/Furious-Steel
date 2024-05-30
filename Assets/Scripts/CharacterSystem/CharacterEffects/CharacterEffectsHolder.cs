@@ -10,10 +10,6 @@ using CharacterSystem.Attacks;
 using Unity.Collections;
 using Cysharp.Threading.Tasks;
 
-
-
-
-
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -51,11 +47,11 @@ public class CharacterEffectsHolder : NetworkBehaviour
 
         public void EditColor (Color color)
         {
-            material.SetColor("_Color", color);
+            material?.SetColor("_Color", color);
         }
         public void EditPower (float power)
         {
-            material.SetFloat("_Power", power);
+            material?.SetFloat("_Power", power);
         }
 
         public async void Remove()
@@ -158,7 +154,11 @@ public class CharacterEffectsHolder : NetworkBehaviour
             var dublicate = characterEffects.Find(e => e.GetType() == effect.GetType());
             if (dublicate != null) 
             {
-                dublicate.effectsSource = effect.effectsSource;
+                if (effect.effectsSource != null)
+                {
+                    dublicate.effectsSource = effect.effectsSource;
+                }
+
                 dublicate.AddDublicate(effect);
 
                 return false;
