@@ -62,8 +62,7 @@ public class UltimateDamageSource : DamageSource
     {
         if (report.isDelivered && 
             !report.isBlocked && 
-            report.damage.RechargeUltimate && 
-            report.damage.sender != Invoker)
+            report.damage.RechargeUltimate)
         {
             chargeValue.AddValue(report);
         }
