@@ -10,6 +10,7 @@ using JetBrains.Annotations;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 using UnityEngine.UI;
 
 public class CharacterUI : MonoBehaviour
@@ -61,7 +62,10 @@ public class CharacterUI : MonoBehaviour
         }
         else
         {
-            gameObject.SetActive(!NetworkCharacter.IsOwner);
+            if (NetworkCharacter.IsLocalPlayer)
+            {
+                transform.localScale = Vector3.one * 1.5f;
+            }
 
             UpdateValue();
         }

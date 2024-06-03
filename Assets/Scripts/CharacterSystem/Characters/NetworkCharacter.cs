@@ -6,11 +6,7 @@ using System.Security.Cryptography;
 using CharacterSystem.Blocking;
 using CharacterSystem.DamageMath;
 using Unity.Netcode;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.AI;
-using UnityEngine.Events;
-using UnityEngine.TextCore.Text;
 using UnityEngine.VFX;
 using UnityEngine.Rendering.Universal;
 
@@ -51,7 +47,7 @@ namespace CharacterSystem.Objects
         public static event OnCharacterStateChangedDelegate OnCharacterDead = delegate { };
         public static event OnCharacterStateChangedDelegate OnCharacterSpawn = delegate { };
 
-        public const float RotateInterpolationTime = 15f;
+        public const float RotateInterpolationTime = 37f;
         public const float ServerPositionInterpolationTime = 0.07f;
         public const float VelocityReducingMultipliyer = 0.85f;
 
@@ -65,7 +61,8 @@ namespace CharacterSystem.Objects
         
 
         [field : SerializeField, Range (0.1f, 25f)]
-        public virtual float Speed { get; set; } = 11;
+        public float Speed { get; set; } = 11;
+
 
         [SerializeField, Range (0.1f, 2.5f)]
         public float Mass = 1f;
@@ -89,12 +86,9 @@ namespace CharacterSystem.Objects
         [SerializeField]
         private VisualEffect JumpEffect;
 
-        [field : Space]
-        [field : Header("Team")]
-        [field : SerializeField]
-        public virtual int TeamIndex { get; private set; }
+        public Team team { get; set; }
+
 #endregion
-        
         [SerializeField]
         private DecalProjector shadow;
 
@@ -110,6 +104,16 @@ namespace CharacterSystem.Objects
         public Damage lastRecievedDamage { get; set; }
         public Animator animator { get; private set; }
         public CharacterController characterController { get; private set; }
+        
+        public virtual float CurrentSpeed { 
+            get => network_speed.Value; 
+            set {
+                if (IsServer)
+                {
+                    network_speed.Value = value;
+                }
+            }
+        }
 
         public CharacterPermission permissions
         {
@@ -121,10 +125,6 @@ namespace CharacterSystem.Objects
                     if (!value.HasFlag(CharacterPermission.AllowRotate))
                     {   
                         SetAngle(transform.eulerAngles.y);
-                    }
-                    if (!value.HasFlag(CharacterPermission.AllowMove))
-                    {   
-                        SetPosition(transform.position);
                     }
 
                     network_permissions.Value = value;
@@ -158,9 +158,16 @@ namespace CharacterSystem.Objects
             get => network_movementVector.Value.normalized;
             set
             {
-                if (IsOwner)
+                if (IsServer)
                 {
                     network_movementVector.Value = value;
+                }
+                else
+                {
+                    if (IsOwner)
+                    {
+                        SetMovementDirection_ServerRpc(value);
+                    }
                 }
             }
         }      
@@ -169,9 +176,16 @@ namespace CharacterSystem.Objects
             get => network_lookVector.Value.normalized;
             set 
             {
-                if (IsOwner)
+                if (IsServer)
                 {
                     network_lookVector.Value = value;
+                }
+                else
+                {
+                    if (IsOwner && permissions.HasFlag(CharacterPermission.AllowRotate))
+                    {
+                        SetLookDirection_ServerRpc(value);
+                    }
                 }
             }
         }
@@ -205,12 +219,13 @@ namespace CharacterSystem.Objects
             }
         }
 
-        public SyncedActivitiesList activities { get; private set; } = new();
+        public SyncedActivitiesList activities { get; } = new();
 
 
+        private NetworkVariable<float> network_speed = new NetworkVariable<float>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);    
         private NetworkVariable<Vector3> network_position = new NetworkVariable<Vector3>(Vector3.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);    
-        private NetworkVariable<Vector2> network_movementVector = new NetworkVariable<Vector2>(Vector2.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-        private NetworkVariable<Vector2> network_lookVector = new NetworkVariable<Vector2>(Vector2.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+        private NetworkVariable<Vector2> network_movementVector = new NetworkVariable<Vector2>(Vector2.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+        private NetworkVariable<Vector2> network_lookVector = new NetworkVariable<Vector2>(Vector2.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
         private NetworkVariable<Vector3> network_velocity = new NetworkVariable<Vector3>(Vector3.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);   
 
         private NetworkVariable<CharacterPermission> network_permissions = new (CharacterPermission.Default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
@@ -271,7 +286,7 @@ namespace CharacterSystem.Objects
         }
         public virtual bool Heal (Damage damage)
         {
-            health += damage.value;
+            health += Mathf.Abs(damage.value);
 
             onDamageRecieved?.Invoke(damage);
 
@@ -287,10 +302,8 @@ namespace CharacterSystem.Objects
         {
             if (direction.magnitude > 0)
             {
-                direction /= 2;
-
                 speed_acceleration_multipliyer = Vector2.zero;
-                velocity = direction;
+                velocity = direction / Mass;
             }
         }
 
@@ -304,6 +317,7 @@ namespace CharacterSystem.Objects
 
             if (IsServer)
             {
+                CurrentSpeed = Speed;
                 health = maxHealth;
 
                 Spawn_ClientRpc();
@@ -329,7 +343,10 @@ namespace CharacterSystem.Objects
             
             StopAllCoroutines();
             
-            SpawnCorpse();
+            if (NetworkManager.IsListening)
+            {
+                SpawnCorpse();
+            }
         }
 
         public void SetAngle (float angle)
@@ -387,11 +404,8 @@ namespace CharacterSystem.Objects
             characterController = GetComponent<CharacterController>();
             animator = GetComponentInChildren<Animator>();
 
-            gameObject.layer = LayerMask.NameToLayer("Character");
-
             network_permissions.OnValueChanged += OnPermissionsChanged;
             network_health.OnValueChanged += (Old, New) => onHealthChanged(New);
-            network_health.OnValueChanged += (Old, New) => { if (New <= 0) Kill(); };
         }
         protected virtual void Start () { }
 
@@ -414,6 +428,11 @@ namespace CharacterSystem.Objects
 
                 if (isStunned != stunnedState)
                 {
+                    if (isStunned)
+                    {
+                        movementVector = Vector3.zero;
+                    }
+
                     onStunStateChanged.Invoke(isStunned);
                 }
             }
@@ -462,6 +481,11 @@ namespace CharacterSystem.Objects
 
         protected virtual void OnPermissionsChanged (CharacterPermission Old, CharacterPermission New)
         {
+            if (Old.HasFlag(CharacterPermission.AllowMove) && !New.HasFlag(CharacterPermission.AllowMove))
+            {
+                movementVector = Vector2.zero;
+            }
+
             if (New.HasFlag(CharacterPermission.Untouchable))
             {
                 gameObject.layer = LayerMask.NameToLayer("Untouchable");
@@ -492,11 +516,11 @@ namespace CharacterSystem.Objects
 
                 foreach (var rigidbody in corpseObject.GetComponentsInChildren<Rigidbody>())
                 {
-                    rigidbody.AddForce(velocity * 3000 * UnityEngine.Random.Range(0.5f, 1.5f) + Vector3.up * 500 * UnityEngine.Random.Range(0.5f, 1.5f));
+                    rigidbody.AddForce(velocity * 300 * UnityEngine.Random.Range(0.5f, 1.5f) + Vector3.up * 300 * UnityEngine.Random.Range(0.5f, 1.5f));
                     rigidbody.AddTorque(
-                        Vector3.right * 4000 * UnityEngine.Random.Range(0.5f, 2f) + 
-                        Vector3.up * 4000 * UnityEngine.Random.Range(0.5f, 2f) + 
-                        Vector3.left * 4000 * UnityEngine.Random.Range(0.5f, 2f));
+                        Vector3.right * 400 * UnityEngine.Random.Range(0.5f, 2f) + 
+                        Vector3.up * 400 * UnityEngine.Random.Range(0.5f, 2f) + 
+                        Vector3.left * 400 * UnityEngine.Random.Range(0.5f, 2f));
                 }
 
                 Destroy(corpseObject, 10);
@@ -514,13 +538,13 @@ namespace CharacterSystem.Objects
                 case SyncedActivitiesList.EventType.Add:
                     permissions = activities.CalculatePermissions();
                     syncedActivity.onPermissionsChanged += HandlePermissionsChanged_Event;
-                    Speed -= syncedActivity.SpeedChange;
+                    CurrentSpeed -= syncedActivity.SpeedChange;
                     break;
                 
                 case SyncedActivitiesList.EventType.Remove:
                     permissions = activities.CalculatePermissions();
                     syncedActivity.onPermissionsChanged -= HandlePermissionsChanged_Event;
-                    Speed += syncedActivity.SpeedChange;
+                    CurrentSpeed += syncedActivity.SpeedChange;
                     break;
             }
         }
@@ -533,19 +557,12 @@ namespace CharacterSystem.Objects
         {
             var characterMovement = Vector3.zero;
 
-            if (!isStunned && permissions.HasFlag(CharacterPermission.AllowMove))
-            {
-                speed_acceleration_multipliyer = Vector2.Lerp(
-                    speed_acceleration_multipliyer, 
-                    Speed <= 0 ? Vector2.zero : movementVector * Mathf.Max(0, Speed) * (characterController.isGrounded ? 1f : 0.3f), 
-                    38  * TimeScale);
+            speed_acceleration_multipliyer = Vector2.Lerp(
+                speed_acceleration_multipliyer, 
+                CurrentSpeed <= 0 ? Vector2.zero : movementVector * Mathf.Max(0, CurrentSpeed) * (characterController.isGrounded ? 1f : 0.3f), 
+                38  * TimeScale);
 
-                characterMovement = isStunned ? Vector3.zero : new Vector3(speed_acceleration_multipliyer.x, 0, speed_acceleration_multipliyer.y) * TimeScale;
-            }
-            else
-            {
-                speed_acceleration_multipliyer = Vector2.zero;
-            }
+            characterMovement = new Vector3(speed_acceleration_multipliyer.x, 0, speed_acceleration_multipliyer.y) * TimeScale;
 
             return characterMovement;
         }
@@ -555,13 +572,13 @@ namespace CharacterSystem.Objects
 
             velocity.x =  Mathf.Lerp(velocity.x, 0, InterpolateSpeed());
             velocity.y =  permissions.HasFlag(CharacterPermission.AllowGravity) ? 
-                            Mathf.Lerp(velocity.y, IsGrounded ? -0.1f : Physics.gravity.y, 0.00085f) : 
-                            Mathf.Lerp(velocity.y, 0, 0.12f);
+                Mathf.Lerp(velocity.y, IsGrounded ? -0.1f : Physics.gravity.y, 0.2f * Time.fixedDeltaTime) : 
+                Mathf.Lerp(velocity.y, 0, 0.22f);
             velocity.z =  Mathf.Lerp(velocity.z, 0, InterpolateSpeed());
 
             this.velocity = velocity;
 
-            float InterpolateSpeed() => (IsGrounded ? 0.12f : 0.025f) * Mass;
+            float InterpolateSpeed() => (IsGrounded ? 0.24f : 0.05f) * Mass;
         }
         private void CharacterMove (Vector3 vector)
         {
@@ -569,10 +586,10 @@ namespace CharacterSystem.Objects
             {
                 if(!IsServer)
                 {
-                    vector += Vector3.Lerp(Vector3.zero, network_position.Value - transform.position, 34f * Time.fixedDeltaTime);
+                    vector += Vector3.Lerp(Vector3.zero, network_position.Value - transform.position, 18f * Time.fixedDeltaTime);
                 }
 
-                if (Vector3.Distance(network_position.Value, transform.position) < 1.4f)
+                if (Vector3.Distance(network_position.Value, transform.position) < 1.8f)
                 {
                     characterController.Move(vector + velocity);
                 }
@@ -589,21 +606,11 @@ namespace CharacterSystem.Objects
         }
         private void RotateCharacter (float TimeScale)
         {
-            if (permissions.HasFlag(CharacterPermission.AllowRotate))
-            {
-                var LookVector = new Vector3 (lookVector.x, 0, lookVector.y);
+            var LookVector = new Vector3 (lookVector.x, 0, lookVector.y);
 
-                if (LookVector.magnitude > 0.1f)
-                {
-                    if (IsServer)
-                    {
-                        transform.rotation = Quaternion.LookRotation(LookVector);
-                    }
-                    else
-                    {
-                        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(LookVector), RotateInterpolationTime * TimeScale);
-                    }
-                }
+            if (LookVector.magnitude > 0.1f)
+            {
+                transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(LookVector), RotateInterpolationTime * TimeScale);
             }
         }
         private void SetAnimationStates ()
@@ -643,7 +650,7 @@ namespace CharacterSystem.Objects
         private void Jump_ServerRpc(Vector2 direction)
         {
             direction.Normalize();
-            direction *= Mathf.Max(0, Speed) * Time.fixedDeltaTime * 3f;
+            direction *= Mathf.Max(0, CurrentSpeed) * Time.fixedDeltaTime * 2f;
 
             if (!isStunned && (IsGrounded || completeJumpCount < JumpCount) && permissions.HasFlag(CharacterPermission.AllowJump))
             {
@@ -718,6 +725,23 @@ namespace CharacterSystem.Objects
         private void SetPosition_ClientRpc (Vector3 position, ClientRpcParams rpcParams = default)
         {
             transform.position = position;
+        }
+        
+        [ServerRpc]
+        private void SetMovementDirection_ServerRpc(Vector2 walkDirection)
+        {
+            if (permissions.HasFlag(CharacterPermission.AllowMove))
+            {
+                movementVector = walkDirection;
+            }
+        }
+        [ServerRpc]
+        private void SetLookDirection_ServerRpc(Vector2 walkDirection)
+        {
+            if (permissions.HasFlag(CharacterPermission.AllowRotate))
+            {
+                lookVector = walkDirection;
+            }
         }
     }
 

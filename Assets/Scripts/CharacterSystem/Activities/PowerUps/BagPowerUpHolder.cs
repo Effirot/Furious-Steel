@@ -14,9 +14,9 @@ namespace CharacterSystem.PowerUps
 
             if (other.TryGetComponent<PowerUpContainer>(out var container) && IsServer)
             {
-                if (container.powerUp.IsOneshot && Invoker.PowerUp == null)
+                if (container.powerUp.IsOneshot && Source.PowerUp == null)
                 {
-                    Invoker.PowerUp = container.powerUp;
+                    Source.PowerUp = container.powerUp;
                     
                     container.powerUp.OnPick(this);
                     container.NetworkObject.Despawn();

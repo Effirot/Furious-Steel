@@ -81,7 +81,7 @@ public class Projectile : NetworkBehaviour,
 
     public event Action<Damage> onDamageRecieved;
 
-    public int TeamIndex => Summoner.TeamIndex;
+    public Team team { get => Summoner.team; }
 
 
     private NetworkVariable<ulong> network_SummonerId = new NetworkVariable<ulong> (0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);

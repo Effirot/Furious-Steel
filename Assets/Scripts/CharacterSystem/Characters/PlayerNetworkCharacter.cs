@@ -45,7 +45,7 @@ namespace CharacterSystem.Objects
         [SerializeField]
         private InputActionReference lookInput;
         [SerializeField]
-        private InputActionReference dashInput;
+        private InputActionReference jumpInput;
         [SerializeField]
         private InputActionReference killBindInput;
 
@@ -107,7 +107,9 @@ namespace CharacterSystem.Objects
             }
         }
 
+        public bool JumpButtonState => network_jumpPressState.Value;
 
+        private NetworkVariable<bool> network_jumpPressState = new (false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
         private NetworkVariable<int> network_powerUpId = new (-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
         private NetworkVariable<DamageDeliveryReport> network_lastReport = new (new(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
         private NetworkVariable<ulong> network_serverClientId = new (0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
@@ -119,6 +121,11 @@ namespace CharacterSystem.Objects
 
         private Coroutine comboResetTimer = null;
 
+        [HideInInspector]
+        public Vector2 internalMovementVector = Vector2.zero;
+        [HideInInspector]
+        public Vector2 internalLookVector = Vector2.zero;
+
         public override bool Hit(Damage damage)
         {
             var isBlocked = Blocker != null && Blocker.Block(ref damage) || base.Hit(damage);
@@ -126,11 +133,6 @@ namespace CharacterSystem.Objects
             if (isBlocked)
             {                
                 Combo += 10;               
-            }
-
-            if (IsOwner && damage.type is not Damage.Type.Effect)
-            {
-                OnHitImpulseSource?.GenerateImpulse(damage.value / 8f);
             }
 
             return isBlocked;
@@ -176,7 +178,17 @@ namespace CharacterSystem.Objects
                 OnHitImpulseSource?.GenerateImpulse(report.damage.value / 12f);
             }
         }
-        
+
+        protected override void OnHitReaction(Damage damage)
+        {
+            base.OnHitReaction(damage);
+
+            if (IsOwner && damage.type is not Damage.Type.Effect)
+            {
+                OnHitImpulseSource?.GenerateImpulse(damage.value / 8f);
+            }
+        }
+
         public override void Kill()
         {
             base.Kill();
@@ -203,7 +215,7 @@ namespace CharacterSystem.Objects
             network_combo.OnValueChanged += (Old, New) => {
                 onComboChanged?.Invoke(New);
 
-                Speed += (New - Old) / 6f;
+                CurrentSpeed += (New - Old) / 12f;
             };
             
             Players.Add(this);
@@ -230,15 +242,15 @@ namespace CharacterSystem.Objects
                     action.canceled += OnLook;
                 }
 
-                if (dashInput != null) {
-                    var action = dashInput.action;
+                if (jumpInput != null) {
+                    var action = jumpInput.action;
                     action.Enable();
 
                     action.performed += OnJump;
                     action.canceled += OnJump;
-
+                                        
                     isGroundedEvent += isGrounded => {
-                        if (action.IsPressed() && isGrounded)
+                        if (JumpButtonState && isGrounded)
                         {
                             Jump(movementVector);
                         }
@@ -289,7 +301,7 @@ namespace CharacterSystem.Objects
                 }
 
                 {
-                    var action = dashInput.action;
+                    var action = jumpInput.action;
 
                     action.performed -= OnJump;
                     action.canceled -= OnJump;
@@ -300,6 +312,24 @@ namespace CharacterSystem.Objects
 
                     action.performed -= KillBind;
                     action.canceled -= KillBind;
+                }
+            }
+        }
+
+        protected override void FixedUpdate()
+        {
+            base.FixedUpdate();
+
+            if (IsLocalPlayer)
+            {
+                if (permissions.HasFlag(CharacterPermission.AllowMove))
+                {
+                    movementVector = internalMovementVector;
+                }
+
+                if (permissions.HasFlag(CharacterPermission.AllowRotate))
+                {
+                    lookVector = internalLookVector;
                 }
             }
         }
@@ -318,6 +348,15 @@ namespace CharacterSystem.Objects
             base.Spawn();
 
             OnPlayerCharacterSpawn.Invoke(this);
+        }
+
+        protected override void OnDrawGizmosSelected()
+        {
+            base.OnDrawGizmosSelected();
+            
+            var lookPoint = new Vector3(internalLookVector.x, 0, internalLookVector.y) + transform.position;
+
+            Gizmos.DrawWireSphere(lookPoint, 0.2f);
         }
 
         protected override GameObject SpawnCorpse()
@@ -380,9 +419,8 @@ namespace CharacterSystem.Objects
 
         private void OnMove(CallbackContext input)
         {
-            movementVector = input.ReadValue<Vector2>();
+            internalMovementVector = input.ReadValue<Vector2>();
         }
-
         private void OnLook(CallbackContext input)
         {
             var value = input.ReadValue<Vector2>();
@@ -397,18 +435,18 @@ namespace CharacterSystem.Objects
                 {
                     var vector = ray.GetPoint(enter) - transform.position;
 
-                    lookVector = new Vector2(vector.x, vector.z);
-                }    
+                    internalLookVector = new Vector2(vector.x, vector.z);
+                }
             }
 
             if (input.control.device is XInputController)
             {
-                lookVector = value;
+                internalLookVector = value;
             }
         }
         private void OnJump(CallbackContext input)
         {
-            if (input.ReadValueAsButton())
+            if (network_jumpPressState.Value = input.ReadValueAsButton())
             {
                 Jump(movementVector);
             }
@@ -445,6 +483,6 @@ namespace CharacterSystem.Objects
                 
                 Destroy(corpse, 5);
             }
-        }
+        }    
     }
 }

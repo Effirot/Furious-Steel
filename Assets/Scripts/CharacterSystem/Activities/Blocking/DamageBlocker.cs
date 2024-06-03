@@ -113,7 +113,7 @@ namespace CharacterSystem.Blocking
 
                 if (damage.sender != null && damage.type != Damage.Type.Magical && damage.type != Damage.Type.Balistic)
                 {                    
-                    backDamage.sender = Invoker;
+                    backDamage.sender = Source;
                     backDamage.pushDirection = Vector3.up * 0.3f + -damage.pushDirection.normalized * PushForce;
                     backDamage.type = Damage.Type.Parrying;
 
@@ -134,10 +134,10 @@ namespace CharacterSystem.Blocking
 
         public override void Play()
         {
-            if (!Invoker.permissions.HasFlag(CharacterPermission.AllowBlocking))
+            if (!Source.permissions.HasFlag(CharacterPermission.AllowBlocking))
                 return;
 
-            if (Invoker.isStunned || !IsPerforming)
+            if (Source.isStunned || !IsPerforming)
                 return;
 
             base.Play();
@@ -148,7 +148,7 @@ namespace CharacterSystem.Blocking
             {                                
                 Permissions = CharacterPermission.Default;
             
-                Invoker.animator.SetBool("Blocking", false);
+                Source.animator.SetBool("Blocking", false);
                 IsBlockActive = false;
                 
                 base.Stop();
@@ -158,10 +158,10 @@ namespace CharacterSystem.Blocking
         public override IEnumerator Process()
         {
             Permissions = BeforeBlockCharacterPermissions;
-            Invoker.Blocker = this;
-            Invoker.Push(Vector3.up * 0.01f);
+            Source.Blocker = this;
+            Source.Push(Vector3.up * 0.01f);
             
-            var array = Invoker.activities;
+            var array = Source.activities;
             for (int i = 0; i < array.Count(); i++)
             {
                 if (array[i] is DamageSource)
@@ -178,7 +178,7 @@ namespace CharacterSystem.Blocking
             Permissions = BlockCharacterPermissions;
             OnBlockingEvent.Invoke();
 
-            Invoker.animator.SetBool("Blocking", true);
+            Source.animator.SetBool("Blocking", true);
 
             if (HoldMode)
             {
@@ -194,7 +194,7 @@ namespace CharacterSystem.Blocking
                 yield return new WaitForSeconds(BlockProcessTime);
             }
 
-            Invoker.animator.SetBool("Blocking", false);
+            Source.animator.SetBool("Blocking", false);
 
 
             IsBlockActive = false;

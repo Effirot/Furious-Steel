@@ -57,7 +57,7 @@ public class KillsMenuElement : MonoBehaviour
         {
             transform.localScale = Vector3.Lerp(transform.localScale, new Vector3(transform.localScale.x, 0, transform.localScale.z), lerpForce);
 
-            await UniTask.WaitForEndOfFrame();
+            await UniTask.Yield(PlayerLoopTiming.FixedUpdate);
         }
 
         transform.localScale = new Vector3(transform.localScale.x, 0, transform.localScale.z);

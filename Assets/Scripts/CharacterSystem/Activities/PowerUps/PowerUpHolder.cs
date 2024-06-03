@@ -37,7 +37,7 @@ namespace CharacterSystem.PowerUps
     {
         public void Drop(PowerUp powerUp)
         {
-            var powerupGameObject = Instantiate(Invoker.PowerUp.prefab, transform.position, Quaternion.identity);
+            var powerupGameObject = Instantiate(Source.PowerUp.prefab, transform.position, Quaternion.identity);
         
             powerupGameObject.GetComponent<NetworkObject>().Spawn();
 
@@ -49,13 +49,13 @@ namespace CharacterSystem.PowerUps
         
         public override IEnumerator Process()
         {
-            if (Invoker.permissions.HasFlag(CharacterPermission.AllowPowerUps))
+            if (Source.permissions.HasFlag(CharacterPermission.AllowPowerUps))
             {
-                Invoker.PowerUp?.Activate(this);
+                Source.PowerUp?.Activate(this);
 
                 if (IsServer)
                 {
-                    Invoker.PowerUp = null;
+                    Source.PowerUp = null;
                 }
             }
 
@@ -68,9 +68,9 @@ namespace CharacterSystem.PowerUps
 
             if (other.TryGetComponent<PowerUpContainer>(out var container) && IsServer)
             {
-                if (!container.powerUp.IsOneshot && Invoker.PowerUp == null)
+                if (!container.powerUp.IsOneshot && Source.PowerUp == null)
                 {
-                    Invoker.PowerUpId = container.Id;
+                    Source.PowerUpId = container.Id;
                     
                     container.powerUp.OnPick(this);
                     container.NetworkObject.Despawn();
@@ -94,7 +94,7 @@ namespace CharacterSystem.PowerUps
             {
                 base.OnInspectorGUI();
 
-                GUILayout.Label(target.Invoker?.PowerUp?.GetType().Name ?? "None");
+                GUILayout.Label(target.Source?.PowerUp?.GetType().Name ?? "None");
             }
         }
 

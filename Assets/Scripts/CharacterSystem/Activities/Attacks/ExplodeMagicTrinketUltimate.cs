@@ -30,7 +30,7 @@ public class ExplodeMagicTrinketUltimate : UltimateDamageSource
     {
         if (report.damage.type != CharacterSystem.DamageMath.Damage.Type.Effect && !report.target.IsUnityNull())
         {
-            var deliveryReport = Damage.Deliver(report.target, new Damage(0, Invoker, 0, Vector3.zero, Damage.Type.Effect, burnEffect));
+            var deliveryReport = Damage.Deliver(report.target, new Damage(0, Source, 0, Vector3.zero, Damage.Type.Effect, burnEffect));
             
             var collection = deliveryReport?.RecievedEffects?.Where(effect => effect is BurnEffect and not null).Select(effect => (BurnEffect)effect);
 
@@ -44,8 +44,8 @@ public class ExplodeMagicTrinketUltimate : UltimateDamageSource
     public override void Play()
     {
         if (chargeValue.Value >= chargeValue.MaxValue && 
-            Invoker.permissions.HasFlag(CharacterPermission.AllowAttacking) &&
-            !Invoker.isStunned && 
+            Source.permissions.HasFlag(CharacterPermission.AllowAttacking) &&
+            !Source.isStunned && 
             IsPerforming &&
             !IsInProcess)
         {
@@ -92,7 +92,7 @@ public class ExplodeMagicTrinketUltimate : UltimateDamageSource
                     var VectorToTarget = effect.effectsHolder.transform.position - collider.transform.position;
                     VectorToTarget.Normalize();
                     damage.pushDirection = VectorToTarget  + transform.rotation * damage.pushDirection;
-                    damage.sender = Invoker;
+                    damage.sender = Source;
 
                     Damage.Deliver(collider.gameObject, damage);
                 }
@@ -124,6 +124,6 @@ public class ExplodeMagicTrinketUltimate : UltimateDamageSource
     {
         base.Start();
 
-        Invoker.onDamageDelivered += OnDamageDelivered_event;
+        Source.onDamageDelivered += OnDamageDelivered_event;
     }
 }

@@ -24,7 +24,7 @@ public class ExplodePowerUp : PowerUp
                 var VectorToTarget = holder.transform.position - collider.transform.position;
                 VectorToTarget.Normalize();
 
-                holder.Invoker.Push(Vector3.up * 0.6f + holder.Invoker.transform.forward);
+                holder.Source.Push(Vector3.up * 0.6f + holder.Source.transform.forward);
 
                 var report = Damage.Deliver(collider.gameObject, new Damage()
                 {
@@ -32,10 +32,10 @@ public class ExplodePowerUp : PowerUp
                     stunlock = 0.8f,
                     pushDirection = Vector3.up / 1.5f,
                     type = Damage.Type.Magical,
-                    sender = holder.Invoker
+                    sender = holder.Source
                 });
 
-                holder.Invoker.DamageDelivered(report);
+                holder.Source.DamageDelivered(report);
             }
         }
 

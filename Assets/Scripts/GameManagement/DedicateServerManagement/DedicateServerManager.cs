@@ -22,7 +22,7 @@ public class DedicateServerManager : MonoBehaviour
     }
 
 #if !UNITY_SERVER || UNITY_EDITOR
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void OnStartClient()
     {
         Application.targetFrameRate = 240;
@@ -45,7 +45,7 @@ public class DedicateServerManager : MonoBehaviour
         SceneManager.sceneLoaded += StartServerOnLoad_Event;
         SceneManager.LoadScene(System.Environment.GetCommandLineArgs()[1]);
 
-        Application.targetFrameRate = 60;
+        Application.targetFrameRate = 240;
         QualitySettings.vSyncCount = 0;    
     }
 #endif

@@ -55,19 +55,7 @@ public sealed class Authorizer : NetworkBehaviour
             NetworkManager.Singleton.NetworkConfig.ConnectionData = value.ConvertToBytes();
         } 
     }
-
-    [RuntimeInitializeOnLoadMethod]
-    private static void OnLoad()
-    {
-        localAuthorizeArgs = new AuthorizeArguments() {
-            #if UNITY_EDITOR
-                    Name = "DEVELOPMENT",
-            #else
-                    Name = "Unnamed",
-            #endif
-        };
-    }
-    
+   
 
     [SerializeField, Range(1, 64)]
     private int CharactersLimit = 12;

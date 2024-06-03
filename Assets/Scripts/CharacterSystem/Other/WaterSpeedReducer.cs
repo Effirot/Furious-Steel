@@ -19,11 +19,11 @@ public class WaterSpeedReducer : MonoBehaviour
             {
                 if (value)
                 {
-                    character.Speed -= speedReducing;
+                    character.CurrentSpeed -= speedReducing;
                 }
                 else
                 {
-                    character.Speed += speedReducing;
+                    character.CurrentSpeed += speedReducing;
                 }
             }
             

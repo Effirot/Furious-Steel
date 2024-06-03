@@ -64,7 +64,6 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 8047190744935610207, guid: bdf3e7f7eae78f844bd4f60d57993222, type: 2}
   m_audioClip: {fileID: 8300000, guid: b7de493e2a9333d498e7687308ea6036, type: 3}
-  m_Resource: {fileID: 8300000, guid: b7de493e2a9333d498e7687308ea6036, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.451612
   m_Pitch: 0.8445565
@@ -161,7 +160,6 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 8047190744935610207, guid: bdf3e7f7eae78f844bd4f60d57993222, type: 2}
   m_audioClip: {fileID: 8300000, guid: f4a05482fd9ace948a74332ee35b0846, type: 3}
-  m_Resource: {fileID: 8300000, guid: f4a05482fd9ace948a74332ee35b0846, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.4724436
   m_Pitch: 1.1443477
@@ -258,7 +256,6 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 8047190744935610207, guid: bdf3e7f7eae78f844bd4f60d57993222, type: 2}
   m_audioClip: {fileID: 8300000, guid: ce4f84f62c9725044bd7e73a83d1fb5c, type: 3}
-  m_Resource: {fileID: 8300000, guid: ce4f84f62c9725044bd7e73a83d1fb5c, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.39755934
   m_Pitch: 1.1347027
@@ -355,7 +352,6 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 8047190744935610207, guid: bdf3e7f7eae78f844bd4f60d57993222, type: 2}
   m_audioClip: {fileID: 8300000, guid: b5af2e616835a884e994732a145bdf2a, type: 3}
-  m_Resource: {fileID: 8300000, guid: b5af2e616835a884e994732a145bdf2a, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.45224255
   m_Pitch: 0.8160383
@@ -492,8 +488,6 @@ VFXRenderer:
   m_ReflectionProbeUsage: 0
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -619,7 +613,7 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1204799724044258670, guid: 4732144334366d94ca21cb0a55a89fdf, type: 3}
     - target: {fileID: -2157062192948810478, guid: 4732144334366d94ca21cb0a55a89fdf, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
+      propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: e029c8edad473174fb5af7e90b7b9a4d, type: 2}
     - target: {fileID: -1385617847329348855, guid: 4732144334366d94ca21cb0a55a89fdf, type: 3}
@@ -644,6 +638,9 @@ PrefabInstance:
     - {fileID: -8252472733541772135, guid: 4732144334366d94ca21cb0a55a89fdf, type: 3}
     - {fileID: 2856963396468438271, guid: 4732144334366d94ca21cb0a55a89fdf, type: 3}
     - {fileID: 255796341139548692, guid: 4732144334366d94ca21cb0a55a89fdf, type: 3}
+    - {fileID: 7803407436844761574, guid: 4732144334366d94ca21cb0a55a89fdf, type: 3}
+    - {fileID: -1718346493621106198, guid: 4732144334366d94ca21cb0a55a89fdf, type: 3}
+    - {fileID: -241635271286662823, guid: 4732144334366d94ca21cb0a55a89fdf, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 4612683462476920205, guid: 4732144334366d94ca21cb0a55a89fdf, type: 3}
@@ -662,7 +659,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
 --- !u!95 &6387965839520803173
 Animator:
-  serializedVersion: 7
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -676,7 +673,6 @@ Animator:
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
@@ -996,12 +992,12 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5804015679080351171, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
-      propertyPath: JumpCount
-      value: 2
+      propertyPath: Mass
+      value: 0.9
       objectReference: {fileID: 0}
     - target: {fileID: 5804015679080351171, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
-      propertyPath: JumpForce
-      value: 0.32
+      propertyPath: JumpCount
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5804015679080351171, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
       propertyPath: maxHealth
@@ -1061,7 +1057,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7945737309752349265, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 2068653529
+      value: 1174773251
       objectReference: {fileID: 0}
     - target: {fileID: 8156873103014966663, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
       propertyPath: m_Layer

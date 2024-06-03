@@ -340,9 +340,10 @@ public class RoomManager : NetworkBehaviour
         if (item == null)
             return null;
 
-            var character = SpawnCharacter(item.TypeName, Param);
+        var character = SpawnCharacter(item.TypeName, Param);
         
-        if (character.TryGetComponent<ItemBinder>(out var component))
+        
+        if (character != null && character.TryGetComponent<ItemBinder>(out var component))
         {
             component.item = item;
         }    

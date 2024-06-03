@@ -8,7 +8,7 @@ using UnityEngine;
 [System.Serializable]
 public class RegenerationEffect : CharacterEffect
 {
-    public override bool Existance => time > 0 && !ITeammate.IsAlly(effectsSource, effectsHolder.character);
+    public override bool Existance => time > 0 && !Team.IsAlly(effectsSource, effectsHolder.character);
 
     [SerializeField, Range(0, 120)]
     public float time = 0;

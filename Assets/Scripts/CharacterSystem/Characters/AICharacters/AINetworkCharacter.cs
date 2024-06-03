@@ -15,6 +15,8 @@ namespace CharacterSystem.Objects.AI
         IDamageSource,
         IDamageBlocker
     {       
+        private static Team botTeam = new(); 
+        
         public int PatchLayerIndex = 0;
 
         private NavMeshPath path;
@@ -29,7 +31,7 @@ namespace CharacterSystem.Objects.AI
 
 
         public event Action<DamageDeliveryReport> onDamageDelivered;
-        public event Action<int> onComboChanged;
+        public event Action<int> onComboChanged = delegate { };
 
         public void DamageDelivered(DamageDeliveryReport report)
         {
@@ -39,6 +41,8 @@ namespace CharacterSystem.Objects.AI
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
+
+            team = botTeam;
 
             if (IsServer)
             {

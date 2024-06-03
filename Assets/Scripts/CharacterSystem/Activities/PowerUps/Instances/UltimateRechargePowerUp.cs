@@ -15,7 +15,7 @@ namespace CharacterSystem.PowerUps
         {
             if (holder.IsServer)
             {
-                foreach (var property in holder.Invoker.gameObject.GetComponentsInChildren<CustomProperty>())
+                foreach (var property in holder.Source.gameObject.GetComponentsInChildren<CustomProperty>())
                 {
                     property.Value = property.MaxValue;
                 }

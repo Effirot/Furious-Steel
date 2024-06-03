@@ -74,9 +74,8 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 8047190744935610207, guid: bdf3e7f7eae78f844bd4f60d57993222, type: 2}
   m_audioClip: {fileID: 8300000, guid: 6513f13d8cbe9344f85769c14994afcb, type: 3}
-  m_Resource: {fileID: 8300000, guid: 6513f13d8cbe9344f85769c14994afcb, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.643
+  m_Volume: 0.194
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -249,8 +248,6 @@ VFXRenderer:
   m_ReflectionProbeUsage: 0
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -321,9 +318,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inputAction: {fileID: -8254143158167318630, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 2
-  OnPowerUpChanged:
-    m_PersistentCalls:
-      m_Calls: []
+  SpeedChange: 0
 --- !u!135 &3839919385296745302
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -460,7 +455,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 756936595
+  GlobalObjectIdHash: 3147394388
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -480,7 +475,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69c6254aeac4ab74f8b3cb28e2ff8d68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 150
+  <maxHealth>k__BackingField: 150
   regenerationPerSecond: 15
   <Speed>k__BackingField: 11
   Mass: 1
@@ -490,14 +485,15 @@ MonoBehaviour:
   JumpForce: 0.35
   JumpCount: 1
   JumpEffect: {fileID: 5614067285868523917}
-  <TeamIndex>k__BackingField: 0
   shadow: {fileID: 100295437377061273}
   moveInput: {fileID: -3797342247120088548, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   lookInput: {fileID: 9093183501225965390, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
-  dashInput: {fileID: 3350768162098237311, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
+  jumpInput: {fileID: 3350768162098237311, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   killBindInput: {fileID: 7880830833157163440, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   OnHitImpulseSource: {fileID: 7011506643223629107}
   suicideCorpsePrefab: {fileID: 4209492775328486699}
+  internalMovementVector: {x: 0, y: 0}
+  internalLookVector: {x: 0, y: 0}
 --- !u!114 &3623222165156314097
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -664,8 +660,9 @@ Light:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6957374696908509525}
   m_Enabled: 1
-  serializedVersion: 11
+  serializedVersion: 10
   m_Type: 2
+  m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 31.3
   m_Range: 15
@@ -849,8 +846,6 @@ VFXRenderer:
   m_ReflectionProbeUsage: 0
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -884,7 +879,6 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -1137,8 +1131,6 @@ VFXRenderer:
   m_ReflectionProbeUsage: 0
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -1172,7 +1164,6 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: -3030808425486764759, guid: bdf3e7f7eae78f844bd4f60d57993222, type: 2}
   m_audioClip: {fileID: 8300000, guid: d01a125dd4411d24c81ff2803b154652, type: 3}
-  m_Resource: {fileID: 8300000, guid: d01a125dd4411d24c81ff2803b154652, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.3
   m_Pitch: 0.92
@@ -1302,7 +1293,6 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 0}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -1436,6 +1426,46 @@ PrefabInstance:
       propertyPath: m_Name
       value: MiniUI
       objectReference: {fileID: 0}
+    - target: {fileID: 3720901733141114526, guid: c00d9bda7fc8af444bd7ffecc8c9a80c, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3720901733141114526, guid: c00d9bda7fc8af444bd7ffecc8c9a80c, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3720901733141114526, guid: c00d9bda7fc8af444bd7ffecc8c9a80c, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 255.88
+      objectReference: {fileID: 0}
+    - target: {fileID: 3720901733141114526, guid: c00d9bda7fc8af444bd7ffecc8c9a80c, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 36.98
+      objectReference: {fileID: 0}
+    - target: {fileID: 3720901733141114526, guid: c00d9bda7fc8af444bd7ffecc8c9a80c, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 118.735
+      objectReference: {fileID: 0}
+    - target: {fileID: 3720901733141114526, guid: c00d9bda7fc8af444bd7ffecc8c9a80c, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -8.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4426938782379853808, guid: c00d9bda7fc8af444bd7ffecc8c9a80c, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 237.47
+      objectReference: {fileID: 0}
+    - target: {fileID: 4426938782379853808, guid: c00d9bda7fc8af444bd7ffecc8c9a80c, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4426938782379853808, guid: c00d9bda7fc8af444bd7ffecc8c9a80c, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 7.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4426938782379853808, guid: c00d9bda7fc8af444bd7ffecc8c9a80c, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -20.9
+      objectReference: {fileID: 0}
     - target: {fileID: 4444117556360541244, guid: c00d9bda7fc8af444bd7ffecc8c9a80c, type: 3}
       propertyPath: _networkCharacter
       value: 
@@ -1488,11 +1518,37 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8742535544353806792, guid: c00d9bda7fc8af444bd7ffecc8c9a80c, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6472501554032803143, guid: c00d9bda7fc8af444bd7ffecc8c9a80c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 9204351010687947605}
   m_SourcePrefab: {fileID: 100100000, guid: c00d9bda7fc8af444bd7ffecc8c9a80c, type: 3}
+--- !u!1 &1148942577177865452 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6472501554032803143, guid: c00d9bda7fc8af444bd7ffecc8c9a80c, type: 3}
+  m_PrefabInstance: {fileID: 6206854125654364587}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &9204351010687947605
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1148942577177865452}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalFit: 0
+  m_VerticalFit: 1
 --- !u!4 &1923249998421846311 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5518014957221820556, guid: c00d9bda7fc8af444bd7ffecc8c9a80c, type: 3}

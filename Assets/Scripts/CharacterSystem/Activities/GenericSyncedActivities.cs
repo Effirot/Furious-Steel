@@ -11,17 +11,17 @@ using static UnityEngine.InputSystem.InputAction;
 
 public abstract class SyncedActivity<T> : SyncedActivity where T : ISyncedActivitiesSource
 {
-    public new T Invoker { 
+    public new T Source { 
         get 
         {
-            if (base.Invoker == null)
+            if (base.Source == null)
             {
-                base.Invoker = (ISyncedActivitiesSource) ResearchInvoker();
+                base.Source = (ISyncedActivitiesSource) ResearchInvoker();
             }
 
-            return (T) base.Invoker;
+            return (T) base.Source;
         } 
-        private set => base.Invoker = value;
+        private set => base.Source = value;
     }
     
     private T ResearchInvoker ()

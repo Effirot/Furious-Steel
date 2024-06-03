@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using CharacterSystem.DamageMath;
 using CharacterSystem.Objects;
+using Cysharp.Threading.Tasks;
 using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -64,7 +65,7 @@ public abstract class SyncedActivity : NetworkBehaviour
 
     
 
-    public ISyncedActivitiesSource Invoker { 
+    public ISyncedActivitiesSource Source { 
         get 
         {
             return m_invoker;
@@ -102,7 +103,7 @@ public abstract class SyncedActivity : NetworkBehaviour
                 activity => 
                     activity.inputAction == inputAction && 
                     (int)activity.Priority > (int)Priority &&
-                    activity.Invoker == Invoker);
+                    activity.Source == Source);
         }
 
         return !syncedActivityOverrider.IsUnityNull();
@@ -128,7 +129,6 @@ public abstract class SyncedActivity : NetworkBehaviour
         base.OnDestroy();
 
         regsitredSyncedActivities.Remove(this);
-
         Stop();
     }
     
@@ -139,26 +139,27 @@ public abstract class SyncedActivity : NetworkBehaviour
 
     public virtual void Play()
     {
+
         if (!HasOverrides() && IsServer && !IsInProcess)
         {
             process = StartCoroutine(ProcessRoutine());
-            Invoker.activities.Add(this);
+            Source.activities.Add(this);
             
             Play_ClientRpc();
         }
     }
-    public virtual void Stop() 
+    public virtual void Stop()
     {
-        if (IsInProcess)
-        {
-            StopCoroutine(process);
-            Invoker.activities.Remove(this);
-        }
-
-        process = null;
-
         if (IsServer)
         {
+            if (IsInProcess)
+            {
+                StopCoroutine(process);
+                Source.activities.Remove(this);
+            }
+
+            process = null;
+
             Stop_ClientRpc();
         }
     }
@@ -180,7 +181,7 @@ public abstract class SyncedActivity : NetworkBehaviour
         Stop();
     }
 
-    private void Register()
+    private void Register ()
     {
         var index = 0;
 
@@ -227,7 +228,8 @@ public abstract class SyncedActivity : NetworkBehaviour
         if (!IsServer)
         {
             process = StartCoroutine(ProcessRoutine());
-            Invoker.activities.Add(this);
+
+            Source?.activities.Add(this);
 
             Play();
         }
@@ -238,6 +240,14 @@ public abstract class SyncedActivity : NetworkBehaviour
         if (!IsServer)
         {
             Stop();
+        
+            if (IsInProcess)
+            {
+                StopCoroutine(process);
+                Source?.activities.Remove(this);
+            }
+
+            process = null;
         }
     }
 

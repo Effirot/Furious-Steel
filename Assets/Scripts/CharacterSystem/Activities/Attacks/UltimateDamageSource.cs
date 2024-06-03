@@ -32,9 +32,9 @@ public class UltimateDamageSource : DamageSource
         base.OnNetworkDespawn();
 
 
-        if (Invoker != null)
+        if (Source != null)
         {
-            Invoker.onDamageDelivered -= OnDamageDelivered_Event;
+            Source.onDamageDelivered -= OnDamageDelivered_Event;
         }
     }
 
@@ -55,7 +55,7 @@ public class UltimateDamageSource : DamageSource
     {
         base.Start();
         
-        Invoker.onDamageDelivered += OnDamageDelivered_Event;
+        Source.onDamageDelivered += OnDamageDelivered_Event;
     }
 
     private void OnDamageDelivered_Event(DamageDeliveryReport report)

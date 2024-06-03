@@ -20,11 +20,11 @@ public class SlownessEffect : CharacterEffect
 
     public override void Start()
     {
-        effectsHolder.character.Speed -= force;
+        effectsHolder.character.CurrentSpeed -= force;
     }
     public override void Remove()
     {
-        effectsHolder.character.Speed += force;
+        effectsHolder.character.CurrentSpeed += force;
     }
     public override void Update()
     {

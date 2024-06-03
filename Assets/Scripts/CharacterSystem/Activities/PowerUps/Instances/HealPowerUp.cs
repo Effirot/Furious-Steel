@@ -13,7 +13,7 @@ namespace CharacterSystem.PowerUps
 
         public override void Activate(PowerUpHolder holder)
         {
-            Damage.Deliver(holder.Invoker, new Damage(new RegenerationEffect(7, holder.Invoker.maxHealth / 7f)));
+            Damage.Deliver(holder.Source, new Damage(new RegenerationEffect(7, holder.Source.maxHealth / 7f)));
         }
         
         public override void OnPick(PowerUpHolder holder)

@@ -20,15 +20,7 @@ public class WeatherManager : NetworkBehaviour
         set => RainEnabled_network.Value = value;
     }
 
-    public DateTime TimeEnabled { 
-        get => Time_network.Value;
-    }
-
-    [SerializeField]
-    private NetworkVariable<DateTime> Time_network = new(DateTime.Now, NVRP.Everyone, NVWP.Server); 
-    [SerializeField]
-    private NetworkVariable<bool> LaternsEnabled_network = new(false, NVRP.Everyone, NVWP.Server); 
-    [SerializeField]
+    private NetworkVariable<bool> LaternsEnabled_network = new(true, NVRP.Everyone, NVWP.Server); 
     private NetworkVariable<bool> RainEnabled_network = new(false, NVRP.Everyone, NVWP.Server); 
 
     private void Awake()

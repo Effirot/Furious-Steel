@@ -3,6 +3,7 @@
 using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using Cysharp.Threading.Tasks;
 using Effiry.Items;
 using Unity.Mathematics;
 using Unity.VisualScripting;

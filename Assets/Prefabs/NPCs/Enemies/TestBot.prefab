@@ -101,8 +101,6 @@ VFXRenderer:
   m_ReflectionProbeUsage: 0
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -238,8 +236,6 @@ VFXRenderer:
   m_ReflectionProbeUsage: 0
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -273,7 +269,6 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: -3030808425486764759, guid: bdf3e7f7eae78f844bd4f60d57993222, type: 2}
   m_audioClip: {fileID: 8300000, guid: d01a125dd4411d24c81ff2803b154652, type: 3}
-  m_Resource: {fileID: 8300000, guid: d01a125dd4411d24c81ff2803b154652, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.3
   m_Pitch: 0.92
@@ -387,7 +382,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fdfea1f838247c40921a07afedde962, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Space: 0
   m_Property:
     m_Name: Transform
   Target: {fileID: 0}
@@ -455,7 +449,6 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 8047190744935610207, guid: bdf3e7f7eae78f844bd4f60d57993222, type: 2}
   m_audioClip: {fileID: 8300000, guid: b7de493e2a9333d498e7687308ea6036, type: 3}
-  m_Resource: {fileID: 8300000, guid: b7de493e2a9333d498e7687308ea6036, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -552,7 +545,6 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 8047190744935610207, guid: bdf3e7f7eae78f844bd4f60d57993222, type: 2}
   m_audioClip: {fileID: 8300000, guid: f4a05482fd9ace948a74332ee35b0846, type: 3}
-  m_Resource: {fileID: 8300000, guid: f4a05482fd9ace948a74332ee35b0846, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -649,7 +641,6 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 8047190744935610207, guid: bdf3e7f7eae78f844bd4f60d57993222, type: 2}
   m_audioClip: {fileID: 8300000, guid: ce4f84f62c9725044bd7e73a83d1fb5c, type: 3}
-  m_Resource: {fileID: 8300000, guid: ce4f84f62c9725044bd7e73a83d1fb5c, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -746,7 +737,6 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 8047190744935610207, guid: bdf3e7f7eae78f844bd4f60d57993222, type: 2}
   m_audioClip: {fileID: 8300000, guid: b5af2e616835a884e994732a145bdf2a, type: 3}
-  m_Resource: {fileID: 8300000, guid: b5af2e616835a884e994732a145bdf2a, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -933,8 +923,6 @@ VFXRenderer:
   m_ReflectionProbeUsage: 0
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -1008,8 +996,6 @@ VFXRenderer:
   m_ReflectionProbeUsage: 0
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -1220,7 +1206,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2296023891
+  GlobalObjectIdHash: 1143411012
+  InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -1250,7 +1237,6 @@ MonoBehaviour:
   JumpForce: 0.5
   JumpCount: 1
   JumpEffect: {fileID: 2548673797093014449}
-  <TeamIndex>k__BackingField: 10
   shadow: {fileID: 8315167364251983953}
   PatchLayerIndex: 1
   AICompute:
@@ -1699,7 +1685,7 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4444117556360541244, guid: c00d9bda7fc8af444bd7ffecc8c9a80c, type: 3}
-      propertyPath: 'holders.Array.data[0]'
+      propertyPath: holders.Array.data[0]
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5518014957221820556, guid: c00d9bda7fc8af444bd7ffecc8c9a80c, type: 3}
@@ -1879,7 +1865,7 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -2157062192948810478, guid: 4732144334366d94ca21cb0a55a89fdf, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
+      propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 4cde90ee6d36ebd41b2880f92114afa5, type: 2}
     - target: {fileID: -1385617847329348855, guid: 4732144334366d94ca21cb0a55a89fdf, type: 3}
@@ -1920,6 +1906,9 @@ PrefabInstance:
     - {fileID: -8252472733541772135, guid: 4732144334366d94ca21cb0a55a89fdf, type: 3}
     - {fileID: 2856963396468438271, guid: 4732144334366d94ca21cb0a55a89fdf, type: 3}
     - {fileID: 255796341139548692, guid: 4732144334366d94ca21cb0a55a89fdf, type: 3}
+    - {fileID: 7803407436844761574, guid: 4732144334366d94ca21cb0a55a89fdf, type: 3}
+    - {fileID: -1718346493621106198, guid: 4732144334366d94ca21cb0a55a89fdf, type: 3}
+    - {fileID: -241635271286662823, guid: 4732144334366d94ca21cb0a55a89fdf, type: 3}
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 2176169013868300151, guid: 4732144334366d94ca21cb0a55a89fdf, type: 3}
       insertIndex: -1
@@ -1944,7 +1933,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
 --- !u!95 &3369923573906190697
 Animator:
-  serializedVersion: 7
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -1958,7 +1947,6 @@ Animator:
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1

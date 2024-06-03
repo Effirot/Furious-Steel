@@ -19,7 +19,7 @@ public class ToxicPowerUp : PowerUp
         {
             var projectileEffectObject = GameObject.Instantiate(projectilePrefab, holder.transform.position, holder.transform.rotation);
 
-            IDamageSource damageSource = holder.Invoker;
+            IDamageSource damageSource = holder.Source;
 
             if (projectileEffectObject.TryGetComponent<Projectile>(out var projectile))
             {

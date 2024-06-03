@@ -11,7 +11,8 @@ using UnityEngine.VFX;
 namespace CharacterSystem.DamageMath
 {
     [Serializable]
-    public struct Damage : INetworkSerializable
+    public struct Damage : INetworkSerializable,
+        IEquatable<Damage>
     {
         public enum Type : byte
         {
@@ -61,10 +62,9 @@ namespace CharacterSystem.DamageMath
                 return report;
             
             try {
-
                 if (damage.value >= 0)
                 {
-                    if (target != damage.sender || (damage.SelfDamageUltimate !&& target == damage.sender))
+                    if (damage.sender != target || damage.SelfDamageUltimate)
                     {
                         if (damage.sender.IsUnityNull() && !target.lastRecievedDamage.sender.IsUnityNull())
                         {
@@ -89,6 +89,11 @@ namespace CharacterSystem.DamageMath
                 }
 
                 report.isLethal = target.health <= 0;
+
+                if (report.isLethal)
+                {
+                    target.Kill();
+                }
             }
             catch (Exception e)
             {
@@ -226,6 +231,25 @@ namespace CharacterSystem.DamageMath
 
             serializer.SerializeValue(ref senderID);
         }
+        public bool Equals(Damage other)
+        {
+            return other.value == value &&
+                other.type == type &&
+                other.stunlock == stunlock &&
+                other.pushDirection == pushDirection &&
+                other.RechargeUltimate == RechargeUltimate &&
+
+                other.senderID == senderID;
+        }
+
+        public static bool operator == (Damage damage1, Damage damage2)
+        {
+            return damage1.Equals(damage2);
+        }
+        public static bool operator != (Damage damage1, Damage damage2)
+        {
+            return !damage1.Equals(damage2);
+        }
 
         public static Damage operator * (Damage damage, float multipliyer)
         {
@@ -243,12 +267,24 @@ namespace CharacterSystem.DamageMath
 
             return damage;
         }
+
+        public override bool Equals(object o)
+        {
+            if (o is Damage)
+            {
+                return (Damage)o == this;
+            }
+            
+            return false;
+        }
+        public override readonly int GetHashCode() => 1;
     }
     
     [Serializable]
     public class DamageDeliveryReport : 
         IDisposable, 
-        INetworkSerializable
+        INetworkSerializable,
+        IEquatable<DamageDeliveryReport>
     {
         public Damage damage = new Damage();
 
@@ -285,6 +321,16 @@ namespace CharacterSystem.DamageMath
         public void Dispose()
         {
             GC.SuppressFinalize(this);
+        }
+
+        public bool Equals(DamageDeliveryReport other)
+        {
+            return other.damage == damage &&
+                other.isDelivered == isDelivered &&
+                other.isBlocked == isBlocked &&
+                other.isLethal == isLethal &&
+                other.time == time &&
+                other.TargetID == TargetID;
         }
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter

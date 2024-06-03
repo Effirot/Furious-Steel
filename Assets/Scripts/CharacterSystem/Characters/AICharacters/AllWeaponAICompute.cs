@@ -106,7 +106,7 @@ namespace CharacterSystem.Objects.AI
 
         private void OnDamageRecieved_Event(DamageMath.Damage damage)
         {
-            if (target == null && damage.sender != null)
+            if (target == null && damage.sender != null && !Team.IsAlly(damage.sender, Character))
             {
                 target = damage.sender.transform;
             }
@@ -199,9 +199,15 @@ namespace CharacterSystem.Objects.AI
         
         private Vector3 LookToTarget()
         {
-            return Quaternion.LookRotation(transform.position - target.position).eulerAngles;
-        }
+            var vector = transform.position - target.position;
 
+            if (vector.magnitude <= 0)
+            {
+                return Vector3.zero;
+            }
+
+            return Quaternion.LookRotation(vector).eulerAngles;
+        }
 
         private Transform ResearchTarget()
         {
@@ -211,7 +217,7 @@ namespace CharacterSystem.Objects.AI
             
             Array.Sort(characters, new DistanceComparer());
 
-            character = Array.FindLast(characters, item => item.gameObject.TryGetComponent<ITeammate>(out var teammate) && !ITeammate.IsAlly(Character, teammate));
+            character = Array.FindLast(characters, item => item.gameObject != Character.gameObject && item.gameObject.TryGetComponent<ITeammate>(out var teammate) && !Team.IsAlly(Character, teammate));
             
             if (character != null)
             {

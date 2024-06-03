@@ -65,7 +65,7 @@ public class CharacterEffectsHolder : NetworkBehaviour
 
                 materialLink.SetColor("_Color", color);
 
-                await UniTask.WaitForEndOfFrame();
+                await UniTask.Yield(PlayerLoopTiming.FixedUpdate);
             }
 
             renderer.sharedMaterials = renderer.sharedMaterials.Where(material => material.name != materialInstanceID + " (Instance)" ).ToArray();

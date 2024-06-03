@@ -77,7 +77,7 @@ namespace CharacterSystem.Attacks
             } 
         }
 
-        public virtual bool IsActive => !IsInProcess && !HasOverrides() && !Invoker.isStunned && Invoker.permissions.HasFlag(CharacterPermission.AllowAttacking) && IsPerforming; 
+        public virtual bool IsActive => !IsInProcess && !HasOverrides() && !Source.isStunned && Source.permissions.HasFlag(CharacterPermission.AllowAttacking) && IsPerforming; 
 
         private NetworkVariable<bool> network_isPerforming = new NetworkVariable<bool>(true, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
@@ -138,7 +138,7 @@ namespace CharacterSystem.Attacks
         {
             if (IsServer && IsInterruptOnHit)
             {
-                Invoker.onDamageRecieved += (damage) => { 
+                Source.onDamageRecieved += (damage) => { 
                     if (damage.type != Damage.Type.Effect)
                     {
                         Stop();
@@ -170,8 +170,8 @@ namespace CharacterSystem.Attacks
 
                 currentAttackDamageReport = report;
 
-                Invoker.DamageDelivered(report);
-                Invoker.lastReport = report;
+                Source.DamageDelivered(report);
+                Source.lastReport = report;
             }
         }
 
@@ -201,8 +201,8 @@ namespace CharacterSystem.Attacks
                         continue;
 
                     var damage = cast.damage;
-                    damage.pushDirection = damageSource.Invoker.transform.rotation * cast.damage.pushDirection;
-                    damage.sender = damageSource.Invoker;
+                    damage.pushDirection = damageSource.Source.transform.rotation * cast.damage.pushDirection;
+                    damage.sender = damageSource.Source;
 
                     var report = Damage.Deliver(collider.gameObject, damage);
 
@@ -216,7 +216,7 @@ namespace CharacterSystem.Attacks
                 }
             }
 
-            damageSource.Invoker.Push(impactPushVector / impactsCount);
+            damageSource.Source.Push(impactPushVector / impactsCount);
         }
     
         public abstract IEnumerator AttackPipeline(DamageSource source);
@@ -237,7 +237,7 @@ namespace CharacterSystem.Attacks
         }
         public IEnumerator ChargedAttackPipeline(DamageSource source, float chargeValue, bool flexibleCollider, bool flexibleDamage)
         {            
-            source.Invoker.Push(source.Invoker.transform.rotation * CastPushDirection * chargeValue);
+            source.Source.Push(source.Source.transform.rotation * CastPushDirection * chargeValue);
 
             yield break;
         }
@@ -269,7 +269,7 @@ namespace CharacterSystem.Attacks
         }
         public IEnumerator ChargedAttackPipeline(DamageSource source, float chargeValue, bool flexibleCollider, bool flexibleDamage)
         {            
-            if (source.Invoker.gameObject.TryGetComponent<CharacterController>(out var component))
+            if (source.Source.gameObject.TryGetComponent<CharacterController>(out var component))
             {
                 source.Permissions = permission;
 
@@ -317,7 +317,7 @@ namespace CharacterSystem.Attacks
         
         public override IEnumerator AttackPipeline(DamageSource source)
         {
-            Damage.Deliver(source.Invoker, damage);
+            Damage.Deliver(source.Source, damage);
 
             yield break;
         }
@@ -373,7 +373,7 @@ namespace CharacterSystem.Attacks
                     newPosition = hit.point;
                 }
 
-                source.Invoker.SetPosition (newPosition);
+                source.Source.SetPosition (newPosition);
             }
 
             yield break;
@@ -397,7 +397,7 @@ namespace CharacterSystem.Attacks
         {
             if (source.currentAttackDamageReport != null && !source.currentAttackDamageReport.target.IsUnityNull())
             {
-                source.Invoker.SetPosition (source.currentAttackDamageReport.target.transform.position + source.transform.rotation * AdditiveTeleportRelativeDirectionDirection);
+                source.Source.SetPosition (source.currentAttackDamageReport.target.transform.position + source.transform.rotation * AdditiveTeleportRelativeDirectionDirection);
             }
 
             yield break;
@@ -430,7 +430,7 @@ namespace CharacterSystem.Attacks
         }
         public IEnumerator ChargedAttackPipeline(DamageSource source, float chargeValue, bool flexibleCollider, bool flexibleDamage)
         {
-            var invoker = source.Invoker;
+            var invoker = source.Source;
 
             var newCasters = CopyArray(flexibleCollider ? chargeValue : 1, flexibleDamage ? chargeValue : 1);
 
@@ -503,7 +503,7 @@ namespace CharacterSystem.Attacks
 
                     yield break;
                 }
-                projectile.Initialize(source.transform.rotation * direction, source.Invoker, source.HandleDamageReport);
+                projectile.Initialize(source.transform.rotation * direction, source.Source, source.HandleDamageReport);
 
                 projectile.speed *= chargeValue;
                 if (flexibleDamage)
@@ -626,7 +626,7 @@ namespace CharacterSystem.Attacks
             source.Permissions = Permissions;
             
             yield return new WaitUntil(() => {
-                if (source.Invoker.gameObject.TryGetComponent<CharacterController>(out var character))
+                if (source.Source.gameObject.TryGetComponent<CharacterController>(out var character))
                 {
                     return Reverse ? !character.isGrounded : character.isGrounded;
                 }
@@ -659,7 +659,7 @@ namespace CharacterSystem.Attacks
         {
             source.Permissions = Permissions;
             
-            yield return new WaitForSeconds(Mathf.Clamp(WaitTime - source.Invoker.Combo * ReducingByHit, MinWaitTime, WaitTime));
+            yield return new WaitForSeconds(Mathf.Clamp(WaitTime - source.Source.Combo * ReducingByHit, MinWaitTime, WaitTime));
         }
         
         public override void OnDrawGizmos(Transform transform)
@@ -683,7 +683,7 @@ namespace CharacterSystem.Attacks
         {
             source.Permissions = Permissions;
 
-            var deltaTime = DateTime.Now - (source.Invoker.lastReport?.time ?? DateTime.MinValue);
+            var deltaTime = DateTime.Now - (source.Source.lastReport?.time ?? DateTime.MinValue);
                         
             if (deltaTime > new TimeSpan((long)Mathf.Round(TimeSpan.TicksPerSecond * LastHitRequireSeconds)))
             {
@@ -707,9 +707,9 @@ namespace CharacterSystem.Attacks
         public override IEnumerator AttackPipeline(DamageSource source)
         {
 
-            if (source.Invoker.animator != null && source.Invoker.animator.gameObject.activeInHierarchy)
+            if (source.Source.animator != null && source.Source.animator.gameObject.activeInHierarchy)
             {
-                source.Invoker.animator.Play(AnimationName, -1, 0.1f);
+                source.Source.animator.Play(AnimationName, -1, 0.1f);
             }
 
             yield break;

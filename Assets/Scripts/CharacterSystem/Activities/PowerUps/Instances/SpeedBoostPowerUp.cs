@@ -15,7 +15,7 @@ namespace CharacterSystem.PowerUps
         {
             if (holder.IsServer)
             {
-                foreach (var effects in holder.Invoker.gameObject.GetComponentsInChildren<CharacterEffectsHolder>())
+                foreach (var effects in holder.Source.gameObject.GetComponentsInChildren<CharacterEffectsHolder>())
                 {
                     effects.AddEffect(new SpeedBoostEffect(10));
                 }
