@@ -84,8 +84,6 @@ SkinnedMeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 3
   m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -175,6 +173,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GlobalObjectIdHash: 646616531
+  InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -302,7 +301,6 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 8047190744935610207, guid: bdf3e7f7eae78f844bd4f60d57993222, type: 2}
   m_audioClip: {fileID: 8300000, guid: 48c1b6829ce7b074bb8564c12a603e69, type: 3}
-  m_Resource: {fileID: 8300000, guid: 48c1b6829ce7b074bb8564c12a603e69, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 0.8
@@ -827,7 +825,6 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 24300002, guid: bdf3e7f7eae78f844bd4f60d57993222, type: 2}
   m_audioClip: {fileID: 8300000, guid: 1b6f62efc1b9a4849945977faa2634cd, type: 3}
-  m_Resource: {fileID: 8300000, guid: 1b6f62efc1b9a4849945977faa2634cd, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.764
   m_Pitch: 0.76
@@ -972,7 +969,7 @@ VisualEffect:
         m_Overridden: 1
       - m_Value: 3.62
         m_Name: Size
-        m_Overridden: 1
+        m_Overridden: 0
     m_Vector2f:
       m_Array: []
     m_Vector3f:
@@ -984,7 +981,7 @@ VisualEffect:
       m_Array:
       - m_Value: {x: 1, y: 1, z: 1, w: 0.43137255}
         m_Name: Color
-        m_Overridden: 1
+        m_Overridden: 0
       - m_Value: {x: 13.766359, y: 0, z: 6.3689055, w: 1}
         m_Name: SecondColor
         m_Overridden: 1
@@ -1020,8 +1017,6 @@ VFXRenderer:
   m_ReflectionProbeUsage: 0
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -1172,7 +1167,6 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 8047190744935610207, guid: bdf3e7f7eae78f844bd4f60d57993222, type: 2}
   m_audioClip: {fileID: 8300000, guid: 8ae609db06b501047a8857a36acd8c2c, type: 3}
-  m_Resource: {fileID: 8300000, guid: 8ae609db06b501047a8857a36acd8c2c, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.772
   m_Pitch: 0.84
@@ -1309,8 +1303,6 @@ VFXRenderer:
   m_ReflectionProbeUsage: 0
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -1371,10 +1363,10 @@ VisualEffect:
       m_Array:
       - m_Value: {x: 1, y: 1, z: 1, w: 0.43137255}
         m_Name: SecondColor
-        m_Overridden: 1
+        m_Overridden: 0
       - m_Value: {x: 1, y: 1, z: 1, w: 0.43137255}
         m_Name: Color
-        m_Overridden: 1
+        m_Overridden: 0
     m_Uint:
       m_Array: []
     m_Int:
@@ -1440,8 +1432,6 @@ VFXRenderer:
   m_ReflectionProbeUsage: 0
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -1502,10 +1492,10 @@ VisualEffect:
       m_Array:
       - m_Value: {x: 1, y: 1, z: 1, w: 0.43137255}
         m_Name: SecondColor
-        m_Overridden: 1
+        m_Overridden: 0
       - m_Value: {x: 1, y: 1, z: 1, w: 0.43137255}
         m_Name: Color
-        m_Overridden: 1
+        m_Overridden: 0
     m_Uint:
       m_Array: []
     m_Int:
@@ -1604,8 +1594,6 @@ VFXRenderer:
   m_ReflectionProbeUsage: 0
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -1669,7 +1657,7 @@ VisualEffect:
         m_Overridden: 1
       - m_Value: {x: 1, y: 1, z: 1, w: 0.43137255}
         m_Name: Color
-        m_Overridden: 1
+        m_Overridden: 0
     m_Uint:
       m_Array: []
     m_Int:
@@ -2032,8 +2020,6 @@ VFXRenderer:
   m_ReflectionProbeUsage: 0
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -2359,10 +2345,10 @@ VisualEffect:
       m_Array:
       - m_Value: {x: 1, y: 1, z: 1, w: 0.43137255}
         m_Name: Color
-        m_Overridden: 1
+        m_Overridden: 0
       - m_Value: {x: 1, y: 1, z: 1, w: 0.43137255}
         m_Name: SecondColor
-        m_Overridden: 1
+        m_Overridden: 0
     m_Uint:
       m_Array: []
     m_Int:
@@ -2395,8 +2381,6 @@ VFXRenderer:
   m_ReflectionProbeUsage: 0
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:

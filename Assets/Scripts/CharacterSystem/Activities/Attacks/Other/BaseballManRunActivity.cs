@@ -17,7 +17,7 @@ public class BaseballManRunActivity : SyncedActivity<PlayerNetworkCharacter>
     [SerializeField, Range(0.5f, 3)]
     private float speedAcelerationMultiplyer = 1.5f;
     
-    [SerializeField, Range(1f, 0.0001f)]
+    [SerializeField, Range(50f, 0.01f)]
     private float lookVectorAceleration = 0.03f;
 
     [SerializeField, Range(1, 8)]
@@ -64,6 +64,14 @@ public class BaseballManRunActivity : SyncedActivity<PlayerNetworkCharacter>
 
 
 
+    private float SpeedAceleration { 
+        get => speedAceleration; 
+        set {
+            Source.CurrentSpeed += value - speedAceleration;
+
+            speedAceleration = value;
+        }
+    }
     private float speedAceleration = 0;
     
     private NetworkVariable<Vector2> network_internal_lookVector = new(Vector2.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
@@ -73,7 +81,7 @@ public class BaseballManRunActivity : SyncedActivity<PlayerNetworkCharacter>
         base.OnNetworkSpawn();
 
         Source.isGroundedEvent += (state) => {
-            if (!state && IsPressed)
+            if (!state && IsPressed )
             {
                 Play();
             }
@@ -81,6 +89,9 @@ public class BaseballManRunActivity : SyncedActivity<PlayerNetworkCharacter>
         Source.onDamageRecieved += (damage) => {
             if (IsInProcess && damage.type != Damage.Type.Effect)
             {
+                Source.stunlock += 1;
+                Source.Push(damage.pushDirection * 5);
+
                 Stop();
             }
         };
@@ -88,9 +99,9 @@ public class BaseballManRunActivity : SyncedActivity<PlayerNetworkCharacter>
 
     public override void Play()
     {
-        if (Source.JumpButtonState && Source.IsGrounded && !IsInProcess)
+        if (Source.JumpButtonState && !IsInProcess && !Source.isStunned && Source.permissions.HasFlag(CharacterPermission.AllowAttacking))
         {
-            speedAceleration = 0;
+            SpeedAceleration = 0;
 
             Permissions = CharacterPermission.AllowGravity;
 
@@ -103,8 +114,7 @@ public class BaseballManRunActivity : SyncedActivity<PlayerNetworkCharacter>
 
         if (IsInProcess)
         {            
-            Source.CurrentSpeed -= speedAceleration;
-            speedAceleration = 0;
+            SpeedAceleration = 0;
             
             Permissions = CharacterPermission.Default;
         }
@@ -116,7 +126,7 @@ public class BaseballManRunActivity : SyncedActivity<PlayerNetworkCharacter>
     {
         onStartRunning.Invoke();
         
-        speedAceleration = 0f;
+        SpeedAceleration = 0f;
 
         var waitForEndOfFrame = new WaitForEndOfFrame();
         
@@ -125,7 +135,10 @@ public class BaseballManRunActivity : SyncedActivity<PlayerNetworkCharacter>
 
         while (IsPressed)
         {   
-            var newAcelerationPercent = speedAceleration / maxSpeed;
+            if (Source.isStunned)
+                yield break;
+                
+            var newAcelerationPercent = SpeedAceleration / maxSpeed;
             
             if (newAcelerationPercent > collideAcelerationPercentRequirement && runAccelerationPercent < collideAcelerationPercentRequirement)
             {
@@ -142,15 +155,13 @@ public class BaseballManRunActivity : SyncedActivity<PlayerNetworkCharacter>
 
             var timescale = Time.fixedDeltaTime * speedAcelerationMultiplyer;
 
-            if (speedAceleration + timescale < maxSpeed)
+            if (SpeedAceleration + timescale < maxSpeed)
             {
-                speedAceleration += timescale;
-                Source.CurrentSpeed += timescale;
+                SpeedAceleration += timescale;
             }
             else
             {
-                Source.CurrentSpeed += maxSpeed - speedAceleration;
-                speedAceleration = maxSpeed;
+                SpeedAceleration = maxSpeed;
             }
 
             if (IsServer)
@@ -158,7 +169,7 @@ public class BaseballManRunActivity : SyncedActivity<PlayerNetworkCharacter>
                 var angle = Vector2.SignedAngle(Source.lookVector, Vector2.up);
                 var newAngle = Vector2.SignedAngle(network_internal_lookVector.Value, Vector2.up);
 
-                var interpolatedAngle = Quaternion.Lerp(Quaternion.Euler(0, 0, angle), Quaternion.Euler(0, 0, newAngle), lookVectorAceleration);
+                var interpolatedAngle = Quaternion.RotateTowards(Quaternion.Euler(0, 0, angle), Quaternion.Euler(0, 0, newAngle), lookVectorAceleration * Time.fixedDeltaTime);
                 interpolatedAngle = Quaternion.Inverse(interpolatedAngle); 
 
                 Source.movementVector = Source.lookVector =  interpolatedAngle * Vector2.up;
@@ -187,21 +198,19 @@ public class BaseballManRunActivity : SyncedActivity<PlayerNetworkCharacter>
         }
         else
         {
-            while (speedAceleration > 0)
+            while (SpeedAceleration > 0)
             {
                 Source.movementVector = Source.lookVector;
                 
                 var timescale = Time.fixedDeltaTime * speedAcelerationMultiplyer * 5;
 
-                if (speedAceleration - timescale > 0)
+                if (SpeedAceleration - timescale > 0)
                 {
-                    speedAceleration -= timescale;
-                    Source.CurrentSpeed -= timescale;
+                    SpeedAceleration -= timescale;
                 }
                 else
                 {
-                    Source.CurrentSpeed -= speedAceleration;
-                    speedAceleration = 0;
+                    SpeedAceleration = 0;
                 }
                 
                 yield return waitForEndOfFrame;
