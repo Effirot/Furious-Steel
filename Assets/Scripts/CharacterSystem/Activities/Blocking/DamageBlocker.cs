@@ -134,13 +134,11 @@ namespace CharacterSystem.Blocking
 
         public override void Play()
         {
-            if (!Source.permissions.HasFlag(CharacterPermission.AllowBlocking))
-                return;
+            if (!Source.isStunned && IsPerforming && Source.permissions.HasFlag(CharacterPermission.AllowBlocking))
+            {
+                base.Play();
+            }
 
-            if (Source.isStunned || !IsPerforming)
-                return;
-
-            base.Play();
         }
         public override void Stop()
         {
