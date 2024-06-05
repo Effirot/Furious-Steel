@@ -95,8 +95,6 @@ VFXRenderer:
   m_ReflectionProbeUsage: 0
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -169,6 +167,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GlobalObjectIdHash: 4060660341
+  InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -188,9 +187,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bfba81b10efcb8049a24487e60557391, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 41.7
+  speed: 25.8
   speedTimeIncreacing: 0.95
-  lifetime: 1.17
+  lifetime: 0.93
   <DamageOnHit>k__BackingField: 0
   <AllowDeflecting>k__BackingField: 0
   <Gravity>k__BackingField: 0
@@ -228,8 +227,9 @@ Light:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6845969276890429663}
   m_Enabled: 1
-  serializedVersion: 11
+  serializedVersion: 10
   m_Type: 2
+  m_Shape: 0
   m_Color: {r: 1, g: 0.5214753, b: 0, a: 1}
   m_Intensity: 4.5
   m_Range: 12
@@ -417,8 +417,12 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6199894316168492106, guid: 04245663e3d3ae9439887411c250ec3f, type: 3}
+      propertyPath: m_ImpulseDefinition.m_DissipationRate
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 6199894316168492106, guid: 04245663e3d3ae9439887411c250ec3f, type: 3}
       propertyPath: m_ImpulseDefinition.m_ImpulseDuration
-      value: 0.2
+      value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 8514960153952812828, guid: 04245663e3d3ae9439887411c250ec3f, type: 3}
       propertyPath: m_Enabled

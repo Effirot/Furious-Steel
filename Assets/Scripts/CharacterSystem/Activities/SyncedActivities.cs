@@ -139,7 +139,6 @@ public abstract class SyncedActivity : NetworkBehaviour
 
     public virtual void Play()
     {
-
         if (!HasOverrides() && IsServer && !IsInProcess)
         {
             process = StartCoroutine(ProcessRoutine());

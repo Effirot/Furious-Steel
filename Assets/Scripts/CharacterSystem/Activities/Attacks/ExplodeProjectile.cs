@@ -56,24 +56,6 @@ public class ExplodeProjectile : Projectile
     }
     private void Explode()
     {
-        if (Summoner.IsUnityNull()) 
-            return;
-
-        foreach (var collider in Physics.OverlapSphere(transform.position, Range))
-        {
-            var damage = explodeDamage;
-
-            damage.sender = Summoner;
-            damage.pushDirection = collider.transform.position - transform.position;
-            damage.pushDirection.Normalize();
-            damage.pushDirection *= PushForce;
-            damage.pushDirection += transform.rotation * explodeDamage.pushDirection;
-
-            var report = Damage.Deliver(collider.gameObject, damage);
-            
-            onDamageDeliveryReport?.Invoke(report);
-        }
-
         if (!OnExplodePrefab.IsUnityNull())
         {
             var gameObject = Instantiate(OnExplodePrefab, transform.position, transform.rotation);
@@ -83,6 +65,27 @@ public class ExplodeProjectile : Projectile
             gameObject.GetComponent<CinemachineImpulseSource>()?.GenerateImpulse();
 
             Destroy(gameObject, 4);
+        }
+
+        if (Summoner.IsUnityNull()) 
+            return;
+
+        if (IsServer)
+        {
+            foreach (var collider in Physics.OverlapSphere(transform.position, Range))
+            {
+                var damage = explodeDamage;
+
+                damage.sender = Summoner;
+                damage.pushDirection = collider.transform.position - transform.position;
+                damage.pushDirection.Normalize();
+                damage.pushDirection *= PushForce;
+                damage.pushDirection += transform.rotation * explodeDamage.pushDirection;
+
+                var report = Damage.Deliver(collider.gameObject, damage);
+                
+                onDamageDeliveryReport?.Invoke(report);
+            }
         }
     }
 

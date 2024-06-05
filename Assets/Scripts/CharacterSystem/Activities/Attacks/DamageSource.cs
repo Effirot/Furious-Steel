@@ -65,7 +65,7 @@ namespace CharacterSystem.Attacks
 
         public DamageDeliveryReport currentAttackDamageReport { get; protected set; }
 
-        public bool IsPerforming 
+        public bool IsPerforming
         { 
             get => network_isPerforming.Value; 
             set 

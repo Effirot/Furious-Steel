@@ -90,7 +90,6 @@ public class BaseballManRunActivity : SyncedActivity<PlayerNetworkCharacter>
             if (IsInProcess && damage.type != Damage.Type.Effect)
             {
                 Source.stunlock += 1;
-                Source.Push(damage.pushDirection * 5);
 
                 Stop();
             }
@@ -102,8 +101,6 @@ public class BaseballManRunActivity : SyncedActivity<PlayerNetworkCharacter>
         if (Source.JumpButtonState && !IsInProcess && !Source.isStunned && Source.permissions.HasFlag(CharacterPermission.AllowAttacking))
         {
             SpeedAceleration = 0;
-
-            Permissions = CharacterPermission.AllowGravity;
 
             base.Play();
         }
@@ -124,6 +121,10 @@ public class BaseballManRunActivity : SyncedActivity<PlayerNetworkCharacter>
 
     public override IEnumerator Process()
     {
+        Permissions = CharacterPermission.AllowGravity;
+
+        yield return new WaitUntil(() => Source.IsGrounded);
+
         onStartRunning.Invoke();
         
         SpeedAceleration = 0f;

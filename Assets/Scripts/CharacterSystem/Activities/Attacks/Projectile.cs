@@ -153,6 +153,11 @@ public class Projectile : NetworkBehaviour,
         base.OnNetworkDespawn();
 
         onDespawnEvent.Invoke();
+
+        if (IsClient)
+        {
+            transform.position = network_position.Value;
+        }
     }
 
     protected virtual void FixedUpdate ()
@@ -174,12 +179,19 @@ public class Projectile : NetworkBehaviour,
         }
         else
         {
-            transform.position = Vector3.Lerp(transform.position, network_position.Value, 0.2f);
+            
         }
 
         if (network_moveDirection.Value.magnitude > 0)
         {
             transform.rotation = Quaternion.LookRotation(network_moveDirection.Value);
+        }
+    }
+    protected virtual void LateUpdate()
+    {
+        if (IsClient)
+        {
+            transform.position = Vector3.Lerp(transform.position, network_position.Value, 15 * Time.deltaTime);
         }
     }
     protected virtual void OnTriggerEnter (Collider other)

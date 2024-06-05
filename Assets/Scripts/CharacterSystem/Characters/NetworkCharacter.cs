@@ -650,7 +650,7 @@ namespace CharacterSystem.Objects
         private void Jump_ServerRpc(Vector2 direction)
         {
             direction.Normalize();
-            direction *= Mathf.Max(0, CurrentSpeed) * Time.fixedDeltaTime * 2f;
+            direction *= Mathf.Max(0, CurrentSpeed) * Time.fixedDeltaTime * 1.5f;
 
             if (!isStunned && (IsGrounded || completeJumpCount < JumpCount) && permissions.HasFlag(CharacterPermission.AllowJump))
             {
