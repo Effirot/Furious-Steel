@@ -17,7 +17,8 @@ namespace CharacterSystem.Attacks
 {
     public interface IDamageSource :
         ISyncedActivitiesSource,
-        IDamagable
+        IDamagable,
+        ITimeScalable
     {
         DamageDeliveryReport lastReport { get; set; }
 
@@ -31,7 +32,7 @@ namespace CharacterSystem.Attacks
     }
 
     [DisallowMultipleComponent]
-    public class DamageSource : SyncedActivity<IDamageSource>
+    public class DamageSource : SyncedActivitySource<IDamageSource>
     {
         [Flags]
         public enum AdditiveExecutingConditions
@@ -604,7 +605,7 @@ namespace CharacterSystem.Attacks
         {
             source.Permissions = Permissions;
             
-            yield return new WaitForSeconds(WaitTime);
+            yield return new WaitForSeconds(WaitTime * source.Source.LocalTimeScale);
         }
         
         public override void OnDrawGizmos(Transform transform)
@@ -659,7 +660,7 @@ namespace CharacterSystem.Attacks
         {
             source.Permissions = Permissions;
             
-            yield return new WaitForSeconds(Mathf.Clamp(WaitTime - source.Source.Combo * ReducingByHit, MinWaitTime, WaitTime));
+            yield return new WaitForSeconds(Mathf.Clamp(WaitTime - source.Source.Combo * ReducingByHit, MinWaitTime, WaitTime) * source.Source.LocalTimeScale);
         }
         
         public override void OnDrawGizmos(Transform transform)
@@ -685,9 +686,9 @@ namespace CharacterSystem.Attacks
 
             var deltaTime = DateTime.Now - (source.Source.lastReport?.time ?? DateTime.MinValue);
                         
-            if (deltaTime > new TimeSpan((long)Mathf.Round(TimeSpan.TicksPerSecond * LastHitRequireSeconds)))
+            if (deltaTime > new TimeSpan((long)Mathf.Round(TimeSpan.TicksPerSecond * LastHitRequireSeconds / source.Source.LocalTimeScale)))
             {
-                yield return new WaitForSeconds(WaitTime);
+                yield return new WaitForSeconds(WaitTime * source.Source.LocalTimeScale);
             }           
         }
         

@@ -11,21 +11,25 @@ public class SpeedBoostEffect : CharacterEffect
     [SerializeField, Range(0, 120)]
     private float time = 0;
 
+    [SerializeField, Range(0, 120)]
+    private float force = 5;
+
     public SpeedBoostEffect() { }
-    public SpeedBoostEffect(float Time)
+    public SpeedBoostEffect(float Time, float Force)
     {
-       time = Time;
+        time = Time;
+        force = Force;
     }
 
     public override void Start()
     {
-        effectsHolder.character.CurrentSpeed += 5;
+        effectsHolder.character.CurrentSpeed += force;
 
         effectsHolder.AddGlowing(this, Color.blue * 3, 1);
     }
     public override void Remove()
     {
-        effectsHolder.character.CurrentSpeed -= 5;
+        effectsHolder.character.CurrentSpeed -= force;
     }
     public override void Update()
     {
@@ -37,7 +41,15 @@ public class SpeedBoostEffect : CharacterEffect
 
     public override void AddDublicate(CharacterEffect effect)
     {
-        time = ((SpeedBoostEffect)effect).time;
+        var speedEffect = (SpeedBoostEffect)effect;
+        
+
+        var deltaForce = Mathf.Max(force, speedEffect.force);
+        deltaForce -= force;
+
+        force += deltaForce;
+        effectsHolder.character.CurrentSpeed += deltaForce;
+        time = Mathf.Max(time, speedEffect.time);
     }
 
     public override string ToString()

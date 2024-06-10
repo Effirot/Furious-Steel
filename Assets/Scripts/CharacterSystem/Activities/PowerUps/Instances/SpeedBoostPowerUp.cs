@@ -17,7 +17,7 @@ namespace CharacterSystem.PowerUps
             {
                 foreach (var effects in holder.Source.gameObject.GetComponentsInChildren<CharacterEffectsHolder>())
                 {
-                    effects.AddEffect(new SpeedBoostEffect(10));
+                    effects.AddEffect(new SpeedBoostEffect(10, 5));
                 }
             }
         }

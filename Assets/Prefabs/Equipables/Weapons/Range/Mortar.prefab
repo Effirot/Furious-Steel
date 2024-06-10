@@ -189,8 +189,8 @@ MonoBehaviour:
     - rid: 8630938131973537871
       type: {class: ReducableWait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        WaitTime: 0.44
-        MinWaitTime: 0.2
+        WaitTime: 0.3
+        MinWaitTime: 0.1
         ReducingByHit: 0.03
         Permissions: 2816
 --- !u!1 &457665740342306194
@@ -375,6 +375,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GlobalObjectIdHash: 2614737537
+  InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -439,8 +440,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7833ff246d1754459595b40d8d6c25c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DefaultValue: 4
-  MaxValue: 4
+  DefaultValue: 5
+  MaxValue: 5
   color: {r: 1, g: 0.54877096, b: 0.015686274, a: 1}
   fullChargeColor: {r: 1, g: 0.54901963, b: 0.015686275, a: 1}
   OnValueChanged:
@@ -528,6 +529,18 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 8656365930082199868}
+        m_TargetAssemblyTypeName: CustomProperty, Assembly-CSharp
+        m_MethodName: AddValue
+        m_Mode: 4
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 1
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
@@ -841,10 +854,10 @@ VisualEffect:
       m_Array:
       - m_Value: {x: 1, y: 1, z: 1, w: 0.43137255}
         m_Name: Color
-        m_Overridden: 1
+        m_Overridden: 0
       - m_Value: {x: 1, y: 1, z: 1, w: 0.43137255}
         m_Name: SecondColor
-        m_Overridden: 1
+        m_Overridden: 0
     m_Uint:
       m_Array: []
     m_Int:

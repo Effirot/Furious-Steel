@@ -17,7 +17,7 @@ public class RegenerationEffect : CharacterEffect
     public float healthPerSecond = 5;
 
     [SerializeField, ColorUsageAttribute(false, true)]
-    public Color color = new Color(25, 191, 40) * 1.1f;
+    public Color color = new Color(0.09f, 0.7f, 0.15f) * 1.1f;
 
     public RegenerationEffect() { }
     public RegenerationEffect(float Time, float healthPerSecond)
@@ -28,7 +28,8 @@ public class RegenerationEffect : CharacterEffect
 
     public override void Start()
     {
-        effectsHolder.AddGlowing(this, color, 10f);
+        effectsHolder.AddGlowing(this, color, 5f);
+        effectsHolder.character.Heal(new Damage(20, effectsSource, 0, Vector3.zero, Damage.Type.Effect));
     }
     public override void Update()
     {

@@ -9,15 +9,18 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class BaseballManRunActivity : SyncedActivity<PlayerNetworkCharacter>
+public class ChargeRunninActivity : SyncedActivitySource<PlayerNetworkCharacter>
 {
+    
+    [Space]
+    [Header("Charging")]
     [SerializeField, Range(0, 35)]
     private float maxSpeed = 35;
 
     [SerializeField, Range(0.5f, 3)]
     private float speedAcelerationMultiplyer = 1.5f;
     
-    [SerializeField, Range(50f, 0.01f)]
+    [SerializeField, Range(0.01f, 50f)]
     private float lookVectorAceleration = 0.03f;
 
     [SerializeField, Range(1, 8)]
@@ -25,6 +28,9 @@ public class BaseballManRunActivity : SyncedActivity<PlayerNetworkCharacter>
 
     [SerializeField, Range(0, 1)]
     private float collideAcelerationPercentRequirement = 0.4f;
+
+    [SerializeField, Range(0, 50)]
+    private float maxPushTime = 0f;
 
     [Space]
     [Header("Collider")]
@@ -87,9 +93,12 @@ public class BaseballManRunActivity : SyncedActivity<PlayerNetworkCharacter>
             }
         };
         Source.onDamageRecieved += (damage) => {
-            if (IsInProcess && damage.type != Damage.Type.Effect)
+            if (IsInProcess && damage.type is not Damage.Type.Effect and not Damage.Type.Magical and not Damage.Type.Balistic)
             {
-                Source.stunlock += 1;
+                if (SpeedAceleration / maxSpeed >= collideAcelerationPercentRequirement)
+                {
+                    Source.stunlock = Mathf.Max(Source.stunlock, 1);
+                }
 
                 Stop();
             }
@@ -121,10 +130,12 @@ public class BaseballManRunActivity : SyncedActivity<PlayerNetworkCharacter>
 
     public override IEnumerator Process()
     {
-        Permissions = CharacterPermission.AllowGravity;
+        Permissions &= ~CharacterPermission.AllowJump;
 
         yield return new WaitUntil(() => Source.IsGrounded);
 
+        Permissions = CharacterPermission.AllowGravity;
+        
         onStartRunning.Invoke();
         
         SpeedAceleration = 0f;
@@ -132,10 +143,12 @@ public class BaseballManRunActivity : SyncedActivity<PlayerNetworkCharacter>
         var waitForEndOfFrame = new WaitForEndOfFrame();
         
         var collision = false;
-        var runAccelerationPercent = 0f;       
+        var runAccelerationPercent = 0f;
 
-        while (IsPressed)
-        {   
+        var pushTime = 0f;
+
+        while (IsPressed && (pushTime < maxPushTime || maxPushTime == 0))
+        {
             if (Source.isStunned)
                 yield break;
                 
@@ -151,11 +164,9 @@ public class BaseballManRunActivity : SyncedActivity<PlayerNetworkCharacter>
             }
 
             runAccelerationPercent = newAcelerationPercent;
+            pushTime += Time.fixedDeltaTime;
 
-
-
-            var timescale = Time.fixedDeltaTime * speedAcelerationMultiplyer;
-
+            var timescale = Time.fixedDeltaTime * speedAcelerationMultiplyer * Source.LocalTimeScale;
             if (SpeedAceleration + timescale < maxSpeed)
             {
                 SpeedAceleration += timescale;
@@ -165,12 +176,13 @@ public class BaseballManRunActivity : SyncedActivity<PlayerNetworkCharacter>
                 SpeedAceleration = maxSpeed;
             }
 
+
             if (IsServer)
             {
                 var angle = Vector2.SignedAngle(Source.lookVector, Vector2.up);
                 var newAngle = Vector2.SignedAngle(network_internal_lookVector.Value, Vector2.up);
 
-                var interpolatedAngle = Quaternion.RotateTowards(Quaternion.Euler(0, 0, angle), Quaternion.Euler(0, 0, newAngle), lookVectorAceleration * Time.fixedDeltaTime);
+                var interpolatedAngle = Quaternion.RotateTowards(Quaternion.Euler(0, 0, angle), Quaternion.Euler(0, 0, newAngle), lookVectorAceleration * Time.fixedDeltaTime * Source.LocalTimeScale);
                 interpolatedAngle = Quaternion.Inverse(interpolatedAngle); 
 
                 Source.movementVector = Source.lookVector =  interpolatedAngle * Vector2.up;

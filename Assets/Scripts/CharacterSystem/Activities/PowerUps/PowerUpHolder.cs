@@ -33,7 +33,7 @@ namespace CharacterSystem.PowerUps
         }
     }
 
-    public class PowerUpHolder : SyncedActivity<IPowerUpActivator>
+    public class PowerUpHolder : SyncedActivitySource<IPowerUpActivator>
     {
         public void Drop(PowerUp powerUp)
         {
@@ -68,18 +68,21 @@ namespace CharacterSystem.PowerUps
 
             if (other.TryGetComponent<PowerUpContainer>(out var container) && IsServer)
             {
-                if (!container.powerUp.IsOneshot && Source.PowerUp == null)
-                {
-                    Source.PowerUpId = container.Id;
-                    
-                    container.powerUp.OnPick(this);
-                    container.NetworkObject.Despawn();
-                }
-                else
+                if (container.powerUp.IsOneshot)
                 {
                     container.powerUp.Activate(this);
                     container.NetworkObject.Despawn();
                 }
+                else
+                {
+                    if (Source.PowerUp == null)
+                    {
+                        Source.PowerUpId = container.Id;
+                        
+                        container.powerUp.OnPick(this);
+                        container.NetworkObject.Despawn();
+                    }
+                } 
             }
         }
 

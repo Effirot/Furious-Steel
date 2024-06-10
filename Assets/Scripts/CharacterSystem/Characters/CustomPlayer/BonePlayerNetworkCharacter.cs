@@ -54,7 +54,7 @@ public class BonePlayerNetworkCharacter : PlayerNetworkCharacter
                 Heal(new Damage(-report.damage.value * newDrainPercent, null, 0, Vector3.zero, Damage.Type.Effect));
             }
 
-            if (report.target.gameObject.TryGetComponent<NetworkObject>(out var component))
+            if (report.target?.gameObject?.TryGetComponent<NetworkObject>(out var component) ?? false)
             {
                 HealthDrain_ClientRpc(component.NetworkObjectId);
             }
@@ -68,7 +68,7 @@ public class BonePlayerNetworkCharacter : PlayerNetworkCharacter
 
         if (result)
         {
-            result = result || Heal(new Damage(healtPerBlock, null, 0, Vector3.zero, Damage.Type.Effect));
+            result = Heal(new Damage(healtPerBlock, null, 0, Vector3.zero, Damage.Type.Effect)) || result;
         }
 
         return result;

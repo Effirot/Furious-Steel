@@ -10,21 +10,23 @@ namespace CharacterSystem.DamageMath
         IGameObjectLink, 
         ITeammate
     {
-        float maxHealth { get; }
-        float health { get; set; }
+        public float maxHealth { get; }
+        public float health { get; set; }
 
-        float stunlock { get; set; }
+        public float stunlock { get; set; }
 
-        Damage lastRecievedDamage { get; set; }
-
-        bool Hit(Damage damage);
-        bool Heal(Damage damage);
-        void Push(Vector3 direction);
-
-        event Action<Damage> onDamageRecieved;
-
-        void Kill();
+        public Damage lastRecievedDamage { get; set; }
 
         public bool isStunned => stunlock > 0;
+
+
+        public event Action<Damage> onDamageRecieved;
+
+
+        public bool Hit(Damage damage);
+        public bool Heal(Damage damage);
+        public void Push(Vector3 direction);
+
+        public void Kill();
     }
 }

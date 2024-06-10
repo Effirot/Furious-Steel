@@ -1,16 +1,25 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using CharacterSystem.DamageMath;
 using CharacterSystem.Objects;
 using Cinemachine;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
+
+public interface IObservableObject
+{
+    public Transform ObservingPoint { get; }
+
+    public bool IsOwner { get; }
+}
 
 public class CharacterCameraObserver : MonoBehaviour
 {
     public static CharacterCameraObserver Singleton { get; private set; }
 
-    public Transform observingTransform
+    public IObservableObject ObservingObject
     {
         get => _observingCharacter;
         set
@@ -19,23 +28,20 @@ public class CharacterCameraObserver : MonoBehaviour
 
             if (value != null)
             {
-                // Camera drawer
-                virtualCamera.Follow = value.transform;
+                virtualCamera.Follow = value.ObservingPoint;
             }
 
             StopAllCoroutines();
 
+            if (value == null || !(value.IsOwner))
             {
-                if (value == null || !(value.gameObject.TryGetComponent<PlayerNetworkCharacter>(out var character) && character.IsOwner))
-                {
-                    StartCoroutine(ObserveRandomCharacter());
-                }
+                StartCoroutine(ObserveRandomCharacter());
             }
         }
     }
 
     [SerializeField]
-    private Transform _observingCharacter = null;
+    private IObservableObject _observingCharacter = null;
 
     [SerializeField]
     private CinemachineVirtualCamera virtualCamera; 
@@ -43,49 +49,35 @@ public class CharacterCameraObserver : MonoBehaviour
     private void Awake()
     {
         Singleton = this;
-        observingTransform = null;
+        ObservingObject = null;
     
-        PlayerNetworkCharacter.OnPlayerCharacterSpawn += ObserveRandomCharacterCharacter_Event;
         PlayerNetworkCharacter.OnOwnerPlayerCharacterDead += ResetObserver_Event;
-        PlayerNetworkCharacter.OnOwnerPlayerCharacterSpawn += ObserveCharacter_Event;
     }
-
     private void OnDestroy()
     {
         Singleton = null;
 
-        PlayerNetworkCharacter.OnPlayerCharacterSpawn -= ObserveRandomCharacterCharacter_Event;
         PlayerNetworkCharacter.OnOwnerPlayerCharacterDead -= ResetObserver_Event;
-        PlayerNetworkCharacter.OnOwnerPlayerCharacterSpawn -= ObserveCharacter_Event;
     }
 
-    private void ObserveRandomCharacterCharacter_Event(PlayerNetworkCharacter character)
-    {
-        if (observingTransform == null)
-        {
-            observingTransform = character.transform;
-        }
-    }
-    private void ObserveCharacter_Event(PlayerNetworkCharacter character)
-    {
-        observingTransform = character.transform;
-    }
     private void ResetObserver_Event(PlayerNetworkCharacter character)
     {
-        observingTransform = null;
+        ObservingObject = null;
     }
 
     private IEnumerator ObserveRandomCharacter()
     {
         yield return new WaitForSecondsRealtime(5);
 
+        var array = NetworkCharacter.NetworkCharacters.Where(character => character is IObservableObject).Select(character => character as IObservableObject).ToArray();
+
         if (PlayerNetworkCharacter.Players.Count == 0)
         {
-            observingTransform = null;
+            ObservingObject = null;
         }
         else
         {
-            observingTransform = PlayerNetworkCharacter.Players[Random.Range(0, PlayerNetworkCharacter.Players.Count - 1)].transform;
+            ObservingObject = array[Random.Range(0, PlayerNetworkCharacter.Players.Count - 1)];
         }
     }
 }

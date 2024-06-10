@@ -17,9 +17,9 @@ public class InventoryDrawer : MonoBehaviour
 
     public static ItemPack LocalInventoryInstance = new() { 
         items = new Item[] {
-            new Sword(), new LongSword(), new Axe(), null, new Bone(), 
-            new Mace(), new Spear(), null, null, new Plate(), 
-            new HeavySword(), new Rapier(), new Bow(), null, new LeatherJacket(),
+            new Sword(), new LongSword(), new Axe(), null, new Plate(), 
+            new Mace(), new Spear(), null, null, new Bone(), 
+            new HeavySword(), new Rapier(), null, null, new LeatherJacket(),
             
             new VoidMagic(), new ExplodeMagic(), null, null, new BaseballMan(), 
             new FlameMagic(), null, null, null, null, 
@@ -39,7 +39,7 @@ public class InventoryDrawer : MonoBehaviour
     } 
     private static void OnQuitting()
     {       
-        Debug.Log($"Inventory was succesfully saved to \"{inventoryBufferPath}\"!");
+        
     }
 
     [SerializeField]

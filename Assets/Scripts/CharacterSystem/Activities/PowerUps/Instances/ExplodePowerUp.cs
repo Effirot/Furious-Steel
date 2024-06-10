@@ -24,7 +24,7 @@ public class ExplodePowerUp : PowerUp
                 var VectorToTarget = holder.transform.position - collider.transform.position;
                 VectorToTarget.Normalize();
 
-                holder.Source.Push(Vector3.up * 0.6f + holder.Source.transform.forward);
+                holder.Source.Push(Vector3.up * 0.6f + holder.Source.transform.forward / 2f);
 
                 var report = Damage.Deliver(collider.gameObject, new Damage()
                 {

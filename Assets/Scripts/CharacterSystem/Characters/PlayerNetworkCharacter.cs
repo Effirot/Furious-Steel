@@ -22,7 +22,8 @@ namespace CharacterSystem.Objects
     public class PlayerNetworkCharacter : NetworkCharacter,
         IDamageSource,
         IDamageBlocker,
-        IPowerUpActivator
+        IPowerUpActivator,
+        IObservableObject
     {
         public static bool AllowChampionMode = true;
 
@@ -39,6 +40,7 @@ namespace CharacterSystem.Objects
 
         public static List<PlayerNetworkCharacter> Players = new();
 
+        [Space]
         [Header("Player")]
         [SerializeField]
         private InputActionReference moveInput;
@@ -54,6 +56,10 @@ namespace CharacterSystem.Objects
 
         [SerializeField]
         private GameObject suicideCorpsePrefab;
+
+        [field : SerializeField]
+        public Transform ObservingPoint { get; private set; }
+
 
         public ulong ServerClientID => network_serverClientId.Value;
         public int ClientDataIndex => RoomManager.Singleton.IndexOfPlayerData(data => data.ID == ServerClientID);
@@ -116,6 +122,9 @@ namespace CharacterSystem.Objects
         private NetworkVariable<int> network_combo = new (0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
         public UnityEvent<PowerUp> onPowerUpChanged { get; } = new();
+
+
+
         public event Action<DamageDeliveryReport> onDamageDelivered;
         public event Action<int> onComboChanged;
 
@@ -140,7 +149,7 @@ namespace CharacterSystem.Objects
         public virtual void DamageDelivered(DamageDeliveryReport report)
         {
             if (IsServer && report.isDelivered)
-            {
+            {            
                 if (report.damage.type is not Damage.Type.Effect)
                 {
                     if (report.isBlocked)
@@ -175,7 +184,7 @@ namespace CharacterSystem.Objects
             
             if (IsOwner && report.damage.type is not Damage.Type.Effect)
             {
-                OnHitImpulseSource?.GenerateImpulse(report.damage.value / 12f);
+                OnHitImpulseSource?.GenerateImpulse(report.damage.value / 10f);
             }
         }
 
@@ -226,6 +235,8 @@ namespace CharacterSystem.Objects
             {
                 Owner = this;
                 
+                CharacterCameraObserver.Singleton.ObservingObject = this;
+
                 if (moveInput != null) {
                     var action = moveInput.action;
                     action.Enable();
@@ -361,14 +372,14 @@ namespace CharacterSystem.Objects
 
         protected override GameObject SpawnCorpse()
         {
-            var gameObject = base.SpawnCorpse();
+            var corpseObject = base.SpawnCorpse();
 
-            if (IsOwner && !gameObject.IsUnityNull())
+            if (IsOwner && !corpseObject.IsUnityNull() && corpseObject.TryGetComponent<IObservableObject>(out var observableObject))
             {
-                CharacterCameraObserver.Singleton.observingTransform = gameObject.transform;
+                CharacterCameraObserver.Singleton.ObservingObject = observableObject;
             }
 
-            return gameObject;
+            return corpseObject;
         }
 
         protected virtual void OnOwnerPlayerDataChanged(NetworkListEvent<RoomManager.PublicClientData> changeEvent)

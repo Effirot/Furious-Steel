@@ -83,7 +83,7 @@ namespace CharacterSystem.DamageMath
                     report.isDelivered = true;
                 }
  
-                if (!report.isBlocked && report.isDelivered)
+                if (report.isDelivered)
                 {
                     DeliverEffects();
                 }

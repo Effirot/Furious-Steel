@@ -35,6 +35,7 @@ public class BuildTools : EditorWindow
     private List<BuildTarget> AvailableTargets = new List<BuildTarget>();
 
     private bool BuildServer = false; 
+    private bool FastBuild = false; 
 
     private void OnEnable()
     {
@@ -44,21 +45,17 @@ public class BuildTools : EditorWindow
         {
             BuildTarget target = (BuildTarget)buildTargetValue;
 
-            // skip if unsupported
             if (!BuildPipeline.IsBuildTargetSupported(GetTargetGroupForTarget(target), target))
                 continue;
 
             AvailableTargets.Add(target);
 
-            // add the target if not in the build list
             if (!TargetsToBuild.ContainsKey(target))
                 TargetsToBuild[target] = false;
         }
 
-        // check if any targets have gone away
         if (TargetsToBuild.Count > AvailableTargets.Count)
         {
-            // build the list of removed targets
             List<BuildTarget> targetsToRemove = new List<BuildTarget>();
             foreach(var target in TargetsToBuild.Keys)
             {
@@ -66,17 +63,16 @@ public class BuildTools : EditorWindow
                     targetsToRemove.Add(target);
             }
 
-            // cleanup the removed targets
             foreach(var target in targetsToRemove)
                 TargetsToBuild.Remove(target);
         }
     }
-
     private void OnGUI()
     {
         GUILayout.Label("Platforms to Build", EditorStyles.boldLabel);
 
         BuildServer = EditorGUILayout.Toggle("Build Server additive", BuildServer);
+        FastBuild = EditorGUILayout.Toggle("Fast build", FastBuild);
         
         EditorGUILayout.Space();
         
@@ -104,22 +100,22 @@ public class BuildTools : EditorWindow
     {
         
         var targets = TargetsToBuild.Where(KeyValue => KeyValue.Value).ToArray();
+        var options = FastBuild ? BuildOptions.BuildScriptsOnly : BuildOptions.None;
+
         foreach(var target in targets)
         {
-            PerformBuild(target.Key, $"Build\\{target.Key.ToString()}", StandaloneBuildSubtarget.Player);
-
             if (BuildServer)
             {
                 if (target.Key == BuildTarget.StandaloneWindows || 
                     target.Key == BuildTarget.StandaloneWindows64 ||
                     target.Key == BuildTarget.StandaloneLinux64)
                 {
-                    PerformBuild(target.Key, $"Build\\{target.Key.ToString()}\\Server", StandaloneBuildSubtarget.Server);
+                    PerformBuild(target.Key, $"Build\\{target.Key.ToString()}\\Server", StandaloneBuildSubtarget.Server, options);
                 }
             }
-        }
 
-        // System.Diagnostics.Process.Start("explorer.exe", path);
+            PerformBuild(target.Key, $"Build\\{target.Key.ToString()}", StandaloneBuildSubtarget.Player, options);
+        }
     }
 
     private void PerformBuild(BuildTarget target, string directory, StandaloneBuildSubtarget standaloneBuildSubtarget, BuildOptions options = BuildOptions.None)

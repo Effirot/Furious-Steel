@@ -26,7 +26,7 @@ public interface ISyncedActivitiesSource : IGameObjectLink
     public bool IsOwner => NetworkObject.IsOwner;
 }
 
-public abstract class SyncedActivity : NetworkBehaviour
+public abstract class SyncedActivitySource : NetworkBehaviour
 {
     public enum SyncedActivityPriority : byte
     {
@@ -37,7 +37,7 @@ public abstract class SyncedActivity : NetworkBehaviour
         Unoverridable = 5,
     }
 
-    private static List<SyncedActivity> regsitredSyncedActivities = new ();
+    private static List<SyncedActivitySource> regsitredSyncedActivities = new ();
 
     [Space]
     [Header("Input")]
@@ -90,7 +90,7 @@ public abstract class SyncedActivity : NetworkBehaviour
     private NetworkVariable<bool> network_isPressed = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     
     private ISyncedActivitiesSource m_invoker;
-    private SyncedActivity syncedActivityOverrider;
+    private SyncedActivitySource syncedActivityOverrider;
 
     private Coroutine process = null;
 
@@ -103,13 +103,13 @@ public abstract class SyncedActivity : NetworkBehaviour
                 activity => 
                     activity.inputAction == inputAction && 
                     (int)activity.Priority > (int)Priority &&
-                    activity.Source == Source);
+                    System.Object.ReferenceEquals(activity.Source, Source) && 
+                    !activity.Source.IsUnityNull());
         }
 
         return !syncedActivityOverrider.IsUnityNull();
     }
     
-
 
     public override void OnNetworkSpawn ()
     {
@@ -153,6 +153,8 @@ public abstract class SyncedActivity : NetworkBehaviour
         {
             if (IsInProcess)
             {
+                permissions = CharacterPermission.Default;
+
                 StopCoroutine(process);
                 Source.activities.Remove(this);
             }
@@ -263,9 +265,9 @@ public abstract class SyncedActivity : NetworkBehaviour
 }
 
 public sealed class SyncedActivitiesList : 
-    IEnumerable<SyncedActivity>
+    IEnumerable<SyncedActivitySource>
 {
-    public delegate void OnSyncedActivityListChangedDelegate(EventType type, SyncedActivity syncedActivity);
+    public delegate void OnSyncedActivityListChangedDelegate(EventType type, SyncedActivitySource syncedActivity);
 
     public enum EventType {
         Add,
@@ -275,11 +277,11 @@ public sealed class SyncedActivitiesList :
 
     public event OnSyncedActivityListChangedDelegate onSyncedActivityListChanged;
 
-    public ReadOnlyCollection<SyncedActivity> SyncedActivities => syncedActivities.AsReadOnly();
+    public ReadOnlyCollection<SyncedActivitySource> SyncedActivities => syncedActivities.AsReadOnly();
 
-    public SyncedActivity this [int index] => syncedActivities[index];
+    public SyncedActivitySource this [int index] => syncedActivities[index];
 
-    private List<SyncedActivity> syncedActivities = new();
+    private List<SyncedActivitySource> syncedActivities = new();
 
     public CharacterPermission CalculatePermissions()
     {
@@ -293,7 +295,7 @@ public sealed class SyncedActivitiesList :
         return result;
     }
 
-    public void Add(SyncedActivity syncedActivity)
+    public void Add(SyncedActivitySource syncedActivity)
     {
         if (syncedActivity != null)
         {
@@ -302,7 +304,7 @@ public sealed class SyncedActivitiesList :
             onSyncedActivityListChanged?.Invoke(EventType.Add, syncedActivity);
         }
     }
-    public void Remove(SyncedActivity syncedActivity)
+    public void Remove(SyncedActivitySource syncedActivity)
     {
         if (syncedActivity != null)
         {
@@ -312,6 +314,6 @@ public sealed class SyncedActivitiesList :
         }
     }
 
-    public IEnumerator<SyncedActivity> GetEnumerator() => syncedActivities.GetEnumerator();
+    public IEnumerator<SyncedActivitySource> GetEnumerator() => syncedActivities.GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => syncedActivities.GetEnumerator();
 }

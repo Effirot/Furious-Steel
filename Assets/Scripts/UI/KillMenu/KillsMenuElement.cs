@@ -53,7 +53,7 @@ public class KillsMenuElement : MonoBehaviour
 
         await UniTask.WaitForSeconds(lifetime);
 
-        while (transform.localScale.y > 0.02f)
+        while (!this.IsUnityNull() && transform.localScale.y > 0.02f)
         {
             transform.localScale = Vector3.Lerp(transform.localScale, new Vector3(transform.localScale.x, 0, transform.localScale.z), lerpForce);
 

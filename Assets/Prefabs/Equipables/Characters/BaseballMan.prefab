@@ -173,11 +173,11 @@ Transform:
   m_GameObject: {fileID: 288197098737932061}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -1.841, z: -2.375}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 1.315, z: 0}
+  m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 5722430203050411489}
+  m_Father: {fileID: 4677655301496448860}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!2083052967 &8929587349146115709
 VisualEffect:
@@ -294,7 +294,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4735524244770661556}
-  - {fileID: 6710510045024653068}
   - {fileID: 2842444281256179593}
   - {fileID: 8203446885267368292}
   m_Father: {fileID: 3087705141772529430}
@@ -319,6 +318,7 @@ MonoBehaviour:
   lookVectorAceleration: 50
   stuckThresold: 5.5
   collideAcelerationPercentRequirement: 0.7
+  maxPushTime: 0
   colliderOffset: {x: 0, y: 0, z: -0.47}
   colliderScale: {x: 3.59, y: 4.74, z: 1.72}
   explodeRange: 5
@@ -326,7 +326,7 @@ MonoBehaviour:
     value: 30
     type: 8
     stunlock: 1
-    pushDirection: {x: 0, y: 0.68, z: 1.6}
+    pushDirection: {x: 0, y: 0.68, z: 0.85}
     RechargeUltimate: 1
     SelfDamageUltimate: 0
     Effects: []
@@ -334,7 +334,7 @@ MonoBehaviour:
     value: 25
     type: 8
     stunlock: 0.3
-    pushDirection: {x: 0, y: 0.2, z: 1.42}
+    pushDirection: {x: 0, y: 0.2, z: 0.42}
     RechargeUltimate: 1
     SelfDamageUltimate: 0
     Effects: []
@@ -2402,7 +2402,7 @@ PrefabInstance:
       objectReference: {fileID: 6853982749296474702}
     - target: {fileID: 5804015679080351171, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
       propertyPath: <Speed>k__BackingField
-      value: 8
+      value: 8.5
       objectReference: {fileID: 0}
     - target: {fileID: 5804015679080351171, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
       propertyPath: <maxHealth>k__BackingField
@@ -2458,7 +2458,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7945737309752349265, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 3629207819
+      value: 554749405
       objectReference: {fileID: 0}
     - target: {fileID: 8156873103014966663, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
       propertyPath: m_Layer
@@ -2589,6 +2589,9 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 9ae212ebcb224044a9d5293ac6ff9e0d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6710510045024653068}
     - targetCorrespondingSourceObject: {fileID: -6579369597479647389, guid: 9ae212ebcb224044a9d5293ac6ff9e0d, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3817389473046351783}
@@ -3026,6 +3029,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 9ae212ebcb224044a9d5293ac6ff9e0d, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3904098358891299226}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 9ae212ebcb224044a9d5293ac6ff9e0d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8949915347511646679}
     - targetCorrespondingSourceObject: {fileID: 4996439207406508226, guid: 9ae212ebcb224044a9d5293ac6ff9e0d, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8955407662848062860}
@@ -3765,6 +3771,19 @@ MonoBehaviour:
   layerMask:
     serializedVersion: 2
     m_Bits: 1024
+--- !u!114 &8949915347511646679
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6853982749296474702}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dcb39e3efc5336c41b1243edf6d2c04e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <ObservingPoint>k__BackingField: {fileID: 8605876527865593980}
 --- !u!1 &7016426779257592134 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -5584446126907826599, guid: 9ae212ebcb224044a9d5293ac6ff9e0d, type: 3}
@@ -4177,6 +4196,11 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!4 &8605876527865593980 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -6579369597479647389, guid: 9ae212ebcb224044a9d5293ac6ff9e0d, type: 3}
+  m_PrefabInstance: {fileID: 6043642885179803423}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &9006271284674356567 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -5826565918730919352, guid: 9ae212ebcb224044a9d5293ac6ff9e0d, type: 3}

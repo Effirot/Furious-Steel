@@ -8,6 +8,7 @@ using CharacterSystem.Objects;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.InputSystem;
 
 // WinBlocker HAHAHAHA
 
@@ -23,7 +24,7 @@ namespace CharacterSystem.Blocking
         public event Action<bool> onStunStateChanged;
     }
 
-    public class DamageBlocker : SyncedActivity<IDamageBlocker>
+    public class DamageBlocker : SyncedActivitySource<IDamageBlocker>
     {
         [SerializeField]
         private bool IsActiveAsDefault = true;
@@ -50,6 +51,9 @@ namespace CharacterSystem.Blocking
         [Space]
         [SerializeField, Range(0f, 9f)]
         private float PushForce = 0.5f;
+
+        [SerializeField, Range(0f, 180f)]
+        private float blockingDegree = 75f;
 
         [SerializeField]
         private bool InterruptOnHit = true;
@@ -99,7 +103,8 @@ namespace CharacterSystem.Blocking
             if (damage.type == Damage.Type.Parrying || damage.type == Damage.Type.Unblockable || damage.type == Damage.Type.Effect) 
                 return false;
 
-            if (IsBlockActive)
+
+            if (IsBlockActive && Vector3.Angle(transform.forward, damage.sender.transform.position - transform.position) < blockingDegree)
             {
                 if (IsServer)
                 {
@@ -121,15 +126,25 @@ namespace CharacterSystem.Blocking
                 }
                 damage *= 1f - DamageReducing;
 
-                if (InterruptOnHit)
-                {
-                    Stop();
-                }
+                SkipBlockingProcess();
 
                 return true;
             }
 
+            SkipBlockingProcess();
+
             return false;
+            
+            void SkipBlockingProcess()
+            {
+                if (InterruptOnHit)
+                {
+                    Source.animator.SetBool("Blocking", false);
+
+                    IsBlockActive = false;
+                    Permissions = AfterBlockCharacterPermissions;
+                }
+            }
         } 
 
         public override void Play()
@@ -138,7 +153,6 @@ namespace CharacterSystem.Blocking
             {
                 base.Play();
             }
-
         }
         public override void Stop()
         {
@@ -193,7 +207,6 @@ namespace CharacterSystem.Blocking
             }
 
             Source.animator.SetBool("Blocking", false);
-
 
             IsBlockActive = false;
             Permissions = AfterBlockCharacterPermissions;

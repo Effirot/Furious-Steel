@@ -71,23 +71,27 @@ public class SpecializedSlot : MonoBehaviour,
     [SerializeField]
     private ItemCheckCondition[] itemCheckConditions = new ItemCheckCondition[0];
 
+    private string SlotName => "ItemSlot" + gameObject.name;
+
     public Item Item {
         get => _item; 
         set
         {
-            if (CheckItem(value))
+            if (value == null && AllowEmptyness)
             {
-                onItemChanged.Invoke(value);
-                _item = value;
+                onItemChanged.Invoke(null);
+                _item = null;
             }
             else
             {
-                if (AllowEmptyness)
+                if (CheckItem(value))
                 {
-                    onItemChanged.Invoke(null);
-                    _item = null;
+                    onItemChanged.Invoke(value);
+                    _item = value;
                 }
             }
+            
+            SaveItem(_item);
 
             LoadIcon();
         } 
@@ -162,6 +166,34 @@ public class SpecializedSlot : MonoBehaviour,
         image.enabled = true;
         image.gameObject.SetActive(true);
         image.sprite = invalidLoadingSprite;
+    }
+
+    private void Start()
+    {
+        Item = LoadItem();
+    }
+
+    private Item LoadItem()
+    {
+        var loadedIndex = PlayerPrefs.GetInt(SlotName, -1);
+            
+        if (loadedIndex < 0 || loadedIndex >= InventoryDrawer.LocalInventoryInstance.items.Length)
+        {
+            if (AllowEmptyness)
+            {
+                return null;
+            }
+            else
+            {
+                return InventoryDrawer.LocalInventoryInstance.items.First(item => CheckItem(item));
+            }
+        }
+        
+        return InventoryDrawer.LocalInventoryInstance.items[loadedIndex];
+    }
+    private void SaveItem(Item item)
+    {            
+        PlayerPrefs.SetInt(SlotName, Array.IndexOf(InventoryDrawer.LocalInventoryInstance.items, item));
     }
 
     private Sprite ConvertToSprite(Texture2D texture)

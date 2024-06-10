@@ -86,8 +86,6 @@ VFXRenderer:
   m_ReflectionProbeUsage: 0
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -273,8 +271,6 @@ VFXRenderer:
   m_ReflectionProbeUsage: 0
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -382,6 +378,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GlobalObjectIdHash: 896179055
+  InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -558,7 +555,7 @@ MonoBehaviour:
           value: 15
           type: 1
           stunlock: 0
-          pushDirection: {x: 0, y: 0.06, z: 0.2}
+          pushDirection: {x: 0, y: 0.06, z: 0.1}
           RechargeUltimate: 1
           SelfDamageUltimate: 0
           Effects: []
@@ -789,7 +786,7 @@ MonoBehaviour:
       type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          value: 20
+          value: 15
           type: 8
           stunlock: 0.5
           pushDirection: {x: 0, y: 0, z: 0.06}
@@ -871,8 +868,6 @@ SkinnedMeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 3
   m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1034,11 +1029,26 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: 2874887729735794688
+      type: {class: BoxCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        damage:
+          value: 0
+          type: 0
+          stunlock: 0
+          pushDirection: {x: 0, y: 0, z: 0}
+          RechargeUltimate: 0
+          SelfDamageUltimate: 0
+          Effects: []
+        position: {x: 0, y: 0, z: 1.99}
+        size: {x: 1, y: 1, z: 2.59}
+        angle: {x: 0, y: 0, z: 0}
     - rid: 2961813231421882371
       type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         casters:
         - rid: 2961813231421882372
+        - rid: 2874887729735794688
         CastPushDirection: {x: 0, y: 0, z: 0}
         OnCast:
           m_PersistentCalls:
@@ -1164,8 +1174,6 @@ VFXRenderer:
   m_ReflectionProbeUsage: 0
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -1319,7 +1327,6 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -1448,7 +1455,6 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 8047190744935610207, guid: bdf3e7f7eae78f844bd4f60d57993222, type: 2}
   m_audioClip: {fileID: 8300000, guid: 81c44d0f7d83e13469329c81a981dd98, type: 3}
-  m_Resource: {fileID: 8300000, guid: 81c44d0f7d83e13469329c81a981dd98, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.737
   m_Pitch: 0.98

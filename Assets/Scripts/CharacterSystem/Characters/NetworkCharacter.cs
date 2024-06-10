@@ -39,13 +39,17 @@ namespace CharacterSystem.Objects
     public abstract class NetworkCharacter : NetworkBehaviour,
         IDamagable,
         ITeammate,
-        ISyncedActivitiesSource
+        ISyncedActivitiesSource,
+        ITimeScalable
     {
         public delegate void OnCharacterStateChangedDelegate (NetworkCharacter character);
         public delegate void OnCharacterSendDamageDelegate (NetworkCharacter character, Damage damage);
         
         public static event OnCharacterStateChangedDelegate OnCharacterDead = delegate { };
         public static event OnCharacterStateChangedDelegate OnCharacterSpawn = delegate { };
+
+        public static List<NetworkCharacter> NetworkCharacters { get; } = new();
+
 
         public const float RotateInterpolationTime = 37f;
         public const float ServerPositionInterpolationTime = 0.07f;
@@ -99,8 +103,9 @@ namespace CharacterSystem.Objects
         public event Action<bool> onStunStateChanged = delegate { };
 
         public bool IsGrounded => characterController.isGrounded;
-        public bool isDashing { get; private set; } = false;
 
+        public virtual float LocalTimeScale { get; set; } = 1;
+        
         public Damage lastRecievedDamage { get; set; }
         public Animator animator { get; private set; }
         public CharacterController characterController { get; private set; }
@@ -333,6 +338,8 @@ namespace CharacterSystem.Objects
                     }
                 };
             }
+
+            NetworkCharacters.Add(this);
         }
         public override void OnNetworkDespawn ()
         {
@@ -343,10 +350,9 @@ namespace CharacterSystem.Objects
             
             StopAllCoroutines();
             
-            if (NetworkManager.IsListening)
-            {
-                SpawnCorpse();
-            }
+            NetworkCharacters.Remove(this);
+
+            SpawnCorpse();
         }
 
         public void SetAngle (float angle)
@@ -419,7 +425,10 @@ namespace CharacterSystem.Objects
 
                 if (isStunned)
                 {
-                    stunlock -= Time.fixedDeltaTime;
+                    if (IsGrounded)
+                    {
+                        stunlock -= Time.fixedDeltaTime * LocalTimeScale;
+                    }
                 }
                 else
                 {
@@ -438,7 +447,7 @@ namespace CharacterSystem.Objects
             }
             
             CalculatePhysicsSimulation();
-            CharacterMove(CalculateMovement(Time.fixedDeltaTime / 2)); 
+            CharacterMove(CalculateMovement()); 
 
             if (isGroundedDeltaState != IsGrounded)
             {
@@ -462,7 +471,7 @@ namespace CharacterSystem.Objects
 
             if (!isStunned)
             {
-                RotateCharacter(Time.fixedDeltaTime);
+                RotateCharacter();
             }
         }       
         protected virtual void Update () { }
@@ -501,7 +510,7 @@ namespace CharacterSystem.Objects
 
         protected virtual GameObject SpawnCorpse()
         {
-            if (IsClient && CorpsePrefab != null)
+            if (!NetworkManager.ShutdownInProgress && NetworkManager.IsListening && IsClient && CorpsePrefab != null)
             {
                 var corpseObject = Instantiate(CorpsePrefab, transform.position, transform.rotation);
 
@@ -531,7 +540,7 @@ namespace CharacterSystem.Objects
             return null;
         }
 
-        private void HandleActivitiesChanges_Event(SyncedActivitiesList.EventType type, SyncedActivity syncedActivity)
+        private void HandleActivitiesChanges_Event(SyncedActivitiesList.EventType type, SyncedActivitySource syncedActivity)
         {
             switch (type)
             {
@@ -553,32 +562,34 @@ namespace CharacterSystem.Objects
             permissions = activities.CalculatePermissions();
         }
 
-        private Vector3 CalculateMovement (float TimeScale)
+        private Vector3 CalculateMovement ()
         {
             var characterMovement = Vector3.zero;
 
             speed_acceleration_multipliyer = Vector2.Lerp(
                 speed_acceleration_multipliyer, 
                 CurrentSpeed <= 0 ? Vector2.zero : movementVector * Mathf.Max(0, CurrentSpeed) * (characterController.isGrounded ? 1f : 0.3f), 
-                38  * TimeScale);
+                20  * Time.fixedDeltaTime * LocalTimeScale);
 
-            characterMovement = new Vector3(speed_acceleration_multipliyer.x, 0, speed_acceleration_multipliyer.y) * TimeScale;
-
-            return characterMovement;
+            return new Vector3(speed_acceleration_multipliyer.x / 2, 0, speed_acceleration_multipliyer.y / 2) * Time.fixedDeltaTime * LocalTimeScale;
         }
         private void CalculatePhysicsSimulation ()
         {
             var velocity = this.velocity;
 
-            velocity.x =  Mathf.Lerp(velocity.x, 0, InterpolateSpeed());
             velocity.y =  permissions.HasFlag(CharacterPermission.AllowGravity) ? 
-                Mathf.Lerp(velocity.y, IsGrounded ? -0.1f : Physics.gravity.y, 0.2f * Time.fixedDeltaTime) : 
+                Mathf.Lerp(velocity.y, IsGrounded ? -0.1f : Physics.gravity.y, 0.2f * Time.fixedDeltaTime * LocalTimeScale) : 
                 Mathf.Lerp(velocity.y, 0, 0.22f);
-            velocity.z =  Mathf.Lerp(velocity.z, 0, InterpolateSpeed());
+
+            if (IsGrounded || !permissions.HasFlag(CharacterPermission.AllowGravity))
+            {
+                var interpolateValue = (IsGrounded ? 12 : 2.5f) * Mass * Time.fixedDeltaTime * LocalTimeScale;
+                
+                velocity.x =  Mathf.Lerp(velocity.x, 0, interpolateValue);
+                velocity.z =  Mathf.Lerp(velocity.z, 0, interpolateValue);
+            }
 
             this.velocity = velocity;
-
-            float InterpolateSpeed() => (IsGrounded ? 0.24f : 0.05f) * Mass;
         }
         private void CharacterMove (Vector3 vector)
         {
@@ -586,12 +597,12 @@ namespace CharacterSystem.Objects
             {
                 if(!IsServer)
                 {
-                    vector += Vector3.Lerp(Vector3.zero, network_position.Value - transform.position, 18f * Time.fixedDeltaTime);
+                    vector += Vector3.Lerp(Vector3.zero, network_position.Value - transform.position, 18f * Time.fixedDeltaTime * LocalTimeScale);
                 }
 
                 if (Vector3.Distance(network_position.Value, transform.position) < 1.8f)
                 {
-                    characterController.Move(vector + velocity);
+                    characterController.Move(vector + velocity * LocalTimeScale);
                 }
                 else
                 {
@@ -604,19 +615,21 @@ namespace CharacterSystem.Objects
                 }
             }
         }
-        private void RotateCharacter (float TimeScale)
+        private void RotateCharacter ()
         {
             var LookVector = new Vector3 (lookVector.x, 0, lookVector.y);
 
             if (LookVector.magnitude > 0.1f)
             {
-                transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(LookVector), RotateInterpolationTime * TimeScale);
+                transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(LookVector), RotateInterpolationTime * Time.fixedDeltaTime * LocalTimeScale);
             }
         }
         private void SetAnimationStates ()
         {
             if (animator.gameObject.activeInHierarchy && animator != null)
             {
+                animator.speed = LocalTimeScale;
+
                 var vector = new Vector3(speed_acceleration_multipliyer.x , 0, -speed_acceleration_multipliyer.y); 
                 
                 vector = transform.rotation * -vector;
@@ -638,7 +651,7 @@ namespace CharacterSystem.Objects
             var waitForFixedUpdateRoutine = new WaitForFixedUpdate();
             while (health < maxHealth && IsSpawned)
             {
-                health = Mathf.Clamp(health + regenerationPerSecond * Time.fixedDeltaTime, 0, maxHealth);
+                health = Mathf.Clamp(health + regenerationPerSecond * Time.fixedDeltaTime * LocalTimeScale, 0, maxHealth);
 
                 yield return waitForFixedUpdateRoutine;
             }
@@ -650,7 +663,7 @@ namespace CharacterSystem.Objects
         private void Jump_ServerRpc(Vector2 direction)
         {
             direction.Normalize();
-            direction *= Mathf.Max(0, CurrentSpeed) * Time.fixedDeltaTime * 1.5f;
+            direction *= Mathf.Max(0, CurrentSpeed) * Time.fixedDeltaTime * LocalTimeScale * 1.5f;
 
             if (!isStunned && (IsGrounded || completeJumpCount < JumpCount) && permissions.HasFlag(CharacterPermission.AllowJump))
             {
