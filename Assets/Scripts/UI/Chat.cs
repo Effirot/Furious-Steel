@@ -1,13 +1,6 @@
-using System.Collections.Generic;
-using CharacterSystem.DamageMath;
-using CharacterSystem.Objects;
-using Cinemachine;
 using TMPro;
 using Unity.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using static RoomManager;
 

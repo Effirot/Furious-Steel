@@ -20,6 +20,8 @@ public class UltimateDamageSource : DamageSource
     [HideInInspector]
     public CustomProperty chargeValue; 
 
+    public override bool IsActive => base.IsActive && chargeValue.Value >= chargeValue.MaxValue;
+
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
@@ -40,14 +42,14 @@ public class UltimateDamageSource : DamageSource
 
     public override void Play()
     {        
-        if (chargeValue.Value >= chargeValue.MaxValue && IsActive)
+        if (IsActive)
         {
+            base.Play();
+
             if (ClearCharge)
             {
                 chargeValue.Value = 0;
             }
-
-            base.Play();
         }
     }
 

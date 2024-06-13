@@ -48,8 +48,8 @@ public class CustomProperty : NetworkBehaviour
         }
     }
 
-    private NetworkVariable<float> network_value = new(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-    private NetworkVariable<bool> network_IsActive = new(true, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    protected NetworkVariable<float> network_value = new(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    protected NetworkVariable<bool> network_IsActive = new(true, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
 
     public void AddValue(float value)

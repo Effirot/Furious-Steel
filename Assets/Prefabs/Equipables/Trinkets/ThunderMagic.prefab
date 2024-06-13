@@ -49,6 +49,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GlobalObjectIdHash: 841343833
+  InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -574,6 +575,7 @@ MonoBehaviour:
   - rid: 868177009411096674
   - rid: 868177009411096678
   - rid: 868177009411096672
+  - rid: 2874887837082190062
   - rid: 868177009411096675
   - rid: 8630937699458744397
   OnDamageReport:
@@ -646,6 +648,10 @@ MonoBehaviour:
       data:
         WaitTime: 0.01
         Permissions: 256
+    - rid: 2874887837082190062
+      type: {class: Push, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        CastPushDirection: {x: 0, y: 0.38, z: 0.23}
     - rid: 8630937699458744397
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:

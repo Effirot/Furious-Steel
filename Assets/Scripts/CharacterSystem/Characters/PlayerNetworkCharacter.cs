@@ -5,7 +5,7 @@ using CharacterSystem.Attacks;
 using CharacterSystem.Blocking;
 using CharacterSystem.DamageMath;
 using CharacterSystem.PowerUps;
-using Cinemachine;
+using Unity.Cinemachine;
 using Unity.Collections;
 using Unity.Netcode;
 using Unity.VisualScripting;

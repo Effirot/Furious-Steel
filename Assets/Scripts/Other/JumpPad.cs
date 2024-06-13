@@ -10,9 +10,9 @@ public class JumpPad : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.TryGetComponent<IDamagable>(out var damagable))
+        if (other.TryGetComponent<IPhysicObject>(out var IPhysicObject))
         {
-            damagable.Push(pushDirection);
+            IPhysicObject.Push(pushDirection);
         }
     }
 

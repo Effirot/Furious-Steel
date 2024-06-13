@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CharacterSystem.DamageMath;
 using CharacterSystem.Objects;
-using Cinemachine;
+using Unity.Cinemachine;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
@@ -44,7 +44,7 @@ public class CharacterCameraObserver : MonoBehaviour
     private IObservableObject _observingCharacter = null;
 
     [SerializeField]
-    private CinemachineVirtualCamera virtualCamera; 
+    private CinemachineCamera virtualCamera; 
 
     private void Awake()
     {

@@ -10,7 +10,6 @@ public class WaterSpeedReducer : MonoBehaviour
     [SerializeField, Range(0, 20f)]
     private float speedReducing = 4f;
 
-
     public bool isInWater { 
         get => m_isInWater;
         set 

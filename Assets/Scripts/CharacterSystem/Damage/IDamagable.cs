@@ -25,7 +25,6 @@ namespace CharacterSystem.DamageMath
 
         public bool Hit(Damage damage);
         public bool Heal(Damage damage);
-        public void Push(Vector3 direction);
 
         public void Kill();
     }

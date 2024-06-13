@@ -154,7 +154,7 @@ namespace CharacterSystem.Blocking
                 base.Play();
             }
         }
-        public override void Stop()
+        public override void Stop(bool interuptProcess = true)
         {
             if (IsInProcess)
             {                                
@@ -163,7 +163,7 @@ namespace CharacterSystem.Blocking
                 Source.animator.SetBool("Blocking", false);
                 IsBlockActive = false;
                 
-                base.Stop();
+                base.Stop(interuptProcess);
             }
         }
         

@@ -155,6 +155,26 @@ namespace CharacterSystem.Objects.AI
                         GetCast ((AttackQueueElement) charger.chargeListener);
                     }
                 }
+
+                if (element is CharacterSystem.Attacks.Repeat)
+                {
+                    var charger = (CharacterSystem.Attacks.Repeat) element;
+
+                    if (charger.queueElement is AttackQueueElement)
+                    {
+                        GetCast ((AttackQueueElement) charger.queueElement);
+                    }
+                }
+
+                if (element is CharacterSystem.Attacks.HoldRepeat)
+                {
+                    var charger = (CharacterSystem.Attacks.HoldRepeat) element;
+
+                    if (charger.queueElement is AttackQueueElement)
+                    {
+                        GetCast ((AttackQueueElement) charger.queueElement);
+                    }
+                }
             }
         }
         private (Caster, Vector3) GetAttackVector(Cast cast)

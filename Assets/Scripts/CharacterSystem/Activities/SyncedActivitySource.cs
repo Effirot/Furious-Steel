@@ -108,8 +108,7 @@ public abstract class SyncedActivitySource : NetworkBehaviour
         }
 
         return !syncedActivityOverrider.IsUnityNull();
-    }
-    
+    }    
 
     public override void OnNetworkSpawn ()
     {
@@ -147,21 +146,26 @@ public abstract class SyncedActivitySource : NetworkBehaviour
             Play_ClientRpc();
         }
     }
-    public virtual void Stop()
+    public virtual void Stop(bool interuptProcess = true)
     {
         if (IsServer)
         {
             if (IsInProcess)
             {
                 permissions = CharacterPermission.Default;
+                
+                if (interuptProcess)
+                {
+                    StopCoroutine(process);
+                    StopAllCoroutines();
+                }
 
-                StopCoroutine(process);
+                process = null;
+
                 Source.activities.Remove(this);
-            }
+            }           
 
-            process = null;
-
-            Stop_ClientRpc();
+            Stop_ClientRpc(interuptProcess);
         }
     }
 
@@ -177,9 +181,9 @@ public abstract class SyncedActivitySource : NetworkBehaviour
 
     private IEnumerator ProcessRoutine()
     {
-        yield return StartCoroutine(Process());
+        yield return Process();
 
-        Stop();
+        Stop(false);
     }
 
     private void Register ()
@@ -228,6 +232,12 @@ public abstract class SyncedActivitySource : NetworkBehaviour
     {
         if (!IsServer)
         {
+            if (process != null)
+            {
+                StopCoroutine(process);
+                process = null;
+            }
+
             process = StartCoroutine(ProcessRoutine());
 
             Source?.activities.Add(this);
@@ -236,13 +246,13 @@ public abstract class SyncedActivitySource : NetworkBehaviour
         }
     }
     [ClientRpc]
-    private void Stop_ClientRpc()
+    private void Stop_ClientRpc(bool interuptProcess)
     {
         if (!IsServer)
         {
-            Stop();
+            Stop(interuptProcess);
         
-            if (IsInProcess)
+            if (IsInProcess && interuptProcess)
             {
                 StopCoroutine(process);
                 Source?.activities.Remove(this);

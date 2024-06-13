@@ -70,7 +70,6 @@ public class CharacterEffectsHolder : NetworkBehaviour
 
             renderer.sharedMaterials = renderer.sharedMaterials.Where(material => material.name != materialInstanceID + " (Instance)" ).ToArray();
         }
-        
     } 
 
     private struct NetworkCharacterEffectData : 

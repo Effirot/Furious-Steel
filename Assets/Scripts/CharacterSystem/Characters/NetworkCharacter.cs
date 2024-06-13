@@ -40,7 +40,8 @@ namespace CharacterSystem.Objects
         IDamagable,
         ITeammate,
         ISyncedActivitiesSource,
-        ITimeScalable
+        ITimeScalable,
+        IPhysicObject
     {
         public delegate void OnCharacterStateChangedDelegate (NetworkCharacter character);
         public delegate void OnCharacterSendDamageDelegate (NetworkCharacter character, Damage damage);
@@ -68,8 +69,8 @@ namespace CharacterSystem.Objects
         public float Speed { get; set; } = 11;
 
 
-        [SerializeField, Range (0.1f, 2.5f)]
-        public float Mass = 1f;
+        [field : SerializeField, Range (0.1f, 2.5f)]
+        public float mass { get; set; } = 1f;
 
         [SerializeField]
         public GameObject CorpsePrefab = null;
@@ -225,7 +226,8 @@ namespace CharacterSystem.Objects
         }
 
         public SyncedActivitiesList activities { get; } = new();
-
+        public float PhysicTimeScale { get; set; } = 1;
+        public float GravityScale { get; set; } = 1;
 
         private NetworkVariable<float> network_speed = new NetworkVariable<float>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);    
         private NetworkVariable<Vector3> network_position = new NetworkVariable<Vector3>(Vector3.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);    
@@ -308,7 +310,7 @@ namespace CharacterSystem.Objects
             if (direction.magnitude > 0)
             {
                 speed_acceleration_multipliyer = Vector2.zero;
-                velocity = direction / Mass;
+                velocity = direction / mass;
             }
         }
 
@@ -583,7 +585,7 @@ namespace CharacterSystem.Objects
 
             if (IsGrounded || !permissions.HasFlag(CharacterPermission.AllowGravity))
             {
-                var interpolateValue = (IsGrounded ? 12 : 2.5f) * Mass * Time.fixedDeltaTime * LocalTimeScale;
+                var interpolateValue = (IsGrounded ? 8 : 2.5f) * mass * Time.fixedDeltaTime * LocalTimeScale * PhysicTimeScale;
                 
                 velocity.x =  Mathf.Lerp(velocity.x, 0, interpolateValue);
                 velocity.z =  Mathf.Lerp(velocity.z, 0, interpolateValue);
@@ -602,7 +604,7 @@ namespace CharacterSystem.Objects
 
                 if (Vector3.Distance(network_position.Value, transform.position) < 1.8f)
                 {
-                    characterController.Move(vector + velocity * LocalTimeScale);
+                    characterController.Move(vector + (velocity * LocalTimeScale * PhysicTimeScale));
                 }
                 else
                 {

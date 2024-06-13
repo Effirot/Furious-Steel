@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1532867506026913969}
   - component: {fileID: 6485004803870085525}
   m_Layer: 0
-  m_Name: CursedFlameBallBright
+  m_Name: GlowingOrb
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -60,7 +60,7 @@ VisualEffect:
       m_Array: []
     m_Vector4f:
       m_Array:
-      - m_Value: {x: 766.99615, y: 126.79282, z: 0, w: 1}
+      - m_Value: {x: 90.409035, y: 30.323652, z: 8.102694, w: 1}
         m_Name: Color
         m_Overridden: 1
     m_Uint:
@@ -95,6 +95,130 @@ VFXRenderer:
   m_ReflectionProbeUsage: 0
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+--- !u!1 &5909503779845597544
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4947200031336687148}
+  - component: {fileID: 5794447280218631509}
+  - component: {fileID: 2636282276581791995}
+  m_Layer: 0
+  m_Name: AfterExplodeOrbGlowing
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &4947200031336687148
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5909503779845597544}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 520601800893309648}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!2083052967 &5794447280218631509
+VisualEffect:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5909503779845597544}
+  m_Enabled: 1
+  m_Asset: {fileID: 8926484042661614526, guid: d86096578ba4b5c43adaa137dabf5d0c, type: 3}
+  m_InitialEventName: OnPlay
+  m_InitialEventNameOverriden: 0
+  m_StartSeed: 0
+  m_ResetSeedOnPlay: 1
+  m_AllowInstancing: 0
+  m_ResourceVersion: 1
+  m_PropertySheet:
+    m_Float:
+      m_Array:
+      - m_Value: 1.68
+        m_Name: Size
+        m_Overridden: 1
+      - m_Value: 1
+        m_Name: Lifetime
+        m_Overridden: 1
+    m_Vector2f:
+      m_Array: []
+    m_Vector3f:
+      m_Array: []
+    m_Vector4f:
+      m_Array:
+      - m_Value: {x: 155.7486, y: 14.677877, z: 17.41265, w: 1}
+        m_Name: Color
+        m_Overridden: 1
+    m_Uint:
+      m_Array: []
+    m_Int:
+      m_Array: []
+    m_Matrix4x4f:
+      m_Array: []
+    m_AnimationCurve:
+      m_Array: []
+    m_Gradient:
+      m_Array: []
+    m_NamedObject:
+      m_Array: []
+    m_Bool:
+      m_Array: []
+--- !u!73398921 &2636282276581791995
+VFXRenderer:
+  serializedVersion: 1
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5909503779845597544}
+  m_Enabled: 0
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 0
+  m_LightProbeUsage: 0
+  m_ReflectionProbeUsage: 0
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -127,7 +251,7 @@ GameObject:
   m_Component:
   - component: {fileID: 520601800893309648}
   - component: {fileID: 8766839339822984711}
-  - component: {fileID: 4499440394487248025}
+  - component: {fileID: 4412733993099324369}
   - component: {fileID: 6030445069456558557}
   - component: {fileID: 6770969057966665048}
   m_Layer: 9
@@ -151,6 +275,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3733290632038327404}
+  - {fileID: 4947200031336687148}
   - {fileID: 3583526226229244892}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -175,7 +300,7 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
---- !u!114 &4499440394487248025
+--- !u!114 &4412733993099324369
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -184,12 +309,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 6845969276890429663}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bfba81b10efcb8049a24487e60557391, type: 3}
+  m_Script: {fileID: 11500000, guid: 28ebc4a05468ef24c89f6fca6c06b0f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 25.8
+  speed: 27.7
   speedTimeIncreacing: 0.95
-  lifetime: 0.93
+  lifetime: 4
   <DamageOnHit>k__BackingField: 0
   <AllowDeflecting>k__BackingField: 0
   <Gravity>k__BackingField: 0
@@ -197,25 +322,41 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   damage:
-    value: 30
-    type: 4
+    value: 0
+    type: 0
     stunlock: 0
     pushDirection: {x: 0, y: 0, z: 0}
-    RechargeUltimate: 1
+    RechargeUltimate: 0
     SelfDamageUltimate: 0
     Effects: []
   Range: 4
-  PushForce: 0.85
+  PushForce: 0.79
   explodeDamage:
-    value: 30
+    value: 40
     type: 4
     stunlock: 0
-    pushDirection: {x: 0, y: 0.24, z: 0}
+    pushDirection: {x: 0, y: 0.75, z: 0}
     RechargeUltimate: 1
     SelfDamageUltimate: 1
     Effects: []
   <OnExplodePrefab>k__BackingField: {fileID: 5810625439441998450}
   PereodicExplodeDelay: 0
+  ExplodeAfter: 0.22
+  OnAfterDetonateEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 5909503779845597544}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
   references:
     version: 2
     RefIds: []
@@ -227,9 +368,8 @@ Light:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6845969276890429663}
   m_Enabled: 1
-  serializedVersion: 10
+  serializedVersion: 11
   m_Type: 2
-  m_Shape: 0
   m_Color: {r: 1, g: 0.5214753, b: 0, a: 1}
   m_Intensity: 4.5
   m_Range: 12
@@ -414,7 +554,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5703535841718628397, guid: 04245663e3d3ae9439887411c250ec3f, type: 3}
       propertyPath: m_PropertySheet.m_Vector4f.m_Array.Array.data[0].m_Overridden
-      value: 1
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6199894316168492106, guid: 04245663e3d3ae9439887411c250ec3f, type: 3}
+      propertyPath: ImpulseDefinition.DissipationRate
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 6199894316168492106, guid: 04245663e3d3ae9439887411c250ec3f, type: 3}
+      propertyPath: ImpulseDefinition.ImpulseDuration
+      value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 6199894316168492106, guid: 04245663e3d3ae9439887411c250ec3f, type: 3}
       propertyPath: m_ImpulseDefinition.m_DissipationRate

@@ -60,6 +60,7 @@ MonoBehaviour:
   - rid: 8630938155889197135
   - rid: 2874887711280857093
   - rid: 8630938155889197137
+  - rid: 2874887841219346432
   OnDamageReport:
     m_PersistentCalls:
       m_Calls: []
@@ -85,6 +86,11 @@ MonoBehaviour:
       type: {class: PlayAnimation, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         AnimationName: Trinket.Block
+    - rid: 2874887841219346432
+      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        WaitTime: 0.3
+        Permissions: 57088
     - rid: 8630938155889197135
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
@@ -246,6 +252,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 8047190744935610207, guid: bdf3e7f7eae78f844bd4f60d57993222, type: 2}
   m_audioClip: {fileID: 8300000, guid: 6491850071269364db489f54dba8868b, type: 3}
+  m_Resource: {fileID: 8300000, guid: 6491850071269364db489f54dba8868b, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.891
   m_Pitch: 0.21
@@ -380,6 +387,8 @@ SkinnedMeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 3
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -573,6 +582,8 @@ VFXRenderer:
   m_ReflectionProbeUsage: 0
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -644,6 +655,8 @@ SkinnedMeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 3
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -779,6 +792,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 8047190744935610207, guid: bdf3e7f7eae78f844bd4f60d57993222, type: 2}
   m_audioClip: {fileID: 8300000, guid: 2ac096dcddbb5594bacd0c79be77d5d1, type: 3}
+  m_Resource: {fileID: 8300000, guid: 2ac096dcddbb5594bacd0c79be77d5d1, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1

@@ -129,101 +129,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!1 &756363562134313771
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1268313531738635781}
-  - component: {fileID: 2164128774607307364}
-  m_Layer: 0
-  m_Name: BaseCombo
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1268313531738635781
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 756363562134313771}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 6939889687448814556}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2164128774607307364
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 756363562134313771}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a8ecdfc990da94647995780684bb1166, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  inputAction: {fileID: 2243838571553120747, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
-  Priority: 2
-  SpeedChange: 0
-  IsPerformingAsDefault: 1
-  IsInterruptableWhenBlocked: 0
-  IsInterruptOnHit: 1
-  RestartWhenHolding: 0
-  attackQueue:
-  - rid: 8630937770391502929
-  - rid: 8630937770391502933
-  OnDamageReport:
-    m_PersistentCalls:
-      m_Calls: []
-  OnAttackEnded:
-    m_PersistentCalls:
-      m_Calls: []
-  references:
-    version: 2
-    RefIds:
-    - rid: 8630937770391502929
-      type: {class: HoldRepeat, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        queueElement:
-          rid: 8630937770391502930
-        RepeatLimit: 1
-    - rid: 8630937770391502930
-      type: {class: Queue, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        queue:
-        - rid: 8630938134238724174
-        - rid: 8630937770391502932
-        - rid: 8630937770391502931
-    - rid: 8630937770391502931
-      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        WaitTime: 0.1
-        Permissions: 12032
-    - rid: 8630937770391502932
-      type: {class: ProjectileShooter, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        projectilePrefab: {fileID: 6845969276890429663, guid: e693aee615084e94296a94df13b4fc19, type: 3}
-        direction: {x: 0, y: 0, z: 1}
-    - rid: 8630937770391502933
-      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        WaitTime: 0.4
-        Permissions: 12032
-    - rid: 8630938134238724174
-      type: {class: PlayAnimation, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        AnimationName: Torso.Attack1
 --- !u!1 &1436455018461280856
 GameObject:
   m_ObjectHideFlags: 0
@@ -380,6 +285,7 @@ GameObject:
   - component: {fileID: 7669626182777078651}
   - component: {fileID: 4268581567253092760}
   - component: {fileID: 467114278958066080}
+  - component: {fileID: 4533531134351662696}
   m_Layer: 6
   m_Name: ExplodeMagic
   m_TagString: Weapon
@@ -419,7 +325,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1891694031
+  GlobalObjectIdHash: 898145242
+  InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -467,7 +374,28 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   overrides:
   - Name: Attack1
-    Clip: {fileID: 5870210824424291235, guid: 722bbb0c0e6be5a45b34b827fb90d9f6, type: 3}
+    Clip: {fileID: -1134353356091838015, guid: 722bbb0c0e6be5a45b34b827fb90d9f6, type: 3}
+--- !u!114 &4533531134351662696
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1517727645108543378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f33f700d19759654199fa933d831ff38, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DefaultValue: 100
+  MaxValue: 100
+  color: {r: 0.015686274, g: 0.696047, b: 1, a: 1}
+  fullChargeColor: {r: 0.015686275, g: 0.69411767, b: 1, a: 1}
+  OnValueChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  RegenerationPerSecond: 30
+  BeforeRegenerationTimeout: 0.4
 --- !u!1 &1668164172153416259
 GameObject:
   m_ObjectHideFlags: 0
@@ -727,7 +655,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1268313531738635781}
+  - {fileID: 1063323474533724367}
   - {fileID: 8800284770908725859}
   - {fileID: 7603754523266505145}
   - {fileID: 6056542105741424838}
@@ -795,7 +723,7 @@ VisualEffect:
       m_Array:
       - m_Value: {x: 14.911403, y: 1.5614034, z: 0, w: 1}
         m_Name: Color
-        m_Overridden: 1
+        m_Overridden: 0
     m_Uint:
       m_Array: []
     m_Int:
@@ -864,8 +792,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6056542105741424838}
-  - component: {fileID: 963998028711503832}
-  - component: {fileID: 1594928545550114486}
+  - component: {fileID: 6400126629261240867}
   m_Layer: 6
   m_Name: Ultimate
   m_TagString: Untagged
@@ -888,7 +815,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 6939889687448814556}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &963998028711503832
+--- !u!114 &6400126629261240867
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -897,7 +824,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4599782399667057845}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d66bbf5c70176ad4f93959db1bbb4fb9, type: 3}
+  m_Script: {fileID: 11500000, guid: 0902c8092743d294c9e1e585f998fde4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: -697749738134341483, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
@@ -905,45 +832,46 @@ MonoBehaviour:
   SpeedChange: 0
   IsPerformingAsDefault: 1
   IsInterruptableWhenBlocked: 0
-  IsInterruptOnHit: 1
+  IsInterruptOnHit: 0
   RestartWhenHolding: 1
   attackQueue:
-  - rid: 8630937973846966352
+  - rid: 2874887858773557336
+  - rid: 2874887858773557337
   OnDamageReport:
     m_PersistentCalls:
       m_Calls: []
   OnAttackEnded:
     m_PersistentCalls:
       m_Calls: []
-  ClearCharge: 1
-  chargeValue: {fileID: 0}
+  MinRequiredValue: 0
+  StopOnValueLessThenMinimum: 1
+  customProperty: {fileID: 0}
   references:
     version: 2
     RefIds:
-    - rid: 8630937973846966352
+    - rid: 2874887858773557336
       type: {class: ProjectileShooter, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         projectilePrefab: {fileID: 9105060519269508590, guid: 3c631cf22d06a164e8c0edbb131fcd81, type: 3}
         direction: {x: 0, y: 0, z: 1}
---- !u!114 &1594928545550114486
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4599782399667057845}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f7833ff246d1754459595b40d8d6c25c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  DefaultValue: 0
-  MaxValue: 180
-  color: {r: 0, g: 1, b: 0.94148946, a: 1}
-  fullChargeColor: {r: 0.11485406, g: 0.8396226, b: 0.360811, a: 1}
-  OnValueChanged:
-    m_PersistentCalls:
-      m_Calls: []
+    - rid: 2874887858773557337
+      type: {class: Event, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        Function:
+          m_PersistentCalls:
+            m_Calls:
+            - m_Target: {fileID: 4533531134351662696}
+              m_TargetAssemblyTypeName: CustomProperty, Assembly-CSharp
+              m_MethodName: SubtractValue
+              m_Mode: 4
+              m_Arguments:
+                m_ObjectArgument: {fileID: 0}
+                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+                m_IntArgument: 0
+                m_FloatArgument: 100
+                m_StringArgument: 
+                m_BoolArgument: 0
+              m_CallState: 2
 --- !u!1 &4748355354840485092
 GameObject:
   m_ObjectHideFlags: 0
@@ -988,47 +916,47 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 180ecf9b41d478f468eb3e9083753217, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ImpulseDefinition:
-    m_ImpulseChannel: 1
-    m_ImpulseShape: 3
-    m_CustomImpulseShape:
+  ImpulseDefinition:
+    ImpulseChannel: 1
+    ImpulseShape: 3
+    CustomImpulseShape:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    m_ImpulseDuration: 0.2
-    m_ImpulseType: 1
-    m_DissipationRate: 0
-    m_RawSignal: {fileID: 11400000, guid: 69ce8388f6785dd4c8c39915efece2f4, type: 2}
-    m_AmplitudeGain: 1
-    m_FrequencyGain: 1
-    m_RepeatMode: 0
-    m_Randomize: 1
-    m_TimeEnvelope:
-      m_AttackShape:
+    ImpulseDuration: 0.2
+    ImpulseType: 1
+    DissipationRate: 0
+    RawSignal: {fileID: 11400000, guid: 69ce8388f6785dd4c8c39915efece2f4, type: 2}
+    AmplitudeGain: 1
+    FrequencyGain: 1
+    RepeatMode: 0
+    Randomize: 1
+    TimeEnvelope:
+      AttackShape:
         serializedVersion: 2
         m_Curve: []
         m_PreInfinity: 2
         m_PostInfinity: 2
         m_RotationOrder: 4
-      m_DecayShape:
+      DecayShape:
         serializedVersion: 2
         m_Curve: []
         m_PreInfinity: 2
         m_PostInfinity: 2
         m_RotationOrder: 4
-      m_AttackTime: 0
-      m_SustainTime: 0.2
-      m_DecayTime: 0.3
-      m_ScaleWithImpact: 1
-      m_HoldForever: 0
-    m_ImpactRadius: 30
-    m_DirectionMode: 0
-    m_DissipationMode: 2
-    m_DissipationDistance: 30
-    m_PropagationSpeed: 343
-  m_DefaultVelocity: {x: 0, y: 1, z: 0}
+      AttackTime: 0
+      SustainTime: 0.2
+      DecayTime: 0.3
+      ScaleWithImpact: 1
+      HoldForever: 0
+    ImpactRadius: 30
+    DirectionMode: 0
+    DissipationMode: 2
+    DissipationDistance: 30
+    PropagationSpeed: 343
+  DefaultVelocity: {x: 0, y: 1, z: 0}
 --- !u!1 &7173264314187313197
 GameObject:
   m_ObjectHideFlags: 0
@@ -1091,7 +1019,7 @@ VisualEffect:
       m_Array:
       - m_Value: {x: 14.911403, y: 1.5614034, z: 0, w: 1}
         m_Name: Color
-        m_Overridden: 1
+        m_Overridden: 0
     m_Uint:
       m_Array: []
     m_Int:
@@ -1160,7 +1088,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8800284770908725859}
-  - component: {fileID: 201413705774400062}
+  - component: {fileID: 6453642844179289918}
   m_Layer: 6
   m_Name: AltAttack
   m_TagString: Untagged
@@ -1184,7 +1112,7 @@ Transform:
   - {fileID: 5693253236861280496}
   m_Father: {fileID: 6939889687448814556}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &201413705774400062
+--- !u!114 &6453642844179289918
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1193,127 +1121,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 7304995406397758848}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a8ecdfc990da94647995780684bb1166, type: 3}
+  m_Script: {fileID: 11500000, guid: 3d1cded350cd6d84695f8f1d87d1877b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: 5277666054227158027, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
-  Priority: 2
+  Priority: 5
   SpeedChange: 0
-  IsPerformingAsDefault: 1
-  IsInterruptableWhenBlocked: 0
-  IsInterruptOnHit: 1
-  RestartWhenHolding: 1
-  attackQueue:
-  - rid: 8630937752400560209
-  - rid: 8630937752400560208
-  - rid: 8630937752400560205
-  - rid: 3189152335008104540
-  - rid: 3189152335008104539
-  - rid: 3395287651162521948
-  - rid: 8630937770391502935
-  - rid: 8630937770391502936
-  OnDamageReport:
-    m_PersistentCalls:
-      m_Calls: []
-  OnAttackEnded:
-    m_PersistentCalls:
-      m_Calls: []
-  references:
-    version: 2
-    RefIds:
-    - rid: 3189152335008104539
-      type: {class: WaitForGroudpound, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        Permissions: 1024
-        Reverse: 0
-    - rid: 3189152335008104540
-      type: {class: Push, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        CastPushDirection: {x: 0, y: -0.93, z: 0.3}
-    - rid: 3395287651162521948
-      type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        casters:
-        - rid: 3395287651162521951
-        CastPushDirection: {x: 0, y: 0.2, z: -0.3}
-        OnCast:
-          m_PersistentCalls:
-            m_Calls:
-            - m_Target: {fileID: 1770413179816825295}
-              m_TargetAssemblyTypeName: UnityEngine.VFX.VisualEffect, UnityEngine
-              m_MethodName: Play
-              m_Mode: 1
-              m_Arguments:
-                m_ObjectArgument: {fileID: 0}
-                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-                m_IntArgument: 0
-                m_FloatArgument: 0
-                m_StringArgument: 
-                m_BoolArgument: 0
-              m_CallState: 2
-            - m_Target: {fileID: 5201484329118489868}
-              m_TargetAssemblyTypeName: AudioSourceRandomize, Assembly-CSharp
-              m_MethodName: Randomize
-              m_Mode: 1
-              m_Arguments:
-                m_ObjectArgument: {fileID: 0}
-                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-                m_IntArgument: 0
-                m_FloatArgument: 0
-                m_StringArgument: 
-                m_BoolArgument: 0
-              m_CallState: 2
-            - m_Target: {fileID: 3487500842407008031}
-              m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
-              m_MethodName: Play
-              m_Mode: 1
-              m_Arguments:
-                m_ObjectArgument: {fileID: 0}
-                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-                m_IntArgument: 0
-                m_FloatArgument: 0
-                m_StringArgument: 
-                m_BoolArgument: 0
-              m_CallState: 2
-    - rid: 3395287651162521951
-      type: {class: SphereCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        damage:
-          value: 40
-          type: 4
-          stunlock: 0
-          pushDirection: {x: 0, y: 0.4, z: 0.5}
-          RechargeUltimate: 1
-          SelfDamageUltimate: 0
-          Effects: []
-        position: {x: 0, y: 0, z: 0}
-        radius: 5
-    - rid: 8630937752400560205
-      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        WaitTime: 0.1
-        Permissions: 0
-    - rid: 8630937752400560208
-      type: {class: Push, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        CastPushDirection: {x: 0, y: 0.2, z: 0}
-    - rid: 8630937752400560209
-      type: {class: InterruptableWait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        WaitTime: 0.2
-        LastHitRequireSeconds: 0.8
-        Permissions: 0
-    - rid: 8630937770391502935
-      type: {class: InterruptableWait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        WaitTime: 1
-        LastHitRequireSeconds: 0.1
-        Permissions: 65280
-    - rid: 8630937770391502936
-      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        WaitTime: 1
-        Permissions: 65280
 --- !u!1 &8082012029032708640
 GameObject:
   m_ObjectHideFlags: 0
@@ -1460,6 +1273,112 @@ MonoBehaviour:
   MinPitch: 0.69
   MaxVolume: 0.28
   MinVolume: 0.12
+--- !u!1 &9091859485633712073
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1063323474533724367}
+  - component: {fileID: 4646577680919864156}
+  m_Layer: 0
+  m_Name: BaseAttack
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1063323474533724367
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9091859485633712073}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6939889687448814556}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4646577680919864156
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9091859485633712073}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0902c8092743d294c9e1e585f998fde4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  inputAction: {fileID: 2243838571553120747, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
+  Priority: 2
+  SpeedChange: 0
+  IsPerformingAsDefault: 1
+  IsInterruptableWhenBlocked: 0
+  IsInterruptOnHit: 1
+  RestartWhenHolding: 1
+  attackQueue:
+  - rid: 2874887858773557343
+  - rid: 2874887858773557344
+  - rid: 2874887858773557345
+  - rid: 2874887858773557346
+  - rid: 2874887858773557347
+  OnDamageReport:
+    m_PersistentCalls:
+      m_Calls: []
+  OnAttackEnded:
+    m_PersistentCalls:
+      m_Calls: []
+  MinRequiredValue: 25
+  StopOnValueLessThenMinimum: 0
+  customProperty: {fileID: 4533531134351662696}
+  references:
+    version: 2
+    RefIds:
+    - rid: 2874887858773557343
+      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        WaitTime: 0.1
+        Permissions: 12032
+    - rid: 2874887858773557344
+      type: {class: PlayAnimation, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        AnimationName: Torso.Attack1
+    - rid: 2874887858773557345
+      type: {class: Event, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        Function:
+          m_PersistentCalls:
+            m_Calls:
+            - m_Target: {fileID: 4533531134351662696}
+              m_TargetAssemblyTypeName: CustomProperty, Assembly-CSharp
+              m_MethodName: SubtractValue
+              m_Mode: 4
+              m_Arguments:
+                m_ObjectArgument: {fileID: 0}
+                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+                m_IntArgument: 0
+                m_FloatArgument: 25
+                m_StringArgument: 
+                m_BoolArgument: 0
+              m_CallState: 2
+    - rid: 2874887858773557346
+      type: {class: ProjectileShooter, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        projectilePrefab: {fileID: 6845969276890429663, guid: e693aee615084e94296a94df13b4fc19, type: 3}
+        direction: {x: 0, y: 0, z: 1}
+    - rid: 2874887858773557347
+      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        WaitTime: 0.05
+        Permissions: 12032
 --- !u!1 &9114848457831012187
 GameObject:
   m_ObjectHideFlags: 0

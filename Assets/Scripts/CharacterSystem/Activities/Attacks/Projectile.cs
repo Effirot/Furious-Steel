@@ -1,7 +1,7 @@
 using System;
 using CharacterSystem.Attacks;
 using CharacterSystem.DamageMath;
-using Cinemachine;
+using Unity.Cinemachine;
 using Cysharp.Threading.Tasks;
 using Unity.Netcode;
 using Unity.VisualScripting;
@@ -177,10 +177,6 @@ public class Projectile : NetworkBehaviour,
 
             CheckGroundCollision();
         }
-        else
-        {
-            
-        }
 
         if (network_moveDirection.Value.magnitude > 0)
         {
@@ -191,7 +187,14 @@ public class Projectile : NetworkBehaviour,
     {
         if (IsClient)
         {
-            transform.position = Vector3.Lerp(transform.position, network_position.Value, 15 * Time.deltaTime);
+            if (Vector3.Distance(transform.position, network_position.Value) < 0.5f)
+            {
+                transform.position = Vector3.Lerp(transform.position, network_position.Value, 22 * Time.deltaTime);
+            }
+            else
+            {
+                transform.position = network_position.Value;
+            }
         }
     }
     protected virtual void OnTriggerEnter (Collider other)

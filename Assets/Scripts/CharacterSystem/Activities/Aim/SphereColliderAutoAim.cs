@@ -121,7 +121,7 @@ public class SphereColliderAutoAim : NetworkBehaviour
                 .Where(collider => collider != null && collider.gameObject.TryGetComponent<IDamagable>(out _));
             
             Collider targetCollider = null;
-            float minDistance = 1000000;
+            float minDistance = float.MaxValue;
 
             foreach (var collider in colliders) {
                 
@@ -137,7 +137,10 @@ public class SphereColliderAutoAim : NetworkBehaviour
             {
                 target = targetCollider.transform;
             }
-
+            else
+            {
+                target = null;
+            }
 
             yield return wait;
         }

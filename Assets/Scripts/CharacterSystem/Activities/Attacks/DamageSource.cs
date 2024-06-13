@@ -18,7 +18,8 @@ namespace CharacterSystem.Attacks
     public interface IDamageSource :
         ISyncedActivitiesSource,
         IDamagable,
-        ITimeScalable
+        ITimeScalable,
+        IPhysicObject
     {
         DamageDeliveryReport lastReport { get; set; }
 
@@ -113,7 +114,7 @@ namespace CharacterSystem.Attacks
                 PlayForced();                
             }    
         }
-        public override void Stop()
+        public override void Stop(bool interuptProcess = true)
         {
             if (IsInProcess)
             {
@@ -122,9 +123,9 @@ namespace CharacterSystem.Attacks
                 currentAttackDamageReport = null;
 
                 OnAttackEnded.Invoke();
+                
+                base.Stop(interuptProcess);
             }
-
-            base.Stop();
         }
         
         public override IEnumerator Process()
@@ -146,8 +147,7 @@ namespace CharacterSystem.Attacks
                     }
                 };
             }
-        }
-
+        }     
         protected virtual void FixedUpdate()
         {
             if (IsPressed && RestartWhenHolding)
@@ -546,10 +546,10 @@ namespace CharacterSystem.Attacks
     public sealed class Repeat : AttackQueueElement
     {
         [SerializeField, SerializeReference, SubclassSelector]
-        private AttackQueueElement queueElement;
+        public AttackQueueElement queueElement;
 
         [SerializeField, Range(1, 50)]
-        private int RepeatCount = 5;
+        public int RepeatCount = 5;
 
         public override IEnumerator AttackPipeline(DamageSource source)
         {
@@ -568,10 +568,10 @@ namespace CharacterSystem.Attacks
     public sealed class HoldRepeat : AttackQueueElement
     {
         [SerializeField, SerializeReference, SubclassSelector]
-        private AttackQueueElement queueElement;
+        public AttackQueueElement queueElement;
 
         [SerializeField, Range(0, 100)]
-        private int RepeatLimit = 0;
+        public int RepeatLimit = 0;
 
         public override IEnumerator AttackPipeline(DamageSource source)
         {

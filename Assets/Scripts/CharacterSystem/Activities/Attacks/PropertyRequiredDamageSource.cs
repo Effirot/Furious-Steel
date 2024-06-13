@@ -9,13 +9,21 @@ public class PropertyRequiredDamageSource : DamageSource
     private float MinRequiredValue = 0;
 
     [SerializeField]
+    private bool StopOnValueLessThenMinimum = true;
+
+    [SerializeField]
     private CustomProperty customProperty;
 
-    public override void Play()
+    public override bool IsActive => base.IsActive && customProperty.Value >= MinRequiredValue; 
+
+    public override void OnNetworkSpawn()
     {
-        if (customProperty.Value >= MinRequiredValue)
-        {
-            base.Play();
-        }
+        base.OnNetworkSpawn();
+
+        customProperty.OnValueChanged.AddListener(value => {
+            if (StopOnValueLessThenMinimum && value <= MinRequiredValue) {
+                Stop();
+            }
+        });
     }
 }

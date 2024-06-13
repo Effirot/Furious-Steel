@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using CharacterSystem.DamageMath;
 using CharacterSystem.Objects;
 using CharacterSystem.PowerUps;
-using Cinemachine;
+using Unity.Cinemachine;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.VFX;

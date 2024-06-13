@@ -1,7 +1,7 @@
 
 
 using CharacterSystem.DamageMath;
-using Cinemachine;
+using Unity.Cinemachine;
 using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
