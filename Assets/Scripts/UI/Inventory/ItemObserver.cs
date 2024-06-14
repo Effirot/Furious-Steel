@@ -75,7 +75,7 @@ Creation time: {value.CreationTime.ToLongTimeString()}");
         PointerEventData eventData = new(EventSystem.current);
         eventData.position = Mouse.current.position.value;
 
-        EventSystem.current.RaycastAll(eventData, eventDataRaycastResult);
+        EventSystem.current?.RaycastAll(eventData, eventDataRaycastResult);
         
 
         if (eventDataRaycastResult.Any() && eventDataRaycastResult.First().gameObject.TryGetComponent<IItemSlot>(out var component))

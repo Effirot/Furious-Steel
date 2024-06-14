@@ -4,11 +4,11 @@ using CharacterSystem.Objects;
 using UnityEngine;
 
 [DisallowMultipleComponent]
-[RequireComponent(typeof(NetworkCharacter))]
+[RequireComponent(typeof(IPhysicObject))]
 public class WaterSpeedReducer : MonoBehaviour
 {
-    [SerializeField, Range(0, 20f)]
-    private float speedReducing = 4f;
+    [SerializeField, Range(0, 1)]
+    private float speedReducing = 1f;
 
     public bool isInWater { 
         get => m_isInWater;
@@ -18,11 +18,11 @@ public class WaterSpeedReducer : MonoBehaviour
             {
                 if (value)
                 {
-                    character.CurrentSpeed -= speedReducing;
+                    physicObject.PhysicTimeScale -= speedReducing;
                 }
                 else
                 {
-                    character.CurrentSpeed += speedReducing;
+                    physicObject.PhysicTimeScale += speedReducing;
                 }
             }
             
@@ -31,11 +31,11 @@ public class WaterSpeedReducer : MonoBehaviour
     }
     
     private bool m_isInWater = false; 
-    private NetworkCharacter character;
+    private IPhysicObject physicObject;
     
     private void Awake()
     {
-        character = GetComponent<NetworkCharacter>();
+        physicObject = GetComponent<IPhysicObject>();
     }
     private void OnTriggerEnter (Collider collider)
     {

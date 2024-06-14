@@ -236,7 +236,7 @@ public class Projectile : NetworkBehaviour,
 
     private void CheckGroundCollision()
     {
-        if (Physics.Raycast(transform.position, MoveDirection, MoveDirection.magnitude, LayerMask.GetMask("Ground")))
+        if (Physics.Linecast(transform.position - MoveDirection, transform.position + MoveDirection, LayerMask.GetMask("Ground")))
         {
             Kill();
         }

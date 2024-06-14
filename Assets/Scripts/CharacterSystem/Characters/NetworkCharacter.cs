@@ -579,9 +579,12 @@ namespace CharacterSystem.Objects
         {
             var velocity = this.velocity;
 
+            var PhysicTimeScale = Mathf.Max(this.PhysicTimeScale, 0);
+
             velocity.y =  permissions.HasFlag(CharacterPermission.AllowGravity) ? 
-                Mathf.Lerp(velocity.y, IsGrounded ? -0.1f : Physics.gravity.y, 0.2f * Time.fixedDeltaTime * LocalTimeScale) : 
-                Mathf.Lerp(velocity.y, 0, 0.22f);
+                Mathf.Lerp(velocity.y, IsGrounded ? -0.1f : Physics.gravity.y, 0.2f * Time.fixedDeltaTime * LocalTimeScale * PhysicTimeScale) : 
+                Mathf.Lerp(velocity.y, -0.1f, 0.22f);
+
 
             if (IsGrounded || !permissions.HasFlag(CharacterPermission.AllowGravity))
             {
@@ -604,6 +607,7 @@ namespace CharacterSystem.Objects
 
                 if (Vector3.Distance(network_position.Value, transform.position) < 1.8f)
                 {
+                    var PhysicTimeScale = Mathf.Max(this.PhysicTimeScale, 0);
                     characterController.Move(vector + (velocity * LocalTimeScale * PhysicTimeScale));
                 }
                 else

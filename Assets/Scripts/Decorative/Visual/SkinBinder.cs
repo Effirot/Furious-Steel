@@ -18,14 +18,26 @@ public sealed class SkinBinder : NetworkBehaviour
     {
         base.OnNetworkDespawn();
     }
-
     public override void OnNetworkObjectParentChanged(NetworkObject parentNetworkObject)
     {
         base.OnNetworkObjectParentChanged(parentNetworkObject);
         
         if (parentNetworkObject != null)
         {
-            origin.rootBone = parentNetworkObject.transform.Find(TargetParentPath);
+            Research(parentNetworkObject.gameObject);
+        }
+    }
+
+    private void Start()
+    {
+        Research(transform.parent.gameObject);
+    }
+
+    private void Research(GameObject target)
+    {
+        if (target != null)
+        {
+            origin.rootBone = target.transform.Find(TargetParentPath);
             
             if (origin.rootBone != null)
             {

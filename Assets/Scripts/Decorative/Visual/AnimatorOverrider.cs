@@ -20,6 +20,7 @@ public class AnimatorOverrider : NetworkBehaviour
     private Animator lastAnimator;
     private AnimatorOverrideController localOverrider;
 
+
     public override void OnNetworkObjectParentChanged(NetworkObject parentNetworkObject)
     {
         ClearAnimationOverrides();
@@ -27,7 +28,24 @@ public class AnimatorOverrider : NetworkBehaviour
         if (parentNetworkObject == null) 
             return;
         
-        var animator = parentNetworkObject.GetComponentInChildren<Animator>();
+        UpdateParent(parentNetworkObject.gameObject);
+    }
+    public override void OnNetworkDespawn()
+    {
+        ClearAnimationOverrides();
+
+        base.OnNetworkDespawn();
+    }
+
+    private void Start()
+    {
+        UpdateParent(transform.parent?.gameObject);
+    }
+
+    private void UpdateParent(GameObject traget)
+    {
+        var animator = traget.GetComponentInChildren<Animator>();
+
         if (animator != null)
         {
             if (animator.runtimeAnimatorController is AnimatorOverrideController)
@@ -57,12 +75,6 @@ public class AnimatorOverrider : NetworkBehaviour
             lastAnimator = animator;
             animator.runtimeAnimatorController = localOverrider;
         }
-    }
-    public override void OnNetworkDespawn()
-    {
-        ClearAnimationOverrides();
-
-        base.OnNetworkDespawn();
     }
 
     private void ClearAnimationOverrides()

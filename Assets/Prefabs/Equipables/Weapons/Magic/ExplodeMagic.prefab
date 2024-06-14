@@ -405,7 +405,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7603754523266505145}
-  - component: {fileID: 6648956905109973235}
+  - component: {fileID: 4732907055801026765}
   m_Layer: 6
   m_Name: BlockAttack
   m_TagString: Untagged
@@ -427,10 +427,9 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2985969198671272836}
-  - {fileID: 1298638837469949200}
   m_Father: {fileID: 6939889687448814556}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6648956905109973235
+--- !u!114 &4732907055801026765
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -439,34 +438,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 1668164172153416259}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a8ecdfc990da94647995780684bb1166, type: 3}
+  m_Script: {fileID: 11500000, guid: 0902c8092743d294c9e1e585f998fde4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: 4628471853980608337, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 2
-  SpeedChange: 0
+  SpeedChange: 4
   IsPerformingAsDefault: 1
-  IsInterruptableWhenBlocked: 0
+  IsInterruptableWhenBlocked: 1
   IsInterruptOnHit: 1
   RestartWhenHolding: 0
   attackQueue:
-  - rid: 8630937752400560206
-  - rid: 3189152335008104528
-  - rid: 3189152335008104525
-  - rid: 3189152335008104527
-  - rid: 8630937770391502934
-  - rid: 8630937868824477776
-  - rid: 3189152335008104530
+  - rid: 2874887882897358929
   OnDamageReport:
     m_PersistentCalls:
-      m_Calls: []
-  OnAttackEnded:
-    m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7749770091516303091}
-        m_TargetAssemblyTypeName: UnityEngine.VFX.VisualEffect, UnityEngine
-        m_MethodName: Stop
-        m_Mode: 1
+      - m_Target: {fileID: 4533531134351662696}
+        m_TargetAssemblyTypeName: CustomProperty, Assembly-CSharp
+        m_MethodName: RefillOnKill
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -475,43 +465,37 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  OnAttackEnded:
+    m_PersistentCalls:
+      m_Calls: []
+  MinRequiredValue: 0
+  StopOnValueLessThenMinimum: 1
+  customProperty: {fileID: 4533531134351662696}
   references:
     version: 2
     RefIds:
-    - rid: 3189152335008104525
-      type: {class: Charger, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+    - rid: 2874887882897358929
+      type: {class: HoldRepeat, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Permissions: 512
-        MaxChargingTime: 0.8
-        MinChargeValue: 1
-        MaxChargeValue: 2
-        flexibleDamage: 0
-        flexibleCollider: 0
-        OnStart:
-          m_PersistentCalls:
-            m_Calls: []
-        OnEnd:
-          m_PersistentCalls:
-            m_Calls: []
-        OnCharge:
-          m_PersistentCalls:
-            m_Calls: []
-        OnFullCharged:
-          m_PersistentCalls:
-            m_Calls: []
-        chargeListener:
-          rid: 3189152335008104526
-        FullyChargeQueue:
-          queue: []
-    - rid: 3189152335008104526
-      type: {class: Push, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+        queueElement:
+          rid: 2874887882897358930
+        RepeatLimit: 0
+    - rid: 2874887882897358930
+      type: {class: Queue, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        CastPushDirection: {x: 0, y: 0.3, z: 0.6}
-    - rid: 3189152335008104527
+        queue:
+        - rid: 2874887882897358932
+        - rid: 2874887882897358933
+    - rid: 2874887882897358932
+      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        WaitTime: 0.3
+        Permissions: 44800
+    - rid: 2874887882897358933
       type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         casters:
-        - rid: 3189152335008104529
+        - rid: 2874887882897358934
         CastPushDirection: {x: 0, y: 0, z: 0}
         OnCast:
           m_PersistentCalls:
@@ -519,30 +503,6 @@ MonoBehaviour:
             - m_Target: {fileID: 5107299969745464446}
               m_TargetAssemblyTypeName: UnityEngine.VFX.VisualEffect, UnityEngine
               m_MethodName: Play
-              m_Mode: 1
-              m_Arguments:
-                m_ObjectArgument: {fileID: 0}
-                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-                m_IntArgument: 0
-                m_FloatArgument: 0
-                m_StringArgument: 
-                m_BoolArgument: 0
-              m_CallState: 2
-            - m_Target: {fileID: 897015580173702940}
-              m_TargetAssemblyTypeName: Cinemachine.CinemachineImpulseSource, Cinemachine
-              m_MethodName: GenerateImpulse
-              m_Mode: 1
-              m_Arguments:
-                m_ObjectArgument: {fileID: 0}
-                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-                m_IntArgument: 0
-                m_FloatArgument: 0
-                m_StringArgument: 
-                m_BoolArgument: 0
-              m_CallState: 2
-            - m_Target: {fileID: 5201484329118489868}
-              m_TargetAssemblyTypeName: AudioSourceRandomize, Assembly-CSharp
-              m_MethodName: Randomize
               m_Mode: 1
               m_Arguments:
                 m_ObjectArgument: {fileID: 0}
@@ -564,68 +524,31 @@ MonoBehaviour:
                 m_StringArgument: 
                 m_BoolArgument: 0
               m_CallState: 2
-            - m_Target: {fileID: 7749770091516303091}
-              m_TargetAssemblyTypeName: UnityEngine.VFX.VisualEffect, UnityEngine
-              m_MethodName: Play
-              m_Mode: 1
+            - m_Target: {fileID: 4533531134351662696}
+              m_TargetAssemblyTypeName: CustomProperty, Assembly-CSharp
+              m_MethodName: SubtractValue
+              m_Mode: 4
               m_Arguments:
                 m_ObjectArgument: {fileID: 0}
                 m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
                 m_IntArgument: 0
-                m_FloatArgument: 0
+                m_FloatArgument: 10
                 m_StringArgument: 
                 m_BoolArgument: 0
               m_CallState: 2
-    - rid: 3189152335008104528
-      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        WaitTime: 0.2
-        Permissions: 256
-    - rid: 3189152335008104529
+    - rid: 2874887882897358934
       type: {class: SphereCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
-          value: 25
+          value: 20
           type: 4
-          stunlock: 0.5
-          pushDirection: {x: 0, y: 0.7, z: 0}
+          stunlock: 0
+          pushDirection: {x: 0, y: 0.15, z: 0.43}
           RechargeUltimate: 1
           SelfDamageUltimate: 0
           Effects: []
         position: {x: 0, y: 0, z: 0}
-        radius: 4.03
-    - rid: 3189152335008104530
-      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        WaitTime: 3
-        Permissions: 65280
-    - rid: 8630937752400560206
-      type: {class: Push, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        CastPushDirection: {x: 0, y: 0.1, z: 0}
-    - rid: 8630937770391502934
-      type: {class: WaitForGroudpound, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        Permissions: 65280
-        Reverse: 0
-    - rid: 8630937868824477776
-      type: {class: Event, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        Function:
-          m_PersistentCalls:
-            m_Calls:
-            - m_Target: {fileID: 7749770091516303091}
-              m_TargetAssemblyTypeName: UnityEngine.VFX.VisualEffect, UnityEngine
-              m_MethodName: Stop
-              m_Mode: 1
-              m_Arguments:
-                m_ObjectArgument: {fileID: 0}
-                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-                m_IntArgument: 0
-                m_FloatArgument: 0
-                m_StringArgument: 
-                m_BoolArgument: 0
-              m_CallState: 2
+        radius: 4
 --- !u!1 &2550411166488077007
 GameObject:
   m_ObjectHideFlags: 0
@@ -728,7 +651,7 @@ VisualEffect:
       m_Array: []
     m_Int:
       m_Array:
-      - m_Value: 6
+      - m_Value: 0
         m_Name: SmokeParticlesCount
         m_Overridden: 1
     m_Matrix4x4f:
@@ -1173,8 +1096,8 @@ AudioSource:
   m_audioClip: {fileID: 8300000, guid: 96495f1f7ea3c1047b41c43ce726a35d, type: 3}
   m_Resource: {fileID: 8300000, guid: 96495f1f7ea3c1047b41c43ce726a35d, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 0.483
-  m_Pitch: 1
+  m_Volume: 0.108
+  m_Pitch: 0.5
   Loop: 0
   Mute: 0
   Spatialize: 0
@@ -1318,11 +1241,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAction: {fileID: 2243838571553120747, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
-  Priority: 2
+  Priority: 5
   SpeedChange: 0
   IsPerformingAsDefault: 1
   IsInterruptableWhenBlocked: 0
-  IsInterruptOnHit: 1
+  IsInterruptOnHit: 0
   RestartWhenHolding: 1
   attackQueue:
   - rid: 2874887858773557343
@@ -1332,11 +1255,23 @@ MonoBehaviour:
   - rid: 2874887858773557347
   OnDamageReport:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 4533531134351662696}
+        m_TargetAssemblyTypeName: CustomProperty, Assembly-CSharp
+        m_MethodName: RefillOnKill
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   OnAttackEnded:
     m_PersistentCalls:
       m_Calls: []
-  MinRequiredValue: 25
+  MinRequiredValue: 20
   StopOnValueLessThenMinimum: 0
   customProperty: {fileID: 4533531134351662696}
   references:
@@ -1365,7 +1300,7 @@ MonoBehaviour:
                 m_ObjectArgument: {fileID: 0}
                 m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
                 m_IntArgument: 0
-                m_FloatArgument: 25
+                m_FloatArgument: 20
                 m_StringArgument: 
                 m_BoolArgument: 0
               m_CallState: 2
@@ -1379,154 +1314,3 @@ MonoBehaviour:
       data:
         WaitTime: 0.05
         Permissions: 12032
---- !u!1 &9114848457831012187
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1298638837469949200}
-  - component: {fileID: 7749770091516303091}
-  - component: {fileID: 3239663999259161885}
-  m_Layer: 0
-  m_Name: SmokeTrail
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1298638837469949200
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9114848457831012187}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 7603754523266505145}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!2083052967 &7749770091516303091
-VisualEffect:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9114848457831012187}
-  m_Enabled: 1
-  m_Asset: {fileID: 8926484042661614526, guid: a446fec1b033ba0428e14d71436de113, type: 3}
-  m_InitialEventName: 
-  m_InitialEventNameOverriden: 1
-  m_StartSeed: 0
-  m_ResetSeedOnPlay: 1
-  m_AllowInstancing: 1
-  m_ResourceVersion: 1
-  m_PropertySheet:
-    m_Float:
-      m_Array:
-      - m_Value: 2
-        m_Name: Length
-        m_Overridden: 1
-      - m_Value: 1
-        m_Name: Size
-        m_Overridden: 1
-    m_Vector2f:
-      m_Array: []
-    m_Vector3f:
-      m_Array: []
-    m_Vector4f:
-      m_Array: []
-    m_Uint:
-      m_Array: []
-    m_Int:
-      m_Array: []
-    m_Matrix4x4f:
-      m_Array: []
-    m_AnimationCurve:
-      m_Array: []
-    m_Gradient:
-      m_Array:
-      - m_Value:
-          serializedVersion: 2
-          key0: {r: 1024, g: 265.6973, b: 0, a: 1}
-          key1: {r: 0, g: 0, b: 0, a: 0}
-          key2: {r: 0, g: 0, b: 0, a: 0}
-          key3: {r: 0, g: 0, b: 0, a: 0}
-          key4: {r: 0, g: 0, b: 0, a: 0}
-          key5: {r: 0, g: 0, b: 0, a: 0}
-          key6: {r: 0, g: 0, b: 0, a: 0}
-          key7: {r: 0, g: 0, b: 0, a: 0}
-          ctime0: 0
-          ctime1: 65535
-          ctime2: 0
-          ctime3: 0
-          ctime4: 0
-          ctime5: 0
-          ctime6: 0
-          ctime7: 0
-          atime0: 17733
-          atime1: 65535
-          atime2: 65535
-          atime3: 65535
-          atime4: 0
-          atime5: 0
-          atime6: 0
-          atime7: 0
-          m_Mode: 0
-          m_ColorSpace: 1
-          m_NumColorKeys: 2
-          m_NumAlphaKeys: 2
-        m_Name: ColorOverLife
-        m_Overridden: 1
-    m_NamedObject:
-      m_Array: []
-    m_Bool:
-      m_Array: []
---- !u!73398921 &3239663999259161885
-VFXRenderer:
-  serializedVersion: 1
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9114848457831012187}
-  m_Enabled: 1
-  m_CastShadows: 0
-  m_ReceiveShadows: 0
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 0
-  m_LightProbeUsage: 0
-  m_ReflectionProbeUsage: 0
-  m_RayTracingMode: 0
-  m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
