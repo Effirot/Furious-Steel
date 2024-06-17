@@ -152,19 +152,6 @@ public class RoomManager : NetworkBehaviour
             serializer.SerializeValue(ref statistics);
         }
     }
-    private class PrivateClientInfo : IDisposable
-    {
-        public NetworkClient networkClient;
-
-        public PlayerNetworkCharacter networkCharacter;
-        public NetworkObject networkCharacterWeapon;
-        public NetworkObject networkCharacterTrinket;
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
-    }
 
     public delegate void SendChatMessageDelegate (PublicClientData publicClientData, FixedString512Bytes text);
 
@@ -186,8 +173,6 @@ public class RoomManager : NetworkBehaviour
     [NonSerialized]
     public SpawnArguments spawnArgs;
     public NetworkList<PublicClientData> playersData;
-
-    private Dictionary<ulong, PrivateClientInfo> privatePlayersData = new ();
 
 
     public bool TryFindClientData(ulong ClientID, out PublicClientData publicClientData)
@@ -280,12 +265,6 @@ public class RoomManager : NetworkBehaviour
 
     public async void OnPlayerAuthorized(ulong ID, Authorizer.AuthorizeArguments authorizedPlayerData)
     {
-        privatePlayersData.Add(ID, new ()
-        {
-            networkCharacter = null,
-            networkCharacterWeapon = null,
-        });
-
         await UniTask.WaitUntil(() => NetworkManager.IsListening); 
         
         if (ID != 0)
@@ -313,12 +292,6 @@ public class RoomManager : NetworkBehaviour
         if (playersData != null)
         {
             playersData?.RemoveAt(publicDataIndex);
-            
-            if (privatePlayersData.ContainsKey(ID))
-            {
-                privatePlayersData[ID].Dispose();
-                privatePlayersData.Remove(ID);
-            }
         }
     }
 
@@ -352,14 +325,9 @@ public class RoomManager : NetworkBehaviour
     }
     private PlayerNetworkCharacter SpawnCharacter (string name, ServerRpcParams Param)
     {
-        var senderId = Param.Receive.SenderClientId;
-        var client = privatePlayersData[senderId];
-        
+        var senderId = Param.Receive.SenderClientId;        
         
         var character = ResearchCharacterPrefab(name);
-
-        if (client.networkCharacter != null && client.networkCharacter.IsSpawned || character == null)
-            return null;
         
         // Get spawn point
         var spawnPoint = SpawnPoint.GetSpawnPoint().transform;
@@ -367,92 +335,12 @@ public class RoomManager : NetworkBehaviour
         // Spawn character
         var characterGameObject = Instantiate(character, spawnPoint.position, spawnPoint.rotation);
     
-        client.networkCharacter = characterGameObject.GetComponent<PlayerNetworkCharacter>();
-        client.networkCharacter.NetworkObject.SpawnAsPlayerObject(senderId, true);
+        var player = characterGameObject.GetComponent<PlayerNetworkCharacter>();
+        player.NetworkObject.SpawnAsPlayerObject(senderId, true);
 
-        return client.networkCharacter;
+        return player;
     }
    
-    private NetworkObject SetWeapon (Item item, ServerRpcParams Param)
-    {
-        if (item == null)
-            return null;
-
-        var weapon = SetWeapon (item.TypeName, Param);
-
-        if (weapon.TryGetComponent<ItemBinder>(out var component))
-        {
-            component.item = item;
-        }    
-
-        return weapon;
-    }
-    private NetworkObject SetWeapon (string WeaponName, ServerRpcParams Param)
-    {
-        var senderId = Param.Receive.SenderClientId;
-        var client = privatePlayersData[senderId];
-        var weapon = ResearchWeaponPrefab(WeaponName);
-
-        if (client.networkCharacter == null || weapon == null)
-            return null;
-
-        if (client.networkCharacterWeapon != null)
-        {
-            Destroy(client.networkCharacterWeapon);
-        }
-
-        // Spawn weapon
-        var weaponGameObject = Instantiate(weapon, Vector3.zero, Quaternion.identity);
-        var weaponNetObject = client.networkCharacterWeapon = weaponGameObject.GetComponent<NetworkObject>();
-
-        weaponNetObject.SpawnWithOwnership(senderId, true);
-        weaponGameObject.transform.SetParent(client.networkCharacter.transform, false);
-
-        client.networkCharacter.OnWeaponChanged(weaponNetObject);
-
-        return weaponNetObject;
-    }
-   
-    private NetworkObject SetTrinket (Item item, ServerRpcParams Param)
-    {
-        if (item == null)
-            return null;
-
-        var trinket = SetTrinket(item.TypeName, Param);
-
-        if (trinket.TryGetComponent<ItemBinder>(out var component))
-        {
-            component.item = item;
-        } 
-
-        return trinket;
-    }
-    private NetworkObject SetTrinket (string TrinketName, ServerRpcParams Param)
-    {
-        var senderId = Param.Receive.SenderClientId;
-        var client = privatePlayersData[senderId];
-        var trinket = ResearchTrinketPrefab(TrinketName);
-
-        if (client.networkCharacter == null || trinket == null)
-            return null;
-        
-        if (client.networkCharacterTrinket != null)
-        {
-            Destroy(client.networkCharacterTrinket);
-        }
-
-        // Spawn trinket
-        var trinketGameObject = Instantiate(trinket, Vector3.zero, Quaternion.identity);
-        var trinketNetObject = client.networkCharacterTrinket = trinketGameObject.GetComponent<NetworkObject>();
-
-        trinketNetObject.SpawnWithOwnership(senderId, true);
-        trinketGameObject.transform.SetParent(client.networkCharacter.transform, false);
-
-        client.networkCharacter.OnTrinketChanged(trinketNetObject);
-
-        return trinketNetObject;
-    }
-
 
     [ServerRpc (RequireOwnership = false)]
     private void Spawn_ServerRpc(SpawnArguments args, ServerRpcParams Param = default)
@@ -465,15 +353,16 @@ public class RoomManager : NetworkBehaviour
         data.spawnArguments = args;
         playersData[DataIndex] = data;
 
-        if (!SpawnCharacter(JsonToItem(args.CharacterItemJson.Value), Param).IsUnityNull())
+        var character = SpawnCharacter(JsonToItem(args.CharacterItemJson.Value), Param);
+        if (!character.IsUnityNull())
         {
             try {
-                SetTrinket(JsonToItem(args.TrinketItemJson.Value), Param);
+                character.SetTrinket(JsonToItem(args.TrinketItemJson.Value));
             }
             catch { }
 
             try {
-                SetWeapon(JsonToItem(args.WeaponItemJson.Value), Param);
+                character.SetWeapon(JsonToItem(args.WeaponItemJson.Value));
             }
             catch { }
         }

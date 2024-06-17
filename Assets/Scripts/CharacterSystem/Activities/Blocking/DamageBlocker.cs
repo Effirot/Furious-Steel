@@ -26,9 +26,6 @@ namespace CharacterSystem.Blocking
 
     public class DamageBlocker : SyncedActivitySource<IDamageBlocker>
     {
-        [SerializeField]
-        private bool IsActiveAsDefault = true;
-
         [Space]
         [Header("Stun")]
         [SerializeField]
@@ -77,34 +74,22 @@ namespace CharacterSystem.Blocking
         [SerializeField]
         private UnityEvent OnSuccesfulBlockingEvent = new();
 
-        public bool IsPerforming {
-            get => network_isPerforming.Value;
-            set {
-                if (IsServer)
-                {
-                    network_isPerforming.Value = value;
-                }
-            }
-        }
-
         public bool IsBlockActive { get; private set; }
-
-        private NetworkVariable<bool> network_isPerforming = new NetworkVariable<bool>(true, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
-
-            network_isPerforming.Value = IsActiveAsDefault;
         }
 
         public virtual bool Block(ref Damage damage)
         {            
-            if (damage.type == Damage.Type.Parrying || damage.type == Damage.Type.Unblockable || damage.type == Damage.Type.Effect) 
+            if (damage.type == Damage.Type.Effect) 
                 return false;
 
-
-            if (IsBlockActive && Vector3.Angle(transform.forward, damage.sender.transform.position - transform.position) < blockingDegree)
+            if (IsBlockActive && 
+                Vector3.Angle(transform.forward, damage.sender.transform.position - transform.position) < blockingDegree && 
+                damage.type != Damage.Type.Parrying && 
+                damage.type != Damage.Type.Unblockable)
             {
                 if (IsServer)
                 {
@@ -125,17 +110,17 @@ namespace CharacterSystem.Blocking
                     Damage.Deliver(damage.sender, backDamage);
                 }
                 damage *= 1f - DamageReducing;
-
-                SkipBlockingProcess();
+                
+                SkipBlock();
 
                 return true;
             }
-
-            SkipBlockingProcess();
+            
+            SkipBlock();
 
             return false;
-            
-            void SkipBlockingProcess()
+
+            void SkipBlock()
             {
                 if (InterruptOnHit)
                 {

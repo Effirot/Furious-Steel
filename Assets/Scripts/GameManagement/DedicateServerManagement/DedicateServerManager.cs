@@ -7,6 +7,11 @@ using Unity.Netcode;
 using System.Text.RegularExpressions;
 using UnityEngine.SceneManagement;
 using Unity.Netcode.Transports.UTP;
+using System.Net;
+using System.Net.Sockets;
+using System.Threading;
+using System.Linq;
+using Cysharp.Threading.Tasks;
 
 public class DedicateServerManager : MonoBehaviour
 {
@@ -29,7 +34,7 @@ public class DedicateServerManager : MonoBehaviour
         QualitySettings.vSyncCount = 0; 
 
         GameObject.DontDestroyOnLoad(GameObject.Instantiate(Resources.Load<GameObject>("NetworkManager")));
-        GameObject.DontDestroyOnLoad(GameObject.Instantiate(Resources.Load<GameObject>("MainMenu"))); 
+        GameObject.DontDestroyOnLoad(GameObject.Instantiate(Resources.Load<GameObject>("MainMenu")));
     }
 #else 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -39,14 +44,14 @@ public class DedicateServerManager : MonoBehaviour
 
         Debug.Log("LoadingScene " + System.Environment.GetCommandLineArgs()[1]);
         
-        var transport = NetworkManager.Singleton.NetworkConfig.NetworkTransport as UnityTransport; 
-
-
         SceneManager.sceneLoaded += StartServerOnLoad_Event;
         SceneManager.LoadScene(System.Environment.GetCommandLineArgs()[1]);
 
         Application.targetFrameRate = 240;
-        QualitySettings.vSyncCount = 0;    
+        QualitySettings.vSyncCount = 0;
+
+        PuncherServer server = new PuncherServer();
+        server.Start(new IPEndPoint(IPAddress.Any, 7777));
     }
 #endif
 }

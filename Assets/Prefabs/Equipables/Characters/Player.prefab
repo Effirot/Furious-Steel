@@ -322,6 +322,7 @@ MonoBehaviour:
   inputAction: {fileID: -8254143158167318630, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 2
   SpeedChange: 0
+  IsPerformingAsDefault: 1
 --- !u!135 &3839919385296745302
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -379,7 +380,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1288931942115344864}
-  - component: {fileID: 7339049487124217837}
   - component: {fileID: 7945737309752349265}
   - component: {fileID: 5804015679080351171}
   - component: {fileID: 3623222165156314097}
@@ -388,6 +388,7 @@ GameObject:
   - component: {fileID: 870618445999855470}
   - component: {fileID: 8929279843199986160}
   - component: {fileID: 8756047339975557824}
+  - component: {fileID: 7339049487124217837}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -420,32 +421,6 @@ Transform:
   - {fileID: 6903170830719949202}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!143 &7339049487124217837
-CharacterController:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6610828187798962060}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Height: 2.71
-  m_Radius: 0.5
-  m_SlopeLimit: 45
-  m_StepOffset: 0.65
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 1.3, z: 0}
 --- !u!114 &7945737309752349265
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -623,6 +598,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f8362cf897c101449b32c7c0a5fa054, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!143 &7339049487124217837
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6610828187798962060}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Height: 2.71
+  m_Radius: 0.5
+  m_SlopeLimit: 45
+  m_StepOffset: 0.65
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 1.3, z: 0}
 --- !u!1 &6957374696908509525
 GameObject:
   m_ObjectHideFlags: 0

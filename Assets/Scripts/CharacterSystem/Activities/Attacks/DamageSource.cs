@@ -43,9 +43,8 @@ namespace CharacterSystem.Attacks
             OnDespawn,
         }
 
-        [SerializeField]
-        private bool IsPerformingAsDefault = true;
 
+        [Space]
         [SerializeField]
         private bool IsInterruptableWhenBlocked = false;
 
@@ -67,32 +66,8 @@ namespace CharacterSystem.Attacks
 
         public DamageDeliveryReport currentAttackDamageReport { get; protected set; }
 
-        public bool IsPerforming
-        { 
-            get => network_isPerforming.Value; 
-            set 
-            {
-                if (IsServer)
-                {
-                    network_isPerforming.Value = value;
-                }
-            } 
-        }
-
         public virtual bool IsActive => !IsInProcess && !HasOverrides() && !Source.isStunned && Source.permissions.HasFlag(CharacterPermission.AllowAttacking) && IsPerforming; 
 
-        private NetworkVariable<bool> network_isPerforming = new NetworkVariable<bool>(true, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-
-
-        public override void OnNetworkSpawn()
-        {
-            base.OnNetworkSpawn();
-                        
-            if (IsServer)
-            {
-                network_isPerforming.Value = IsPerformingAsDefault;
-            }
-        }
         public override void OnNetworkDespawn()
         {
             base.OnNetworkDespawn();
@@ -130,6 +105,8 @@ namespace CharacterSystem.Attacks
         
         public override IEnumerator Process()
         {            
+            yield return new WaitUntil(() => IsPressed);
+
             foreach (var item in attackQueue)
             {
                 yield return item.AttackPipeline(this);
@@ -277,7 +254,7 @@ namespace CharacterSystem.Attacks
                 var waitForFixedUpdate = new WaitForFixedUpdate();
                 var wasteTime = 0f;
 
-                while (wasteTime < time * chargeValue)
+                while (wasteTime < time * chargeValue && !source.Source.isStunned)
                 {
                     var direction = source.transform.rotation * MoveDirection * Time.fixedDeltaTime;
                     
@@ -431,6 +408,11 @@ namespace CharacterSystem.Attacks
         }
         public IEnumerator ChargedAttackPipeline(DamageSource source, float chargeValue, bool flexibleCollider, bool flexibleDamage)
         {
+            if (source.Source.isStunned)
+            {
+                yield break;
+            }
+
             var invoker = source.Source;
 
             var newCasters = CopyArray(flexibleCollider ? chargeValue : 1, flexibleDamage ? chargeValue : 1);
@@ -441,7 +423,6 @@ namespace CharacterSystem.Attacks
 
             Execute(newCasters, source);
 
-            yield break;
         }
 
         public override void OnDrawGizmos(Transform transform)
@@ -483,6 +464,11 @@ namespace CharacterSystem.Attacks
 
         public IEnumerator ChargedAttackPipeline(DamageSource source, float chargeValue, bool flexibleCollider, bool flexibleDamage)
         {
+            if (source.Source.isStunned)
+            {
+                yield break;
+            }
+
             if (source.IsServer)
             {
                 if (projectilePrefab == null)
@@ -496,20 +482,16 @@ namespace CharacterSystem.Attacks
                 projectileObject.SetActive(true);
                 projectileObject.GetComponent<NetworkObject>().Spawn();
 
-                var projectile = projectileObject.GetComponent<Projectile>();
-                
-                if (projectile == null)
+                foreach (var projectile in projectileObject.GetComponents<Projectile>())
                 {
-                    Debug.LogWarning("Projectile Prefab does not contains a Projectile Component");
+                    projectile.Initialize(source.transform.rotation * direction, source.Source, source.HandleDamageReport);
 
-                    yield break;
-                }
-                projectile.Initialize(source.transform.rotation * direction, source.Source, source.HandleDamageReport);
+                    projectile.speed *= chargeValue;
 
-                projectile.speed *= chargeValue;
-                if (flexibleDamage)
-                {
-                    projectile.damage *= chargeValue;
+                    if (flexibleDamage)
+                    {
+                        projectile.damage *= chargeValue;
+                    }
                 }
             }
         }
@@ -576,6 +558,7 @@ namespace CharacterSystem.Attacks
         public override IEnumerator AttackPipeline(DamageSource source)
         {
             int repeats = 0;
+
             while (repeats <= RepeatLimit && source.IsPressed)
             {
                 yield return queueElement.AttackPipeline(source);
@@ -603,6 +586,11 @@ namespace CharacterSystem.Attacks
 
         public override IEnumerator AttackPipeline(DamageSource source)
         {
+            if (source.Source.isStunned)
+            {
+                yield break;
+            }
+
             source.Permissions = Permissions;
             
             yield return new WaitForSeconds(WaitTime * source.Source.LocalTimeScale);
@@ -658,6 +646,11 @@ namespace CharacterSystem.Attacks
 
         public override IEnumerator AttackPipeline(DamageSource source)
         {
+            if (source.Source.isStunned)
+            {
+                yield break;
+            }
+
             source.Permissions = Permissions;
             
             yield return new WaitForSeconds(Mathf.Clamp(WaitTime - source.Source.Combo * ReducingByHit, MinWaitTime, WaitTime) * source.Source.LocalTimeScale);
@@ -765,6 +758,8 @@ namespace CharacterSystem.Attacks
 
         public override IEnumerator AttackPipeline (DamageSource source)
         {
+            yield return new WaitUntil(() => source.IsPressed);
+
             OnStart.Invoke();
             source.Permissions = Permissions;
 
@@ -807,6 +802,7 @@ namespace CharacterSystem.Attacks
             chargeListener?.OnDrawGizmos(transform);
         }
     }
+
 
     [Serializable]
     public abstract class Caster 

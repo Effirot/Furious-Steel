@@ -26,7 +26,12 @@ public abstract class SyncedActivitySource<T> : SyncedActivitySource where T : I
     
     private T ResearchInvoker ()
     {
-        var result = GetComponentInParent<T>();
+        T result = GetComponent<T>();
+
+        if (result == null)
+        {
+            result = GetComponentInParent<T>();
+        }
 
         if (result == null)
         {

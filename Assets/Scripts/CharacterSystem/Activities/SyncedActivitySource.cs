@@ -48,7 +48,10 @@ public abstract class SyncedActivitySource : NetworkBehaviour
     private SyncedActivityPriority Priority = SyncedActivityPriority.Normal;
 
     [SerializeField, Range(-4, 10)]
-    public float SpeedChange = 0;   
+    public float SpeedChange = 0;
+
+    [SerializeField]
+    private bool IsPerformingAsDefault = true;
     
     public CharacterPermission Permissions { 
         get => permissions;
@@ -84,9 +87,20 @@ public abstract class SyncedActivitySource : NetworkBehaviour
             }
         }
     }
-
+    public bool IsPerforming
+    { 
+        get => network_isPerforming.Value; 
+        set 
+        {
+            if (IsServer)
+            {
+                network_isPerforming.Value = value;
+            }
+        } 
+    }
     public bool IsInProcess => process != null;
 
+    private NetworkVariable<bool> network_isPerforming = new NetworkVariable<bool>(true, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     private NetworkVariable<bool> network_isPressed = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     
     private ISyncedActivitiesSource m_invoker;
@@ -97,14 +111,15 @@ public abstract class SyncedActivitySource : NetworkBehaviour
 
     public bool HasOverrides()
     {
-        if (syncedActivityOverrider.IsUnityNull())
+        if (syncedActivityOverrider.IsUnityNull() || !syncedActivityOverrider.IsPerforming || (int)syncedActivityOverrider.Priority <= (int)Priority)
         {
             syncedActivityOverrider = regsitredSyncedActivities.Find(
                 activity => 
                     activity.inputAction == inputAction && 
                     (int)activity.Priority > (int)Priority &&
                     System.Object.ReferenceEquals(activity.Source, Source) && 
-                    !activity.Source.IsUnityNull());
+                    !activity.Source.IsUnityNull() &&
+                    activity.IsPerforming);
         }
 
         return !syncedActivityOverrider.IsUnityNull();
@@ -115,6 +130,8 @@ public abstract class SyncedActivitySource : NetworkBehaviour
         base.OnNetworkSpawn();
 
         Subscribe();
+        
+        IsPerforming = IsPerformingAsDefault;
     }
     public override void OnNetworkDespawn ()
     {
@@ -300,6 +317,16 @@ public sealed class SyncedActivitiesList :
         foreach (var activity in this)
         {
             result &= activity.Permissions;
+
+            if (activity.Permissions.HasFlag(CharacterPermission.Untouchable))
+            {
+                result |= CharacterPermission.Untouchable;
+            }
+
+            if (activity.Permissions.HasFlag(CharacterPermission.Unpushable))
+            {
+                result |= CharacterPermission.Unpushable;
+            }
         }
 
         return result;

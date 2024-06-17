@@ -5,6 +5,8 @@ using CharacterSystem.Attacks;
 using CharacterSystem.Blocking;
 using CharacterSystem.DamageMath;
 using CharacterSystem.PowerUps;
+using Cysharp.Threading.Tasks;
+using Effiry.Items;
 using Unity.Cinemachine;
 using Unity.Collections;
 using Unity.Netcode;
@@ -124,7 +126,6 @@ namespace CharacterSystem.Objects
         public UnityEvent<PowerUp> onPowerUpChanged { get; } = new();
 
 
-
         public event Action<DamageDeliveryReport> onDamageDelivered;
         public event Action<int> onComboChanged;
 
@@ -134,6 +135,54 @@ namespace CharacterSystem.Objects
         public Vector2 internalMovementVector = Vector2.zero;
         [HideInInspector]
         public Vector2 internalLookVector = Vector2.zero;
+
+
+        public virtual NetworkObject SetWeapon (Item item)
+        {
+            if (item == null)
+                return null;
+
+            var weapon = RoomManager.Singleton.ResearchWeaponPrefab(item.TypeName);
+
+            if (weapon == null)
+                return null;
+
+            var weaponGameObject = Instantiate(weapon, Vector3.zero, Quaternion.identity);
+            var weaponNetObject = weaponGameObject.GetComponent<NetworkObject>();
+
+            weaponNetObject.SpawnWithOwnership(NetworkObject.OwnerClientId, true);
+            weaponGameObject.transform.SetParent(transform, false);
+
+            if (weaponGameObject.TryGetComponent<ItemBinder>(out var component))
+            {
+                component.item = item;
+            }    
+
+            return weaponNetObject;
+        } 
+        public virtual NetworkObject SetTrinket (Item item)
+        {
+            if (item == null)
+                return null;
+
+            var trinket = RoomManager.Singleton.ResearchTrinketPrefab(item.TypeName);
+
+            if (trinket == null)
+                return null;
+
+            var trinketGameObject = Instantiate(trinket, Vector3.zero, Quaternion.identity);
+            var trinketNetObject = trinketGameObject.GetComponent<NetworkObject>();
+
+            trinketNetObject.SpawnWithOwnership(NetworkObject.OwnerClientId, true);
+            trinketGameObject.transform.SetParent(transform, false);
+
+            if (trinketGameObject.TryGetComponent<ItemBinder>(out var component))
+            {
+                component.item = item;
+            }    
+
+            return trinketNetObject;
+        }
 
         public override bool Hit(Damage damage)
         {
@@ -188,16 +237,6 @@ namespace CharacterSystem.Objects
             }
         }
 
-        protected override void OnHitReaction(Damage damage)
-        {
-            base.OnHitReaction(damage);
-
-            if (IsOwner && damage.type is not Damage.Type.Effect)
-            {
-                OnHitImpulseSource?.GenerateImpulse(damage.value / 8f);
-            }
-        }
-
         public override void Kill()
         {
             base.Kill();
@@ -212,9 +251,6 @@ namespace CharacterSystem.Objects
                 ClientData = data;
             }
         }
-
-        public virtual void OnWeaponChanged(NetworkObject networkObject) { }
-        public virtual void OnTrinketChanged(NetworkObject networkObject) { }
 
         public override void OnNetworkSpawn()
         {
@@ -282,8 +318,6 @@ namespace CharacterSystem.Objects
             {
                 network_serverClientId.Value = OwnerClientId;
             }
-
-            UpdateName();
         }
         public override void OnNetworkDespawn()
         {
@@ -327,6 +361,23 @@ namespace CharacterSystem.Objects
             }
         }
 
+        protected override void Start()
+        {
+            base.Start();
+
+            UpdateName();
+        }
+
+        protected override void OnHitReaction(Damage damage)
+        {
+            base.OnHitReaction(damage);
+
+            if (IsOwner && damage.type is not Damage.Type.Effect)
+            {
+                OnHitImpulseSource?.GenerateImpulse(damage.value / 8f);
+            }
+        }
+        
         protected override void FixedUpdate()
         {
             base.FixedUpdate();
@@ -343,6 +394,14 @@ namespace CharacterSystem.Objects
                     lookVector = internalLookVector;
                 }
             }
+        }
+        protected override void OnDrawGizmosSelected()
+        {
+            base.OnDrawGizmosSelected();
+            
+            var lookPoint = new Vector3(internalLookVector.x, 0, internalLookVector.y) + transform.position;
+
+            Gizmos.DrawWireSphere(lookPoint, 0.2f);
         }
 
         protected override void Dead()
@@ -361,14 +420,6 @@ namespace CharacterSystem.Objects
             OnPlayerCharacterSpawn.Invoke(this);
         }
 
-        protected override void OnDrawGizmosSelected()
-        {
-            base.OnDrawGizmosSelected();
-            
-            var lookPoint = new Vector3(internalLookVector.x, 0, internalLookVector.y) + transform.position;
-
-            Gizmos.DrawWireSphere(lookPoint, 0.2f);
-        }
 
         protected override GameObject SpawnCorpse()
         {
@@ -382,11 +433,10 @@ namespace CharacterSystem.Objects
             return corpseObject;
         }
 
-        protected virtual void OnOwnerPlayerDataChanged(NetworkListEvent<RoomManager.PublicClientData> changeEvent)
+        private void OnOwnerPlayerDataChanged(NetworkListEvent<RoomManager.PublicClientData> changeEvent)
         {
             UpdateName();
         }
-
         private void OnOwnerPlayerDataChanged_event(NetworkListEvent<RoomManager.PublicClientData> changeEvent)
         {
             if (changeEvent.Value.ID == ServerClientID && 
@@ -398,14 +448,9 @@ namespace CharacterSystem.Objects
                 OnOwnerPlayerDataChanged(changeEvent);
             }
         }
-
         private void UpdateName()
         {
-            try 
-            {
-                gameObject.name = name = ClientData.Name.Value;
-            }
-            catch { }
+            gameObject.name = name = ClientData.Name.Value;
         }
 
         private IEnumerator ComboResetTimer()
@@ -467,7 +512,6 @@ namespace CharacterSystem.Objects
         {
             KillBind_ServerRpc();
         }
-
 
         [ServerRpc]
         private void KillBind_ServerRpc()

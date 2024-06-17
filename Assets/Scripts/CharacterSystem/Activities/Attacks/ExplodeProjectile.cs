@@ -80,7 +80,9 @@ public class ExplodeProjectile : Projectile
                 damage.pushDirection = collider.transform.position - transform.position;
                 damage.pushDirection.Normalize();
                 damage.pushDirection *= PushForce;
-                damage.pushDirection += transform.rotation * explodeDamage.pushDirection;
+
+                var originalPushDirection = transform.rotation * explodeDamage.pushDirection;
+                damage.pushDirection.y = Mathf.Max(damage.pushDirection.y, originalPushDirection.y);
 
                 var report = Damage.Deliver(collider.gameObject, damage);
                 

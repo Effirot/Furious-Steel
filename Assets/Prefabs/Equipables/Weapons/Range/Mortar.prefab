@@ -104,6 +104,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   MinRequiredValue: 1
+  StopOnValueLessThenMinimum: 1
   customProperty: {fileID: 8656365930082199868}
   references:
     version: 2
@@ -236,6 +237,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 8047190744935610207, guid: bdf3e7f7eae78f844bd4f60d57993222, type: 2}
   m_audioClip: {fileID: 8300000, guid: 8049931cf2430664faba8b076e8ebe79, type: 3}
+  m_Resource: {fileID: 8300000, guid: 8049931cf2430664faba8b076e8ebe79, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.779
   m_Pitch: 0.7
@@ -701,6 +703,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 8047190744935610207, guid: bdf3e7f7eae78f844bd4f60d57993222, type: 2}
   m_audioClip: {fileID: 8300000, guid: 5e7ba4a93a820c74f8a1c783180aba27, type: 3}
+  m_Resource: {fileID: 8300000, guid: 5e7ba4a93a820c74f8a1c783180aba27, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.426
   m_Pitch: 0.57
@@ -890,6 +893,8 @@ VFXRenderer:
   m_ReflectionProbeUsage: 0
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -988,6 +993,7 @@ MonoBehaviour:
   - rid: 2874887614783815706
   - rid: 2874887614783815705
   - rid: 8630938134238724176
+  - rid: 2874887932115681383
   OnDamageReport:
     m_PersistentCalls:
       m_Calls: []
@@ -1003,12 +1009,16 @@ MonoBehaviour:
       type: {class: ProjectileShooter, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         projectilePrefab: {fileID: 6845969276890429663, guid: 9778415436698124992821a614dd3705, type: 3}
-        direction: {x: 0, y: 0.12, z: 1.69}
+        direction: {x: 0, y: 0.3, z: 2.4}
     - rid: 2874887614783815706
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         WaitTime: 0.6
         Permissions: 512
+    - rid: 2874887932115681383
+      type: {class: Push, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        CastPushDirection: {x: 0, y: 0.21, z: -0.26}
     - rid: 8630938109234118739
       type: {class: Event, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
@@ -1089,47 +1099,47 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 180ecf9b41d478f468eb3e9083753217, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ImpulseDefinition:
-    m_ImpulseChannel: 1
-    m_ImpulseShape: 2
-    m_CustomImpulseShape:
+  ImpulseDefinition:
+    ImpulseChannel: 1
+    ImpulseShape: 2
+    CustomImpulseShape:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    m_ImpulseDuration: 0.1
-    m_ImpulseType: 1
-    m_DissipationRate: 0.207
-    m_RawSignal: {fileID: 11400000, guid: 69ce8388f6785dd4c8c39915efece2f4, type: 2}
-    m_AmplitudeGain: 1
-    m_FrequencyGain: 1
-    m_RepeatMode: 0
-    m_Randomize: 1
-    m_TimeEnvelope:
-      m_AttackShape:
+    ImpulseDuration: 0.1
+    ImpulseType: 1
+    DissipationRate: 0.207
+    RawSignal: {fileID: 11400000, guid: 69ce8388f6785dd4c8c39915efece2f4, type: 2}
+    AmplitudeGain: 1
+    FrequencyGain: 1
+    RepeatMode: 0
+    Randomize: 1
+    TimeEnvelope:
+      AttackShape:
         serializedVersion: 2
         m_Curve: []
         m_PreInfinity: 2
         m_PostInfinity: 2
         m_RotationOrder: 4
-      m_DecayShape:
+      DecayShape:
         serializedVersion: 2
         m_Curve: []
         m_PreInfinity: 2
         m_PostInfinity: 2
         m_RotationOrder: 4
-      m_AttackTime: 0
-      m_SustainTime: 0.2
-      m_DecayTime: 0.3
-      m_ScaleWithImpact: 1
-      m_HoldForever: 0
-    m_ImpactRadius: 30
-    m_DirectionMode: 0
-    m_DissipationMode: 2
-    m_DissipationDistance: 30
-    m_PropagationSpeed: 343
-  m_DefaultVelocity: {x: 0, y: 1, z: 0}
+      AttackTime: 0
+      SustainTime: 0.2
+      DecayTime: 0.3
+      ScaleWithImpact: 1
+      HoldForever: 0
+    ImpactRadius: 30
+    DirectionMode: 0
+    DissipationMode: 2
+    DissipationDistance: 30
+    PropagationSpeed: 343
+  DefaultVelocity: {x: 0, y: 1, z: 0}
 --- !u!1 &4779291179391813765
 GameObject:
   m_ObjectHideFlags: 0
@@ -1173,6 +1183,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 8047190744935610207, guid: bdf3e7f7eae78f844bd4f60d57993222, type: 2}
   m_audioClip: {fileID: 8300000, guid: fdf4f81f386e7cb4cb5a436580bf43c0, type: 3}
+  m_Resource: {fileID: 8300000, guid: fdf4f81f386e7cb4cb5a436580bf43c0, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -1308,6 +1319,8 @@ SkinnedMeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 3
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1387,6 +1400,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 8047190744935610207, guid: bdf3e7f7eae78f844bd4f60d57993222, type: 2}
   m_audioClip: {fileID: 8300000, guid: 81c44d0f7d83e13469329c81a981dd98, type: 3}
+  m_Resource: {fileID: 8300000, guid: 81c44d0f7d83e13469329c81a981dd98, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.779
   m_Pitch: 0.7
@@ -1559,11 +1573,13 @@ VFXRenderer:
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
-  m_MotionVectors: 0
+  m_MotionVectors: 1
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -1629,6 +1645,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 8047190744935610207, guid: bdf3e7f7eae78f844bd4f60d57993222, type: 2}
   m_audioClip: {fileID: 8300000, guid: 9d2bb467d5e33ae41a0748594657ae5b, type: 3}
+  m_Resource: {fileID: 8300000, guid: 9d2bb467d5e33ae41a0748594657ae5b, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.548
   m_Pitch: 1

@@ -9,6 +9,12 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.VFX;
 using UnityEngine.Rendering.Universal;
+using Unity.VisualScripting;
+using Unity.Cinemachine;
+
+
+
+
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -19,9 +25,10 @@ namespace CharacterSystem.Objects
     [Flags]
     public enum CharacterPermission 
     {
-        Default                 = 0b_1111_1111_0000_0000,
+        Default             = 0b_1111_1111_0000_0000,
         None                = 0b_0000_0000_0000_0000,
 
+        Unpushable          = 0b_0000_0000_0100_0000,
         Untouchable         = 0b_0000_0000_1000_0000,
 
         AllowMove           = 0b_0000_0001_0000_0000,
@@ -103,7 +110,7 @@ namespace CharacterSystem.Objects
         public event Action onJumpEvent = delegate { };
         public event Action<bool> onStunStateChanged = delegate { };
 
-        public bool IsGrounded => characterController.isGrounded;
+        public bool IsGrounded { get; private set; }
 
         public virtual float LocalTimeScale { get; set; } = 1;
         
@@ -245,6 +252,9 @@ namespace CharacterSystem.Objects
         private int completeJumpCount = 0;
 
         private bool isGroundedDeltaState = false;
+        private float groundCollisionTimeout = 0.05f;
+        private ControllerColliderHit controllerCollision = null;
+
         private Vector2 speed_acceleration_multipliyer = Vector2.zero;
 
         private Vector3 resultMovePosition;
@@ -273,7 +283,10 @@ namespace CharacterSystem.Objects
             if (!IsSpawned)
                 return false;
 
-            Push(damage.pushDirection);
+            if (!permissions.HasFlag(CharacterPermission.Unpushable))
+            {
+                Push(damage.pushDirection);
+            }
 
             health -= damage.value;  
 
@@ -447,6 +460,10 @@ namespace CharacterSystem.Objects
                     onStunStateChanged.Invoke(isStunned);
                 }
             }
+            else
+            {
+                RotateCharacter();
+            }
             
             CalculatePhysicsSimulation();
             CharacterMove(CalculateMovement()); 
@@ -454,9 +471,22 @@ namespace CharacterSystem.Objects
             if (isGroundedDeltaState != IsGrounded)
             {
                 isGroundedEvent.Invoke(IsGrounded);
+
+                if (IsGrounded && isStunned)
+                {
+                    stunlock = 0;
+                }
             }
             isGroundedDeltaState = IsGrounded;
 
+            groundCollisionTimeout -= Time.fixedDeltaTime;
+            IsGrounded = IsGrounded && groundCollisionTimeout > 0;
+            
+            if (groundCollisionTimeout <= 0)
+            {
+                controllerCollision = null;
+            }
+            
             if (shadow != null)
             {
                 if (Physics.Raycast(transform.position, Vector3.down, out var hit, LayerMask.GetMask("Ground")))
@@ -470,24 +500,32 @@ namespace CharacterSystem.Objects
 
                 shadow.fadeFactor = 1 / Vector3.Distance(shadow.transform.position, transform.position);
             }
-
-            if (!isStunned)
-            {
-                RotateCharacter();
-            }
         }       
         protected virtual void Update () { }
         protected virtual void LateUpdate () { }
 
         protected virtual void OnValidate () { }
-        protected virtual void OnTriggerEnter (Collider collider) { }
-        protected virtual void OnTriggerExit (Collider collider) { }
         protected virtual void OnDrawGizmos () { }
         protected virtual void OnDrawGizmosSelected ()
         {
             Gizmos.DrawWireSphere(network_position.Value, 0.1f);
             Gizmos.DrawRay(network_position.Value, velocity);
             Gizmos.DrawRay(network_position.Value, movementVector);
+        }
+
+        protected virtual void OnControllerColliderHit(ControllerColliderHit hit)
+        {
+            controllerCollision = hit;
+            groundCollisionTimeout = 0.05f;
+
+            IsGrounded = Vector3.Angle(Vector3.up, hit.normal) <= 45;
+
+            var WallHitVelocity = velocity;
+            WallHitVelocity.y = 0;
+            if (!IsGrounded && WallHitVelocity.magnitude > 0.8f)
+            {   
+                OnWallHitEffect(hit);
+            }   
         }
 
         protected virtual void OnPermissionsChanged (CharacterPermission Old, CharacterPermission New)
@@ -505,10 +543,37 @@ namespace CharacterSystem.Objects
             {
                 gameObject.layer = LayerMask.NameToLayer("Character");
             }
+
+            if (New.HasFlag(CharacterPermission.Unpushable))
+            {
+                velocity = Vector3.zero;
+            }
         }
         
         protected virtual void Dead () { }
         protected virtual void Spawn () { }
+
+        protected virtual void OnWallHitEffect(ControllerColliderHit hit)
+        {
+            // Calculate Angle between hit normal and current velocity
+            var angleNormal = hit.normal;
+            angleNormal.y = 0;
+            var angleVelocity = velocity;
+            angleVelocity.y = 0;
+
+            float angle = Vector3.Angle(angleNormal, angleVelocity); 
+
+            // Recalculate velocity
+            var newVelocity = Quaternion.Euler(0, 180 + angle * 2, 0) * velocity;
+            newVelocity.y = Mathf.Abs(newVelocity.y);
+            newVelocity.y = Mathf.Max(newVelocity.y, 0.4f);
+            
+            // Deliver damage
+
+            Damage.Deliver(this, new (velocity.magnitude * 10, lastRecievedDamage.sender, 0.2f, newVelocity, Damage.Type.Physics));
+            
+            Damage.Deliver(hit.gameObject, new (velocity.magnitude * 10, lastRecievedDamage.sender, 0.2f, velocity, Damage.Type.Physics));
+        }
 
         protected virtual GameObject SpawnCorpse()
         {
@@ -578,20 +643,18 @@ namespace CharacterSystem.Objects
         private void CalculatePhysicsSimulation ()
         {
             var velocity = this.velocity;
-
             var PhysicTimeScale = Mathf.Max(this.PhysicTimeScale, 0);
 
             velocity.y =  permissions.HasFlag(CharacterPermission.AllowGravity) ? 
                 Mathf.Lerp(velocity.y, IsGrounded ? -0.1f : Physics.gravity.y, 0.2f * Time.fixedDeltaTime * LocalTimeScale * PhysicTimeScale) : 
-                Mathf.Lerp(velocity.y, -0.1f, 0.22f);
+                Mathf.Lerp(velocity.y, 0, 10f * Time.fixedDeltaTime * LocalTimeScale);
 
-
-            if (IsGrounded || !permissions.HasFlag(CharacterPermission.AllowGravity))
+            if (controllerCollision != null)
             {
-                var interpolateValue = (IsGrounded ? 8 : 2.5f) * mass * Time.fixedDeltaTime * LocalTimeScale * PhysicTimeScale;
+                var interpolateValue = 8 * mass * Time.fixedDeltaTime * LocalTimeScale * PhysicTimeScale;
                 
-                velocity.x =  Mathf.Lerp(velocity.x, 0, interpolateValue);
-                velocity.z =  Mathf.Lerp(velocity.z, 0, interpolateValue);
+                velocity.x =  Mathf.Lerp(velocity.x, IsGrounded ? 0 : controllerCollision.normal.x * 0.2f, interpolateValue);
+                velocity.z =  Mathf.Lerp(velocity.z, IsGrounded ? 0 : controllerCollision.normal.z * 0.2f, interpolateValue);
             }
 
             this.velocity = velocity;
@@ -623,11 +686,21 @@ namespace CharacterSystem.Objects
         }
         private void RotateCharacter ()
         {
-            var LookVector = new Vector3 (lookVector.x, 0, lookVector.y);
-
-            if (LookVector.magnitude > 0.1f)
+            if (isStunned)
             {
-                transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(LookVector), RotateInterpolationTime * Time.fixedDeltaTime * LocalTimeScale);
+                var newVelocity = velocity;
+                newVelocity.y = 0;
+
+                transform.rotation = Quaternion.LookRotation(newVelocity);
+            }
+            else
+            {
+                var LookVector = new Vector3 (lookVector.x, 0, lookVector.y);
+
+                if (LookVector.magnitude > 0)
+                {
+                    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(LookVector), RotateInterpolationTime * Time.fixedDeltaTime * LocalTimeScale);
+                }
             }
         }
         private void SetAnimationStates ()

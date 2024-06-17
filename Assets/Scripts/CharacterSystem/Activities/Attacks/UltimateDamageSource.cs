@@ -57,7 +57,10 @@ public class UltimateDamageSource : DamageSource
     {
         base.Start();
         
-        Source.onDamageDelivered += OnDamageDelivered_Event;
+        if (NetworkManager.IsListening)
+        {
+            Source.onDamageDelivered += OnDamageDelivered_Event;    
+        }
     }
 
     private void OnDamageDelivered_Event(DamageDeliveryReport report)

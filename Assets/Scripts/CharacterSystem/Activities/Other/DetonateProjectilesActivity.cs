@@ -11,4 +11,11 @@ public class DetonateProjectilesActivity : SyncedActivitySource<IDamageSource>
 
         yield break;
     }
+
+    public override void OnNetworkDespawn()
+    {
+        base.OnNetworkDespawn();
+
+        DetonatableExplodeProjectile.Detonate(Source);
+    }
 }

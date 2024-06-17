@@ -40,6 +40,7 @@ public class DetonatableExplodeProjectile : ExplodeProjectile
             OnAfterDetonateEvent.Invoke();
 
             await UniTask.WaitForSeconds(ExplodeAfter);
+            await UniTask.WaitForSeconds(UnityEngine.Random.Range(0, 0.2f));
 
             Kill();
         }
