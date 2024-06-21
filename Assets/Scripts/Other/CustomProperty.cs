@@ -1,9 +1,9 @@
 
 
 using CharacterSystem.DamageMath;
-using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Events;
+using Mirror;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -14,7 +14,7 @@ public class CustomProperty : NetworkBehaviour
     [Space]
     [SerializeField, Range(0, 1000)]
     public float DefaultValue = 10;
-    
+
     [SerializeField, Range(0, 1000)]
     public float MaxValue = 10;
     
@@ -30,26 +30,20 @@ public class CustomProperty : NetworkBehaviour
 
 
     public float Value {
-        get => IsActive ? network_value.Value : 0;
+        get => IsActive ? _value : 0;
         set {
-            if (IsServer && IsActive)
+            if (IsActive)
             {
-                network_value.Value = Mathf.Clamp(value, 0, MaxValue);
-            }
-        }
-    }
-    public bool IsActive {
-        get => network_IsActive.Value;
-        set {
-            if (IsServer)
-            {
-                network_IsActive.Value = value;
+                _value = Mathf.Clamp(value, 0, MaxValue);
             }
         }
     }
 
-    protected NetworkVariable<float> network_value = new(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-    protected NetworkVariable<bool> network_IsActive = new(true, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    [SyncVar]
+    public bool IsActive = true;
+
+    [SyncVar(hook = nameof(OnValueChangedHook))]
+    private float _value;
 
 
     public void AddValue(float value)
@@ -93,17 +87,13 @@ public class CustomProperty : NetworkBehaviour
         }
     }
 
-    public override void OnNetworkSpawn()
-    {
-        base.OnNetworkSpawn();
-        
+    protected virtual void Start()
+    {        
         Value = Mathf.Min(DefaultValue, MaxValue);
-
-        network_value.OnValueChanged += (Old, New) => OnValueChanged.Invoke(New);
     }
-    public override void OnNetworkDespawn()
+    protected virtual void OnValueChangedHook(float Old, float New)
     {
-        base.OnNetworkDespawn();
+        OnValueChanged.Invoke(New);
     }
 
 #if UNITY_EDITOR

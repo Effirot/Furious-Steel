@@ -8,6 +8,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 363246907949679762, guid: e693aee615084e94296a94df13b4fc19, type: 3}
+      propertyPath: _assetId
+      value: 2804411919
+      objectReference: {fileID: 0}
     - target: {fileID: 520601800893309648, guid: e693aee615084e94296a94df13b4fc19, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -161,6 +165,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bfba81b10efcb8049a24487e60557391, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   speed: 0.1
   speedTimeIncreacing: 1
   lifetime: 10
@@ -178,6 +185,8 @@ MonoBehaviour:
     RechargeUltimate: 1
     SelfDamageUltimate: 1
     Effects: []
+  MoveDirection: {x: 0, y: 0, z: 0}
+  position: {x: 0, y: 0, z: 0}
   Range: 3.99
   PushForce: 0.6
   explodeDamage:

@@ -1,4 +1,7 @@
 using UnityEngine;
+using Mirror;
+
+
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -12,14 +15,14 @@ namespace CharacterSystem.PowerUps
         {
             if (HasOverrides()) return;
 
-            if (other.TryGetComponent<PowerUpContainer>(out var container) && IsServer)
+            if (other.TryGetComponent<PowerUpContainer>(out var container) && isServer)
             {
                 if (container.powerUp.IsOneshot && Source.PowerUp == null)
                 {
                     Source.PowerUp = container.powerUp;
                     
                     container.powerUp.OnPick(this);
-                    container.NetworkObject.Despawn();
+                    NetworkServer.Destroy(container.gameObject);
                 }
             }
         }

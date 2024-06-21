@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using CharacterSystem.Objects;
-using Unity.Netcode;
 using UnityEngine;
 using System;
 using CharacterSystem.Attacks;
@@ -9,6 +8,9 @@ using CharacterSystem.DamageMath;
 using CharacterSystem.Blocking;
 using Unity.VisualScripting;
 using UnityEngine.Events;
+using Mirror;
+using Cysharp.Threading.Tasks;
+
 
 
 #if UNITY_EDITOR
@@ -35,15 +37,17 @@ namespace CharacterSystem.PowerUps
 
     public class PowerUpHolder : SyncedActivitySource<IPowerUpActivator>
     {
-        public void Drop(PowerUp powerUp)
+        public async void Drop(PowerUp powerUp)
         {
             var powerupGameObject = Instantiate(Source.PowerUp.prefab, transform.position, Quaternion.identity);
         
-            powerupGameObject.GetComponent<NetworkObject>().Spawn();
+            NetworkServer.Spawn(powerupGameObject);
 
-            if (IsServer)
+            await UniTask.WaitForSeconds(10);
+
+            if (!powerupGameObject.IsUnityNull())
             {
-                Destroy(powerupGameObject, 10);
+                NetworkServer.Destroy(powerupGameObject);
             }
         }
         
@@ -53,7 +57,7 @@ namespace CharacterSystem.PowerUps
             {
                 Source.PowerUp?.Activate(this);
 
-                if (IsServer)
+                if (isServer)
                 {
                     Source.PowerUp = null;
                 }
@@ -66,12 +70,12 @@ namespace CharacterSystem.PowerUps
         {
             if (HasOverrides()) return;
 
-            if (other.TryGetComponent<PowerUpContainer>(out var container) && IsServer)
+            if (other.TryGetComponent<PowerUpContainer>(out var container) && isServer)
             {
                 if (container.powerUp.IsOneshot)
                 {
                     container.powerUp.Activate(this);
-                    container.NetworkObject.Despawn();
+                    NetworkServer.Destroy(container.gameObject);
                 }
                 else
                 {
@@ -80,7 +84,7 @@ namespace CharacterSystem.PowerUps
                         Source.PowerUpId = container.Id;
                         
                         container.powerUp.OnPick(this);
-                        container.NetworkObject.Despawn();
+                        NetworkServer.Destroy(container.gameObject);
                     }
                 } 
             }

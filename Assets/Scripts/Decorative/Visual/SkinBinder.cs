@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.Netcode;
+using Mirror;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
@@ -14,19 +14,16 @@ public sealed class SkinBinder : NetworkBehaviour
     [SerializeField]
     private SkinnedMeshRenderer origin;
 
-    public override void OnNetworkDespawn()
-    {
-        base.OnNetworkDespawn();
-    }
-    public override void OnNetworkObjectParentChanged(NetworkObject parentNetworkObject)
-    {
-        base.OnNetworkObjectParentChanged(parentNetworkObject);
+#warning On Parent Changed fix
+    // public override void OnNetworkObjectParentChanged(NetworkObject parentNetworkObject)
+    // {
+    //     base.OnNetworkObjectParentChanged(parentNetworkObject);
         
-        if (parentNetworkObject != null)
-        {
-            Research(parentNetworkObject.gameObject);
-        }
-    }
+    //     if (parentNetworkObject != null)
+    //     {
+    //         Research(parentNetworkObject.gameObject);
+    //     }
+    // }
 
     private void Start()
     {

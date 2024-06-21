@@ -430,7 +430,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 520601800893309648}
-  - component: {fileID: 8766839339822984711}
+  - component: {fileID: 3061797297274141817}
   - component: {fileID: -5641090124221028093}
   - component: {fileID: -706647796989416874}
   - component: {fileID: 1021237605104187023}
@@ -463,7 +463,7 @@ Transform:
   - {fileID: 3292825549619734041}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8766839339822984711
+--- !u!114 &3061797297274141817
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -472,17 +472,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 6845969276890429663}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 765272766
-  AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
+  sceneId: 0
+  _assetId: 862892240
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
 --- !u!54 &-5641090124221028093
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -640,6 +637,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bfba81b10efcb8049a24487e60557391, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   speed: 24.5
   speedTimeIncreacing: 1
   lifetime: 0.68
@@ -655,8 +655,11 @@ MonoBehaviour:
     stunlock: 0
     pushDirection: {x: 0, y: 0.5, z: 0.3}
     RechargeUltimate: 1
+    SelfDamageUltimate: 0
     Effects:
     - rid: 8630937820481192014
+  MoveDirection: {x: 0, y: 0, z: 0}
+  position: {x: 0, y: 0, z: 0}
   Range: 2.6
   PushForce: 0.6
   explodeDamage:
@@ -665,6 +668,7 @@ MonoBehaviour:
     stunlock: 0
     pushDirection: {x: 0, y: 0, z: 0}
     RechargeUltimate: 1
+    SelfDamageUltimate: 0
     Effects:
     - rid: 8630937770391502938
   <OnExplodePrefab>k__BackingField: {fileID: 731231275301304977}
@@ -893,11 +897,19 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6199894316168492106, guid: 04245663e3d3ae9439887411c250ec3f, type: 3}
+      propertyPath: ImpulseDefinition.ImpulseDuration
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6199894316168492106, guid: 04245663e3d3ae9439887411c250ec3f, type: 3}
       propertyPath: m_ImpulseDefinition.m_ImpulseDuration
       value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 8514960153952812828, guid: 04245663e3d3ae9439887411c250ec3f, type: 3}
       propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8514960153952812828, guid: 04245663e3d3ae9439887411c250ec3f, type: 3}
+      propertyPath: m_CastShadows
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8780444574902021836, guid: 04245663e3d3ae9439887411c250ec3f, type: 3}

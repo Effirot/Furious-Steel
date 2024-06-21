@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using CharacterSystem.DamageMath;
-using Unity.Netcode;
+using Mirror;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -10,10 +10,8 @@ public class KillsMenu : NetworkBehaviour
     [SerializeField]
     private GameObject killPrefab;
 
-    public override void OnDestroy()
+    private void OnDestroy()
     {
-        base.OnDestroy();
-
         Damage.damageDeliveryPipeline -= OnDamageDelivered;
     }
     private void Start()
@@ -23,7 +21,7 @@ public class KillsMenu : NetworkBehaviour
 
     private void OnDamageDelivered(DamageDeliveryReport report)
     {
-        if (!IsServer)
+        if (!isServer)
             return;
 
         if (!report.isLethal) 
@@ -31,11 +29,11 @@ public class KillsMenu : NetworkBehaviour
         if (report.target.IsUnityNull()) 
             return;
 
-        Draw_ClientRpc(report);
+        Draw(report);
     }
 
-    [ClientRpc]
-    private void Draw_ClientRpc(DamageDeliveryReport report)
+    [Command(requiresAuthority = false)]
+    private void Draw(DamageDeliveryReport report)
     {
         var obj = Instantiate(killPrefab, transform);
         obj.GetComponent<KillsMenuElement>().Initialize(report);

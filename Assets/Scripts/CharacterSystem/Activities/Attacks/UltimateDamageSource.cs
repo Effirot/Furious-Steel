@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using CharacterSystem.Attacks;
 using CharacterSystem.DamageMath;
 using CharacterSystem.Objects;
-using Unity.Netcode;
+using Mirror;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
@@ -22,17 +22,21 @@ public class UltimateDamageSource : DamageSource
 
     public override bool IsActive => base.IsActive && chargeValue.Value >= chargeValue.MaxValue;
 
-    public override void OnNetworkSpawn()
+    protected override void Start()
     {
-        base.OnNetworkSpawn();
+        base.Start();
 
         chargeValue = GetComponent<CustomProperty>();
         chargeValue.IsActive = !HasOverrides();
-    }
-    public override void OnNetworkDespawn()
-    {
-        base.OnNetworkDespawn();
 
+        if (NetworkManager.singleton.isNetworkActive)
+        {
+            Source.onDamageDelivered += OnDamageDelivered_Event;    
+        }
+    }
+    protected override void OnDestroy()
+    {
+        base.OnDestroy();
 
         if (Source != null)
         {
@@ -50,16 +54,6 @@ public class UltimateDamageSource : DamageSource
             {
                 chargeValue.Value = 0;
             }
-        }
-    }
-
-    protected override void Start()
-    {
-        base.Start();
-        
-        if (NetworkManager.IsListening)
-        {
-            Source.onDamageDelivered += OnDamageDelivered_Event;    
         }
     }
 

@@ -9,8 +9,9 @@ public sealed class AuthorizeArgumentsEditor : MonoBehaviour
 {
     public void SetName(string Name)
     {
-        var args = Authorizer.localAuthorizeArgs; 
-        args.Name = Name;
-        Authorizer.localAuthorizeArgs = args;
+#warning fix authorizing elements
+        // var args = Authorizer.localAuthorizeArgs; 
+        // args.Name = Name;
+        // Authorizer.localAuthorizeArgs = args;
     }
 }

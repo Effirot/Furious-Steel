@@ -1,48 +1,50 @@
-using Unity.Netcode;
 using UnityEngine;
 
-[System.Serializable]
-public class SlownessEffect : CharacterEffect
+namespace CharacterSystem.Effects
 {
-    public override bool Existance => time > 0;
-
-    [SerializeField, Range(0, 120)]
-    private float time = 0;
-
-    [SerializeField, Range(0, 10)]
-    private float force = 5;
-
-    public SlownessEffect() { }
-    public SlownessEffect(float Time, float force)
+    [System.Serializable]
+    public class SlownessEffect : CharacterEffect
     {
-       time = Time;
-    }
+        public override bool Existance => time > 0;
 
-    public override void Start()
-    {
-        effectsHolder.character.CurrentSpeed -= force;
-    }
-    public override void Remove()
-    {
-        effectsHolder.character.CurrentSpeed += force;
-    }
-    public override void Update()
-    {
-        if (IsServer)
+        [SerializeField, Range(0, 120)]
+        private float time = 0;
+
+        [SerializeField, Range(0, 10)]
+        private float force = 5;
+
+        public SlownessEffect() { }
+        public SlownessEffect(float Time, float force)
         {
-            time -= Time.fixedDeltaTime;
+        time = Time;
         }
-    }
 
-    public override void AddDublicate(CharacterEffect effect)
-    {
-        var slownessEffect = (SlownessEffect)effect;
+        public override void Start()
+        {
+            effectsHolder.character.Speed -= force;
+        }
+        public override void Remove()
+        {
+            effectsHolder.character.Speed += force;
+        }
+        public override void Update()
+        {
+            if (isServer)
+            {
+                time -= Time.fixedDeltaTime;
+            }
+        }
 
-        time = Mathf.Max(time, slownessEffect.time);
-    }
+        public override void AddDublicate(CharacterEffect effect)
+        {
+            var slownessEffect = (SlownessEffect)effect;
 
-    public override string ToString()
-    {
-        return base.ToString() + " - " + time;
-    }
+            time = Mathf.Max(time, slownessEffect.time);
+        }
+
+        public override string ToString()
+        {
+            return base.ToString() + " - " + time;
+        }
+}
 }

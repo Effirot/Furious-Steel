@@ -4,7 +4,6 @@ using UnityEngine;
 using CharacterSystem.DamageMath;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.Netcode;
 using System.Runtime.CompilerServices;
 using CharacterSystem.Objects;
 using Unity.VisualScripting;
@@ -12,6 +11,8 @@ using UnityEngine.Rendering;
 using Cysharp.Threading.Tasks;
 using TMPro;
 using Unity.Cinemachine;
+using Mirror;
+using CharacterSystem.Effects;
 
 public class ExplodeMagicTrinketUltimate : UltimateDamageSource
 {
@@ -46,7 +47,7 @@ public class ExplodeMagicTrinketUltimate : UltimateDamageSource
         if (chargeValue.Value >= chargeValue.MaxValue && 
             Source.permissions.HasFlag(CharacterPermission.AllowAttacking) &&
             !Source.isStunned && 
-            IsPerforming &&
+            isPerforming &&
             !IsInProcess)
         {
             ExplodeAll();
@@ -57,7 +58,7 @@ public class ExplodeMagicTrinketUltimate : UltimateDamageSource
 
     private async void ExplodeAll()
     {
-        if (IsServer)
+        if (isServer)
         {            
             var effects = burnEffects.ToArray();
             
@@ -76,13 +77,8 @@ public class ExplodeMagicTrinketUltimate : UltimateDamageSource
                 if (effect.effectsHolder.IsUnityNull() || !effect.IsValid)
                     continue;
 
-                Explode_ClientRpc(effect.effectsHolder.transform.position);
+                Explode(effect.effectsHolder.transform.position);
                
-                if (!IsClient)
-                {
-                    Explode_Internal(effect.effectsHolder.transform.position);
-                }
-
                 effect.time = -1;
                 
                 foreach (var collider in Physics.OverlapSphere(effect.effectsHolder.transform.position, 5))
@@ -106,12 +102,8 @@ public class ExplodeMagicTrinketUltimate : UltimateDamageSource
         burnEffects.Clear();
     }
 
-    [ClientRpc]
-    private void Explode_ClientRpc(Vector3 position)
-    {
-        Explode_Internal(position);
-    }
-    private void Explode_Internal(Vector3 position)
+    [Command]
+    private void Explode(Vector3 position)
     {
         var gameObject = Instantiate(ExplodeEffectPrefab, position, Quaternion.identity);
         gameObject.SetActive(true);

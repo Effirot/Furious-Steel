@@ -2,7 +2,7 @@
 
 using System;
 using UnityEngine;
-using Unity.Netcode;
+using Mirror;
 using CharacterSystem.Objects;
 using System.Collections.Generic;
 using UnityEngine.Rendering.Universal;
@@ -11,28 +11,27 @@ using System.Drawing;
 using CharacterSystem.DamageMath;
 using CharacterSystem.Attacks;
 using Unity.VisualScripting;
+using CharacterSystem.Effects;
 
 [DisallowMultipleComponent]
 public class CharacterVoidPuddleManager : NetworkBehaviour
 {
-    private struct PuddleData : 
-        INetworkSerializable,
-        IEquatable<PuddleData>
+    private readonly struct PuddleData : IEquatable<PuddleData>
     {
-        public float size;
-        public Vector3 position;
-        public Vector3 normal;
+        public float size { get; }
+        public Vector3 position { get; }
+        public Vector3 normal { get; }
+
+        public PuddleData (float size, Vector3 position, Vector3 normal)
+        {
+            this.size = size; 
+            this.position = position; 
+            this.normal = normal; 
+        } 
 
         public bool Equals(PuddleData other)
         {
             return other.size == size && other.position == position && other.normal == normal;
-        }
-
-        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
-        {
-            serializer.SerializeValue(ref size);
-            serializer.SerializeValue(ref position);
-            serializer.SerializeValue(ref normal);
         }
     }
 
@@ -52,13 +51,13 @@ public class CharacterVoidPuddleManager : NetworkBehaviour
     private float emmitSize = 8f;
 
     private NetworkCharacter networkCharacter;
-    private NetworkList<PuddleData> puddleDatas;
+    private SyncList<PuddleData> puddleDatas = new(Array.Empty<PuddleData>());
 
     private List<GameObject> publeInstances = new();
 
     public void SetPuddle()
     {
-        if (IsServer)
+        if (isServer)
         {
             if (Physics.Raycast(transform.position + Vector3.up + new Vector3(UnityEngine.Random.Range(-0.65f, 0.65f), 0, UnityEngine.Random.Range(-0.65f, 0.65f)), Vector3.down, out var hit, 5))
             {
@@ -68,7 +67,7 @@ public class CharacterVoidPuddleManager : NetworkBehaviour
     }
     public void SetPuddle(DamageDeliveryReport damageDeliveryReport)
     {
-        if (IsServer)
+        if (isServer)
         {
             if (Physics.Raycast(damageDeliveryReport.target.transform.position + Vector3.up + new Vector3(UnityEngine.Random.Range(-0.65f, 0.65f), 0, UnityEngine.Random.Range(-0.65f, 0.65f)), Vector3.down, out var hit, 5))
             {
@@ -78,46 +77,28 @@ public class CharacterVoidPuddleManager : NetworkBehaviour
     }
     public void SetPuddle(Vector3 position, Vector3 normal, float size)
     {
-        if (IsServer)
+        if (isServer)
         {
             if (puddleDatas.Count < puddleLimit)
             {
-                puddleDatas.Add(new PuddleData()
-                {
-                    position = position,
-                    normal = normal,
-                    size = size,
-                });
+                puddleDatas.Add(new PuddleData(size, position, normal));
             }
         }
     }
 
-    public override void OnNetworkSpawn()
+    private void Start()
     {
-        base.OnNetworkSpawn();
-
-        if (IsServer && emmitPubles)
+        if (isServer && emmitPubles)
         {
             StartCoroutine(PubleEmission());
         }
-    }
-    public override void OnNetworkDespawn()
-    {
-        base.OnNetworkDespawn();
 
+        FindCharacter();
+    }
+    private void OnDestroy()
+    {
         Clear();
     }
-
-    public override void OnNetworkObjectParentChanged(NetworkObject parentNetworkObject)
-    {
-        base.OnNetworkObjectParentChanged(parentNetworkObject);
-
-        if (!parentNetworkObject.IsUnityNull())
-        {
-            FindCharacter();
-        }
-    }
-
     private void Awake()
     {
         networkCharacter = GetComponentInParent<NetworkCharacter>();
@@ -126,10 +107,9 @@ public class CharacterVoidPuddleManager : NetworkBehaviour
         {
             networkCharacter = GetComponent<NetworkCharacter>();
         }
-
-        puddleDatas = new(Array.Empty<PuddleData>(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-        puddleDatas.OnListChanged += OnPubleDataListChanged_Event;
+        puddleDatas.OnChange += OnPubleDataListChanged_Event;
     }
+
 #if !UNITY_SERVER || UNITY_EDITOR
     private void LateUpdate()
     {
@@ -145,14 +125,12 @@ public class CharacterVoidPuddleManager : NetworkBehaviour
 #endif
     private void FixedUpdate()
     {
-        if (IsServer)
+        if (isServer)
         {
             for (int i = 0; i < puddleDatas.Count; i++)
             {
-
                 var data = puddleDatas[i];
-                data.size -= Time.fixedDeltaTime * 2;
-                puddleDatas[i] = data;
+                puddleDatas[i] = new PuddleData(data.size - Time.fixedDeltaTime * 2, data.position, data.normal);
 
                 if (data.size <= 0)
                 {
@@ -177,35 +155,28 @@ public class CharacterVoidPuddleManager : NetworkBehaviour
         }
     }
 
-    private void OnPubleDataListChanged_Event(NetworkListEvent<PuddleData> networkListEvent)
+    private void OnPubleDataListChanged_Event(SyncList<PuddleData>.Operation operation, int index, PuddleData puddleData)
     {
-        switch (networkListEvent.Type)
+        switch (operation)
         {
-            case NetworkListEvent<PuddleData>.EventType.Add:
-                CreateObject(networkListEvent.Value);
+            case SyncList<PuddleData>.Operation.OP_ADD: 
+                CreateObject(puddleData);
                 break;
 
-            case NetworkListEvent<PuddleData>.EventType.Insert: 
-                goto case NetworkListEvent<PuddleData>.EventType.Add;
-
-            case NetworkListEvent<PuddleData>.EventType.Remove:
-                Remove(publeInstances[networkListEvent.Index]);
+            case SyncList<PuddleData>.Operation.OP_SET: 
+                SetPubleData(publeInstances[index], puddleData);
                 break;
 
-            case NetworkListEvent<PuddleData>.EventType.RemoveAt:
-                goto case NetworkListEvent<PuddleData>.EventType.Remove;
-
-            case NetworkListEvent<PuddleData>.EventType.Value:
-                SetPubleData(publeInstances[networkListEvent.Index], networkListEvent.Value);
+            case SyncList<PuddleData>.Operation.OP_INSERT: 
+                goto case SyncList<PuddleData>.Operation.OP_ADD;
+                
+            case SyncList<PuddleData>.Operation.OP_REMOVEAT: 
+                Remove(publeInstances[index]);
                 break;
-
-            case NetworkListEvent<PuddleData>.EventType.Clear:
+            
+            case SyncList<PuddleData>.Operation.OP_CLEAR: 
                 Clear();
-                break;
-
-            case NetworkListEvent<PuddleData>.EventType.Full:
-                Refresh();
-                break;        
+                break;      
         }
     }
 

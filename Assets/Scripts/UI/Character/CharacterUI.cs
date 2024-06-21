@@ -8,7 +8,6 @@ using CharacterSystem.PowerUps;
 using Cysharp.Threading.Tasks;
 using JetBrains.Annotations;
 using TMPro;
-using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
 using UnityEngine.UI;
@@ -62,7 +61,7 @@ public class CharacterUI : MonoBehaviour
         }
         else
         {
-            if (NetworkCharacter.IsLocalPlayer)
+            if (NetworkCharacter.isLocalPlayer)
             {
                 transform.localScale = Vector3.one * 1.5f;
             }

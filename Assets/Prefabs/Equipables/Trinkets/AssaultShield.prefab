@@ -51,6 +51,8 @@ VFXRenderer:
   m_ReflectionProbeUsage: 0
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -163,6 +165,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: e9ccefcc15798284eabc7fab7f8b2c67, type: 3}
+  m_Resource: {fileID: 8300000, guid: e9ccefcc15798284eabc7fab7f8b2c67, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.664
   m_Pitch: 1
@@ -291,6 +294,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 98ac7ad5c2317fe41ab1e8768db9873c, type: 3}
+  m_Resource: {fileID: 8300000, guid: 98ac7ad5c2317fe41ab1e8768db9873c, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.767
   m_Pitch: 1
@@ -385,10 +389,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2970410977556372486}
-  - component: {fileID: -58491127308848182}
   - component: {fileID: 3197237487255063236}
   - component: {fileID: 6229423816629485204}
   - component: {fileID: 1262952487810819617}
+  - component: {fileID: 1759281112657891272}
   m_Layer: 0
   m_Name: AssaultShield
   m_TagString: Untagged
@@ -417,27 +421,6 @@ Transform:
   - {fileID: 5769806735366602611}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &-58491127308848182
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5302916356213056320}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3352900342
-  InScenePlacedSourceGlobalObjectIdHash: 0
-  AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
 --- !u!114 &3197237487255063236
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -450,6 +433,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e02cc2139c0c4704ca305884101e1c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   TargetParentPath: ArmorModels/Armor_Armature/SpineCenter
   origin: {fileID: 1821979728203298860}
 --- !u!114 &6229423816629485204
@@ -464,6 +450,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91b59a25b78b63442bfa85d494b70054, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   overrides:
   - Name: Blocking_OneHanded
     Clip: {fileID: 1167525259562148716, guid: 49a9270d79ae6ae47a418f511e4d2577, type: 3}
@@ -479,16 +468,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2dd6b2ebd8fca6f41ac611fd52f52fc4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  IsPerforming: 1
   inputAction: {fileID: 4628471853980608337, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 3
   SpeedChange: 5
+  IsPressed: 0
   maxSpeed: 35
   speedAcelerationMultiplyer: 3
   lookVectorAceleration: 0.01
   stuckThresold: 5
   collideAcelerationPercentRequirement: 0
   maxPushTime: 4
-  stopOnActivityRelease: 0
   colliderOffset: {x: 0, y: 0, z: 1}
   colliderScale: {x: 1, y: 1, z: 1}
   explodeRange: 5
@@ -527,6 +520,23 @@ MonoBehaviour:
   references:
     version: 2
     RefIds: []
+--- !u!114 &1759281112657891272
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5302916356213056320}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 2077388910
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
 --- !u!1 &7395535573987010605
 GameObject:
   m_ObjectHideFlags: 0
@@ -576,6 +586,8 @@ SkinnedMeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 3
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -712,6 +724,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: b54b21bf1c8389f4e94d55c79590de0f, type: 3}
+  m_Resource: {fileID: 8300000, guid: b54b21bf1c8389f4e94d55c79590de0f, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.888
   m_Pitch: 1
@@ -864,6 +877,8 @@ VFXRenderer:
   m_ReflectionProbeUsage: 0
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:

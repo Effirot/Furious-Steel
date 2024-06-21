@@ -3,16 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using CharacterSystem.DamageMath;
 using CharacterSystem.Objects;
+using Mirror;
 using Unity.Cinemachine;
-using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
 public interface IObservableObject
 {
     public Transform ObservingPoint { get; }
-
-    public bool IsOwner { get; }
 }
 
 public class CharacterCameraObserver : MonoBehaviour
@@ -33,7 +31,7 @@ public class CharacterCameraObserver : MonoBehaviour
 
             StopAllCoroutines();
 
-            if (value == null || !(value.IsOwner))
+            if (value == null || !(value.ObservingPoint.TryGetComponent<NetworkIdentity>(out var identity) && identity.isLocalPlayer))
             {
                 StartCoroutine(ObserveRandomCharacter());
             }

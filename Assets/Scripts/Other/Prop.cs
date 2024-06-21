@@ -2,7 +2,7 @@
 
 using System;
 using CharacterSystem.DamageMath;
-using Unity.Netcode;
+using Mirror;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -20,56 +20,32 @@ public class Prop : NetworkBehaviour,
     [field : SerializeField, Range(0.01f, 10)]
     public float mass { get; set; } = 1;
 
-    public float health { 
-        get => network_health.Value; 
-        set { 
-            if (IsServer && !Undestroyable)
-            {
-                network_health.Value = value; 
-            }
-        }
-    }
-
     public float stunlock { get => 0; set { } }
     public Damage lastRecievedDamage { get; set; }
 
-    public Team team => null;
 
-    public Vector3 velocity { 
-        get => network_velocity.Value; 
-        set 
-        {
-            if (IsServer)
-            {
-                network_velocity.Value = value;
-            }
-        } 
-    }
-    public Vector3 position { 
-        get => network_position.Value; 
-        set 
-        {
-            if (IsServer)
-            {
-                network_position.Value = value;
-            }
-        } 
-    }
+
+    [HideInInspector, SyncVar]
+    public float health;
+    [HideInInspector, SyncVar]
+    public Vector3 velocity;
+    [HideInInspector, SyncVar]
+    public Vector3 position;
     
     public float PhysicTimeScale { get; set; } = 1;
     public float GravityScale { get; set; } = 1;
 
+    public Team team => null;
 
     public event Action<Damage> onDamageRecieved;
 
-    private NetworkVariable<Vector3> network_velocity = new (Vector3.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-    private NetworkVariable<Vector3> network_position = new (Vector3.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-    private NetworkVariable<float> network_health = new(1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-    
     protected Rigidbody rb { get; private set; }
     public float LocalTimeScale { get; set; } = 1;
 
     public bool IsGrounded { get; private set; } = false;
+    
+    float IDamagable.health { get => health; set => health = value; }
+    Vector3 IPhysicObject.velocity { get => velocity; set => velocity = value; }
 
     public bool Heal(Damage damage)
     {
@@ -96,24 +72,19 @@ public class Prop : NetworkBehaviour,
         velocity = direction;
     }
 
-    public override void OnNetworkSpawn()
-    {
-        base.OnNetworkSpawn();
-
-        network_health.Value = maxHealth;
-    }
-
     protected virtual void Awake()
     {
         rb = GetComponent<Rigidbody>();
         rb.isKinematic = false;
         rb.constraints = RigidbodyConstraints.FreezeAll;
         rb.useGravity = false;
+        
+        health = maxHealth;
     }
 
     protected virtual void FixedUpdate()
     {   
-        if (IsSpawned)
+        if (NetworkManager.singleton?.isNetworkActive ?? false)
         {
             CalculateVelocity();
 
@@ -161,23 +132,23 @@ public class Prop : NetworkBehaviour,
     }
     private void Move()
     {
-        if (IsServer)
+        if (isServer)
         {
             transform.position = (transform.position + (velocity * LocalTimeScale * PhysicTimeScale * Time.fixedDeltaTime));
             
-            network_position.Value = transform.position;
+            position = transform.position;
         }
         else
         {
-            if (Vector3.Distance(network_position.Value, transform.position) < 0.5f)
+            if (Vector3.Distance(position, transform.position) < 0.5f)
             {
-                var direction = network_position.Value - transform.position;
+                var direction = position - transform.position;
 
                 transform.position = transform.position + direction + (velocity * LocalTimeScale * PhysicTimeScale);
             }
             else
             {
-                transform.position = network_position.Value;
+                transform.position = position;
             }
         }
     }

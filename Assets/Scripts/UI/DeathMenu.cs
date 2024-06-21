@@ -1,8 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using CharacterSystem.Objects;
-using Unity.Netcode;
-using Unity.Netcode.Transports.UTP;
+using Mirror;
 using UnityEngine;
 
 public class DeathMenu : MonoBehaviour
@@ -16,12 +15,11 @@ public class DeathMenu : MonoBehaviour
         if (RoomManager.Singleton != null)
         {
 #if UNITY_EDITOR
-            if (!NetworkManager.Singleton.IsListening)
+            if (!NetworkManager.singleton.isNetworkActive)
             {
-                var transport = NetworkManager.Singleton.NetworkConfig.NetworkTransport as UnityTransport; 
-                NetworkManager.Singleton.StartHost();
+                NetworkManager.singleton.StartHost();
 
-                await Cysharp.Threading.Tasks.UniTask.WaitUntil(() => NetworkManager.Singleton.IsListening);
+                await Cysharp.Threading.Tasks.UniTask.WaitUntil(() => NetworkManager.singleton.isNetworkActive);
             }
 #endif
 

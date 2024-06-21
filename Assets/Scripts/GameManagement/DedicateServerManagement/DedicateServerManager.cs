@@ -3,24 +3,21 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Unity.Netcode;
 using System.Text.RegularExpressions;
 using UnityEngine.SceneManagement;
-using Unity.Netcode.Transports.UTP;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Linq;
 using Cysharp.Threading.Tasks;
+using Mirror;
 
 public class DedicateServerManager : MonoBehaviour
 {
 
     private static void StartServerOnLoad_Event(Scene scene, LoadSceneMode mode)
     {
-        var transport = NetworkManager.Singleton.NetworkConfig.NetworkTransport as UnityTransport;
-
-        NetworkManager.Singleton.StartServer();
+        NetworkManager.singleton.StartServer();
         Debug.Log("Server was Started");
 
         SceneManager.sceneLoaded -= StartServerOnLoad_Event;
@@ -49,9 +46,6 @@ public class DedicateServerManager : MonoBehaviour
 
         Application.targetFrameRate = 240;
         QualitySettings.vSyncCount = 0;
-
-        PuncherServer server = new PuncherServer();
-        server.Start(new IPEndPoint(IPAddress.Any, 7777));
     }
 #endif
 }

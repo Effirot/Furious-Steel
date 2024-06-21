@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using CharacterSystem.DamageMath;
 using CharacterSystem.Objects;
 using Cysharp.Threading.Tasks;
-using Unity.Netcode;
+using Mirror;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
@@ -38,7 +38,7 @@ public class BonePlayerNetworkCharacter : PlayerNetworkCharacter
             }
             else
             {
-                var comboModificator = 1 + Combo * 0.01f; 
+                var comboModificator = 1 + combo * 0.01f; 
                 var newDrainPercent = healthDrainPercent + comboModificator;
 
                 if (report.damage.type is Damage.Type.Balistic or Damage.Type.Magical or Damage.Type.Unblockable)
@@ -54,9 +54,9 @@ public class BonePlayerNetworkCharacter : PlayerNetworkCharacter
                 Heal(new Damage(-report.damage.value * newDrainPercent, null, 0, Vector3.zero, Damage.Type.Effect));
             }
 
-            if (report.target?.gameObject?.TryGetComponent<NetworkObject>(out var component) ?? false)
+            if (report.target?.gameObject?.TryGetComponent<NetworkIdentity>(out var component) ?? false)
             {
-                HealthDrain_ClientRpc(component.NetworkObjectId);
+                HealthDrain_ClientRpc(component.netId);
             }
         }
     
@@ -76,9 +76,9 @@ public class BonePlayerNetworkCharacter : PlayerNetworkCharacter
 
 
     [ClientRpc]
-    private void HealthDrain_ClientRpc(ulong targetID)
+    private void HealthDrain_ClientRpc(uint targetID)
     {
-        var dictionary = NetworkManager.Singleton.SpawnManager.SpawnedObjects;
+        var dictionary = NetworkServer.spawned;
 
         if (!dictionary.ContainsKey(targetID)) return;
         var target = dictionary[targetID];

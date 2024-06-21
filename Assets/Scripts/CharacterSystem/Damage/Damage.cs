@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using CharacterSystem.Attacks;
+using CharacterSystem.Effects;
 using CharacterSystem.Objects;
-using Unity.Netcode;
+using Mirror;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.VFX;
@@ -11,8 +12,7 @@ using UnityEngine.VFX;
 namespace CharacterSystem.DamageMath
 {
     [Serializable]
-    public struct Damage : INetworkSerializable,
-        IEquatable<Damage>
+    public struct Damage : IEquatable<Damage>
     {
         public enum Type : byte
         {
@@ -111,6 +111,9 @@ namespace CharacterSystem.DamageMath
 
                     foreach (var effect in damage.Effects)
                     {
+                        if (effect == null)
+                            continue;
+                            
                         var effectClone = effect.Clone();
                         effectClone.effectsSource = damage.sender;
 
@@ -151,18 +154,15 @@ namespace CharacterSystem.DamageMath
         public CharacterEffect[] Effects;
 
         [NonSerialized]
-        public ulong senderID;
+        public uint senderID;
          
         public IDamageSource sender { 
             get {
-                if (senderID != ulong.MinValue)
-                {
-                    var dictionary = NetworkManager.Singleton.SpawnManager.SpawnedObjects;
+                var dictionary = NetworkServer.spawned;
 
-                    if (dictionary.ContainsKey(senderID) && dictionary[senderID].TryGetComponent<IDamageSource>(out var component))
-                    {
-                        return component;
-                    }
+                if (dictionary.ContainsKey(senderID) && dictionary[senderID].TryGetComponent<IDamageSource>(out var component))
+                {
+                    return component;
                 }
 
                 return null;
@@ -171,7 +171,7 @@ namespace CharacterSystem.DamageMath
                 
                 if (value.IsUnityNull())
                 {
-                    senderID = ulong.MinValue; 
+                    senderID = uint.MinValue; 
                     return;
                 }
 
@@ -179,17 +179,17 @@ namespace CharacterSystem.DamageMath
 
                 if (gObj.IsUnityNull())
                 {
-                    senderID = ulong.MinValue; 
+                    senderID = uint.MinValue; 
                     return;
                 }
 
-                if (gObj.TryGetComponent<NetworkObject>(out var netObj))
-                    senderID = netObj.NetworkObjectId;
+                if (gObj.TryGetComponent<NetworkIdentity>(out var netObj))
+                    senderID = netObj.netId;
             } 
         }
 
 
-        public Damage(float value, ulong senderID, float stunlock, Vector3 pushDirection, Type type, params CharacterEffect[] effects)
+        public Damage(float value, uint senderID, float stunlock, Vector3 pushDirection, Type type, params CharacterEffect[] effects)
         {
             this.value = value;
             this.senderID = senderID;
@@ -221,16 +221,6 @@ namespace CharacterSystem.DamageMath
             return $"Sender: {sender?.gameObject?.name ?? "null"}\n Damage: {value}\n Type: {type}\n Stunlock: {stunlock}\n Push Force: {pushDirection}\n UltimateRecharged {RechargeUltimate}";
         }
 
-        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
-        {
-            serializer.SerializeValue(ref value);
-            serializer.SerializeValue(ref type);
-            serializer.SerializeValue(ref stunlock);
-            serializer.SerializeValue(ref pushDirection);
-            serializer.SerializeValue(ref RechargeUltimate);
-
-            serializer.SerializeValue(ref senderID);
-        }
         public bool Equals(Damage other)
         {
             return other.value == value &&
@@ -255,7 +245,7 @@ namespace CharacterSystem.DamageMath
         {
             damage.value *= multipliyer;
             damage.stunlock *= multipliyer;
-            // damage.pushDirection *= multipliyer;
+            damage.pushDirection *= multipliyer;
 
             return damage;
         }
@@ -263,7 +253,7 @@ namespace CharacterSystem.DamageMath
         {
             damage.value /= multipliyer;
             damage.stunlock /= multipliyer;
-            // damage.pushDirection /= multipliyer;
+            damage.pushDirection /= multipliyer;
 
             return damage;
         }
@@ -281,10 +271,7 @@ namespace CharacterSystem.DamageMath
     }
     
     [Serializable]
-    public class DamageDeliveryReport : 
-        IDisposable, 
-        INetworkSerializable,
-        IEquatable<DamageDeliveryReport>
+    public class DamageDeliveryReport : IDisposable, IEquatable<DamageDeliveryReport>
     {
         public Damage damage = new Damage();
 
@@ -296,24 +283,19 @@ namespace CharacterSystem.DamageMath
 
         public CharacterEffect[] RecievedEffects;
         
-        public ulong TargetID;
+        public uint targetID;
 
         public IDamagable target {
             get {
-                if (TargetID != ulong.MinValue)
+                if (NetworkServer.spawned.ContainsKey(targetID) && NetworkServer.spawned[targetID].TryGetComponent<IDamageSource>(out var component))
                 {
-                    var dictionary = NetworkManager.Singleton.SpawnManager.SpawnedObjects;
-
-                    if (dictionary.ContainsKey(TargetID) && dictionary[TargetID].TryGetComponent<IDamageSource>(out var component))
-                    {
-                        return component;
-                    }
+                    return component;
                 }
 
                 return null;
             }
             set{
-                TargetID = value?.gameObject?.GetComponent<NetworkObject>()?.NetworkObjectId ?? ulong.MinValue;
+                targetID = value?.gameObject?.GetComponent<NetworkIdentity>()?.netId ?? uint.MinValue;
             } 
         }
 
@@ -330,17 +312,61 @@ namespace CharacterSystem.DamageMath
                 other.isBlocked == isBlocked &&
                 other.isLethal == isLethal &&
                 other.time == time &&
-                other.TargetID == TargetID;
+                other.targetID == targetID;
         }
+    }
 
-        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
-        {
-            serializer.SerializeValue(ref damage);
-            serializer.SerializeValue(ref isDelivered);
-            serializer.SerializeValue(ref isBlocked);
-            serializer.SerializeValue(ref isLethal);
-            serializer.SerializeValue(ref time);
-            serializer.SerializeValue(ref TargetID);
-        }
+    public static class CustomDamageSerialization 
+    {
+        // public static void WriteDamage(this NetworkWriter writer, Damage value)
+        // {
+        //     writer.Write(value.value);
+        //     writer.Write((byte)value.type);
+        //     writer.Write(value.stunlock);
+        //     writer.Write(value.pushDirection);
+        //     writer.Write(value.RechargeUltimate);
+        //     writer.Write(value.SelfDamageUltimate);
+        //     writer.Write(value.senderID);
+        //     writer.Write(value.Effects); // ------------------------ FIX THIS
+        // }
+
+        // public static Damage ReadDamage(this NetworkReader reader)
+        // {
+        //     return new Damage()
+        //     {
+        //         value = reader.Read<float>(),
+        //         type = (Damage.Type)reader.Read<byte>(),
+        //         stunlock = reader.Read<float>(),
+        //         pushDirection = reader.Read<Vector3>(),
+        //         RechargeUltimate = reader.Read<bool>(),
+        //         SelfDamageUltimate = reader.Read<bool>(),
+        //         senderID = reader.Read<uint>(),
+        //         Effects = reader.Read<CharacterEffect[]>(), // ------------------------ FIX THIS
+        //     };
+        // }
+
+        // public static void WriteDamageReport(this NetworkWriter writer, DamageDeliveryReport value)
+        // {
+        //     writer.Write(value.damage);
+        //     writer.Write(value.isDelivered);
+        //     writer.Write(value.isBlocked);
+        //     writer.Write(value.isLethal);
+        //     writer.Write(value.time);
+        //     writer.Write(value.targetID);
+        //     writer.Write(value.RecievedEffects); // ------------------------ FIX THIS
+        // }
+
+        // public static DamageDeliveryReport ReadDamageReport(this NetworkReader reader)
+        // {
+        //     return new DamageDeliveryReport() {
+        //         damage = reader.Read<Damage>(),
+        //         isDelivered = reader.Read<bool>(),
+        //         isBlocked = reader.Read<bool>(),
+        //         isLethal = reader.Read<bool>(),
+        //         time = reader.Read<DateTime>(),
+        //         targetID = reader.Read<uint>(),                
+        //         RecievedEffects = reader.Read<CharacterEffect[]>(), // ------------------------ FIX THIS
+        //     };
+        // }
     }
 }

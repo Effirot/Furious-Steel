@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using CharacterSystem.Objects;
 using CharacterSystem.PowerUps;
 using Unity.Collections;
-using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;

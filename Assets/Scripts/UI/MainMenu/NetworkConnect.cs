@@ -2,8 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
-using Unity.Netcode;
-using Unity.Netcode.Transports.UTP;
+using Mirror;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
@@ -15,13 +14,13 @@ public class NetworkConnect : MonoBehaviour
     [SerializeField]
     private UnityEvent OnUnsuccesfullyConnect = new();
 
-    private static NetworkManager NetworkManager => NetworkManager.Singleton;
+    private static NetworkManager NetworkManager => NetworkManager.singleton;
 
-    private static void OnCharacterDisconnected_Event(ulong ID)
+    private static void OnCharacterDisconnected_Event()
     {
         SceneManager.LoadScene(0);
 
-        NetworkManager.OnClientDisconnectCallback -= OnCharacterDisconnected_Event;
+        NetworkClient.OnDisconnectedEvent -= OnCharacterDisconnected_Event;
     }
     private static void StartHostOnLoad_Event(Scene scene, LoadSceneMode mode)
     {
@@ -32,26 +31,21 @@ public class NetworkConnect : MonoBehaviour
     
     public async void Connect() 
     {        
-        if (NetworkManager.StartClient())
+        NetworkManager.StartClient();
+    
+        await UniTask.WaitUntil(() => NetworkClient.isConnecting);
+
+        if (NetworkClient.isConnected)
         {
-            await UniTask.WaitUntil(() => NetworkManager.IsConnectedClient);
+            OnSuccesfullyConnect.Invoke();
 
-            if (NetworkManager.IsConnectedClient)
-            {
-                OnSuccesfullyConnect.Invoke();
-
-                NetworkManager.OnClientDisconnectCallback += OnCharacterDisconnected_Event;
-            }
-            else
-            {
-                OnUnsuccesfullyConnect.Invoke();
-
-                NetworkManager.Shutdown();
-            }
+            NetworkClient.OnDisconnectedEvent += OnCharacterDisconnected_Event;
         }
         else
         {
             OnUnsuccesfullyConnect.Invoke();
+
+            Shutdown();
         }
     }
     public void StartHostOnLoad()
@@ -64,20 +58,35 @@ public class NetworkConnect : MonoBehaviour
     }
     public void Shutdown()
     {
-        NetworkManager.Shutdown();
+        switch (NetworkManager.mode)
+        {
+            case NetworkManagerMode.ServerOnly:
+                NetworkManager.StopServer();
+                break; 
+            
+            case NetworkManagerMode.ClientOnly:
+                NetworkManager.StopClient();
+                break;
+
+            case NetworkManagerMode.Host:
+                NetworkManager.StopHost();
+                break;
+        }
     }
 
     public void SetIP(string IP)
-    {
-        var transport = (UnityTransport)NetworkManager.NetworkConfig.NetworkTransport;
-    
-        transport.ConnectionData.Address = IP;
+    {    
+        NetworkManager.networkAddress = IP;
     }
     public void SetPort(string Port)
     {
-        var transport = (UnityTransport)NetworkManager.NetworkConfig.NetworkTransport;
+        var transport = NetworkManager.transport;
+
+        if (NetworkManager.transport is PortTransport)
+        {
+            ((PortTransport)transport).Port = ushort.Parse(Port);
+        }
     
-        transport.ConnectionData.Port = ushort.Parse(Port);
     }
 
     public void LoadScene(int ID)

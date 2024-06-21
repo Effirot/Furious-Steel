@@ -5,7 +5,7 @@ using System.Linq;
 using CharacterSystem.DamageMath;
 using CharacterSystem.Objects;
 using Cysharp.Threading.Tasks;
-using Unity.Netcode;
+using Mirror;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -24,46 +24,30 @@ public class CharacterStealthGraphicHider : NetworkBehaviour
     [SerializeField] 
     private UnityEvent OnCharacterUnhide = new UnityEvent();
 
-    public bool IsHidden
-    { 
-        get => isObjectHidden_network.Value;
-        set 
-        {
-            if (IsServer)
-            {
-                isObjectHidden_network.Value = value;
-            }
-        }
-    }
+    [SyncVar(hook = nameof(OnHideStateChanged))]
+    public bool IsHidden = false;
 
     private List<StealthObject> stealthObjects = new();
     private float transparency = 1;
     private NetworkCharacter character; 
 
-    private NetworkVariable<bool> isObjectHidden_network = new NetworkVariable<bool> (false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
     private Coroutine OnHitTimeOut;
 
-    public override void OnNetworkSpawn()
+    public override void OnStartClient()
     {
+        base.OnStartClient();
+
         character = GetComponent<NetworkCharacter>();
 
-        base.OnNetworkSpawn();
-
         character.onDamageRecieved += UnhideWhileGetDamage;
-        isObjectHidden_network.OnValueChanged += (Old, New) => {
-            if (New)
-            {
-                OnCharacterHide.Invoke();
-            }
-            else
-            {
-                OnCharacterUnhide.Invoke();
-            }
-        };
+
+        HiddableSkinnedMeshRenderers = GetComponentsInChildren<SkinnedMeshRenderer>();    
     }
-    public override void OnNetworkDespawn()
+    public override void OnStopClient()
     {
+        base.OnStopClient();
+
         foreach(var component in stealthObjects)
         {
             if (component != null && component.characterSteathers.Contains(this))
@@ -73,13 +57,6 @@ public class CharacterStealthGraphicHider : NetworkBehaviour
         }
 
         character.onDamageRecieved -= UnhideWhileGetDamage;
-    }
-
-    private async void Start()
-    {
-        await UniTask.WaitUntil(() => IsSpawned);
-
-        HiddableSkinnedMeshRenderers = GetComponentsInChildren<SkinnedMeshRenderer>();    
     }
 
     private void LateUpdate()
@@ -155,5 +132,17 @@ public class CharacterStealthGraphicHider : NetworkBehaviour
         yield return new WaitForSeconds(1); 
 
         OnHitTimeOut = null;
+    }
+
+    private void OnHideStateChanged(bool Old, bool New)
+    {
+        if (New)
+        {
+            OnCharacterHide.Invoke();
+        }
+        else
+        {
+            OnCharacterUnhide.Invoke();
+        }
     }
 }

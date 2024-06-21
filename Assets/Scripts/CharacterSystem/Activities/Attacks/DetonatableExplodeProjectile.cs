@@ -20,28 +20,33 @@ public class DetonatableExplodeProjectile : ExplodeProjectile
 
     private static UnityEvent<IDamageSource> detonateAll_Evenet = new();
 
-    public override void OnNetworkSpawn()
+    protected override void Start()
     {
-        base.OnNetworkSpawn();
+        base.Start();
 
         detonateAll_Evenet.AddListener(Detonate_Event);
     }
-    public override void OnNetworkDespawn()
+    protected override void OnDestroy()
     {
-        base.OnNetworkDespawn();
+        base.OnDestroy();
 
         detonateAll_Evenet.RemoveListener(Detonate_Event);
     }
 
     private async void Detonate_Event(IDamageSource source)
     {
+        detonateAll_Evenet.RemoveListener(Detonate_Event);
+
         if (System.Object.ReferenceEquals(source, Summoner))
         {
             OnAfterDetonateEvent.Invoke();
+            
+            var random = new System.Random((int)netId);
 
             await UniTask.WaitForSeconds(ExplodeAfter);
-            await UniTask.WaitForSeconds(UnityEngine.Random.Range(0, 0.2f));
+            await UniTask.WaitForSeconds(random.Next(0, 200) / 1000f);
 
+            Explode();
             Kill();
         }
     }

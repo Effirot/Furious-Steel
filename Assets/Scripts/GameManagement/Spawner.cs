@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Netcode;
+using Mirror;
 using UnityEngine;
 
 public class Spawner : NetworkBehaviour
@@ -14,13 +14,13 @@ public class Spawner : NetworkBehaviour
     [SerializeField]
     private GameObject prefab;
 
-    private NetworkObject instance = null;
+    private GameObject instance = null;
 
-    public override void OnNetworkSpawn()
+    public override void OnStartServer()
     {
-        base.OnNetworkSpawn();
+        base.OnStartServer();
 
-        if (IsServer)
+        if (isServer)
         {
             if (SpawnOnStartup)
             {
@@ -30,11 +30,11 @@ public class Spawner : NetworkBehaviour
             StartCoroutine(SpawnProcess());
         }
     }
-    public override void OnNetworkDespawn()
+    public override void OnStopServer()
     {
-        base.OnNetworkDespawn();
+        base.OnStopServer();
 
-        if (IsServer)
+        if (isServer)
         {
             StopAllCoroutines();
         }
@@ -47,10 +47,10 @@ public class Spawner : NetworkBehaviour
         prefabObject.name = prefab.name;
         prefabObject.SetActive(true);
 
-        instance = prefabObject.GetComponent<NetworkObject>(); 
-        instance.Spawn(); 
+        instance = prefabObject; 
+        NetworkServer.Spawn(instance, NetworkServer.localConnection);
 
-        instance.TrySetParent(transform);
+        instance.transform.SetParent(netIdentity.transform);
     
         Debug.Log($"Object was spawned: {instance.name}");
     }

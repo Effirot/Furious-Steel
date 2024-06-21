@@ -9,7 +9,7 @@ using Cysharp.Threading.Tasks;
 using Effiry.Items;
 using Unity.Cinemachine;
 using Unity.Collections;
-using Unity.Netcode;
+using Mirror;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
@@ -18,6 +18,7 @@ using UnityEngine.InputSystem.Interactions;
 using UnityEngine.InputSystem.XInput;
 using UnityEngine.VFX;
 using static UnityEngine.InputSystem.InputAction;
+using kcp2k;
 
 namespace CharacterSystem.Objects
 {
@@ -62,72 +63,24 @@ namespace CharacterSystem.Objects
         [field : SerializeField]
         public Transform ObservingPoint { get; private set; }
 
-
-        public ulong ServerClientID => network_serverClientId.Value;
-        public int ClientDataIndex => RoomManager.Singleton.IndexOfPlayerData(data => data.ID == ServerClientID);
-        public RoomManager.PublicClientData ClientData 
-        { 
-            get => RoomManager.Singleton.playersData[ClientDataIndex];
-            set => RoomManager.Singleton.playersData[ClientDataIndex] = value;
-        }
-
         public DamageBlocker Blocker { get; set; }
-        public DamageDeliveryReport lastReport { 
-            get => network_lastReport.Value; 
-            set
-            {
-                if (IsServer)
-                {
-                    network_lastReport.Value = value;
-                }
-            } 
-        }
+        public DamageDeliveryReport lastReport { get; set; } = new();
 
-        public int Combo 
-        {
-            get => network_combo.Value;
-            private set {
-                if (IsServer)
-                {
-                    if (value > network_combo.Value)
-                    {
-                        if (comboResetTimer != null && !this.IsUnityNull())
-                        {
-                            StopCoroutine(comboResetTimer);
-                            comboResetTimer = null;
-                        }
-
-                        comboResetTimer = StartCoroutine(ComboResetTimer());
-                    }
-
-                    network_combo.Value = Mathf.Clamp(value, 0, 30);
-                }
-            }
-        }
-
-        public int PowerUpId { 
-            get => network_powerUpId.Value; 
-            set {
-                if (IsServer)
-                {
-                    network_powerUpId.Value = value;
-                }
-            }
-        }
-
-        public bool JumpButtonState => network_jumpPressState.Value;
-
-        private NetworkVariable<bool> network_jumpPressState = new (false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-        private NetworkVariable<int> network_powerUpId = new (-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-        private NetworkVariable<DamageDeliveryReport> network_lastReport = new (new(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-        private NetworkVariable<ulong> network_serverClientId = new (0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-        private NetworkVariable<int> network_combo = new (0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-
-        public UnityEvent<PowerUp> onPowerUpChanged { get; } = new();
-
+        [HideInInspector, SyncVar]
+        public bool JumpButtonState = false;
 
         public event Action<DamageDeliveryReport> onDamageDelivered;
         public event Action<int> onComboChanged;
+        public UnityEvent<PowerUp> onPowerUpChanged { get; } = new();
+
+        int IDamageSource.Combo => combo;
+        int IPowerUpActivator.PowerUpId { get => powerUpId; set => powerUpId = value; }
+
+        [SyncVar(hook = nameof(OnComboChanged))]
+        protected int combo;
+        
+        [SyncVar(hook = nameof(OnPowerUpChanged))]
+        private int powerUpId = -1;
 
         private Coroutine comboResetTimer = null;
 
@@ -137,30 +90,31 @@ namespace CharacterSystem.Objects
         public Vector2 internalLookVector = Vector2.zero;
 
 
-        public virtual NetworkObject SetWeapon (Item item)
+        public virtual NetworkIdentity SetWeapon (Item item, NetworkConnectionToClient connectionToClient)
         {
             if (item == null)
                 return null;
 
-            var weapon = RoomManager.Singleton.ResearchWeaponPrefab(item.TypeName);
+            var weaponPrefab = RoomManager.Singleton.ResearchWeaponPrefab(item.TypeName);
 
-            if (weapon == null)
+            if (weaponPrefab == null)
                 return null;
 
-            var weaponGameObject = Instantiate(weapon, Vector3.zero, Quaternion.identity);
-            var weaponNetObject = weaponGameObject.GetComponent<NetworkObject>();
-
-            weaponNetObject.SpawnWithOwnership(NetworkObject.OwnerClientId, true);
-            weaponGameObject.transform.SetParent(transform, false);
-
+            var weaponGameObject = Instantiate(weaponPrefab, transform);
+            var identity = weaponGameObject.GetComponent<NetworkIdentity>();
+            
+            weaponGameObject.transform.SetParent(transform);
+            NetworkServer.Spawn(weaponGameObject, connectionToClient);
+            identity.AssignClientAuthority(connectionToClient);
+            
             if (weaponGameObject.TryGetComponent<ItemBinder>(out var component))
             {
                 component.item = item;
             }    
 
-            return weaponNetObject;
+            return identity;
         } 
-        public virtual NetworkObject SetTrinket (Item item)
+        public virtual NetworkIdentity SetTrinket (Item item)
         {
             if (item == null)
                 return null;
@@ -170,18 +124,21 @@ namespace CharacterSystem.Objects
             if (trinket == null)
                 return null;
 
-            var trinketGameObject = Instantiate(trinket, Vector3.zero, Quaternion.identity);
-            var trinketNetObject = trinketGameObject.GetComponent<NetworkObject>();
-
-            trinketNetObject.SpawnWithOwnership(NetworkObject.OwnerClientId, true);
-            trinketGameObject.transform.SetParent(transform, false);
+            var trinketGameObject = Instantiate(trinket, transform);
+            var identity = trinketGameObject.GetComponent<NetworkIdentity>();
+            
+            trinketGameObject.transform.SetParent(transform);
+            NetworkServer.Spawn(trinketGameObject, connectionToClient);
+            identity.AssignClientAuthority(connectionToClient);
+            
+            SyncNetworkIdentityParent(netIdentity, identity, false);
 
             if (trinketGameObject.TryGetComponent<ItemBinder>(out var component))
             {
                 component.item = item;
             }    
 
-            return trinketNetObject;
+            return trinketGameObject.GetComponent<NetworkIdentity>();
         }
 
         public override bool Hit(Damage damage)
@@ -190,84 +147,41 @@ namespace CharacterSystem.Objects
 
             if (isBlocked)
             {                
-                Combo += 10;               
+                combo += 10;               
             }
 
             return isBlocked;
         }
         public virtual void DamageDelivered(DamageDeliveryReport report)
         {
-            if (IsServer && report.isDelivered)
+            if (isServer && report.isDelivered)
             {            
                 if (report.damage.type is not Damage.Type.Effect)
                 {
                     if (report.isBlocked)
                     {
-                        Combo = 0;
+                        combo = 0;
                     }
                     else
                     {
-                        Combo += 1;
+                        combo = Mathf.Min(combo + 1, 30);
                     }
                 }
-
-                var data = ClientData;
-                data.statistics.DeliveredDamage += report.damage.value;
-
-                if (report.target is PlayerNetworkCharacter && report.isLethal)
-                {
-                    data.statistics.Points += 1;
-                    data.statistics.KillStreakTotal += 1;
-                }
-
-                ClientData = data;
-
-                if (AllowChampionMode && data.statistics.Points >= 10 && TryGetComponent<CharacterEffectsHolder>(out var component))
-                {
-                    component.AddEffect(new ChampionModeEffect());
-                }   
                 
                 onDamageDelivered?.Invoke(report);
             }
-
             
-            if (IsOwner && report.damage.type is not Damage.Type.Effect)
+            if (isLocalPlayer && report.damage.type is not Damage.Type.Effect)
             {
                 OnHitImpulseSource?.GenerateImpulse(report.damage.value / 10f);
             }
         }
 
-        public override void Kill()
+        public override void OnStartClient()
         {
-            base.Kill();
+            base.OnStartClient();
 
-            if (IsServer)
-            {
-                var data = ClientData;
-
-                data.statistics.Points = 0;
-                data.statistics.AssistsStreak = 0;
-
-                ClientData = data;
-            }
-        }
-
-        public override void OnNetworkSpawn()
-        {
-            RoomManager.Singleton.playersData.OnListChanged += OnOwnerPlayerDataChanged_event;
-            network_powerUpId.OnValueChanged += (Old, New) => onPowerUpChanged.Invoke(PowerUp.IdToPowerUpLink(New));
-
-            network_combo.OnValueChanged += (Old, New) => {
-                onComboChanged?.Invoke(New);
-
-                CurrentSpeed += (New - Old) / 12f;
-            };
-            
-            Players.Add(this);
-
-            base.OnNetworkSpawn();
-
-            if (IsOwner)
+            if (isLocalPlayer)
             {
                 Owner = this;
                 
@@ -277,24 +191,24 @@ namespace CharacterSystem.Objects
                     var action = moveInput.action;
                     action.Enable();
 
-                    action.performed += OnMove;
-                    action.canceled += OnMove;
+                    action.performed += OnMoveInput;
+                    action.canceled += OnMoveInput;
                 }
 
                 if (lookInput != null) {
                     var action = lookInput.action;
                     action.Enable();
 
-                    action.performed += OnLook;
-                    action.canceled += OnLook;
+                    action.performed += OnLookInput;
+                    action.canceled += OnLookInput;
                 }
 
                 if (jumpInput != null) {
                     var action = jumpInput.action;
                     action.Enable();
 
-                    action.performed += OnJump;
-                    action.canceled += OnJump;
+                    action.performed += OnJumpInput;
+                    action.canceled += OnJumpInput;
                                         
                     isGroundedEvent += isGrounded => {
                         if (JumpButtonState && isGrounded)
@@ -314,42 +228,44 @@ namespace CharacterSystem.Objects
 
                 OnOwnerPlayerCharacterSpawn.Invoke(this);
             }
-            if (IsServer)
-            {
-                network_serverClientId.Value = OwnerClientId;
-            }
+
+            UpdateName();
+
+            RoomManager.Singleton.playersData.OnChange += OnOwnerPlayerDataChanged_event;
+            
+            Players.Add(this);
         }
-        public override void OnNetworkDespawn()
+        public override void OnStopClient()
         {
-            RoomManager.Singleton.playersData.OnListChanged -= OnOwnerPlayerDataChanged_event;
+            base.OnStopClient();
+
+            RoomManager.Singleton.playersData.OnChange -= OnOwnerPlayerDataChanged_event;
 
             Players.Remove(this);
 
-            base.OnNetworkDespawn();
-
-            if (IsOwner)
+            if (isLocalPlayer)
             {
                 Owner = null;
                 
                 {
                     var action = moveInput.action;
                     
-                    action.performed -= OnMove;
-                    action.canceled -= OnMove;
+                    action.performed -= OnMoveInput;
+                    action.canceled -= OnMoveInput;
                 }
                 
                 {
                     var action = lookInput.action;
 
-                    action.performed -= OnLook;
-                    action.canceled -= OnLook;
+                    action.performed -= OnLookInput;
+                    action.canceled -= OnLookInput;
                 }
 
                 {
                     var action = jumpInput.action;
 
-                    action.performed -= OnJump;
-                    action.canceled -= OnJump;
+                    action.performed -= OnJumpInput;
+                    action.canceled -= OnJumpInput;
                 }
 
                 {
@@ -361,18 +277,11 @@ namespace CharacterSystem.Objects
             }
         }
 
-        protected override void Start()
-        {
-            base.Start();
-
-            UpdateName();
-        }
-
         protected override void OnHitReaction(Damage damage)
         {
             base.OnHitReaction(damage);
 
-            if (IsOwner && damage.type is not Damage.Type.Effect)
+            if (isLocalPlayer && damage.type is not Damage.Type.Effect)
             {
                 OnHitImpulseSource?.GenerateImpulse(damage.value / 8f);
             }
@@ -382,7 +291,7 @@ namespace CharacterSystem.Objects
         {
             base.FixedUpdate();
 
-            if (IsLocalPlayer)
+            if (isLocalPlayer)
             {
                 if (permissions.HasFlag(CharacterPermission.AllowMove))
                 {
@@ -408,7 +317,7 @@ namespace CharacterSystem.Objects
         {
             OnPlayerCharacterDead.Invoke(this);
 
-            if (IsOwner)
+            if (isLocalPlayer)
             {
                 OnOwnerPlayerCharacterDead.Invoke(this);
             }
@@ -425,7 +334,7 @@ namespace CharacterSystem.Objects
         {
             var corpseObject = base.SpawnCorpse();
 
-            if (IsOwner && !corpseObject.IsUnityNull() && corpseObject.TryGetComponent<IObservableObject>(out var observableObject))
+            if (isLocalPlayer && !corpseObject.IsUnityNull() && corpseObject.TryGetComponent<IObservableObject>(out var observableObject))
             {
                 CharacterCameraObserver.Singleton.ObservingObject = observableObject;
             }
@@ -433,24 +342,40 @@ namespace CharacterSystem.Objects
             return corpseObject;
         }
 
-        private void OnOwnerPlayerDataChanged(NetworkListEvent<RoomManager.PublicClientData> changeEvent)
+
+        protected virtual void OnPowerUpChanged(int Old, int New)
+        {
+            onPowerUpChanged.Invoke(PowerUp.IdToPowerUpLink(New));
+        }
+        protected virtual void OnComboChanged(int Old, int New)
+        {
+            if (isServer)
+            {
+                if (New > Old)
+                {
+                    if (comboResetTimer != null && !this.IsUnityNull())
+                    {
+                        StopCoroutine(comboResetTimer);
+                        comboResetTimer = null;
+                    }
+
+                    comboResetTimer = StartCoroutine(ComboResetTimer());
+                }
+            }
+
+            onComboChanged.Invoke(New);
+
+            Speed += (New - Old) / 12f;
+        }
+
+        private void OnOwnerPlayerDataChanged_event(SyncList<RoomManager.PublicClientData>.Operation operation, int index, RoomManager.PublicClientData value)
         {
             UpdateName();
         }
-        private void OnOwnerPlayerDataChanged_event(NetworkListEvent<RoomManager.PublicClientData> changeEvent)
-        {
-            if (changeEvent.Value.ID == ServerClientID && 
-                (changeEvent.Type != NetworkListEvent<RoomManager.PublicClientData>.EventType.Remove || 
-                changeEvent.Type != NetworkListEvent<RoomManager.PublicClientData>.EventType.RemoveAt ||
-                changeEvent.Type != NetworkListEvent<RoomManager.PublicClientData>.EventType.Clear) &&
-                IsSpawned)
-            {
-                OnOwnerPlayerDataChanged(changeEvent);
-            }
-        }
         private void UpdateName()
         {
-            gameObject.name = name = ClientData.Name.Value;
+#warning fix nicknames
+            // gameObject.name = name = ClientData.Name.Value;
         }
 
         private IEnumerator ComboResetTimer()
@@ -459,25 +384,30 @@ namespace CharacterSystem.Objects
 
             var reduceTimeout = 0.6f;
 
-            while (Combo > 0)
+            while (combo > 0)
             {
                 yield return new WaitForSeconds(reduceTimeout);
 
                 reduceTimeout *= 0.92f;    
-                Combo -= 1;
+                combo -= 1;
             }
 
-            Combo = 0;
+            combo = 0;
 
             comboResetTimer = null;
         }
 
+        [Command, Server]
+        private void SyncNetworkIdentityParent(NetworkIdentity parent, NetworkIdentity child, bool worldPositionStays)
+        {
+            child.transform.SetParent(parent.transform, worldPositionStays);
+        }
 
-        private void OnMove(CallbackContext input)
+        private void OnMoveInput(CallbackContext input)
         {
             internalMovementVector = input.ReadValue<Vector2>();
         }
-        private void OnLook(CallbackContext input)
+        private void OnLookInput(CallbackContext input)
         {
             var value = input.ReadValue<Vector2>();
 
@@ -500,44 +430,40 @@ namespace CharacterSystem.Objects
                 internalLookVector = value;
             }
         }
-        private void OnJump(CallbackContext input)
+        private void OnJumpInput(CallbackContext input)
         {
-            if (network_jumpPressState.Value = input.ReadValueAsButton())
+            var state = input.ReadValueAsButton();
+
+            SetJumpState(state);
+
+            if (state)
             {
                 Jump(movementVector);
             }
         }
 
-        private void KillBind(CallbackContext input)
+        [Client, Command]
+        private void SetJumpState(bool Value)
         {
-            KillBind_ServerRpc();
+            JumpButtonState = Value;
         }
 
-        [ServerRpc]
-        private void KillBind_ServerRpc()
+        [Client, Command]
+        private void KillBind(CallbackContext input)
         {
             if (!this.IsUnityNull())
             {
-                if (IsServer && IsSpawned)
+                if (suicideCorpsePrefab != null)
                 {
-                    OnSuicide_ClientRpc();
+                    var corpse = Instantiate(suicideCorpsePrefab, transform.position, transform.rotation);
+                    
+                    corpse.SetActive(true); 
+                    
+                    Destroy(corpse, 5);
                 }
             
                 Damage.Deliver(this, new Damage(maxHealth, null, 100, Vector3.up, Damage.Type.Unblockable));
             }
         } 
-
-        [ClientRpc]
-        private void OnSuicide_ClientRpc()
-        {
-            if (suicideCorpsePrefab != null)
-            {
-                var corpse = Instantiate(suicideCorpsePrefab, transform.position, transform.rotation);
-                
-                corpse.SetActive(true); 
-                
-                Destroy(corpse, 5);
-            }
-        }    
     }
 }

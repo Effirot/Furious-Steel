@@ -5,7 +5,7 @@ using System.Linq;
 using CharacterSystem.DamageMath;
 using CharacterSystem.Objects;
 using Cysharp.Threading.Tasks;
-using Unity.Netcode;
+using Mirror;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
@@ -21,15 +21,15 @@ namespace CharacterSystem.Attacks
         ITimeScalable,
         IPhysicObject
     {
-        DamageDeliveryReport lastReport { get; set; }
+        public int Combo { get; }
 
-        int Combo { get; }
+        public DamageDeliveryReport lastReport { get; set; }
 
-        event Action<DamageDeliveryReport> onDamageDelivered;
-        event Action<int> onComboChanged;
+        public event Action<DamageDeliveryReport> onDamageDelivered;
+        public event Action<int> onComboChanged;
 
-        void SetPosition (Vector3 position);
-        void DamageDelivered(DamageDeliveryReport report);
+        public void SetPosition (Vector3 position);
+        public void DamageDelivered(DamageDeliveryReport report);
     }
 
     [DisallowMultipleComponent]
@@ -66,18 +66,18 @@ namespace CharacterSystem.Attacks
 
         public DamageDeliveryReport currentAttackDamageReport { get; protected set; }
 
-        public virtual bool IsActive => !IsInProcess && !HasOverrides() && !Source.isStunned && Source.permissions.HasFlag(CharacterPermission.AllowAttacking) && IsPerforming; 
+        public virtual bool IsActive => !IsInProcess && !HasOverrides() && !Source.isStunned && Source.permissions.HasFlag(CharacterPermission.AllowAttacking) && isPerforming; 
 
-        public override void OnNetworkDespawn()
+        protected override void OnDestroy()
         {
-            base.OnNetworkDespawn();
+            base.OnDestroy();
 
             Stop();
         }
 
         public void PlayForced()
         {
-            if (!HasOverrides())
+            if (NetworkClient.active && !this.IsUnityNull())
             {
                 base.Play();
             }
@@ -99,7 +99,10 @@ namespace CharacterSystem.Attacks
 
                 OnAttackEnded.Invoke();
                 
-                base.Stop(interuptProcess);
+                if (NetworkClient.active)
+                {
+                    base.Stop(interuptProcess);
+                }
             }
         }
         
@@ -113,9 +116,11 @@ namespace CharacterSystem.Attacks
             }
         }
 
-        protected virtual void Start()
+        protected override void Start()
         {
-            if (IsServer && IsInterruptOnHit)
+            base.Start();
+
+            if (isServer && IsInterruptOnHit)
             {
                 Source.onDamageRecieved += (damage) => { 
                     if (damage.type != Damage.Type.Effect)
@@ -149,6 +154,7 @@ namespace CharacterSystem.Attacks
                 currentAttackDamageReport = report;
 
                 Source.DamageDelivered(report);
+
                 Source.lastReport = report;
             }
         }
@@ -338,7 +344,7 @@ namespace CharacterSystem.Attacks
         
         public override IEnumerator AttackPipeline(DamageSource source)
         {
-            if (source.IsServer)
+            if (source.isServer)
             {
                 var newPosition = source.transform.position + source.transform.rotation * TeleportRelativeDirection;
 
@@ -469,7 +475,7 @@ namespace CharacterSystem.Attacks
                 yield break;
             }
 
-            if (source.IsServer)
+            if (source.isServer)
             {
                 if (projectilePrefab == null)
                 {
@@ -480,7 +486,7 @@ namespace CharacterSystem.Attacks
 
                 var projectileObject = GameObject.Instantiate(projectilePrefab, source.transform.position, Quaternion.identity);
                 projectileObject.SetActive(true);
-                projectileObject.GetComponent<NetworkObject>().Spawn();
+                NetworkServer.Spawn(projectileObject, source.Source.gameObject);
 
                 foreach (var projectile in projectileObject.GetComponents<Projectile>())
                 {

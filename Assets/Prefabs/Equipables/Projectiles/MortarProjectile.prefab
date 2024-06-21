@@ -95,6 +95,8 @@ VFXRenderer:
   m_ReflectionProbeUsage: 0
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -244,6 +246,8 @@ VFXRenderer:
   m_ReflectionProbeUsage: 0
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -275,11 +279,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 520601800893309648}
-  - component: {fileID: 8766839339822984711}
   - component: {fileID: -5641090124221028093}
   - component: {fileID: -706647796989416874}
   - component: {fileID: 1021237605104187023}
   - component: {fileID: 6161998684848566748}
+  - component: {fileID: 6321445808012198542}
   m_Layer: 9
   m_Name: MortarProjectile
   m_TagString: Untagged
@@ -306,27 +310,6 @@ Transform:
   - {fileID: 2177171835186725508}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8766839339822984711
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6845969276890429663}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3549269612
-  InScenePlacedSourceGlobalObjectIdHash: 0
-  AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
 --- !u!54 &-5641090124221028093
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -386,6 +369,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 8047190744935610207, guid: bdf3e7f7eae78f844bd4f60d57993222, type: 2}
   m_audioClip: {fileID: 8300000, guid: 9656ac42b34505747909dc7af500307d, type: 3}
+  m_Resource: {fileID: 8300000, guid: 9656ac42b34505747909dc7af500307d, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 0.483
   m_Pitch: 1
@@ -483,6 +467,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bfba81b10efcb8049a24487e60557391, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   speed: 34
   speedTimeIncreacing: 1
   lifetime: 1.28
@@ -500,6 +487,8 @@ MonoBehaviour:
     RechargeUltimate: 1
     SelfDamageUltimate: 0
     Effects: []
+  MoveDirection: {x: 0, y: 0, z: 0}
+  position: {x: 0, y: 0, z: 0}
   Range: 2.31
   PushForce: 0.51
   explodeDamage:
@@ -515,6 +504,23 @@ MonoBehaviour:
   references:
     version: 2
     RefIds: []
+--- !u!114 &6321445808012198542
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6845969276890429663}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 1391865206
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
 --- !u!1 &7518531386733493784
 GameObject:
   m_ObjectHideFlags: 0
@@ -565,6 +571,8 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using CharacterSystem.DamageMath;
+using CharacterSystem.Effects;
 using CharacterSystem.Objects;
 using UnityEngine;
 

@@ -15,7 +15,7 @@ public class ToxicPowerUp : PowerUp
     
     public override void Activate(PowerUpHolder holder)
     {
-        if (holder.IsServer)
+        if (holder.isServer)
         {
             var projectileEffectObject = GameObject.Instantiate(projectilePrefab, holder.transform.position, holder.transform.rotation);
 

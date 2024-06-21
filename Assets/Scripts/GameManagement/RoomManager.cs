@@ -3,13 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using CharacterSystem.Objects;
 using Unity.Collections;
-using Unity.Netcode;
+using Mirror;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Rendering;
 using static RoomManager.SpawnArguments;
 using System.Net.Sockets;
-using static Authorizer;
 using Cysharp.Threading.Tasks;
 using System.Linq;
 using Unity.VisualScripting;
@@ -22,38 +21,15 @@ using UnityEditor;
 [DisallowMultipleComponent]
 public class RoomManager : NetworkBehaviour
 {
-    public struct SpawnArguments : INetworkSerializable
+    public struct SpawnArguments
     {
         public static SpawnArguments Local; 
 
-        public FixedString512Bytes CharacterItemJson;
-        public FixedString512Bytes WeaponItemJson;
-        public FixedString512Bytes TrinketItemJson;
-
-        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
-        {
-            serializer.SerializeValue(ref WeaponItemJson);
-            serializer.SerializeValue(ref CharacterItemJson);
-            serializer.SerializeValue(ref TrinketItemJson);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj is not SpawnArguments)
-                return false;
-
-            var stats = (SpawnArguments)obj;
-
-            return 
-                stats.WeaponItemJson == WeaponItemJson &&
-                stats.CharacterItemJson == CharacterItemJson;
-        }
-        public override int GetHashCode()
-        {
-            return -1;
-        }
+        public string CharacterItemJson;
+        public string WeaponItemJson;
+        public string TrinketItemJson;
     }
-    public struct PlayerStatistics : INetworkSerializable
+    public struct PlayerStatistics
     {
         public static PlayerStatistics Empty() => new() 
         {
@@ -68,7 +44,15 @@ public class RoomManager : NetworkBehaviour
 
             DeliveredDamage = 0,
             PowerUpsPicked = 0,
+
+            EnterTime = DateTime.Now,
+            DeathTime = DateTime.Now,
+            RespawnTime = DateTime.Now,
         };
+
+        public DateTime EnterTime;
+        public DateTime DeathTime;
+        public DateTime RespawnTime;
 
         public int Points;
 
@@ -81,43 +65,11 @@ public class RoomManager : NetworkBehaviour
 
         public float DeliveredDamage;
         public float PowerUpsPicked;
-
-        public override bool Equals(object obj)
-        {
-            if (obj is not PlayerStatistics)
-                return false;
-
-            var stats = (PlayerStatistics)obj;
-
-            return 
-                stats.Points == Points &&
-                stats.KillStreakTotal == KillStreakTotal &&
-                stats.AssistsStreak == AssistsStreak &&
-                stats.AssistsStreakTotal == AssistsStreakTotal &&
-                stats.Deads == Deads &&
-                stats.DeliveredDamage == DeliveredDamage &&
-                stats.PowerUpsPicked == PowerUpsPicked;
-        }
-        public override int GetHashCode()
-        {
-            return -1;
-        }
-
-        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
-        {
-            serializer.SerializeValue(ref Points);
-            serializer.SerializeValue(ref KillStreakTotal);
-            serializer.SerializeValue(ref AssistsStreak);
-            serializer.SerializeValue(ref AssistsStreakTotal);
-            serializer.SerializeValue(ref Deads);
-            serializer.SerializeValue(ref DeliveredDamage);
-            serializer.SerializeValue(ref PowerUpsPicked);
-        }
     }
 
-    public struct PublicClientData : INetworkSerializable, IEquatable<PublicClientData>
+    public struct PublicClientData
     {
-        public ulong ID;
+        public int ID;
 
         public FixedString64Bytes Name;
         
@@ -125,32 +77,6 @@ public class RoomManager : NetworkBehaviour
 
         public SpawnArguments spawnArguments;
         public PlayerStatistics statistics;
-
-        public DateTime EnterTime;
-        public DateTime DeathTime;
-        public DateTime RespawnTime;
-
-        public bool Equals(PublicClientData other)
-        {
-            return 
-                other.ID.Equals(ID) &&
-                other.Name.Equals(Name) &&
-                other.statistics.Equals(statistics) &&
-                other.spawnArguments.Equals(spawnArguments);
-        }
-        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
-        {
-            serializer.SerializeValue(ref ID);
-            serializer.SerializeValue(ref Name);
-            serializer.SerializeValue(ref Ping);
-
-            serializer.SerializeValue(ref EnterTime);
-            serializer.SerializeValue(ref DeathTime);
-            serializer.SerializeValue(ref RespawnTime);
-
-            serializer.SerializeValue(ref spawnArguments);
-            serializer.SerializeValue(ref statistics);
-        }
     }
 
     public delegate void SendChatMessageDelegate (PublicClientData publicClientData, FixedString512Bytes text);
@@ -164,18 +90,19 @@ public class RoomManager : NetworkBehaviour
     public static readonly PublicClientData ServerData = new PublicClientData() { ID = 0, Name = "[SERVER]" };
 
     [SerializeField]
-    private NetworkPrefabsList characters;
+    private List<GameObject> characters;
     [SerializeField]
-    private NetworkPrefabsList weapons;
+    private List<GameObject> weapons;
     [SerializeField]
-    private NetworkPrefabsList trinkets;
+    private List<GameObject> trinkets;
 
     [NonSerialized]
     public SpawnArguments spawnArgs;
-    public NetworkList<PublicClientData> playersData;
+
+    public SyncList<PublicClientData> playersData = new (new PublicClientData[0]);
 
 
-    public bool TryFindClientData(ulong ClientID, out PublicClientData publicClientData)
+    public bool TryFindClientData(int ClientID, out PublicClientData publicClientData)
     {
         publicClientData = new();
 
@@ -213,26 +140,22 @@ public class RoomManager : NetworkBehaviour
         return Item.FromJsonString(json);
     }
 
-
-    public void Spawn(SpawnArguments args)
+    public async void Spawn(SpawnArguments args)
     {
         spawnArgs = args;
 
-        Spawn_ServerRpc(args);
-    }
+        await UniTask.WaitUntil(() => NetworkClient.ready);
 
-    public void WriteToChat(FixedString512Bytes text)
-    {
-        SendChatMessage_ServerRpc(text);
+        Spawn_Command(args);
     }
 
     public GameObject ResearchCharacterPrefab(string name)
     {
-        foreach (var item in characters.PrefabList)
+        foreach (var item in characters)
         {
-            if (item.Prefab.name == name)
+            if (item.name == name)
             {
-                return item.Prefab;
+                return item;
             }
         }
 
@@ -240,93 +163,79 @@ public class RoomManager : NetworkBehaviour
     }
     public GameObject ResearchWeaponPrefab(string name)
     {
-        foreach (var item in weapons.PrefabList)
+        foreach (var item in weapons)
         {
-            if (item.Prefab.name == name)
+            if (item.name == name)
             {
-                return item.Prefab;
+                return item;
             }
         }
 
-        return weapons.PrefabList[0].Prefab;
+        return null;
     }
     public GameObject ResearchTrinketPrefab(string name)
     {
-        foreach (var item in trinkets.PrefabList)
+        foreach (var item in trinkets)
         {
-            if (item.Prefab.name == name)
+            if (item.name == name)
             {
-                return item.Prefab;
+                return item;
             }
         }
 
         return null;
     }
 
-    public async void OnPlayerAuthorized(ulong ID, Authorizer.AuthorizeArguments authorizedPlayerData)
-    {
-        await UniTask.WaitUntil(() => NetworkManager.IsListening); 
+#warning Player Authorization
+    // public async void OnPlayerAuthorized(int ID, Authorizer.AuthorizeArguments authorizedPlayerData)
+    // {
+    //     await UniTask.WaitUntil(() => NetworkManager.singleton.isNetworkActive); 
         
-        if (ID != 0)
-        {
-            await UniTask.WaitForSeconds(0.3f); 
-        }
+    //     if (ID != 0)
+    //     {
+    //         await UniTask.WaitForSeconds(0.3f); 
+    //     }
         
-        playersData.Add(new()
-        {
-            ID = ID,
+    //     playersData.Add(new()
+    //     {
+    //         ID = ID,
 
-            Name = authorizedPlayerData.Name,
+    //         Name = authorizedPlayerData.Name,
 
-            EnterTime = DateTime.Now,
-            DeathTime = DateTime.Now,
-            RespawnTime = DateTime.Now,
+    //         statistics = PlayerStatistics.Empty()
+    //     });
+    // }
+    // public void OnAuthorizedPlayerDisconnected(int ID)
+    // {
+    //     var publicDataIndex = IndexOfPlayerData(data => data.ID == ID);
 
-            statistics = PlayerStatistics.Empty()
-        });
-    }
-    public void OnAuthorizedPlayerDisconnected(ulong ID)
-    {
-        var publicDataIndex = IndexOfPlayerData(data => data.ID == ID);
-
-        if (playersData != null)
-        {
-            playersData?.RemoveAt(publicDataIndex);
-        }
-    }
-
+    //     if (playersData != null)
+    //     {
+    //         playersData?.RemoveAt(publicDataIndex);
+    //     }
+    // }
 
     private void Awake()
     {
         Singleton = this;
-
-        playersData = new (new PublicClientData[0], NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     }
-    private void OnValidate()
+    protected override void OnValidate()
     {
+        base.OnValidate();
+
         Singleton = this;
     }
 
 
-    private PlayerNetworkCharacter SpawnCharacter (Item item, ServerRpcParams Param)
+    private PlayerNetworkCharacter SpawnCharacter (Item item, NetworkConnectionToClient networkConnection)
     {
         if (item == null)
             return null;
 
-        var character = SpawnCharacter(item.TypeName, Param);
-        
-        
-        if (character != null && character.TryGetComponent<ItemBinder>(out var component))
-        {
-            component.item = item;
-        }    
-
-        return character;
+        return SpawnCharacter(item.TypeName, networkConnection);
     }
-    private PlayerNetworkCharacter SpawnCharacter (string name, ServerRpcParams Param)
-    {
-        var senderId = Param.Receive.SenderClientId;        
-        
+    private PlayerNetworkCharacter SpawnCharacter (string name, NetworkConnectionToClient networkConnection)
+    {   
         var character = ResearchCharacterPrefab(name);
         
         // Get spawn point
@@ -334,66 +243,47 @@ public class RoomManager : NetworkBehaviour
 
         // Spawn character
         var characterGameObject = Instantiate(character, spawnPoint.position, spawnPoint.rotation);
-    
-        var player = characterGameObject.GetComponent<PlayerNetworkCharacter>();
-        player.NetworkObject.SpawnAsPlayerObject(senderId, true);
+        
+        NetworkServer.Spawn(characterGameObject, networkConnection);
+        NetworkServer.AddPlayerForConnection(networkConnection, characterGameObject);
+        characterGameObject.GetComponent<NetworkIdentity>().AssignClientAuthority(networkConnection);
 
-        return player;
+        return characterGameObject.GetComponent<PlayerNetworkCharacter>();
     }
    
 
-    [ServerRpc (RequireOwnership = false)]
-    private void Spawn_ServerRpc(SpawnArguments args, ServerRpcParams Param = default)
+    [Client, Command(requiresAuthority = false)]
+    private void Spawn_Command(SpawnArguments args, NetworkConnectionToClient sender = null)
     {   
-        var DataIndex = IndexOfPlayerData(a => a.ID == Param.Receive.SenderClientId);
-        if (DataIndex == -1)
-            return;
+        // var DataIndex = IndexOfPlayerData(a => a.ID == sender.connectionId);
+        // if (DataIndex == -1)
+        //     return;
         
-        var data = playersData[DataIndex];
-        data.spawnArguments = args;
-        playersData[DataIndex] = data;
+        // var data = playersData[DataIndex];
+        // data.spawnArguments = args;
+        // playersData[DataIndex] = data;
 
-        var character = SpawnCharacter(JsonToItem(args.CharacterItemJson.Value), Param);
+        var character = SpawnCharacter(JsonToItem(args.CharacterItemJson), sender); 
+        
         if (!character.IsUnityNull())
         {
             try {
-                character.SetTrinket(JsonToItem(args.TrinketItemJson.Value));
+                character.SetTrinket(JsonToItem(args.TrinketItemJson));
             }
-            catch { }
+            catch (Exception e) 
+            {
+                Debug.LogException(e);
+            }
 
             try {
-                character.SetWeapon(JsonToItem(args.WeaponItemJson.Value));
+                character.SetWeapon(JsonToItem(args.WeaponItemJson), sender);
             }
-            catch { }
+            catch (Exception e) 
+            {
+                Debug.LogException(e);
+            }
         }
     }
-    [ClientRpc]
-    private void ServerException_ClientRpc(FixedString512Bytes message, ClientRpcParams rpcParams = default)
-    {
-        OnServerException.Invoke(ServerData, message);
-    } 
-
-    [ServerRpc (RequireOwnership = false)]
-    private void SendChatMessage_ServerRpc(FixedString512Bytes text, ServerRpcParams Param = default)
-    {
-        SendChatMessage_ClientRpc(Param.Receive.SenderClientId, text);
-        
-        if (TryFindClientData(Param.Receive.SenderClientId, out var data))
-        {
-            Debug.Log($"Message: {data.Name} - {text}");
-        }
-    }
-    [ClientRpc]
-    private void SendChatMessage_ClientRpc(ulong clientID, FixedString512Bytes text)
-    {
-        if (TryFindClientData(clientID, out var data))
-        {
-            OnWriteToChat.Invoke(data, text);
-
-            Debug.Log($"Message: {data.Name} - {text}");
-        }
-    }
-
 
 #if UNITY_EDITOR
     [CustomEditor(typeof(RoomManager))]

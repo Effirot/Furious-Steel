@@ -5,7 +5,7 @@ using System.Linq;
 using CharacterSystem.Attacks;
 using CharacterSystem.DamageMath;
 using CharacterSystem.Objects;
-using Unity.Netcode;
+using Mirror;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
@@ -76,11 +76,6 @@ namespace CharacterSystem.Blocking
 
         public bool IsBlockActive { get; private set; }
 
-        public override void OnNetworkSpawn()
-        {
-            base.OnNetworkSpawn();
-        }
-
         public virtual bool Block(ref Damage damage)
         {            
             if (damage.type == Damage.Type.Effect) 
@@ -91,14 +86,9 @@ namespace CharacterSystem.Blocking
                 damage.type != Damage.Type.Parrying && 
                 damage.type != Damage.Type.Unblockable)
             {
-                if (IsServer)
+                if (isServer)
                 {
-                    ExecuteSuccesfullyBlockEvent_ClientRpc();
-
-                    if (!IsClient)
-                    {
-                        OnSuccesfulBlockingEvent.Invoke();
-                    }
+                    ExecuteSuccesfullyBlockEvent_Command();
                 }
 
                 if (damage.sender != null && damage.type != Damage.Type.Magical && damage.type != Damage.Type.Balistic)
@@ -134,7 +124,7 @@ namespace CharacterSystem.Blocking
 
         public override void Play()
         {
-            if (!Source.isStunned && IsPerforming && Source.permissions.HasFlag(CharacterPermission.AllowBlocking))
+            if (!Source.isStunned && isPerforming && Source.permissions.HasFlag(CharacterPermission.AllowBlocking))
             {
                 base.Play();
             }
@@ -200,8 +190,8 @@ namespace CharacterSystem.Blocking
             yield return new WaitForSeconds(AfterBlockTime);
         }
 
-        [ClientRpc]
-        private void ExecuteSuccesfullyBlockEvent_ClientRpc()
+        [Server, Command]
+        private void ExecuteSuccesfullyBlockEvent_Command()
         {
             OnSuccesfulBlockingEvent.Invoke();
         }

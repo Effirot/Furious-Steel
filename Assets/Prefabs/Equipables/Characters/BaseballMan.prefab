@@ -314,9 +314,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2dd6b2ebd8fca6f41ac611fd52f52fc4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  IsPerforming: 1
   inputAction: {fileID: 3350768162098237311, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 5
   SpeedChange: 5
+  IsPressed: 0
   maxSpeed: 35
   speedAcelerationMultiplyer: 3
   lookVectorAceleration: 50
@@ -2404,6 +2409,10 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: 1.733
       objectReference: {fileID: 0}
+    - target: {fileID: 5055151860900042870, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
+      propertyPath: _assetId
+      value: 566934946
+      objectReference: {fileID: 0}
     - target: {fileID: 5419961263214253425, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
       propertyPath: m_Layer
       value: 6
@@ -2415,6 +2424,10 @@ PrefabInstance:
     - target: {fileID: 5804015679080351171, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
       propertyPath: Mass
       value: 1.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5804015679080351171, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
+      propertyPath: Speed
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 5804015679080351171, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
       propertyPath: JumpForce
@@ -2451,6 +2464,10 @@ PrefabInstance:
     - target: {fileID: 6610828187798962060, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
       propertyPath: m_Name
       value: BaseballMan
+      objectReference: {fileID: 0}
+    - target: {fileID: 6610828187798962060, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6827058884845999252, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
       propertyPath: m_Layer
@@ -2496,8 +2513,10 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Player
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedComponents:
+    - {fileID: 7945737309752349265, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
+    m_RemovedGameObjects:
+    - {fileID: 8384295875392445556, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 1288931942115344864, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
       insertIndex: 0

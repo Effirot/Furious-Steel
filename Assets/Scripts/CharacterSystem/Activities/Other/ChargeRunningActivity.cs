@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 using CharacterSystem.Attacks;
 using CharacterSystem.DamageMath;
 using CharacterSystem.Objects;
-using Unity.Netcode;
+using Mirror;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -72,37 +72,15 @@ public class ChargeRunningActivity : SyncedActivitySource<PlayerNetworkCharacter
     private float SpeedAceleration { 
         get => speedAceleration; 
         set {
-            Source.CurrentSpeed += value - speedAceleration;
+            Source.Speed += value - speedAceleration;
 
             speedAceleration = value;
         }
     }
     private float speedAceleration = 0;
     
-    private NetworkVariable<Vector2> network_internal_lookVector = new(Vector2.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-
-    public override void OnNetworkSpawn()
-    {
-        base.OnNetworkSpawn();
-
-        Source.isGroundedEvent += (state) => {
-            if (!state && IsPressed )
-            {
-                Play();
-            }
-        };
-        Source.onDamageRecieved += (damage) => {
-            if (IsInProcess && damage.type is not Damage.Type.Effect and not Damage.Type.Magical and not Damage.Type.Balistic)
-            {
-                if (SpeedAceleration / maxSpeed >= collideAcelerationPercentRequirement)
-                {
-                    Source.stunlock = Mathf.Max(Source.stunlock, 1);
-                }
-
-                Stop();
-            }
-        };
-    }
+    [SyncVar]
+    private Vector2 network_internal_lookVector = Vector2.zero;
 
     public override void Play()
     {
@@ -176,10 +154,10 @@ public class ChargeRunningActivity : SyncedActivitySource<PlayerNetworkCharacter
             }
 
 
-            if (IsServer)
+            if (isServer)
             {
                 var angle = Vector2.SignedAngle(Source.lookVector, Vector2.up);
-                var newAngle = Vector2.SignedAngle(network_internal_lookVector.Value, Vector2.up);
+                var newAngle = Vector2.SignedAngle(network_internal_lookVector, Vector2.up);
 
                 var interpolatedAngle = Quaternion.RotateTowards(Quaternion.Euler(0, 0, angle), Quaternion.Euler(0, 0, newAngle), lookVectorAceleration * Time.fixedDeltaTime * Source.LocalTimeScale);
                 interpolatedAngle = Quaternion.Inverse(interpolatedAngle); 
@@ -191,7 +169,7 @@ public class ChargeRunningActivity : SyncedActivitySource<PlayerNetworkCharacter
             
             collision = runAccelerationPercent > collideAcelerationPercentRequirement && (CheckCollision() || CheckStuck());
         
-            if (collision && IsServer)
+            if (collision && isServer)
             {
                 break;
             }
@@ -202,11 +180,6 @@ public class ChargeRunningActivity : SyncedActivitySource<PlayerNetworkCharacter
             Source.Push(Source.transform.rotation * collideBackPush);
 
             Explode();
-
-            if (IsServer)
-            {
-                Explode_ClientRpc();
-            }
         }
         else
         {
@@ -253,8 +226,11 @@ public class ChargeRunningActivity : SyncedActivitySource<PlayerNetworkCharacter
     {
         return Source.characterController.velocity.magnitude <= stuckThresold;
     }
+    [Server, Command]
     private void Explode()
     {
+        onExplode.Invoke();
+
         foreach (var collide in Physics.OverlapSphere(transform.position, explodeRange))
         {
             var damage = explodeDamage;
@@ -272,18 +248,35 @@ public class ChargeRunningActivity : SyncedActivitySource<PlayerNetworkCharacter
 
     private void FixedUpdate()
     {
-        if (IsOwner && IsPressed)
+        if (isLocalPlayer && IsPressed)
         {
-            network_internal_lookVector.Value = Source.internalLookVector;
+            network_internal_lookVector = Source.internalLookVector;
         }  
     }
-
-    [ClientRpc]
-    private void Explode_ClientRpc()
+   
+    protected override void Start()
     {
-        onExplode.Invoke();
-    }
+        base.Start();
 
+        Source.isGroundedEvent += (state) => {
+            if (!state && IsPressed )
+            {
+                Play();
+            }
+        };
+        Source.onDamageRecieved += (damage) => {
+            if (IsInProcess && damage.type is not Damage.Type.Effect and not Damage.Type.Magical and not Damage.Type.Balistic)
+            {
+                if (SpeedAceleration / maxSpeed >= collideAcelerationPercentRequirement)
+                {
+                    Source.stunlock = Mathf.Max(Source.stunlock, 1);
+                }
+
+                Stop();
+            }
+        };
+    }
+   
     private void OnDrawGizmosSelected()
     {
         Gizmos.matrix = transform.localToWorldMatrix;

@@ -6,7 +6,7 @@ using System.Linq;
 using CharacterSystem.DamageMath;
 using CharacterSystem.Objects;
 using Cysharp.Threading.Tasks;
-using Unity.Netcode;
+using Mirror;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -14,7 +14,7 @@ using static UnityEngine.InputSystem.InputAction;
 
 public interface ISyncedActivitiesSource : IGameObjectLink
 {
-    NetworkObject NetworkObject { get; }
+    NetworkIdentity netIdentity { get; }
 
     Animator animator { get; }
 
@@ -22,8 +22,8 @@ public interface ISyncedActivitiesSource : IGameObjectLink
 
     CharacterPermission permissions { get; set; }
     
-    public bool IsServer => NetworkManager.Singleton.IsServer;
-    public bool IsOwner => NetworkObject.IsOwner;
+    public bool isServer => netIdentity.isServer;
+    public bool isLocalPlayer => netIdentity.isLocalPlayer;
 }
 
 public abstract class SyncedActivitySource : NetworkBehaviour
@@ -41,6 +41,10 @@ public abstract class SyncedActivitySource : NetworkBehaviour
 
     [Space]
     [Header("Input")]
+    
+    [SerializeField, SyncVar]
+    public bool isPerforming = true;
+
     [SerializeField]
     private InputActionReference inputAction;
 
@@ -49,9 +53,6 @@ public abstract class SyncedActivitySource : NetworkBehaviour
 
     [SerializeField, Range(-4, 10)]
     public float SpeedChange = 0;
-
-    [SerializeField]
-    private bool IsPerformingAsDefault = true;
     
     public CharacterPermission Permissions { 
         get => permissions;
@@ -66,52 +67,27 @@ public abstract class SyncedActivitySource : NetworkBehaviour
 
     private CharacterPermission permissions = CharacterPermission.Default;  
 
+    [HideInInspector, SyncVar(hook = nameof(OnStateChangedHook))]
+    public bool IsPressed;
+
+    [HideInInspector]
+    public ISyncedActivitiesSource Source;
     
 
-    public ISyncedActivitiesSource Source { 
-        get 
-        {
-            return m_invoker;
-        } 
-        protected set => m_invoker = value;
-    }
-    
-    public bool IsPressed 
-    {
-        get => network_isPressed.Value;
-        set
-        {
-            if (IsOwner && IsSpawned)
-            {
-                network_isPressed.Value = value;
-            }
-        }
-    }
-    public bool IsPerforming
-    { 
-        get => network_isPerforming.Value; 
-        set 
-        {
-            if (IsServer)
-            {
-                network_isPerforming.Value = value;
-            }
-        } 
-    }
+
     public bool IsInProcess => process != null;
-
-    private NetworkVariable<bool> network_isPerforming = new NetworkVariable<bool>(true, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-    private NetworkVariable<bool> network_isPressed = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     
-    private ISyncedActivitiesSource m_invoker;
     private SyncedActivitySource syncedActivityOverrider;
 
     private Coroutine process = null;
 
-
+    public void SetPerformingState(bool state)
+    {
+        isPerforming = state;
+    }
     public bool HasOverrides()
     {
-        if (syncedActivityOverrider.IsUnityNull() || !syncedActivityOverrider.IsPerforming || (int)syncedActivityOverrider.Priority <= (int)Priority)
+        if (syncedActivityOverrider.IsUnityNull() || !syncedActivityOverrider.isPerforming || (int)syncedActivityOverrider.Priority <= (int)Priority)
         {
             syncedActivityOverrider = regsitredSyncedActivities.Find(
                 activity => 
@@ -119,70 +95,67 @@ public abstract class SyncedActivitySource : NetworkBehaviour
                     (int)activity.Priority > (int)Priority &&
                     System.Object.ReferenceEquals(activity.Source, Source) && 
                     !activity.Source.IsUnityNull() &&
-                    activity.IsPerforming);
+                    activity.isPerforming);
         }
 
         return !syncedActivityOverrider.IsUnityNull();
     }    
 
-    public override void OnNetworkSpawn ()
-    {
-        base.OnNetworkSpawn();
-
-        Subscribe();
-        
-        IsPerforming = IsPerformingAsDefault;
-    }
-    public override void OnNetworkDespawn ()
-    {
-        base.OnNetworkDespawn();
-
-        Unsubscribe();
-    }
-
-    public override void OnDestroy()
-    {
-        base.OnDestroy();
-
-        regsitredSyncedActivities.Remove(this);
-        Stop();
-    }
-    
     protected virtual void Awake()
     {
         Register();
     }
+    protected virtual void Start()
+    {
+        Subscribe();
+    }
+    protected virtual void OnDestroy()
+    {
+        regsitredSyncedActivities.Remove(this);
 
+        Unsubscribe();
+    }
+    
+    [ServerCallback, Command]
     public virtual void Play()
     {
-        if (!HasOverrides() && IsServer && !IsInProcess)
+        if (!HasOverrides() && !IsInProcess)
         {
+            if (process != null)
+            {
+                StopCoroutine(process);
+                process = null;
+            }
+
             process = StartCoroutine(ProcessRoutine());
-            Source.activities.Add(this);
-            
-            Play_ClientRpc();
+
+            Source?.activities.Add(this);            
         }
     }
-    public virtual void Stop(bool interuptProcess = true)
+
+    public void Stop()
     {
-        if (IsServer)
+        if (NetworkClient.active)
         {
-            if (IsInProcess)
+            Stop(true);
+        }
+    }   
+    [ServerCallback, Command(requiresAuthority = false)]
+    public virtual void Stop(bool interuptProcess)
+    {
+        if (IsInProcess)
+        {
+            permissions = CharacterPermission.Default;
+            
+            if (interuptProcess)
             {
-                permissions = CharacterPermission.Default;
-                
-                if (interuptProcess)
-                {
-                    StopCoroutine(process);
-                    StopAllCoroutines();
-                }
+                StopCoroutine(process);
+                StopAllCoroutines();
+            }
 
-                process = null;
+            process = null;
 
-                Source.activities.Remove(this);
-            }           
-
-            Stop_ClientRpc(interuptProcess);
+            Source.activities.Remove(this);
         }
     }
 
@@ -190,7 +163,7 @@ public abstract class SyncedActivitySource : NetworkBehaviour
 
     protected virtual void OnStateChanged(bool IsPressed)
     {
-        if (IsPressed)
+        if (NetworkClient.active && IsPressed && !this.IsUnityNull())
         {
             Play();
         }
@@ -220,10 +193,8 @@ public abstract class SyncedActivitySource : NetworkBehaviour
         regsitredSyncedActivities.Insert(index, this);
     }
     private void Subscribe ()
-    {
-        network_isPressed.OnValueChanged += InvokeStateChangedFunction_Event;
-        
-        if (IsOwner && inputAction != null)
+    {        
+        if (isOwned && inputAction != null)
         {
             inputAction.action.Enable();
             inputAction.action.started += OnInputPressStateChanged_Event;
@@ -232,10 +203,8 @@ public abstract class SyncedActivitySource : NetworkBehaviour
         }
     }
     private void Unsubscribe ()
-    {
-        network_isPressed.OnValueChanged -= InvokeStateChangedFunction_Event;
-        
-        if (IsOwner && inputAction != null)
+    {        
+        if (isOwned && inputAction != null)
         {
             inputAction.action.Enable();
             inputAction.action.started -= OnInputPressStateChanged_Event;
@@ -244,46 +213,11 @@ public abstract class SyncedActivitySource : NetworkBehaviour
         }
     }
 
-    [ClientRpc]
-    private void Play_ClientRpc()
-    {
-        if (!IsServer)
-        {
-            if (process != null)
-            {
-                StopCoroutine(process);
-                process = null;
-            }
-
-            process = StartCoroutine(ProcessRoutine());
-
-            Source?.activities.Add(this);
-
-            Play();
-        }
-    }
-    [ClientRpc]
-    private void Stop_ClientRpc(bool interuptProcess)
-    {
-        if (!IsServer)
-        {
-            Stop(interuptProcess);
-        
-            if (IsInProcess && interuptProcess)
-            {
-                StopCoroutine(process);
-                Source?.activities.Remove(this);
-            }
-
-            process = null;
-        }
-    }
-
     private void OnInputPressStateChanged_Event(CallbackContext callback)
     {
         IsPressed = callback.ReadValueAsButton();
     }
-    private void InvokeStateChangedFunction_Event(bool Old, bool New)
+    private void OnStateChangedHook(bool Old, bool New)
     {
         if (HasOverrides()) return;
 

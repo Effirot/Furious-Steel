@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2682705565289463711}
-  - component: {fileID: 4043005819161963949}
   - component: {fileID: 4868943474249717089}
   - component: {fileID: 3382474808171941762}
+  - component: {fileID: 1070689373927008318}
   m_Layer: 6
   m_Name: Pistol
   m_TagString: Weapon
@@ -36,27 +36,6 @@ Transform:
   - {fileID: 4884045045746518388}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4043005819161963949
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1517727645108543378}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1285197716
-  InScenePlacedSourceGlobalObjectIdHash: 0
-  AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
 --- !u!114 &4868943474249717089
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -69,6 +48,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91b59a25b78b63442bfa85d494b70054, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   overrides:
   - Name: Trinket_Holding_Default
     Clip: {fileID: -8742961236503954806, guid: badcb3bbdec5cc341b4e3c375120cd60, type: 3}
@@ -86,6 +68,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7833ff246d1754459595b40d8d6c25c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   DefaultValue: 3
   MaxValue: 3
   color: {r: 1, g: 0.54877096, b: 0.015686274, a: 1}
@@ -93,6 +78,24 @@ MonoBehaviour:
   OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+  IsActive: 1
+--- !u!114 &1070689373927008318
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1517727645108543378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 869908676
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
 --- !u!1 &2429100434997788893
 GameObject:
   m_ObjectHideFlags: 0
@@ -570,10 +573,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0902c8092743d294c9e1e585f998fde4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  IsPerforming: 1
   inputAction: {fileID: 5277666054227158027, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 3
   SpeedChange: 0
-  IsPerformingAsDefault: 1
+  IsPressed: 0
   IsInterruptableWhenBlocked: 0
   IsInterruptOnHit: 0
   RestartWhenHolding: 0

@@ -2228,6 +2228,10 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 5055151860900042870, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
+      propertyPath: _assetId
+      value: 2669122200
+      objectReference: {fileID: 0}
     - target: {fileID: 5419961263214253425, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
       propertyPath: m_Layer
       value: 6
@@ -2364,9 +2368,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 572de5e8b246b4043af60581cab9bc8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <maxHealth>k__BackingField: 150
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  maxHealth: 150
   regenerationPerSecond: 9
-  <Speed>k__BackingField: 10
+  Speed: 10
   <mass>k__BackingField: 1
   CorpsePrefab: {fileID: 851372972664281399}
   OnHitSound: {fileID: 8163247360859426925}
@@ -2375,6 +2382,10 @@ MonoBehaviour:
   JumpCount: 1
   JumpEffect: {fileID: 8562367368173100923}
   shadow: {fileID: 4206042751654752111}
+  permissions: 65280
+  health: 0
+  stunlock: 0
+  velocity: {x: 0, y: 0, z: 0}
   moveInput: {fileID: -3797342247120088548, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   lookInput: {fileID: 9093183501225965390, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   jumpInput: {fileID: 3350768162098237311, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
@@ -2382,6 +2393,9 @@ MonoBehaviour:
   OnHitImpulseSource: {fileID: 6518801678340056005}
   suicideCorpsePrefab: {fileID: 95016300665387997}
   <ObservingPoint>k__BackingField: {fileID: 2949111950295989654}
+  combo: 0
+  PowerUpId: 0
+  JumpButtonState: 0
   internalMovementVector: {x: 0, y: 0}
   internalLookVector: {x: 0, y: 0}
   HealingEffect:

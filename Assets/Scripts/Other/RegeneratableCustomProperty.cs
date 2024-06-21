@@ -13,12 +13,18 @@ public class RegeneratableCustomProperty : CustomProperty
     
     private Coroutine regeneration;
 
-    public override void OnNetworkSpawn()
+    protected override void Start()
     {
-        base.OnNetworkSpawn();
+        base.Start();
 
-        network_value.OnValueChanged += StartRegeneration;
         StartRegeneration(1, 0);
+    }
+
+    protected override void OnValueChangedHook(float Old, float New)
+    {
+        base.OnValueChangedHook(Old, New);
+
+        StartRegeneration(Old, New);
     }
 
     private void StartRegeneration(float Old, float New)
@@ -35,6 +41,7 @@ public class RegeneratableCustomProperty : CustomProperty
             regeneration = StartCoroutine(Regeneration());
         }
     }
+
 
     private IEnumerator Regeneration()
     {

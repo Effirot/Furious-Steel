@@ -1,66 +1,68 @@
 
+
 using CharacterSystem.DamageMath;
-using CharacterSystem.Objects;
-using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
 
-[System.Serializable]
-public class BurnEffect : CharacterEffect
+namespace CharacterSystem.Effects
 {
-    public override bool Existance => time > 0 && !Team.IsAlly(effectsSource, effectsHolder.character);
-
-    [SerializeField, Range(0, 120)]
-    public float time = 0;
-
-    [SerializeField, Range(0, 20)]
-    public float damagePerSecond = 5;
-
-    [SerializeField, ColorUsageAttribute(false, true)]
-    public Color color = Color.yellow * 5;
-
-    public BurnEffect() { }
-    public BurnEffect(float Time, float damagePerSecond)
+    [System.Serializable]
+    public class BurnEffect : CharacterEffect
     {
-       time = Time;
-       this.damagePerSecond = damagePerSecond;
-    }
+        public override bool Existance => time > 0 && !Team.IsAlly(effectsSource, effectsHolder.character);
 
-    public override void Start()
-    {
-        effectsHolder.AddGlowing(this, color, 1);
-    }
-    public override void Update()
-    {
-        time -= Time.fixedDeltaTime;
+        [SerializeField, Range(0, 120)]
+        public float time = 0;
 
-        var report = 
-            Damage.Deliver(
-                effectsHolder.character, 
-                new Damage(
-                    damagePerSecond * Time.fixedDeltaTime, 
-                    effectsSource, 
-                    0, 
-                    Vector3.zero, 
-                    Damage.Type.Effect));
+        [SerializeField, Range(0, 20)]
+        public float damagePerSecond = 5;
 
-        if (!effectsSource.IsUnityNull())
+        [SerializeField, ColorUsageAttribute(false, true)]
+        public Color color = Color.yellow * 5;
+
+        public BurnEffect() { }
+        public BurnEffect(float Time, float damagePerSecond)
         {
-            effectsSource.DamageDelivered(report);
+        time = Time;
+        this.damagePerSecond = damagePerSecond;
         }
-    }
-    public override void Remove()
-    {
-        
-    }
 
-    public override void AddDublicate(CharacterEffect effect)
-    {
-        var burn = (BurnEffect)effect;
+        public override void Start()
+        {
+            effectsHolder.AddGlowing(this, color, 1);
+        }
+        public override void Update()
+        {
+            time -= Time.fixedDeltaTime;
 
-        time = burn.time;
-        damagePerSecond = Mathf.Max(damagePerSecond, burn.damagePerSecond);
+            var report = 
+                Damage.Deliver(
+                    effectsHolder.character, 
+                    new Damage(
+                        damagePerSecond * Time.fixedDeltaTime, 
+                        effectsSource, 
+                        0, 
+                        Vector3.zero, 
+                        Damage.Type.Effect));
 
-        effectsHolder.EditGlowing(this, burn.color);
+            if (!effectsSource.IsUnityNull())
+            {
+                effectsSource.DamageDelivered(report);
+            }
+        }
+        public override void Remove()
+        {
+            
+        }
+
+        public override void AddDublicate(CharacterEffect effect)
+        {
+            var burn = (BurnEffect)effect;
+
+            time = burn.time;
+            damagePerSecond = Mathf.Max(damagePerSecond, burn.damagePerSecond);
+
+            effectsHolder.EditGlowing(this, burn.color);
+        }
     }
 }

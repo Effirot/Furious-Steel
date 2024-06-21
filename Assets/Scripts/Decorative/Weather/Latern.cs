@@ -20,10 +20,11 @@ public class CharacterLatern : MonoBehaviour
     }
     private void LateUpdate()
     {
-        Light.intensity = Mathf.Lerp (
-            Light.intensity, 
-            WeatherManager.Singleton.LaternsEnabled ? 
-                (stealth != null && stealth.IsHidden ? (stealth.IsOwner ? intensity / 3 : 0) : intensity) : 0, 
-            3 * Time.deltaTime);
+#warning mak weather manager
+        // Light.intensity = Mathf.Lerp (
+        //     Light.intensity, 
+        //     WeatherManager.Singleton.LaternsEnabled ? 
+        //         (stealth != null && stealth.IsHidden ? (stealth.IsOwner ? intensity / 3 : 0) : intensity) : 0, 
+        //     3 * Time.deltaTime);
     }
 }

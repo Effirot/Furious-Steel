@@ -1,13 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using CharacterSystem.DamageMath;
-using CharacterSystem.Objects;
-using Unity.Netcode;
-using Unity.VisualScripting;
+
 using UnityEngine;
-using UnityEngine.InputSystem;
-using static UnityEngine.InputSystem.InputAction;
 
 public abstract class SyncedActivitySource<T> : SyncedActivitySource where T : ISyncedActivitiesSource
 {

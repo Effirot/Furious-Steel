@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Netcode;
+using Mirror;
 using UnityEngine;
 
 public class AnimatorOverrider : NetworkBehaviour
@@ -21,30 +21,32 @@ public class AnimatorOverrider : NetworkBehaviour
     private AnimatorOverrideController localOverrider;
 
 
-    public override void OnNetworkObjectParentChanged(NetworkObject parentNetworkObject)
-    {
-        ClearAnimationOverrides();
+#warning detecting parent changing
+    // public override void OnNetworkObjectParentChanged(NetworkObject parentNetworkObject)
+    // {
+    //     ClearAnimationOverrides();
 
-        if (parentNetworkObject == null) 
-            return;
+    //     if (parentNetworkObject == null) 
+    //         return;
         
-        UpdateParent(parentNetworkObject.gameObject);
-    }
-    public override void OnNetworkDespawn()
-    {
-        ClearAnimationOverrides();
-
-        base.OnNetworkDespawn();
-    }
+    //     UpdateParent(parentNetworkObject.gameObject);
+    // }
 
     private void Start()
     {
         UpdateParent(transform.parent?.gameObject);
     }
-
-    private void UpdateParent(GameObject traget)
+    private void OnDestroy()
     {
-        var animator = traget.GetComponentInChildren<Animator>();
+        ClearAnimationOverrides();
+    }
+
+    private void UpdateParent(GameObject target)
+    {
+        if (target == null)
+            return;
+
+        var animator = target.GetComponentInChildren<Animator>();
 
         if (animator != null)
         {

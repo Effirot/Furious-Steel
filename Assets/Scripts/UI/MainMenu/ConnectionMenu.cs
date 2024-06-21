@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.NetworkInformation;
-using Unity.Netcode;
 using UnityEngine;
 
 public class ConnectionMenu : MonoBehaviour

@@ -5,6 +5,7 @@ using CharacterSystem.Attacks;
 using CharacterSystem.Blocking;
 using CharacterSystem.DamageMath;
 using Cysharp.Threading.Tasks;
+using Mirror;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
@@ -38,13 +39,13 @@ namespace CharacterSystem.Objects.AI
             onDamageDelivered?.Invoke(report);
         }
 
-        public override void OnNetworkSpawn()
+        public override void OnStartServer()
         {
-            base.OnNetworkSpawn();
+            base.OnStartServer();
 
             team = botTeam;
 
-            if (IsServer)
+            if (isServer)
             {
                 AICompute?.StartAI();
 
@@ -55,9 +56,9 @@ namespace CharacterSystem.Objects.AI
                 AICompute = null;
             }
         }
-        public override void OnNetworkDespawn()
+        public override void OnStopServer()
         {
-            base.OnNetworkDespawn();
+            base.OnStopServer();
             
             ClearAICompute();
         }
@@ -121,7 +122,7 @@ namespace CharacterSystem.Objects.AI
         }
         private void FollowPath()
         {
-            if (IsServer && AICompute != null)   
+            if (isServer && AICompute != null)   
             {
                 Vector2 input = Vector2.zero; 
 
@@ -149,7 +150,6 @@ namespace CharacterSystem.Objects.AI
                     }
                 }
 
-
                 lookVector = AICompute.lookDirection.magnitude > 0 ? input : AICompute.lookDirection;
 
                 movementVector = input;
@@ -168,7 +168,7 @@ namespace CharacterSystem.Objects.AI
 
         private async void AITickProcess()
         {
-            while (IsSpawned)
+            while (NetworkServer.spawned.ContainsKey(netId))
             {
                 if (stunlock <= 0)
                 {
@@ -177,7 +177,7 @@ namespace CharacterSystem.Objects.AI
                     if (AICompute != null &&
                         AICompute.followPath && 
                         AICompute.targetPosition.HasValue && 
-                        IsServer)
+                        isServer)
                     {
                         NavMesh.CalculatePath(transform.position, AICompute.targetPosition.Value, PatchLayerIndex, path);
                     }

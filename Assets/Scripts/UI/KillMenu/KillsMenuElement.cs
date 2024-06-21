@@ -2,8 +2,8 @@
 
 using CharacterSystem.DamageMath;
 using Cysharp.Threading.Tasks;
+using Mirror;
 using TMPro;
-using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -33,13 +33,13 @@ public class KillsMenuElement : MonoBehaviour
     public void Initialize(DamageDeliveryReport report)
     {
         killerNameField.SetText(report.damage.sender?.gameObject.name ?? "");
-        killedNameField.SetText(report.target.gameObject.name);
+        killedNameField.SetText(report.target?.gameObject.name ?? "");
 
-        if ((report.damage.sender != null && report.damage.sender.IsOwner) || 
-            (report.target.gameObject.TryGetComponent<NetworkObject>(out var net) && net.IsOwner))
-        {
-            image.color = ownerColor;
-        }
+        // if ((report.damage.sender != null && report.damage.sender.isLocalPlayer) || 
+        //     (report.target.gameObject.TryGetComponent<NetworkIdentity>(out var net) && net.isOwned))
+        // {
+        //     image.color = ownerColor;
+        // }
     }
 
     private async void Start()
@@ -60,8 +60,11 @@ public class KillsMenuElement : MonoBehaviour
             await UniTask.Yield(PlayerLoopTiming.FixedUpdate);
         }
 
-        transform.localScale = new Vector3(transform.localScale.x, 0, transform.localScale.z);
+        if (!this.IsUnityNull())
+        {
+            transform.localScale = new Vector3(transform.localScale.x, 0, transform.localScale.z);
 
-        Destroy(gameObject, 0.2f);
+            Destroy(gameObject, 0.2f);
+        }
     }
 }

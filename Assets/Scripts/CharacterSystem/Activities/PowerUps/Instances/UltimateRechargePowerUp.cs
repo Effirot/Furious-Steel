@@ -13,7 +13,7 @@ namespace CharacterSystem.PowerUps
         
         public override void Activate(PowerUpHolder holder)
         {
-            if (holder.IsServer)
+            if (holder.isServer)
             {
                 foreach (var property in holder.Source.gameObject.GetComponentsInChildren<CustomProperty>())
                 {

@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Netcode;
+using Mirror;
 using UnityEngine;
 
 public class MagmaSinMovement : MonoBehaviour
@@ -19,9 +19,9 @@ public class MagmaSinMovement : MonoBehaviour
     
     private void FixedUpdate()
     {
-        if (NetworkManager.Singleton.IsServer)
+        if (NetworkManager.singleton)
         {
-            height = (Mathf.Sin(Time.time / 12f) + 0.6f) * 2.9f;
+            height = (Mathf.Sin((float)NetworkTime.time / 12f) + 0.6f) * 2.9f;
 
             transform.position = Vector3.Lerp(transform.position, resultPosition, 0.05f);
         }

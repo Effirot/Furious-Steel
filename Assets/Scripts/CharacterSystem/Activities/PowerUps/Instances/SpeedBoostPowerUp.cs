@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using CharacterSystem.DamageMath;
+using CharacterSystem.Effects;
 using CharacterSystem.Objects;
 using UnityEngine;
 
@@ -13,7 +14,7 @@ namespace CharacterSystem.PowerUps
         
         public override void Activate(PowerUpHolder holder)
         {
-            if (holder.IsServer)
+            if (holder.isServer)
             {
                 foreach (var effects in holder.Source.gameObject.GetComponentsInChildren<CharacterEffectsHolder>())
                 {

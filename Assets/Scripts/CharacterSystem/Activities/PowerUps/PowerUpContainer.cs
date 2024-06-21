@@ -1,9 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using CharacterSystem.Objects;
-using Unity.Netcode;
+using Mirror;
 using UnityEngine;
 using CharacterSystem.PowerUps;
+using Cysharp.Threading.Tasks;
+
+
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -16,23 +19,25 @@ public class PowerUpContainer : NetworkBehaviour
 
     public PowerUp powerUp => PowerUp.IdToPowerUpLink(Id);
 
-    public override void OnNetworkSpawn()
+    public override void OnStartClient()
     {
-        if (IsServer)
+        base.OnStartClient();
+
+        if (isServer)
         {
             if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, LayerMask.GetMask("Ground")))
             {
-                SetPosition_ClientRpc(hit.point + Vector3.up * 1);
+                SetPosition_Command(hit.point + Vector3.up * 1);
             }
             else
             {
-                SetPosition_ClientRpc(transform.position);
+                SetPosition_Command(transform.position);
             }
         }
     }
 
-    [ClientRpc]
-    private void SetPosition_ClientRpc(Vector3 position)
+    [Server, Command(requiresAuthority = false)]
+    private void SetPosition_Command(Vector3 position)
     {
         transform.position = position;
     }

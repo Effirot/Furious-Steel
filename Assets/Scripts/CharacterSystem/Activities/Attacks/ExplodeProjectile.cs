@@ -2,9 +2,11 @@
 
 using CharacterSystem.DamageMath;
 using Unity.Cinemachine;
-using Unity.Netcode;
+using Mirror;
 using Unity.VisualScripting;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
+using System.Threading.Tasks;
 
 public class ExplodeProjectile : Projectile
 {
@@ -25,11 +27,11 @@ public class ExplodeProjectile : Projectile
 
     private float explodeTimer = 0;
 
-    public override void OnNetworkDespawn()
+    public override void Kill()
     {
-        base.OnNetworkDespawn();
+        Explode();
 
-        Explode_ClientRpc();
+        base.Kill();
     }
 
     protected override void FixedUpdate()
@@ -42,19 +44,20 @@ public class ExplodeProjectile : Projectile
 
             if (explodeTimer > PereodicExplodeDelay)
             {
-                Explode_ClientRpc();
+                ExplodeSynced();
 
                 explodeTimer = 0;
             }
         }
     }
 
-    [ClientRpc]
-    private void Explode_ClientRpc()
+    [Server, Command]
+    public void ExplodeSynced()
     {
         Explode();
     }
-    private void Explode()
+
+    public void Explode()
     {
         if (!OnExplodePrefab.IsUnityNull())
         {
@@ -70,7 +73,7 @@ public class ExplodeProjectile : Projectile
         if (Summoner.IsUnityNull()) 
             return;
 
-        if (IsServer)
+        if (isServer)
         {
             foreach (var collider in Physics.OverlapSphere(transform.position, Range))
             {

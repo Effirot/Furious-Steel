@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CharacterSystem.DamageMath;
 using CharacterSystem.Objects;
-using Unity.Netcode;
+using Mirror;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
@@ -49,7 +49,7 @@ public class SphereColliderAutoAim : NetworkBehaviour
             switch (value)
             {
                 case LockState.LockOnPosition:
-                    lockedFollowPosition = followPosition.Value;
+                    lockedFollowPosition = followPosition;
                     break;
             
                 case LockState.LockOnTarget:
@@ -59,8 +59,8 @@ public class SphereColliderAutoAim : NetworkBehaviour
         }
     }
 
-    [NonSerialized]
-    public NetworkVariable<Vector3> followPosition = new NetworkVariable<Vector3>(Vector3.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    [NonSerialized, SyncVar]
+    public Vector3 followPosition = Vector3.zero;
 
     private Transform target;
 
@@ -72,37 +72,33 @@ public class SphereColliderAutoAim : NetworkBehaviour
         lockState = (LockState)lockStateIndex;
     }
 
-    public override void OnNetworkSpawn()
+    private void Start()
     {
-        base.OnNetworkSpawn();
-
         StartCoroutine(CheckTargets());
     }
-    public override void OnNetworkDespawn()
+    private void OnDestroy()
     {
-        base.OnNetworkDespawn();
-
         StopAllCoroutines();
     }
 
     private void FixedUpdate()
     {    
-        if (IsServer)
+        if (isServer)
         {
             if (target != null)
             {
-                followPosition.Value = followPoint.InverseTransformPoint(target.transform.position + (transform.rotation * AdditivePosition));
+                followPosition = followPoint.InverseTransformPoint(target.transform.position + (transform.rotation * AdditivePosition));
             }    
             else 
             {
-                followPosition.Value = Vector3.zero;
+                followPosition = Vector3.zero;
             }
         }
         
     }
     private void LateUpdate()
     {
-        followPoint.localPosition = Vector3.Lerp(followPoint.localPosition, followPosition.Value, 25f * Time.deltaTime);
+        followPoint.localPosition = Vector3.Lerp(followPoint.localPosition, followPosition, 25f * Time.deltaTime);
     }
     private void OnDrawGizmosSelected()
     {

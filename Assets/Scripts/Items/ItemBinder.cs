@@ -2,7 +2,7 @@
 
 using System.Text;
 using Effiry.Items;
-using Unity.Netcode;
+using Mirror;
 using UnityEngine;
 
 public class ItemBinder : NetworkBehaviour
@@ -14,9 +14,9 @@ public class ItemBinder : NetworkBehaviour
         {
             _item = value;
             
-            if (IsServer)
+            if (isServer)
             {
-                OnItemChanged_ClientRpc(Item.ToJsonString(value));
+                OnItemChanged_Command(Item.ToJsonString(value));
             }
         }
     }
@@ -30,12 +30,9 @@ public class ItemBinder : NetworkBehaviour
         meshRenderers = GetComponentsInChildren<Renderer>();
     }
 
-    [ClientRpc]
-    private void OnItemChanged_ClientRpc(string Json)
+    [Server, Command]
+    private void OnItemChanged_Command(string Json)
     {
-        if (!IsServer)
-        {
-            item = Item.FromJsonString(Json);
-        }
+        _item = Item.FromJsonString(Json);
     }
 }

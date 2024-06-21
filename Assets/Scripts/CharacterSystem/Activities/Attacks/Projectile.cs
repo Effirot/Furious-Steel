@@ -3,11 +3,12 @@ using CharacterSystem.Attacks;
 using CharacterSystem.DamageMath;
 using Unity.Cinemachine;
 using Cysharp.Threading.Tasks;
-using Unity.Netcode;
+using Mirror;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.VFX;
+using Telepathy;
 
 public class Projectile : NetworkBehaviour, 
     IDamagable,
@@ -41,64 +42,53 @@ public class Projectile : NetworkBehaviour,
 
     public OnDamageDeliveryReport onDamageDeliveryReport;
     
-
-    public Vector3 MoveDirection 
-    {
-        get => network_moveDirection.Value;
-        set 
-        {
-            if (IsServer)
-            {
-                network_moveDirection.Value = value;
-            }
-        }
-    }
+    [HideInInspector, SyncVar]
+    public Vector3 MoveDirection;
+    [HideInInspector, SyncVar]
+    public Vector3 position = Vector3.zero;
 
     public Damage lastRecievedDamage { get; set; }
 
     public float maxHealth { get => 0; }
     public float health { get => 0; set { return; } }
     public float stunlock { get => 0; set { return; } }
+    public Team team { get => Summoner.team; }
 
     public IDamageSource Summoner {
         get {
-            if (network_SummonerId.Value != ulong.MinValue)
+            if (!summonerObject.IsUnityNull() && summonerObject.TryGetComponent<IDamageSource>(out var component))
             {
-                var dictionary = NetworkManager.Singleton.SpawnManager.SpawnedObjects;
-
-                if (dictionary.ContainsKey(network_SummonerId.Value) && dictionary[network_SummonerId.Value].TryGetComponent<IDamageSource>(out var component))
-                {
-                    return component;
-                }
+                return component;
             }
-
+            
             return null;
         }
         private set {
-            network_SummonerId.Value = value?.gameObject?.GetComponent<NetworkObject>()?.NetworkObjectId ?? ulong.MinValue;
+            summonerObject = value?.gameObject ?? null;
         } 
     }
 
+
+    [SyncVar]
+    private GameObject summonerObject;
+
     public event Action<Damage> onDamageRecieved;
-
-    public Team team { get => Summoner.team; }
-
-
-    private NetworkVariable<ulong> network_SummonerId = new NetworkVariable<ulong> (0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-    private NetworkVariable<Vector3> network_position = new NetworkVariable<Vector3> (Vector3.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-    private NetworkVariable<Vector3> network_moveDirection = new NetworkVariable<Vector3> (Vector3.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    
 
 
     public void Initialize (Vector3 direction, IDamageSource summoner, OnDamageDeliveryReport onDamageDeliveryReport = null)
     {
-        if (!IsSpawned)
+        if (!NetworkServer.spawned.ContainsKey(netIdentity.netId))
         {
-            NetworkObject.Spawn();
+            NetworkServer.Spawn(gameObject);
+            
+            position = transform.position;
         }
 
         Push (direction);
 
         Summoner = summoner;
+
 
         this.onDamageDeliveryReport = onDamageDeliveryReport;
     }
@@ -122,23 +112,18 @@ public class Projectile : NetworkBehaviour,
 
     public virtual void Kill ()
     {
-        if (IsSpawned && IsServer)
-        {
-            NetworkObject.Despawn();
-        }
+        NetworkServer.Destroy(gameObject);
     }
 
-    public async override void OnNetworkSpawn ()
+    protected virtual async void Start()
     {
-        base.OnNetworkSpawn();
-
-        if (IsServer)
+        if (isServer)
         {
-            network_position.Value = transform.position;
+            position = transform.position;
         }
         else
         {
-            transform.position = network_position.Value;
+            transform.position = position;
         }
 
         await UniTask.WaitForSeconds(lifetime);
@@ -148,58 +133,53 @@ public class Projectile : NetworkBehaviour,
             Kill ();
         }
     }
-    public override void OnNetworkDespawn ()
+    protected virtual void OnDestroy()
     {
-        base.OnNetworkDespawn();
-
         onDespawnEvent.Invoke();
 
-        if (IsClient)
+        if (isClient)
         {
-            transform.position = network_position.Value;
+            transform.position = position;
         }
     }
 
     protected virtual void FixedUpdate ()
     {
-        if (!IsSpawned) return;
-
         speed *= speedTimeIncreacing;
 
-        if (IsServer)
+        if (isServer)
         {
             transform.position += MoveDirection * Time.fixedDeltaTime * speed;
 
             MoveDirection = Vector3.Lerp(MoveDirection, Physics.gravity, Gravity);
             
 
-            network_position.Value = transform.position;
+            position = transform.position;
 
             CheckGroundCollision();
         }
 
-        if (network_moveDirection.Value.magnitude > 0)
+        if (MoveDirection.magnitude > 0)
         {
-            transform.rotation = Quaternion.LookRotation(network_moveDirection.Value);
+            transform.rotation = Quaternion.LookRotation(MoveDirection);
         }
     }
     protected virtual void LateUpdate()
     {
-        if (IsClient)
+        if (isClient)
         {
-            if (Vector3.Distance(transform.position, network_position.Value) < 0.5f)
+            if (Vector3.Distance(transform.position, position) < 0.5f)
             {
-                transform.position = Vector3.Lerp(transform.position, network_position.Value, 22 * Time.deltaTime);
+                transform.position = Vector3.Lerp(transform.position, position, 22 * Time.deltaTime);
             }
             else
             {
-                transform.position = network_position.Value;
+                transform.position = position;
             }
         }
     }
     protected virtual void OnTriggerEnter (Collider other)
     {
-        if (!IsSpawned) return;
         if (!DamageOnHit) return;
 
         var damage = this.damage;
@@ -236,9 +216,16 @@ public class Projectile : NetworkBehaviour,
 
     private void CheckGroundCollision()
     {
-        if (Physics.Linecast(transform.position - MoveDirection, transform.position + MoveDirection, LayerMask.GetMask("Ground")))
+        if (Physics.Linecast(transform.position - MoveDirection, transform.position + MoveDirection, out var hit, LayerMask.GetMask("Ground")))
         {
-            Kill();
+            if (DamageOnHit)
+            {
+                Kill();
+            }
+            else
+            {
+                transform.position += hit.normal * MoveDirection.magnitude * Time.fixedDeltaTime * speed;
+            }
         }
     }
 }
