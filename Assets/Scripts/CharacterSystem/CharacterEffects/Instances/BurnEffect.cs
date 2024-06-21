@@ -18,7 +18,7 @@ namespace CharacterSystem.Effects
         public float damagePerSecond = 5;
 
         [SerializeField, ColorUsageAttribute(false, true)]
-        public Color color = Color.yellow * 5;
+        public Color color = new Color(0.74f, 0.1f, 0) * 4;
 
         public BurnEffect() { }
         public BurnEffect(float Time, float damagePerSecond)

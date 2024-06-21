@@ -45,6 +45,7 @@ namespace CharacterSystem.Effects
             } 
         }
 
+        [HideInInspector]
         public uint effectSourceID = 0;
 
         public abstract bool Existance { get; }
@@ -97,7 +98,6 @@ namespace CharacterSystem.Effects
             {
                 field.SetValue(newEffectInstance, reader.Read<object>());
             }
-            Debug.Log(newEffectType.Name);
 
             return new BurnEffect();
         }

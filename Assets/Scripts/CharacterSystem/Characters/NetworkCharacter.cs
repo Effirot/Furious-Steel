@@ -14,10 +14,6 @@ using Unity.Cinemachine;
 using Cysharp.Threading.Tasks;
 using CharacterSystem.Effects;
 
-
-
-
-
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -540,9 +536,21 @@ namespace CharacterSystem.Objects
             // Deliver damage
             SetPosition(transform.position + newVelocity / 8f);
 
-            Damage.Deliver(this, new Damage(velocity.magnitude * 5, lastRecievedDamage.senderID, 0.2f, newVelocity / 1.5f, Damage.Type.Physics, new TimeScaleEffect(0.1f, 1f)));
+            Damage.Deliver(this, new Damage(
+                velocity.magnitude * 5, 
+                lastRecievedDamage.senderID, 
+                0.2f, 
+                newVelocity / 1.5f, 
+                Damage.Type.Physics, 
+                new TimeScaleEffect(0.1f, 1f)));
             
-            Damage.Deliver(hit.gameObject, new Damage(velocity.magnitude * 5, lastRecievedDamage.senderID, 0.2f, -newVelocity / 1.5f, Damage.Type.Physics, new TimeScaleEffect(0.1f, 1f)));
+            Damage.Deliver(hit.gameObject, new Damage(
+                velocity.magnitude * 5, 
+                lastRecievedDamage.senderID, 
+                0.2f, 
+                Quaternion.Euler(0, 180, 0) * newVelocity, 
+                Damage.Type.Physics, 
+                new TimeScaleEffect(0.1f, 1f)));
         }
 
         protected virtual GameObject SpawnCorpse()

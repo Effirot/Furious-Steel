@@ -1109,7 +1109,7 @@ MonoBehaviour:
     RechargeUltimate: 1
     SelfDamageUltimate: 0
     Effects:
-    - rid: 8630937820481192014
+    - rid: 465147781705891918
   MoveDirection: {x: 0, y: 0, z: 0}
   position: {x: 0, y: 0, z: 0}
   Range: 4.67
@@ -1122,24 +1122,26 @@ MonoBehaviour:
     RechargeUltimate: 1
     SelfDamageUltimate: 0
     Effects:
-    - rid: 8630937770391502938
+    - rid: 465147781705891919
   <OnExplodePrefab>k__BackingField: {fileID: 731231275301304977}
   PereodicExplodeDelay: 0
   references:
     version: 2
     RefIds:
-    - rid: 8630937770391502938
-      type: {class: BurnEffect, ns: , asm: Assembly-CSharp}
+    - rid: 465147781705891918
+      type: {class: BurnEffect, ns: CharacterSystem.Effects, asm: Assembly-CSharp}
       data:
-        time: 2
-        damagePerSecond: 2.5
-        color: {r: 271.87302, g: 82.35665, b: 12.810762, a: 1}
-    - rid: 8630937820481192014
-      type: {class: BurnEffect, ns: , asm: Assembly-CSharp}
-      data:
+        effectSourceID: 0
         time: 2
         damagePerSecond: 5
-        color: {r: 271.87302, g: 82.35665, b: 12.810762, a: 1}
+        color: {r: 5, g: 0.6806283, b: 0, a: 5}
+    - rid: 465147781705891919
+      type: {class: BurnEffect, ns: CharacterSystem.Effects, asm: Assembly-CSharp}
+      data:
+        effectSourceID: 0
+        time: 5
+        damagePerSecond: 5
+        color: {r: 5, g: 0.6806283, b: 0, a: 5}
 --- !u!108 &4492060360821999913
 Light:
   m_ObjectHideFlags: 0

@@ -216,7 +216,7 @@ public class Projectile : NetworkBehaviour,
 
     private void CheckGroundCollision()
     {
-        if (Physics.Linecast(transform.position - MoveDirection, transform.position + MoveDirection, out var hit, LayerMask.GetMask("Ground")))
+        if (Physics.Linecast(transform.position - MoveDirection, transform.position + MoveDirection, out var hit, LayerMask.GetMask("Ground", "Projectile"), QueryTriggerInteraction.Collide))
         {
             if (DamageOnHit)
             {
@@ -224,7 +224,7 @@ public class Projectile : NetworkBehaviour,
             }
             else
             {
-                transform.position += hit.normal * MoveDirection.magnitude * Time.fixedDeltaTime * speed;
+                transform.position += hit.normal * hit.distance * Time.fixedDeltaTime * speed;
             }
         }
     }
