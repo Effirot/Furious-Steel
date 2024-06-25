@@ -49,7 +49,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  IsPerforming: 1
+  isPerforming: 1
   inputAction: {fileID: 2243838571553120747, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 2
   SpeedChange: 0
@@ -341,6 +341,7 @@ GameObject:
   - component: {fileID: 5633976333175869961}
   - component: {fileID: 7669626182777078651}
   - component: {fileID: 8656365930082199868}
+  - component: {fileID: -8611484165617981713}
   m_Layer: 6
   m_Name: Mortar
   m_TagString: Weapon
@@ -397,9 +398,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e02cc2139c0c4704ca305884101e1c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
   TargetParentPath: ArmorModels/Armor_Armature/SpineCenter
   origin: {fileID: 2359737243416969426}
 --- !u!114 &5633976333175869961
@@ -414,9 +412,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91b59a25b78b63442bfa85d494b70054, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
   overrides:
   - Name: Holding_Default
     Clip: {fileID: -6822461226553546067, guid: 1c61bc27e4ff3a14e840eb27977e588e, type: 3}
@@ -436,9 +431,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f8362cf897c101449b32c7c0a5fa054, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
 --- !u!114 &8656365930082199868
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -462,6 +454,22 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   IsActive: 1
+--- !u!114 &-8611484165617981713
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1517727645108543378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32e83e68725eb8e4db40d9b3a73c090e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  networkParent: {fileID: 0}
 --- !u!1 &1668164172153416259
 GameObject:
   m_ObjectHideFlags: 0
@@ -511,7 +519,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  IsPerforming: 1
+  isPerforming: 1
   inputAction: {fileID: 5277666054227158027, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 2
   SpeedChange: 0
@@ -667,7 +675,7 @@ Transform:
   m_GameObject: {fileID: 2550411166488077007}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.19, z: 0.3}
+  m_LocalPosition: {x: 0, y: 1.19, z: 0.54}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -961,7 +969,7 @@ Transform:
   m_GameObject: {fileID: 4599782399667057845}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0.25}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1005,14 +1013,14 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  IsPerforming: 1
+  isPerforming: 1
   inputAction: {fileID: -697749738134341483, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 2
   SpeedChange: 0
   IsPressed: 0
   IsInterruptableWhenBlocked: 0
   IsInterruptOnHit: 0
-  RestartWhenHolding: 1
+  RestartWhenHolding: 0
   attackQueue:
   - rid: 8630938109234118739
   - rid: 2874887614783815706
@@ -1033,17 +1041,17 @@ MonoBehaviour:
     - rid: 2874887614783815705
       type: {class: ProjectileShooter, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        projectilePrefab: {fileID: 6845969276890429663, guid: 9778415436698124992821a614dd3705, type: 3}
-        direction: {x: 0, y: 0.3, z: 2.4}
+        projectilePrefab: {fileID: 3276885023796850411, guid: 9778415436698124992821a614dd3705, type: 3}
+        direction: {x: 0, y: 0.64, z: 0.84}
     - rid: 2874887614783815706
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        WaitTime: 0.6
+        WaitTime: 0.4
         Permissions: 512
     - rid: 2874887932115681383
       type: {class: Push, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        CastPushDirection: {x: 0, y: 0.21, z: -0.26}
+        CastPushDirection: {x: 0, y: 0.21, z: -0.36}
     - rid: 8630938109234118739
       type: {class: Event, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:

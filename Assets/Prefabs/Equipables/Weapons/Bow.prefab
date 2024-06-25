@@ -176,7 +176,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  IsPerforming: 1
+  isPerforming: 1
   inputAction: {fileID: 2243838571553120747, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 2
   SpeedChange: 0
@@ -244,6 +244,7 @@ GameObject:
   - component: {fileID: 5633976333175869961}
   - component: {fileID: 7669626182777078651}
   - component: {fileID: 8512209193314633379}
+  - component: {fileID: 7685591604565873967}
   m_Layer: 6
   m_Name: Bow
   m_TagString: Weapon
@@ -283,9 +284,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e02cc2139c0c4704ca305884101e1c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
   TargetParentPath: 
   origin: {fileID: 0}
 --- !u!114 &5633976333175869961
@@ -300,9 +298,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91b59a25b78b63442bfa85d494b70054, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
   overrides:
   - Name: Holding_Default
     Clip: {fileID: -4470652782877245180, guid: eb101eb5ba008aa4fad4497ac79afc31, type: 3}
@@ -318,9 +313,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f8362cf897c101449b32c7c0a5fa054, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
 --- !u!114 &8512209193314633379
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -338,6 +330,22 @@ MonoBehaviour:
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
+--- !u!114 &7685591604565873967
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1517727645108543378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32e83e68725eb8e4db40d9b3a73c090e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  networkParent: {fileID: 0}
 --- !u!1 &1668164172153416259
 GameObject:
   m_ObjectHideFlags: 0

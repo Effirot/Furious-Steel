@@ -286,6 +286,7 @@ GameObject:
   - component: {fileID: 467114278958066080}
   - component: {fileID: 4533531134351662696}
   - component: {fileID: 4623699568532974442}
+  - component: {fileID: 6425117942021659873}
   m_Layer: 6
   m_Name: ExplodeMagic
   m_TagString: Weapon
@@ -325,9 +326,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f8362cf897c101449b32c7c0a5fa054, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
 --- !u!114 &4268581567253092760
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -340,9 +338,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e02cc2139c0c4704ca305884101e1c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
   TargetParentPath: ArmorModels/Armor_Armature/SpineCenter
   origin: {fileID: 1606992555858146140}
 --- !u!114 &467114278958066080
@@ -357,9 +352,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91b59a25b78b63442bfa85d494b70054, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
   overrides:
   - Name: Attack1
     Clip: {fileID: -1134353356091838015, guid: 722bbb0c0e6be5a45b34b827fb90d9f6, type: 3}
@@ -405,6 +397,22 @@ MonoBehaviour:
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
+--- !u!114 &6425117942021659873
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1517727645108543378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32e83e68725eb8e4db40d9b3a73c090e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  networkParent: {fileID: 0}
 --- !u!1 &1668164172153416259
 GameObject:
   m_ObjectHideFlags: 0
@@ -458,11 +466,14 @@ MonoBehaviour:
   Priority: 2
   SpeedChange: 4
   IsPressed: 0
-  IsInterruptableWhenBlocked: 1
-  IsInterruptOnHit: 1
+  IsInterruptableWhenBlocked: 0
+  IsInterruptOnHit: 0
   RestartWhenHolding: 0
   attackQueue:
-  - rid: 2874887882897358929
+  - rid: 465147837004644435
+  - rid: 465147837004644434
+  - rid: 465147837004644432
+  - rid: 465147837004644436
   OnDamageReport:
     m_PersistentCalls:
       m_Calls:
@@ -481,35 +492,18 @@ MonoBehaviour:
   OnAttackEnded:
     m_PersistentCalls:
       m_Calls: []
-  MinRequiredValue: 0
-  StopOnValueLessThenMinimum: 1
+  MinRequiredValue: 50
+  StopOnValueLessThenMinimum: 0
   customProperty: {fileID: 4533531134351662696}
   references:
     version: 2
     RefIds:
-    - rid: 2874887882897358929
-      type: {class: HoldRepeat, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        queueElement:
-          rid: 2874887882897358930
-        RepeatLimit: 0
-    - rid: 2874887882897358930
-      type: {class: Queue, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        queue:
-        - rid: 2874887882897358932
-        - rid: 2874887882897358933
-    - rid: 2874887882897358932
-      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        WaitTime: 0.3
-        Permissions: 44800
-    - rid: 2874887882897358933
+    - rid: 465147837004644432
       type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         casters:
-        - rid: 2874887882897358934
-        CastPushDirection: {x: 0, y: 0, z: 0}
+        - rid: 465147837004644433
+        CastPushDirection: {x: 0, y: 0.2, z: 0.83}
         OnCast:
           m_PersistentCalls:
             m_Calls:
@@ -545,11 +539,11 @@ MonoBehaviour:
                 m_ObjectArgument: {fileID: 0}
                 m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
                 m_IntArgument: 0
-                m_FloatArgument: 10
+                m_FloatArgument: 50
                 m_StringArgument: 
                 m_BoolArgument: 0
               m_CallState: 2
-    - rid: 2874887882897358934
+    - rid: 465147837004644433
       type: {class: SphereCaster, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         damage:
@@ -562,6 +556,27 @@ MonoBehaviour:
           Effects: []
         position: {x: 0, y: 0, z: 0}
         radius: 4
+    - rid: 465147837004644434
+      type: {class: SelfDamage, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        damage:
+          value: 10
+          type: 32
+          stunlock: 0
+          pushDirection: {x: 0, y: 0, z: 0}
+          RechargeUltimate: 0
+          SelfDamageUltimate: 1
+          Effects: []
+    - rid: 465147837004644435
+      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        WaitTime: 0.2
+        Permissions: 43520
+    - rid: 465147837004644436
+      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        WaitTime: 1
+        Permissions: 65280
 --- !u!1 &2550411166488077007
 GameObject:
   m_ObjectHideFlags: 0

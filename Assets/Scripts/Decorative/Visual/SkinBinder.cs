@@ -6,24 +6,13 @@ using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 
-public sealed class SkinBinder : NetworkBehaviour
+public sealed class SkinBinder : MonoBehaviour
 {
     [SerializeField, TextArea]
     private string TargetParentPath = "";
 
     [SerializeField]
     private SkinnedMeshRenderer origin;
-
-#warning On Parent Changed fix
-    // public override void OnNetworkObjectParentChanged(NetworkObject parentNetworkObject)
-    // {
-    //     base.OnNetworkObjectParentChanged(parentNetworkObject);
-        
-    //     if (parentNetworkObject != null)
-    //     {
-    //         Research(parentNetworkObject.gameObject);
-    //     }
-    // }
 
     private void Start()
     {

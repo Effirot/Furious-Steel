@@ -1,10 +1,9 @@
 
 using Effiry.Items;
 using UnityEngine;
+
+using static ConnectedPlayerData;
 using static RoomManager;
-
-using static RoomManager.SpawnArguments;
-
 
 public sealed class SpawnArgumentsEditor : MonoBehaviour
 {

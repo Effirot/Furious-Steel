@@ -482,6 +482,7 @@ GameObject:
   - component: {fileID: 5633976333175869961}
   - component: {fileID: -6062769866557274273}
   - component: {fileID: 5260753540106727385}
+  - component: {fileID: -865449493917898241}
   m_Layer: 6
   m_Name: Sword
   m_TagString: Weapon
@@ -539,9 +540,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91b59a25b78b63442bfa85d494b70054, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
   overrides:
   - Name: Holding_Default
     Clip: {fileID: -4470652782877245180, guid: be1c18233e86a2c4ab758b9ac5a9a0a4, type: 3}
@@ -561,9 +559,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f8362cf897c101449b32c7c0a5fa054, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
 --- !u!114 &5260753540106727385
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -576,11 +571,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e02cc2139c0c4704ca305884101e1c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  TargetParentPath: ArmorModels/Armor_Armature/SpineCenter
+  origin: {fileID: 4413948113321333777}
+--- !u!114 &-865449493917898241
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1517727645108543378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32e83e68725eb8e4db40d9b3a73c090e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  TargetParentPath: ArmorModels/Armor_Armature/SpineCenter
-  origin: {fileID: 4413948113321333777}
+  networkParent: {fileID: 0}
 --- !u!1 &1901328450275216932
 GameObject:
   m_ObjectHideFlags: 0

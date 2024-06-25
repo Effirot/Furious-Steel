@@ -7,147 +7,37 @@ using Mirror;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Rendering;
-using static RoomManager.SpawnArguments;
 using System.Net.Sockets;
 using Cysharp.Threading.Tasks;
 using System.Linq;
 using Unity.VisualScripting;
 using Effiry.Items;
+using UnityEngine.SceneManagement;
+
+using static ConnectedPlayerData;
 
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
 [DisallowMultipleComponent]
-public class RoomManager : NetworkBehaviour
+public class RoomManager : NetworkManager
 {
-    public struct SpawnArguments
-    {
-        public static SpawnArguments Local; 
-
-        public string CharacterItemJson;
-        public string WeaponItemJson;
-        public string TrinketItemJson;
-    }
-    public struct PlayerStatistics
-    {
-        public static PlayerStatistics Empty() => new() 
-        {
-            Points = 0,
-        
-            KillStreakTotal = 0,
-        
-            AssistsStreak = 0,
-            AssistsStreakTotal = 0,
-        
-            Deads = 0,
-
-            DeliveredDamage = 0,
-            PowerUpsPicked = 0,
-
-            EnterTime = DateTime.Now,
-            DeathTime = DateTime.Now,
-            RespawnTime = DateTime.Now,
-        };
-
-        public DateTime EnterTime;
-        public DateTime DeathTime;
-        public DateTime RespawnTime;
-
-        public int Points;
-
-        public int KillStreakTotal;
-        
-        public int AssistsStreak;
-        public int AssistsStreakTotal;
-        
-        public int Deads;
-
-        public float DeliveredDamage;
-        public float PowerUpsPicked;
-    }
-
-    public struct PublicClientData
-    {
-        public int ID;
-
-        public FixedString64Bytes Name;
-        
-        public short Ping;
-
-        public SpawnArguments spawnArguments;
-        public PlayerStatistics statistics;
-    }
-
-    public delegate void SendChatMessageDelegate (PublicClientData publicClientData, FixedString512Bytes text);
-
     public static RoomManager Singleton { get; private set; }
 
-
-    public static event SendChatMessageDelegate OnWriteToChat = delegate { };
-    public static event SendChatMessageDelegate OnServerException = delegate { };
-
-    public static readonly PublicClientData ServerData = new PublicClientData() { ID = 0, Name = "[SERVER]" };
-
+    [Space]
+    public GameObject playerDataObjectPrfab; 
+    
+    [Space]
     [SerializeField]
     private List<GameObject> characters;
     [SerializeField]
     private List<GameObject> weapons;
     [SerializeField]
     private List<GameObject> trinkets;
+    
+    private Dictionary<NetworkConnection, ConnectedPlayerData> connectionData = new();
 
-    [NonSerialized]
-    public SpawnArguments spawnArgs;
-
-    public SyncList<PublicClientData> playersData = new (new PublicClientData[0]);
-
-
-    public bool TryFindClientData(int ClientID, out PublicClientData publicClientData)
-    {
-        publicClientData = new();
-
-        foreach (var item in playersData)
-        {
-            if (item.ID == ClientID)
-            {
-                publicClientData = item;
-
-                return true;
-            }
-        }
-
-        return false;
-    }
-    public int IndexOfPlayerData(Predicate<PublicClientData> alghoritm)
-    {
-        for (int i = 0; i < playersData.Count; i++)
-        {
-            var data = playersData[i];
-
-            if (alghoritm.Invoke(data))
-            {
-                return i;
-            }
-        }
-
-        return -1;
-    }
-    public Item JsonToItem (string json)
-    {
-        if (json == null || json.Length <= 0)
-            return null;
-
-        return Item.FromJsonString(json);
-    }
-
-    public async void Spawn(SpawnArguments args)
-    {
-        spawnArgs = args;
-
-        await UniTask.WaitUntil(() => NetworkClient.ready);
-
-        Spawn_Command(args);
-    }
 
     public GameObject ResearchCharacterPrefab(string name)
     {
@@ -186,130 +76,95 @@ public class RoomManager : NetworkBehaviour
         return null;
     }
 
-#warning Player Authorization
-    // public async void OnPlayerAuthorized(int ID, Authorizer.AuthorizeArguments authorizedPlayerData)
-    // {
-    //     await UniTask.WaitUntil(() => NetworkManager.singleton.isNetworkActive); 
-        
-    //     if (ID != 0)
-    //     {
-    //         await UniTask.WaitForSeconds(0.3f); 
-    //     }
-        
-    //     playersData.Add(new()
-    //     {
-    //         ID = ID,
-
-    //         Name = authorizedPlayerData.Name,
-
-    //         statistics = PlayerStatistics.Empty()
-    //     });
-    // }
-    // public void OnAuthorizedPlayerDisconnected(int ID)
-    // {
-    //     var publicDataIndex = IndexOfPlayerData(data => data.ID == ID);
-
-    //     if (playersData != null)
-    //     {
-    //         playersData?.RemoveAt(publicDataIndex);
-    //     }
-    // }
-
-    private void Awake()
+    public override async void OnClientConnect()
     {
+        base.OnClientConnect();
+
+        await UniTask.WaitForSeconds(5);
+
+        NetworkClient.PrepareToSpawnSceneObjects();
+    }
+    public override void OnClientDisconnect()
+    {
+        base.OnClientDisconnect();
+
+        if (SceneManager.GetActiveScene().buildIndex != 0)
+        {
+            SceneManager.LoadScene(0); 
+        }
+
+        connectionData.Clear();
+    } 
+
+    public override async void OnServerConnect(NetworkConnectionToClient conn)
+    {
+        base.OnServerConnect(conn);
+
+        Debug.Log("Someone is trying to connect . . . ");
+        
+        if (connectionData.ContainsKey(conn))
+            return;
+        
+        await UniTask.WaitUntil(() => conn.isReady);
+        
+        AddPlayerData(conn);
+    }
+    public override void OnServerDisconnect(NetworkConnectionToClient conn)
+    {
+        base.OnServerConnect(conn);
+
+        if (connectionData.ContainsKey(conn))
+        {
+            var data = connectionData[conn];
+
+            NetworkServer.Destroy(data.gameObject);
+            
+            Debug.Log($"{data.Name} is disconnected");
+            connectionData.Remove(conn);
+        }
+
+        NetworkServer.DestroyPlayerForConnection(conn);
+    }
+
+    public override void Awake()
+    {
+        base.Awake();
+
+        SceneManager.sceneLoaded += OnSceneLoaded;
+        OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single);
+
         Singleton = this;
     }
-    protected override void OnValidate()
+    public override void OnValidate()
     {
         base.OnValidate();
 
         Singleton = this;
     }
 
-
-    private PlayerNetworkCharacter SpawnCharacter (Item item, NetworkConnectionToClient networkConnection)
+    private void AddPlayerData(NetworkConnectionToClient conn)
     {
-        if (item == null)
-            return null;
+                var playerDataObject = Instantiate(playerDataObjectPrfab);
+        
+        NetworkServer.Spawn(playerDataObject, conn);
+        playerDataObject.GetComponent<NetworkIdentity>().AssignClientAuthority(conn);
 
-        return SpawnCharacter(item.TypeName, networkConnection);
+        var playerData = playerDataObject.GetComponent<ConnectedPlayerData>();
+        
+        playerData.Name = conn.connectionId.ToString();
+
+        Debug.Log($"{playerData.Name} is connected");
+        
+        connectionData.Add(conn, playerData);
     }
-    private PlayerNetworkCharacter SpawnCharacter (string name, NetworkConnectionToClient networkConnection)
-    {   
-        var character = ResearchCharacterPrefab(name);
-        
-        // Get spawn point
-        var spawnPoint = SpawnPoint.GetSpawnPoint().transform;
 
-        // Spawn character
-        var characterGameObject = Instantiate(character, spawnPoint.position, spawnPoint.rotation);
-        
-        NetworkServer.Spawn(characterGameObject, networkConnection);
-        NetworkServer.AddPlayerForConnection(networkConnection, characterGameObject);
-        characterGameObject.GetComponent<NetworkIdentity>().AssignClientAuthority(networkConnection);
+    private void OnSceneLoaded(Scene scene, LoadSceneMode loadSceneMode)
+    {
+        networkSceneName = onlineScene = scene.name;
 
-        return characterGameObject.GetComponent<PlayerNetworkCharacter>();
-    }
-   
-
-    [Client, Command(requiresAuthority = false)]
-    private void Spawn_Command(SpawnArguments args, NetworkConnectionToClient sender = null)
-    {   
-        // var DataIndex = IndexOfPlayerData(a => a.ID == sender.connectionId);
-        // if (DataIndex == -1)
-        //     return;
-        
-        // var data = playersData[DataIndex];
-        // data.spawnArguments = args;
-        // playersData[DataIndex] = data;
-
-        var character = SpawnCharacter(JsonToItem(args.CharacterItemJson), sender); 
-        
-        if (!character.IsUnityNull())
+        if (NetworkClient.active && !NetworkServer.active)
         {
-            try {
-                character.SetTrinket(JsonToItem(args.TrinketItemJson));
-            }
-            catch (Exception e) 
-            {
-                Debug.LogException(e);
-            }
-
-            try {
-                character.SetWeapon(JsonToItem(args.WeaponItemJson), sender);
-            }
-            catch (Exception e) 
-            {
-                Debug.LogException(e);
-            }
+            NetworkClient.PrepareToSpawnSceneObjects();
         }
     }
-
-#if UNITY_EDITOR
-    [CustomEditor(typeof(RoomManager))]
-    public class RoomManager_Editor : Editor
-    {
-        public new RoomManager target => base.target as RoomManager;
-
-        public override void OnInspectorGUI()
-        {
-            base.OnInspectorGUI();
-
-            if (target.playersData != null)
-            {
-                foreach (var player in target.playersData)
-                {
-                    EditorGUILayout.BeginHorizontal();
-
-                    EditorGUILayout.LabelField(player.ID.ToString());
-                    EditorGUILayout.LabelField(player.Name.Value);
-
-                    EditorGUILayout.EndHorizontal();
-
-                }
-            }
-
-        }
-    }
-#endif
-}
+} 

@@ -63,7 +63,7 @@ public class ServerMenuDrawerUI : MonoBehaviour
     //     }
     // }
 
-    private ServerMenuDrawerPlayerData Create(PublicClientData clientData)
+    private ServerMenuDrawerPlayerData Create(ConnectedPlayerData clientData)
     {
         var DataField = Instantiate(prefab, transform);
         DataField.SetActive(true);
@@ -75,9 +75,9 @@ public class ServerMenuDrawerUI : MonoBehaviour
         return menuField;
     }
 
-    private void UpdateInfo(ServerMenuDrawerPlayerData playerField, PublicClientData clientData)
+    private void UpdateInfo(ServerMenuDrawerPlayerData playerField, ConnectedPlayerData clientData)
     {
-        playerField.NameField.text = clientData.Name.Value;
+        playerField.NameField.text = clientData.Name;
         
         if (playerField.KillstreakField != null)
         {
@@ -115,7 +115,7 @@ public class ServerMenuDrawerUI : MonoBehaviour
     {
         Clear();
 
-        foreach (var data in RoomManager.Singleton.playersData)
+        foreach (var data in ConnectedPlayerData.All)
         {
             clientDataFields.Add(Create(data));
         }

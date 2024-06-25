@@ -27,9 +27,6 @@ public class DedicateServerManager : MonoBehaviour
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void OnStartClient()
     {
-        Application.targetFrameRate = 240;
-        QualitySettings.vSyncCount = 0; 
-
         GameObject.DontDestroyOnLoad(GameObject.Instantiate(Resources.Load<GameObject>("NetworkManager")));
         GameObject.DontDestroyOnLoad(GameObject.Instantiate(Resources.Load<GameObject>("MainMenu")));
     }
@@ -43,9 +40,6 @@ public class DedicateServerManager : MonoBehaviour
         
         SceneManager.sceneLoaded += StartServerOnLoad_Event;
         SceneManager.LoadScene(System.Environment.GetCommandLineArgs()[1]);
-
-        Application.targetFrameRate = 240;
-        QualitySettings.vSyncCount = 0;
     }
 #endif
 }

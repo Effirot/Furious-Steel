@@ -116,10 +116,10 @@ public abstract class SyncedActivitySource : NetworkBehaviour
         Unsubscribe();
     }
     
-    [ServerCallback, Command]
+    [TargetRpc]
     public virtual void Play()
     {
-        if (!HasOverrides() && !IsInProcess)
+        if (!IsInProcess)
         {
             if (process != null)
             {
@@ -140,7 +140,7 @@ public abstract class SyncedActivitySource : NetworkBehaviour
             Stop(true);
         }
     }   
-    [ServerCallback, Command(requiresAuthority = false)]
+    [TargetRpc]
     public virtual void Stop(bool interuptProcess)
     {
         if (IsInProcess)
@@ -163,7 +163,7 @@ public abstract class SyncedActivitySource : NetworkBehaviour
 
     protected virtual void OnStateChanged(bool IsPressed)
     {
-        if (NetworkClient.active && IsPressed && !this.IsUnityNull())
+        if (!HasOverrides() && NetworkClient.active && IsPressed && !this.IsUnityNull())
         {
             Play();
         }
@@ -215,13 +215,18 @@ public abstract class SyncedActivitySource : NetworkBehaviour
 
     private void OnInputPressStateChanged_Event(CallbackContext callback)
     {
-        IsPressed = callback.ReadValueAsButton();
+        SetPressState(callback.ReadValueAsButton());
     }
     private void OnStateChangedHook(bool Old, bool New)
     {
         if (HasOverrides()) return;
-
         OnStateChanged(New);
+    }
+
+    [Client, Command]
+    private void SetPressState(bool value)
+    {
+        IsPressed = value;
     }
 }
 

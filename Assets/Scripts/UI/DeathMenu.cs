@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using CharacterSystem.Objects;
 using Mirror;
 using UnityEngine;
@@ -20,10 +21,10 @@ public class DeathMenu : MonoBehaviour
                 NetworkManager.singleton.StartHost();
 
                 await Cysharp.Threading.Tasks.UniTask.WaitUntil(() => NetworkManager.singleton.isNetworkActive);
+                await Cysharp.Threading.Tasks.UniTask.WaitUntil(() => ConnectedPlayerData.Local != null);
             }
 #endif
-
-            RoomManager.Singleton.Spawn(RoomManager.SpawnArguments.Local);
+            ConnectedPlayerData.Local.Spawn(ConnectedPlayerData.SpawnArguments.Local);
         }
     }
 

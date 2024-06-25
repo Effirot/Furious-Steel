@@ -308,7 +308,7 @@ namespace CharacterSystem.Objects
             }
         }
 
-        [ServerCallback, Command]
+        [ClientCallback, ClientRpc]
         protected virtual void OnHitReaction(Damage damage) 
         { 
             onDamageRecieved?.Invoke(damage); 
@@ -326,49 +326,44 @@ namespace CharacterSystem.Objects
                 }
             }
         }
-        [ServerCallback, Command]
+        [ClientCallback, ClientRpc]
         protected virtual void OnHealReaction(Damage damage) 
         { 
             onDamageRecieved?.Invoke(damage); 
         }
 
+        public override void OnStartServer()
+        {
+            transform.position = network_position;
+            health = maxHealth;
+
+            Spawn_Command();
+        }
         public override void OnStartClient()
         {
             base.OnStartClient();
 
-            if (isServer)
+            isGroundedEvent += (isGrounded) => 
             {
-                health = maxHealth;
+                if (isGrounded)
+                {
+                    JumpEffect.Play();
+                }
+            };
 
-                Spawn_Command();
-            }
-            
-            SetPosition(transform.position);
+            NetworkCharacters.Add(this);
         }
-
 
         protected virtual void Awake ()
         {
             characterController = GetComponent<CharacterController>();
             animator = GetComponentInChildren<Animator>();
-        }
-        protected virtual void Start () 
-        { 
+
+            network_position = transform.position;
+         
             activities.onSyncedActivityListChanged += HandleActivitiesChanges_Event;
-
-            if (!isClient)
-            {
-                isGroundedEvent += (isGrounded) => 
-                {
-                    if (isGrounded)
-                    {
-                        JumpEffect.Play();
-                    }
-                };
-            }
-
-            NetworkCharacters.Add(this);
         }
+        protected virtual void Start () { }
         protected virtual void OnDestroy()
         {
             activities.onSyncedActivityListChanged -= HandleActivitiesChanges_Event;
@@ -379,6 +374,7 @@ namespace CharacterSystem.Objects
 
             SpawnCorpse();
         }
+
 
         protected virtual void FixedUpdate ()
         {
@@ -514,6 +510,7 @@ namespace CharacterSystem.Objects
 
             onHealthChanged.Invoke(New);
         }
+
 
         protected virtual void Dead () { }
         protected virtual void Spawn () { }

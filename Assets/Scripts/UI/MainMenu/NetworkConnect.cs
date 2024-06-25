@@ -45,7 +45,7 @@ public class NetworkConnect : MonoBehaviour
         {
             OnUnsuccesfullyConnect.Invoke();
 
-            Shutdown();
+            // Shutdown();
         }
     }
     public void StartHostOnLoad()

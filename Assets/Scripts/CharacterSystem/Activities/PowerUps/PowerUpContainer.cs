@@ -19,27 +19,36 @@ public class PowerUpContainer : NetworkBehaviour
 
     public PowerUp powerUp => PowerUp.IdToPowerUpLink(Id);
 
+    [SyncVar(hook = nameof(OnPositionChanged))]
+    private Vector3 serverPosition;
+
+
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
+
+        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, LayerMask.GetMask("Ground")))
+        {
+            transform.position = serverPosition = hit.point + Vector3.up;
+        }
+        else
+        {
+            serverPosition = transform.position;
+        }
+    }
     public override void OnStartClient()
     {
         base.OnStartClient();
 
-        if (isServer)
-        {
-            if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, LayerMask.GetMask("Ground")))
-            {
-                SetPosition_Command(hit.point + Vector3.up * 1);
-            }
-            else
-            {
-                SetPosition_Command(transform.position);
-            }
-        }
+        transform.position = serverPosition;
     }
 
-    [Server, Command(requiresAuthority = false)]
-    private void SetPosition_Command(Vector3 position)
+    private void OnPositionChanged(Vector3 Old, Vector3 New)
     {
-        transform.position = position;
+        if (!isServer && isClient)
+        {
+            transform.position = New;
+        }
     }
 
 #if UNITY_EDITOR

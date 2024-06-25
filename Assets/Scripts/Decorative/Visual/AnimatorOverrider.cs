@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
 
-public class AnimatorOverrider : NetworkBehaviour
+public class AnimatorOverrider : MonoBehaviour
 {
     [System.Serializable]
     private struct StringClipAnimatorOverrideLink
@@ -87,4 +87,6 @@ public class AnimatorOverrider : NetworkBehaviour
             Destroy(localOverrider);
         }
     }
+
+    
 }

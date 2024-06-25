@@ -1,3 +1,4 @@
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -5,20 +6,15 @@ using CharacterSystem.Attacks;
 using CharacterSystem.Blocking;
 using CharacterSystem.DamageMath;
 using CharacterSystem.PowerUps;
-using Cysharp.Threading.Tasks;
 using Effiry.Items;
-using Unity.Cinemachine;
-using Unity.Collections;
 using Mirror;
+using Unity.Cinemachine;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.Interactions;
 using UnityEngine.InputSystem.XInput;
-using UnityEngine.VFX;
 using static UnityEngine.InputSystem.InputAction;
-using kcp2k;
 
 namespace CharacterSystem.Objects
 {
@@ -76,11 +72,18 @@ namespace CharacterSystem.Objects
         int IDamageSource.Combo => combo;
         int IPowerUpActivator.PowerUpId { get => powerUpId; set => powerUpId = value; }
 
+        public ConnectedPlayerData Data => ConnectedPlayerData.All.Find(data => data.netIdentity.connectionToClient == netIdentity.connectionToClient);
+
         [SyncVar(hook = nameof(OnComboChanged))]
         protected int combo;
         
         [SyncVar(hook = nameof(OnPowerUpChanged))]
         private int powerUpId = -1;
+        
+        [SyncVar(hook = nameof(OnWeaponChanged))]
+        private NetworkIdentity weaponIdentity;
+        [SyncVar(hook = nameof(OnTrinketChanged))]
+        private NetworkIdentity trinketIdentity;
 
         private Coroutine comboResetTimer = null;
 
@@ -90,7 +93,7 @@ namespace CharacterSystem.Objects
         public Vector2 internalLookVector = Vector2.zero;
 
 
-        public virtual NetworkIdentity SetWeapon (Item item, NetworkConnectionToClient connectionToClient)
+        public virtual NetworkIdentity SetWeapon (Item item)
         {
             if (item == null)
                 return null;
@@ -101,44 +104,46 @@ namespace CharacterSystem.Objects
                 return null;
 
             var weaponGameObject = Instantiate(weaponPrefab, transform);
-            var identity = weaponGameObject.GetComponent<NetworkIdentity>();
+            if (!weaponGameObject.TryGetComponent<NetworkIdentity>(out weaponIdentity))
+            {
+                Debug.Log($"Weapon {weaponGameObject.name} NetworkIdentity was not founded");
+            }
+
             
             weaponGameObject.transform.SetParent(transform);
             NetworkServer.Spawn(weaponGameObject, connectionToClient);
-            identity.AssignClientAuthority(connectionToClient);
+            weaponIdentity.AssignClientAuthority(connectionToClient);
             
             if (weaponGameObject.TryGetComponent<ItemBinder>(out var component))
             {
                 component.item = item;
-            }    
+            }
 
-            return identity;
+            return weaponIdentity;
         } 
         public virtual NetworkIdentity SetTrinket (Item item)
         {
             if (item == null)
                 return null;
 
-            var trinket = RoomManager.Singleton.ResearchTrinketPrefab(item.TypeName);
+            var trinketPrefab = RoomManager.Singleton.ResearchTrinketPrefab(item.TypeName);
 
-            if (trinket == null)
+            if (trinketPrefab == null)
                 return null;
 
-            var trinketGameObject = Instantiate(trinket, transform);
-            var identity = trinketGameObject.GetComponent<NetworkIdentity>();
+            var trinketGameObject = Instantiate(trinketPrefab, transform);
+            trinketIdentity = trinketGameObject.GetComponent<NetworkIdentity>();
             
             trinketGameObject.transform.SetParent(transform);
             NetworkServer.Spawn(trinketGameObject, connectionToClient);
-            identity.AssignClientAuthority(connectionToClient);
+            trinketIdentity.AssignClientAuthority(connectionToClient);
             
-            SyncNetworkIdentityParent(netIdentity, identity, false);
-
             if (trinketGameObject.TryGetComponent<ItemBinder>(out var component))
             {
                 component.item = item;
-            }    
+            }
 
-            return trinketGameObject.GetComponent<NetworkIdentity>();
+            return trinketIdentity;
         }
 
         public override bool Hit(Damage damage)
@@ -181,100 +186,106 @@ namespace CharacterSystem.Objects
         {
             base.OnStartClient();
 
-            if (isLocalPlayer)
-            {
-                Owner = this;
-                
-                CharacterCameraObserver.Singleton.ObservingObject = this;
-
-                if (moveInput != null) {
-                    var action = moveInput.action;
-                    action.Enable();
-
-                    action.performed += OnMoveInput;
-                    action.canceled += OnMoveInput;
-                }
-
-                if (lookInput != null) {
-                    var action = lookInput.action;
-                    action.Enable();
-
-                    action.performed += OnLookInput;
-                    action.canceled += OnLookInput;
-                }
-
-                if (jumpInput != null) {
-                    var action = jumpInput.action;
-                    action.Enable();
-
-                    action.performed += OnJumpInput;
-                    action.canceled += OnJumpInput;
-                                        
-                    isGroundedEvent += isGrounded => {
-                        if (JumpButtonState && isGrounded)
-                        {
-                            Jump(movementVector);
-                        }
-                    };
-                }
-
-                if (killBindInput != null) {
-                    var action = killBindInput.action;
-                    action.Enable();
-
-                    action.performed += KillBind;
-                    action.canceled += KillBind;
-                }
-
-                OnOwnerPlayerCharacterSpawn.Invoke(this);
-            }
-
-            UpdateName();
-
-            RoomManager.Singleton.playersData.OnChange += OnOwnerPlayerDataChanged_event;
-            
-            Players.Add(this);
+            gameObject.name = name = Data?.Name ?? "";
         }
         public override void OnStopClient()
         {
             base.OnStopClient();
+        }
+        public override void OnStartLocalPlayer()
+        {
+            base.OnStartLocalPlayer();
 
-            RoomManager.Singleton.playersData.OnChange -= OnOwnerPlayerDataChanged_event;
+            Owner = this;
+            
+            CharacterCameraObserver.Singleton.ObservingObject = this;
+
+            if (moveInput != null) {
+                var action = moveInput.action;
+                action.Enable();
+
+                action.performed += OnMoveInput;
+                action.canceled += OnMoveInput;
+            }
+
+            if (lookInput != null) {
+                var action = lookInput.action;
+                action.Enable();
+
+                action.performed += OnLookInput;
+                action.canceled += OnLookInput;
+            }
+
+            if (jumpInput != null) {
+                var action = jumpInput.action;
+                action.Enable();
+
+                action.performed += OnJumpInput;
+                action.canceled += OnJumpInput;
+                                    
+                isGroundedEvent += isGrounded => {
+                    if (JumpButtonState && isGrounded)
+                    {
+                        Jump(movementVector);
+                    }
+                };
+            }
+
+            if (killBindInput != null) {
+                var action = killBindInput.action;
+                action.Enable();
+
+                action.performed += KillBind;
+                action.canceled += KillBind;
+            }
+
+            OnOwnerPlayerCharacterSpawn.Invoke(this);
+        }
+        public override void OnStopLocalPlayer()
+        {
+            base.OnStopLocalPlayer();
+
+            Owner = null;
+            
+            {
+                var action = moveInput.action;
+                
+                action.performed -= OnMoveInput;
+                action.canceled -= OnMoveInput;
+            }
+            
+            {
+                var action = lookInput.action;
+
+                action.performed -= OnLookInput;
+                action.canceled -= OnLookInput;
+            }
+
+            {
+                var action = jumpInput.action;
+
+                action.performed -= OnJumpInput;
+                action.canceled -= OnJumpInput;
+            }
+
+            {
+                var action = killBindInput.action;
+
+                action.performed -= KillBind;
+                action.canceled -= KillBind;
+            }
+        }
+        public override void OnStartServer()
+        {
+            base.OnStartServer();
+            
+            Players.Add(this);
+        }
+        public override void OnStopServer()
+        {
+            base.OnStopServer();
 
             Players.Remove(this);
-
-            if (isLocalPlayer)
-            {
-                Owner = null;
-                
-                {
-                    var action = moveInput.action;
-                    
-                    action.performed -= OnMoveInput;
-                    action.canceled -= OnMoveInput;
-                }
-                
-                {
-                    var action = lookInput.action;
-
-                    action.performed -= OnLookInput;
-                    action.canceled -= OnLookInput;
-                }
-
-                {
-                    var action = jumpInput.action;
-
-                    action.performed -= OnJumpInput;
-                    action.canceled -= OnJumpInput;
-                }
-
-                {
-                    var action = killBindInput.action;
-
-                    action.performed -= KillBind;
-                    action.canceled -= KillBind;
-                }
-            }
         }
 
         protected override void OnHitReaction(Damage damage)
@@ -283,7 +294,7 @@ namespace CharacterSystem.Objects
 
             if (isLocalPlayer && damage.type is not Damage.Type.Effect)
             {
-                OnHitImpulseSource?.GenerateImpulse(damage.value / 8f);
+                OnHitImpulseSource?.GenerateImpulse(Mathf.Min(damage.value / 8f, 4f));
             }
         }
         
@@ -329,7 +340,6 @@ namespace CharacterSystem.Objects
             OnPlayerCharacterSpawn.Invoke(this);
         }
 
-
         protected override GameObject SpawnCorpse()
         {
             var corpseObject = base.SpawnCorpse();
@@ -342,7 +352,14 @@ namespace CharacterSystem.Objects
             return corpseObject;
         }
 
+        protected virtual void OnWeaponChanged(NetworkIdentity Old, NetworkIdentity New)
+        {
+            Debug.Log(New.gameObject.name);
+        }
+        protected virtual void OnTrinketChanged(NetworkIdentity Old, NetworkIdentity New)
+        {
 
+        }
         protected virtual void OnPowerUpChanged(int Old, int New)
         {
             onPowerUpChanged.Invoke(PowerUp.IdToPowerUpLink(New));
@@ -368,16 +385,6 @@ namespace CharacterSystem.Objects
             Speed += (New - Old) / 12f;
         }
 
-        private void OnOwnerPlayerDataChanged_event(SyncList<RoomManager.PublicClientData>.Operation operation, int index, RoomManager.PublicClientData value)
-        {
-            UpdateName();
-        }
-        private void UpdateName()
-        {
-#warning fix nicknames
-            // gameObject.name = name = ClientData.Name.Value;
-        }
-
         private IEnumerator ComboResetTimer()
         {
             yield return new WaitForSeconds(1f);
@@ -395,12 +402,6 @@ namespace CharacterSystem.Objects
             combo = 0;
 
             comboResetTimer = null;
-        }
-
-        [Command, Server]
-        private void SyncNetworkIdentityParent(NetworkIdentity parent, NetworkIdentity child, bool worldPositionStays)
-        {
-            child.transform.SetParent(parent.transform, worldPositionStays);
         }
 
         private void OnMoveInput(CallbackContext input)
@@ -453,16 +454,7 @@ namespace CharacterSystem.Objects
         {
             if (!this.IsUnityNull())
             {
-                if (suicideCorpsePrefab != null)
-                {
-                    var corpse = Instantiate(suicideCorpsePrefab, transform.position, transform.rotation);
-                    
-                    corpse.SetActive(true); 
-                    
-                    Destroy(corpse, 5);
-                }
-            
-                Damage.Deliver(this, new Damage(maxHealth, null, 100, Vector3.up, Damage.Type.Unblockable));
+                Damage.Deliver(this, new Damage(maxHealth * 100, null, 100, Vector3.up, Damage.Type.Unblockable));
             }
         } 
     }
