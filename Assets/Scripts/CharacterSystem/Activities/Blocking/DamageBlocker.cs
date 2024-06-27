@@ -5,7 +5,9 @@ using System.Linq;
 using CharacterSystem.Attacks;
 using CharacterSystem.DamageMath;
 using CharacterSystem.Objects;
+using Cysharp.Threading.Tasks;
 using Mirror;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
@@ -46,9 +48,6 @@ namespace CharacterSystem.Blocking
         private float AfterBlockTime = 0.5f;
 
         [Space]
-        [SerializeField, Range(0f, 9f)]
-        private float PushForce = 0.5f;
-
         [SerializeField, Range(0f, 180f)]
         private float blockingDegree = 75f;
 
@@ -59,6 +58,9 @@ namespace CharacterSystem.Blocking
         [Header("Damage")]
         [SerializeField]
         private Damage backDamage;
+
+        [SerializeField]
+        private Damage selfHeal;
 
         [SerializeField, Range(0, 1)]
         public float DamageReducing = 1;
@@ -76,28 +78,27 @@ namespace CharacterSystem.Blocking
 
         public bool IsBlockActive { get; private set; }
 
-        public virtual bool Block(ref Damage damage)
+        public virtual bool CheckBlocking(ref Damage damage)
         {            
             if (damage.type == Damage.Type.Effect) 
                 return false;
 
-            if (IsBlockActive && 
+            if (!damage.sender.IsUnityNull() &&
+                IsBlockActive && 
                 Vector3.Angle(transform.forward, damage.sender.transform.position - transform.position) < blockingDegree && 
                 damage.type != Damage.Type.Parrying && 
                 damage.type != Damage.Type.Unblockable)
             {
                 if (isServer)
                 {
+                    OnSuccesfulBlockingEvent.Invoke();
+
                     ExecuteSuccesfullyBlockEvent_Command();
                 }
 
                 if (damage.sender != null && damage.type != Damage.Type.Magical && damage.type != Damage.Type.Balistic)
-                {                    
-                    backDamage.sender = Source;
-                    backDamage.pushDirection = Vector3.up * 0.3f + -damage.pushDirection.normalized * PushForce;
-                    backDamage.type = Damage.Type.Parrying;
-
-                    Damage.Deliver(damage.sender, backDamage);
+                {
+                    LateDamageDelivery(damage);
                 }
                 damage *= 1f - DamageReducing;
                 
@@ -110,6 +111,7 @@ namespace CharacterSystem.Blocking
 
             return false;
 
+
             void SkipBlock()
             {
                 if (InterruptOnHit)
@@ -120,7 +122,29 @@ namespace CharacterSystem.Blocking
                     Permissions = AfterBlockCharacterPermissions;
                 }
             }
-        } 
+        
+            async void LateDamageDelivery(Damage damage)
+            {
+                var blockDamage = backDamage;
+
+                blockDamage.sender = Source;
+                blockDamage.pushDirection = -damage.pushDirection;
+                blockDamage.pushDirection += transform.rotation * backDamage.pushDirection;
+                blockDamage.type = Damage.Type.Parrying;
+                
+                var selfDamage = selfHeal;
+
+                selfDamage.sender = Source;
+                selfDamage.pushDirection += transform.rotation * selfHeal.pushDirection;
+                selfDamage.type = Damage.Type.Parrying;
+                
+                await UniTask.WaitForFixedUpdate();
+
+                Damage.Deliver(damage.sender, blockDamage);
+
+                Damage.Deliver(Source, selfDamage);
+            }
+        }
 
         public override void Play()
         {
@@ -190,7 +214,7 @@ namespace CharacterSystem.Blocking
             yield return new WaitForSeconds(AfterBlockTime);
         }
 
-        [Server, Command]
+        [ClientRpc]
         private void ExecuteSuccesfullyBlockEvent_Command()
         {
             OnSuccesfulBlockingEvent.Invoke();

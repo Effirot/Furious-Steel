@@ -76,6 +76,15 @@ public class RoomManager : NetworkManager
         return null;
     }
 
+
+    public override void OnStartServer()
+    {
+        if (SceneManager.GetActiveScene().buildIndex == 0)
+        {
+            SceneManager.LoadScene(1); 
+        }
+    }
+
     public override async void OnClientConnect()
     {
         base.OnClientConnect();
@@ -144,7 +153,7 @@ public class RoomManager : NetworkManager
 
     private void AddPlayerData(NetworkConnectionToClient conn)
     {
-                var playerDataObject = Instantiate(playerDataObjectPrfab);
+        var playerDataObject = Instantiate(playerDataObjectPrfab);
         
         NetworkServer.Spawn(playerDataObject, conn);
         playerDataObject.GetComponent<NetworkIdentity>().AssignClientAuthority(conn);

@@ -254,10 +254,8 @@ public class ChargeRunningActivity : SyncedActivitySource<PlayerNetworkCharacter
         }  
     }
    
-    protected override void Start()
+    private void Start()
     {
-        base.Start();
-
         Source.isGroundedEvent += (state) => {
             if (!state && IsPressed )
             {

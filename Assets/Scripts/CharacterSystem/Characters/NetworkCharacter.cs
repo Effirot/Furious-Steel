@@ -202,13 +202,17 @@ namespace CharacterSystem.Objects
 
         private Vector3 resultMovePosition;
 
-        [Server, Command]
-        public virtual void Kill ()
+        public virtual void Kill (Damage damage)
         {
-            Dead();
-
             if (isServer)
             {
+                OnCharacterDead.Invoke(this);
+
+                Dead(damage);
+
+                Dead_ClientRpc(damage);
+
+
                 foreach (var item in GetComponentsInChildren<NetworkIdentity>().Reverse()) 
                 {
                     NetworkServer.Destroy(item.gameObject);
@@ -228,7 +232,15 @@ namespace CharacterSystem.Objects
 
             stunlock = Mathf.Max(damage.stunlock, stunlock); 
 
-            OnHitReaction(damage);
+            if (isServer)
+            {
+                OnHitReaction_ClientRpc(damage);
+            }
+
+            if (!isClient)
+            {
+                OnHitReaction(damage);
+            }
 
             return false;
         }
@@ -238,13 +250,23 @@ namespace CharacterSystem.Objects
 
             onDamageRecieved?.Invoke(damage);
 
-            OnHealReaction(damage);
+            Push(damage.pushDirection);
+
+            if (isServer)
+            {
+                OnHealReaction_ClientRpc(damage);
+            }
+
+            if (!isClient)
+            {
+                OnHealReaction(damage);
+            }
 
             return true;
         }
         public void Push (Vector3 direction)
         {
-            if (direction.magnitude > 0)
+            if (direction.magnitude > 0 && !permissions.HasFlag(CharacterPermission.Unpushable))
             {
                 speed_acceleration_multipliyer = Vector2.zero;
                 velocity = direction / mass;
@@ -264,12 +286,12 @@ namespace CharacterSystem.Objects
             }
         }
 
-        [Server, Command]
+        [ClientRpc]
         public void SetAngle (float angle)
         {
             transform.eulerAngles = new Vector3(0, angle, 0);
         }
-        [Server, Command]
+        [ClientRpc]
         public void SetPosition (Vector3 position)
         {
             network_position = position;
@@ -308,7 +330,6 @@ namespace CharacterSystem.Objects
             }
         }
 
-        [ClientCallback, ClientRpc]
         protected virtual void OnHitReaction(Damage damage) 
         { 
             onDamageRecieved?.Invoke(damage); 
@@ -326,7 +347,6 @@ namespace CharacterSystem.Objects
                 }
             }
         }
-        [ClientCallback, ClientRpc]
         protected virtual void OnHealReaction(Damage damage) 
         { 
             onDamageRecieved?.Invoke(damage); 
@@ -336,8 +356,6 @@ namespace CharacterSystem.Objects
         {
             transform.position = network_position;
             health = maxHealth;
-
-            Spawn_Command();
         }
         public override void OnStartClient()
         {
@@ -363,7 +381,20 @@ namespace CharacterSystem.Objects
          
             activities.onSyncedActivityListChanged += HandleActivitiesChanges_Event;
         }
-        protected virtual void Start () { }
+        protected virtual void Start () 
+        { 
+            if (isServer)
+            {
+                OnCharacterSpawn.Invoke(this);
+
+                Spawn();
+
+                if (isServer)
+                {
+                    Spawn_ClientRpc();
+                }
+            }
+        }
         protected virtual void OnDestroy()
         {
             activities.onSyncedActivityListChanged -= HandleActivitiesChanges_Event;
@@ -512,7 +543,7 @@ namespace CharacterSystem.Objects
         }
 
 
-        protected virtual void Dead () { }
+        protected virtual void Dead (Damage damage) { }
         protected virtual void Spawn () { }
 
         protected virtual void OnWallHitEffect(ControllerColliderHit hit)
@@ -531,23 +562,24 @@ namespace CharacterSystem.Objects
             newVelocity.y = Mathf.Max(newVelocity.y, 0.3f);
             
             // Deliver damage
-            SetPosition(transform.position + newVelocity / 8f);
+            if (isServer) 
+            {
+                SetPosition(transform.position + newVelocity / 8f);
+            }
 
             Damage.Deliver(this, new Damage(
                 velocity.magnitude * 5, 
                 lastRecievedDamage.senderID, 
                 0.2f, 
                 newVelocity / 1.5f, 
-                Damage.Type.Physics, 
-                new TimeScaleEffect(0.1f, 1f)));
+                Damage.Type.Physics));
             
             Damage.Deliver(hit.gameObject, new Damage(
                 velocity.magnitude * 5, 
                 lastRecievedDamage.senderID, 
                 0.2f, 
                 Quaternion.Euler(0, 180, 0) * newVelocity, 
-                Damage.Type.Physics, 
-                new TimeScaleEffect(0.1f, 1f)));
+                Damage.Type.Physics));
         }
 
         protected virtual GameObject SpawnCorpse()
@@ -707,16 +739,38 @@ namespace CharacterSystem.Objects
             regenerationCoroutine = null;
         }
 
-
-        [Server, ClientRpc]
-        private void Spawn_Command ()
+        [ClientRpc]
+        private void OnHitReaction_ClientRpc(Damage damage)
         {
-            OnCharacterSpawn.Invoke(this);
-
-            Spawn();
+            OnHitReaction(damage);
+        }
+        [ClientRpc]
+        private void OnHealReaction_ClientRpc(Damage damage)
+        {
+            OnHealReaction(damage);
         }
 
-        
+        [ClientRpc]
+        private void Dead_ClientRpc (Damage damage) 
+        { 
+            if (!isServer)
+            {
+                OnCharacterDead.Invoke(this);
+
+                Dead(damage);
+            }
+        }
+        [ClientRpc]
+        private void Spawn_ClientRpc () 
+        { 
+            if (!isServer)
+            {
+                OnCharacterSpawn.Invoke(this);
+
+                Spawn();
+            }
+        }
+
         [Client, Command]
         private void SetMovementDirection_Command(Vector2 walkDirection)
         {
@@ -757,7 +811,12 @@ namespace CharacterSystem.Objects
 
                 if (GUILayout.Button("Kill"))
                 {
-                    target.Kill();
+                    target.Kill(new Damage(
+                        9999.99f,
+                        null,
+                        0,
+                        Vector3.zero,
+                        Damage.Type.Unblockable));
                 }
             }
 

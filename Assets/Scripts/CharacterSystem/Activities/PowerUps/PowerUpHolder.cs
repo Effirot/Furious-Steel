@@ -11,8 +11,6 @@ using UnityEngine.Events;
 using Mirror;
 using Cysharp.Threading.Tasks;
 
-
-
 #if UNITY_EDITOR
 using UnityEditor;
 #endif

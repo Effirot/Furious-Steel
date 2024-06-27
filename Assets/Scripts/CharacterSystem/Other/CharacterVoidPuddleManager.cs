@@ -16,7 +16,7 @@ using CharacterSystem.Effects;
 [DisallowMultipleComponent]
 public class CharacterVoidPuddleManager : NetworkBehaviour
 {
-    private readonly struct PuddleData : IEquatable<PuddleData>
+    private struct PuddleData : IEquatable<PuddleData>
     {
         public float size { get; }
         public Vector3 position { get; }
@@ -51,7 +51,7 @@ public class CharacterVoidPuddleManager : NetworkBehaviour
     private float emmitSize = 8f;
 
     private NetworkCharacter networkCharacter;
-    private SyncList<PuddleData> puddleDatas = new(Array.Empty<PuddleData>());
+    private readonly SyncList<PuddleData> puddleDatas = new(Array.Empty<PuddleData>());
 
     private List<GameObject> publeInstances = new();
 

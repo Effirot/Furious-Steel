@@ -109,7 +109,6 @@ namespace CharacterSystem.Objects
                 Debug.Log($"Weapon {weaponGameObject.name} NetworkIdentity was not founded");
             }
 
-            
             weaponGameObject.transform.SetParent(transform);
             NetworkServer.Spawn(weaponGameObject, connectionToClient);
             weaponIdentity.AssignClientAuthority(connectionToClient);
@@ -132,7 +131,10 @@ namespace CharacterSystem.Objects
                 return null;
 
             var trinketGameObject = Instantiate(trinketPrefab, transform);
-            trinketIdentity = trinketGameObject.GetComponent<NetworkIdentity>();
+            if (!trinketGameObject.TryGetComponent<NetworkIdentity>(out trinketIdentity))
+            {
+                Debug.Log($"Weapon {trinketGameObject.name} NetworkIdentity was not founded");
+            }
             
             trinketGameObject.transform.SetParent(transform);
             NetworkServer.Spawn(trinketGameObject, connectionToClient);
@@ -148,7 +150,7 @@ namespace CharacterSystem.Objects
 
         public override bool Hit(Damage damage)
         {
-            var isBlocked = Blocker != null && Blocker.Block(ref damage) || base.Hit(damage);
+            var isBlocked = Blocker != null && Blocker.CheckBlocking(ref damage) || base.Hit(damage);
 
             if (isBlocked)
             {                
@@ -324,7 +326,7 @@ namespace CharacterSystem.Objects
             Gizmos.DrawWireSphere(lookPoint, 0.2f);
         }
 
-        protected override void Dead()
+        protected override void Dead(Damage damage)
         {
             OnPlayerCharacterDead.Invoke(this);
 

@@ -77,13 +77,10 @@ namespace CharacterSystem.Attacks
 
         public void PlayForced()
         {
-            if (NetworkClient.active && !this.IsUnityNull())
-            {
-                base.Play();
-            }
+            base.Play();
         }
         public override void Play()
-        {            
+        {   
             if (IsActive)
             {
                 PlayForced();                
@@ -116,10 +113,8 @@ namespace CharacterSystem.Attacks
             }
         }
 
-        protected override void Start()
+        private void Start()
         {
-            base.Start();
-
             if (isServer && IsInterruptOnHit)
             {
                 Source.onDamageRecieved += (damage) => { 
@@ -132,7 +127,7 @@ namespace CharacterSystem.Attacks
         }     
         protected virtual void FixedUpdate()
         {
-            if (IsPressed && RestartWhenHolding)
+            if (IsPressed && RestartWhenHolding && isServer)
             {
                 Play();
             }

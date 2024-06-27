@@ -1,5 +1,4 @@
 
-
 using Cysharp.Threading.Tasks;
 using Mirror;
 using UnityEngine;
@@ -7,7 +6,7 @@ using UnityEngine;
 [RequireComponent(typeof(NetworkIdentity))]
 public class NetworkIdentityParentSync : NetworkBehaviour
 {
-    [SyncVar(hook = nameof(OnParentChanged))]
+    [SyncVar(hook = nameof(ParentChanged))]
     public NetworkIdentity networkParent;
     
     public override void OnStartServer()
@@ -17,11 +16,13 @@ public class NetworkIdentityParentSync : NetworkBehaviour
         UpdateParent();
     }
 
-    private void OnParentChanged(NetworkIdentity Old, NetworkIdentity New)
+    private void ParentChanged(NetworkIdentity Old, NetworkIdentity New)
     {
         if (isClient)
         {
             netIdentity.transform.SetParent(New?.transform ?? null, false);
+            
+            gameObject.SendMessageUpwards("OnParentChanged", New);
         }
     }
 

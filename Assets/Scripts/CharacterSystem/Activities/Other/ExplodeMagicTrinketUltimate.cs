@@ -13,6 +13,7 @@ using TMPro;
 using Unity.Cinemachine;
 using Mirror;
 using CharacterSystem.Effects;
+using CharacterSystem.Attacks;
 
 public class ExplodeMagicTrinketUltimate : UltimateDamageSource
 {
@@ -112,10 +113,8 @@ public class ExplodeMagicTrinketUltimate : UltimateDamageSource
         gameObject.GetComponent<CinemachineImpulseSource>()?.GenerateImpulse();   
     }    
 
-    protected override void Start()
+    public override void OnFindSource(IDamageSource damageSource)
     {
-        base.Start();
-
-        Source.onDamageDelivered += OnDamageDelivered_event;
+        damageSource.onDamageDelivered += OnDamageDelivered_event;
     }
 }

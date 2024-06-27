@@ -6,6 +6,7 @@ using CharacterSystem.Blocking;
 using CharacterSystem.DamageMath;
 using Cysharp.Threading.Tasks;
 using Mirror;
+using Org.BouncyCastle.Security;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
@@ -109,6 +110,16 @@ namespace CharacterSystem.Objects.AI
             SetDataToAICompute();
 
             AICompute?.OnValidate();
+
+            RemoveAllActivityesInput();
+        }
+
+        public void RemoveAllActivityesInput()
+        {
+            foreach (var activity in GetComponentsInChildren<SyncedActivitySource>())
+            {
+                activity.inputAction = null;
+            }
         }
 
         private void SetDataToAICompute()

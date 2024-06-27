@@ -20,17 +20,15 @@ public class AnimatorOverrider : MonoBehaviour
     private Animator lastAnimator;
     private AnimatorOverrideController localOverrider;
 
-
-#warning detecting parent changing
-    // public override void OnNetworkObjectParentChanged(NetworkObject parentNetworkObject)
-    // {
-    //     ClearAnimationOverrides();
-
-    //     if (parentNetworkObject == null) 
-    //         return;
+    private void OnParentChanged(NetworkIdentity networkIdentity)
+    {
+        ClearAnimationOverrides();
         
-    //     UpdateParent(parentNetworkObject.gameObject);
-    // }
+        if (networkIdentity == null) 
+            return;
+        
+        UpdateParent(networkIdentity.gameObject);
+    }
 
     private void Start()
     {

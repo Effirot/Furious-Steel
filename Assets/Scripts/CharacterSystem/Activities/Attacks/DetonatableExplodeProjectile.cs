@@ -47,7 +47,7 @@ public class DetonatableExplodeProjectile : ExplodeProjectile
             await UniTask.WaitForSeconds(random.Next(0, 200) / 1000f);
 
             Explode();
-            Kill();
+            Kill(default);
         }
     }
 }

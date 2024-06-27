@@ -27,11 +27,11 @@ public class ExplodeProjectile : Projectile
 
     private float explodeTimer = 0;
 
-    public override void Kill()
+    public override void Kill(Damage damage)
     {
         Explode();
 
-        base.Kill();
+        base.Kill(damage);
     }
 
     protected override void FixedUpdate()

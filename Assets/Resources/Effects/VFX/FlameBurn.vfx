@@ -90,6 +90,38 @@ MonoBehaviour:
     max: Infinity
     enumValues: []
     descendantCount: 0
+  - name: Color
+    path: Color
+    tooltip: 
+    space: -1
+    spaceable: 0
+    sheetType: m_Vector4f
+    realType: Color
+    defaultValue:
+      m_Type:
+        m_SerializableType: UnityEngine.Color, UnityEngine.CoreModule, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+      m_SerializableObject: '{"r":149.4228973388672,"g":13.548552513122559,"b":0.0,"a":1.0}'
+    min: -Infinity
+    max: Infinity
+    enumValues: []
+    descendantCount: 0
+  - name: SecondColor
+    path: SecondColor
+    tooltip: 
+    space: -1
+    spaceable: 0
+    sheetType: m_Vector4f
+    realType: Color
+    defaultValue:
+      m_Type:
+        m_SerializableType: UnityEngine.Color, UnityEngine.CoreModule, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+      m_SerializableObject: '{"r":23.294788360595704,"g":1.707471489906311,"b":0.0,"a":1.0}'
+    min: -Infinity
+    max: Infinity
+    enumValues: []
+    descendantCount: 0
   - name: FlamesCount
     path: FlamesCount
     tooltip: 
@@ -104,6 +136,22 @@ MonoBehaviour:
       m_SerializableObject: 48
     min: 0
     max: 64
+    enumValues: []
+    descendantCount: 0
+  - name: Gavity
+    path: Gavity
+    tooltip: 
+    space: -1
+    spaceable: 0
+    sheetType: m_Vector3f
+    realType: Vector3
+    defaultValue:
+      m_Type:
+        m_SerializableType: UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+      m_SerializableObject: '{"x":0.0,"y":23.899999618530275,"z":0.0}'
+    min: -Infinity
+    max: Infinity
     enumValues: []
     descendantCount: 0
   - name: DistortionPower
@@ -154,22 +202,6 @@ MonoBehaviour:
     max: Infinity
     enumValues: []
     descendantCount: 0
-  - name: Gavity
-    path: Gavity
-    tooltip: 
-    space: -1
-    spaceable: 0
-    sheetType: m_Vector3f
-    realType: Vector3
-    defaultValue:
-      m_Type:
-        m_SerializableType: UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0,
-          Culture=neutral, PublicKeyToken=null
-      m_SerializableObject: '{"x":0.0,"y":23.899999618530275,"z":0.0}'
-    min: -Infinity
-    max: Infinity
-    enumValues: []
-    descendantCount: 0
   - name: Size
     path: Size
     tooltip: 
@@ -186,22 +218,6 @@ MonoBehaviour:
     max: Infinity
     enumValues: []
     descendantCount: 0
-  - name: Color
-    path: Color
-    tooltip: 
-    space: -1
-    spaceable: 0
-    sheetType: m_Vector4f
-    realType: Color
-    defaultValue:
-      m_Type:
-        m_SerializableType: UnityEngine.Color, UnityEngine.CoreModule, Version=0.0.0.0,
-          Culture=neutral, PublicKeyToken=null
-      m_SerializableObject: '{"r":149.4228973388672,"g":13.548552513122559,"b":0.0,"a":1.0}'
-    min: -Infinity
-    max: Infinity
-    enumValues: []
-    descendantCount: 0
   - name: Lifetime
     path: Lifetime
     tooltip: 
@@ -214,22 +230,6 @@ MonoBehaviour:
         m_SerializableType: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
       m_SerializableObject: 0.05
-    min: -Infinity
-    max: Infinity
-    enumValues: []
-    descendantCount: 0
-  - name: SecondColor
-    path: SecondColor
-    tooltip: 
-    space: -1
-    spaceable: 0
-    sheetType: m_Vector4f
-    realType: Color
-    defaultValue:
-      m_Type:
-        m_SerializableType: UnityEngine.Color, UnityEngine.CoreModule, Version=0.0.0.0,
-          Culture=neutral, PublicKeyToken=null
-      m_SerializableObject: '{"r":23.294788360595704,"g":1.707471489906311,"b":0.0,"a":1.0}'
     min: -Infinity
     max: Infinity
     enumValues: []
@@ -754,7 +754,7 @@ MonoBehaviour:
   - {fileID: 8926484042661616335}
   m_ExposedName: FlamesCount
   m_Exposed: 1
-  m_Order: 1
+  m_Order: 3
   m_Category: 
   m_Min:
     m_Type:
@@ -1910,7 +1910,7 @@ MonoBehaviour:
   - {fileID: 8926484042661616841}
   m_ExposedName: Color
   m_Exposed: 1
-  m_Order: 7
+  m_Order: 1
   m_Category: 
   m_Min:
     m_Type:
@@ -2126,7 +2126,7 @@ MonoBehaviour:
   - {fileID: 8926484042661616847}
   m_ExposedName: SecondColor
   m_Exposed: 1
-  m_Order: 9
+  m_Order: 2
   m_Category: 
   m_Min:
     m_Type:
@@ -2342,7 +2342,7 @@ MonoBehaviour:
   - {fileID: 8926484042661616858}
   m_ExposedName: Lifetime
   m_Exposed: 1
-  m_Order: 8
+  m_Order: 9
   m_Category: 
   m_Min:
     m_Type:
@@ -2422,7 +2422,7 @@ MonoBehaviour:
   - {fileID: 8926484042661616860}
   m_ExposedName: Size
   m_Exposed: 1
-  m_Order: 6
+  m_Order: 8
   m_Category: 
   m_Min:
     m_Type:
@@ -2502,7 +2502,7 @@ MonoBehaviour:
   - {fileID: 8926484042661616862}
   m_ExposedName: FlameCurve
   m_Exposed: 1
-  m_Order: 4
+  m_Order: 7
   m_Category: 
   m_Min:
     m_Type:
@@ -2582,7 +2582,7 @@ MonoBehaviour:
   - {fileID: 8926484042661616864}
   m_ExposedName: Gavity
   m_Exposed: 1
-  m_Order: 5
+  m_Order: 4
   m_Category: 
   m_Min:
     m_Type:
@@ -2764,7 +2764,7 @@ MonoBehaviour:
   - {fileID: 8926484042661616869}
   m_ExposedName: FlameLength
   m_Exposed: 1
-  m_Order: 3
+  m_Order: 6
   m_Category: 
   m_Min:
     m_Type:
@@ -2844,7 +2844,7 @@ MonoBehaviour:
   - {fileID: 8926484042661616871}
   m_ExposedName: DistortionPower
   m_Exposed: 1
-  m_Order: 2
+  m_Order: 5
   m_Category: 
   m_Min:
     m_Type:

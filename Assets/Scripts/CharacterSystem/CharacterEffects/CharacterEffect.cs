@@ -75,7 +75,11 @@ namespace CharacterSystem.Effects
         public static void WriteCharacterEffect(this NetworkWriter writer, CharacterEffect value)
         {
             if (value == null)
+            {
+                writer.Write(-1);
+
                 return;
+            }
 
             writer.Write(value.indexOfEffect);
             writer.Write(value.effectSourceID);
@@ -89,6 +93,14 @@ namespace CharacterSystem.Effects
         public static CharacterEffect ReadCharacterEffect(this NetworkReader reader)
         {
             var index = reader.Read<int>();
+
+            if (index == -1)
+            {
+                Debug.Log("Null character effect");
+
+                return null;
+            }
+            
             var newEffectType = CharacterEffect.AllCharacterEffectTypes[index];
             var newEffectInstance = Activator.CreateInstance(newEffectType) as CharacterEffect;
 
@@ -99,7 +111,7 @@ namespace CharacterSystem.Effects
                 field.SetValue(newEffectInstance, reader.Read<object>());
             }
 
-            return new BurnEffect();
+            return newEffectInstance;
         }
     }
 }

@@ -6,6 +6,7 @@ using CharacterSystem.Objects;
 using Mirror;
 using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 using UnityEngine.UI;
 
 public interface IObservableObject
@@ -75,7 +76,34 @@ public class CharacterCameraObserver : MonoBehaviour
         }
         else
         {
-            ObservingObject = array[Random.Range(0, PlayerNetworkCharacter.Players.Count - 1)];
+            NextCharacter();
         }
+    }
+
+    private void NextCharacter()
+    {
+        var index = PlayerNetworkCharacter.Players.FindIndex(character => object.ReferenceEquals(character, PlayerNetworkCharacter.Players));
+        
+        if (index >= PlayerNetworkCharacter.Players.Count + 1)
+        {
+            index = 0;
+        }
+        else
+        {
+            index += 1;
+        }
+
+        if (index == -1)
+        {
+            ObservingObject = null;
+        }
+        else
+        {
+            ObservingObject = PlayerNetworkCharacter.Players[index];
+        }
+    }
+    private void LastCharacter()
+    {
+
     }
 }

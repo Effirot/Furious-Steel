@@ -16,10 +16,8 @@ public class PropertyRequiredDamageSource : DamageSource
 
     public override bool IsActive => base.IsActive && customProperty.Value >= MinRequiredValue;
 
-    protected override void Start()
+    private void Start()
     {
-        base.Start();
-
         customProperty.OnValueChanged.AddListener(value => {
             if (StopOnValueLessThenMinimum && value <= MinRequiredValue) {
                 Stop();

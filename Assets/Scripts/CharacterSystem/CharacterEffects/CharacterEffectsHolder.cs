@@ -80,57 +80,6 @@ namespace CharacterSystem.Effects
             }
         } 
 
-        private struct NetworkCharacterEffectData : IEquatable<NetworkCharacterEffectData>
-        {
-            public int EffectTypeId;
-
-            public uint EffectsSourceLink;
-
-            public IDamageSource EffectSource
-            {
-                get {
-
-                    var dictionary = NetworkServer.spawned;
-
-                    if (dictionary.ContainsKey(EffectsSourceLink) && dictionary[EffectsSourceLink].TryGetComponent<IDamageSource>(out var component))
-                    {
-                        return component;
-                    }
-                    
-                    return null;
-                }
-                set {
-                    EffectsSourceLink = value?.gameObject?.GetComponent<NetworkIdentity>()?.netId ?? uint.MinValue;
-                } 
-            }
-            public Type EffectType
-            {
-                get {
-                    return EffectTypeId < 0 || EffectTypeId >= CharacterEffect.AllCharacterEffectTypes.Length ? null : CharacterEffect.AllCharacterEffectTypes[EffectTypeId];
-                }
-                set{
-                    EffectTypeId = Array.IndexOf(CharacterEffect.AllCharacterEffectTypes, value);
-                } 
-            }
-
-            public NetworkCharacterEffectData(int TypeId, uint EffectsSourceLink)
-            {
-                this.EffectTypeId = TypeId;
-                this.EffectsSourceLink = EffectsSourceLink;
-            }
-            public NetworkCharacterEffectData(int TypeId, IDamageSource EffectsSource)
-            {
-                this.EffectTypeId = TypeId;
-                this.EffectsSourceLink = 0;
-                this.EffectSource = EffectsSource;
-            }
-
-            public bool Equals(NetworkCharacterEffectData other)
-            {
-                return EffectTypeId == other.EffectTypeId && EffectsSourceLink == other.EffectsSourceLink;
-            }
-        }
-
         [SerializeField]
         public SkinnedMeshRenderer characterSkinnedMeshRenderer;
 
@@ -139,15 +88,19 @@ namespace CharacterSystem.Effects
 
         public NetworkCharacter character { get; private set; }
 
-        private SyncList<NetworkCharacterEffectData> characterEffectIds_network = new ();
         private List<CharacterEffect> characterEffects = new();
         
         private Dictionary<CharacterEffect, CharacterGlowing> characterGlowings = new();
 
         public bool AddEffect (CharacterEffect effect)
         {
-            if (isServer)
+            if (effect != null)
             {
+                if (isServer)
+                {
+                    AddEffect_ClientRpc(effect);
+                }
+
                 var dublicate = characterEffects.Find(e => e.GetType() == effect.GetType());
                 if (dublicate != null) 
                 {
@@ -163,60 +116,80 @@ namespace CharacterSystem.Effects
 
                 effect.effectsHolder = this;
 
-                if (effect.Existance)
+                if (effect.Existance || !isServer)
                 {
                     characterEffects.Add(effect);
-                    
-                    characterEffectIds_network.Add(new (
-                        effect.indexOfEffect,
-                        effect.effectsSource));
                 
                     effect.IsValid = true;
                     effect.Start();
-
+                    
                     return true;
                 }
             }
 
             return false;
         }
+        public void RemoveEffect (CharacterEffect effect)
+        {
+            RemoveEffect(characterEffects.IndexOf(effect));
+        }
+        public void RemoveEffect (int effectIndex)
+        {
+            RemoveGlowing(characterEffects[effectIndex]);
+
+            characterEffects[effectIndex].IsValid = false;
+            characterEffects[effectIndex].Remove();
+            characterEffects.RemoveAt(effectIndex);
+
+            if (isServer)
+            {
+                RemoveEffect_ClientRpc(effectIndex);
+            }
+        }
 
         public void AddGlowing(CharacterEffect bindingEffect, Color color, float power)
         {
+#if !UNITY_SERVER || UNITY_EDITOR
             if (!characterGlowings.ContainsKey(bindingEffect))
             {
                 characterGlowings.Add(bindingEffect, new CharacterGlowing(color, power, GlowingShader, characterSkinnedMeshRenderer));
             }
+#endif
         }
         public void EditGlowing(CharacterEffect bindingEffect, Color color)
         {
+#if !UNITY_SERVER || UNITY_EDITOR
             if (characterGlowings.ContainsKey(bindingEffect))
             {
                 characterGlowings[bindingEffect].EditColor(color);
             }
+#endif
         }
         public void RemoveGlowing(CharacterEffect bindingEffect)
         {
+#if !UNITY_SERVER || UNITY_EDITOR
             if (characterGlowings.ContainsKey(bindingEffect))
             {
                 characterGlowings[bindingEffect].Remove();
                 characterGlowings.Remove(bindingEffect);
             }
+#endif
         }
 
-
-        private void Start ()
+        [ClientRpc]
+        private void AddEffect_ClientRpc(CharacterEffect effect)
         {
             if (!isServer)
             {
-                characterEffectIds_network.OnChange += OnListChanged_event;
+                AddEffect(effect);
             }
         }
-        private void OnDestroy ()
+        [ClientRpc]
+        private void RemoveEffect_ClientRpc(int effectIndex)
         {
             if (!isServer)
             {
-                characterEffectIds_network.OnChange -= OnListChanged_event;
+                RemoveEffect(effectIndex);
             }
         }
 
@@ -230,85 +203,13 @@ namespace CharacterSystem.Effects
             {
                 characterEffects[i].Update();
 
-                if (isServer)
+                if (isServer && !characterEffects[i].Existance)
                 {
-                    if (!characterEffects[i].Existance)
-                    {
-                        RemoveGlowing(characterEffects[i]);
-
-                        characterEffects[i].IsValid = false;
-                        characterEffects[i].Remove();
-                        characterEffects.RemoveAt(i);
-                        
-                        characterEffectIds_network.RemoveAt(i);
-                        
-                        i--;
-                    }
+                    RemoveEffect(i);
+                    
+                    i--;
                 }
             }
-        }
-
-        private void OnListChanged_event (SyncList<NetworkCharacterEffectData>.Operation operation, int index, NetworkCharacterEffectData networkCharacterEffectData)
-        {
-            switch (operation)
-            {
-                case SyncList<NetworkCharacterEffectData>.Operation.OP_ADD: 
-                    CharacterEffect instance = Activator.CreateInstance(networkCharacterEffectData.EffectType) as CharacterEffect;
-                    
-                    instance.effectsHolder = this;
-                    instance.effectsSource = networkCharacterEffectData.EffectSource;
-                    instance.IsValid = true;
-                    instance.Start();
-
-                    characterEffects.Insert(index, instance);
-                    break;
-
-                case SyncList<NetworkCharacterEffectData>.Operation.OP_INSERT:
-                    goto case SyncList<NetworkCharacterEffectData>.Operation.OP_ADD;
-
-                case SyncList<NetworkCharacterEffectData>.Operation.OP_REMOVEAT:
-                    var effect = characterEffects[index];
-
-                    RemoveGlowing(effect);
-                    effect.IsValid = false;
-                    effect.Remove();
-                    
-                    characterEffects.Remove(effect);
-                    break;
-
-                case SyncList<NetworkCharacterEffectData>.Operation.OP_SET: 
-                    break;
-
-                case SyncList<NetworkCharacterEffectData>.Operation.OP_CLEAR: 
-                    RemoveAll();
-                    break;
-            }
-        }
-
-        private void RefreshAll()
-        {
-            foreach (var item in characterEffectIds_network)
-            {
-                var type = CharacterEffect.AllCharacterEffectTypes[item.EffectTypeId];
-                var instance = Activator.CreateInstance(type) as CharacterEffect;
-                instance.effectsHolder = this;
-                instance.effectsSource = item.EffectSource;
-                instance.IsValid = true;
-                instance.Start();
-
-                characterEffects.Add(instance);
-            }
-        }
-        private void RemoveAll()
-        {
-            foreach (var item in characterEffects)
-            {
-                RemoveGlowing(item);
-
-                item.IsValid = false;
-                item.Remove();
-            }
-            characterEffects.Clear();
         }
 
         #if UNITY_EDITOR
@@ -319,15 +220,9 @@ namespace CharacterSystem.Effects
 
             SerializedProperty onListChangedEvent;
 
-            void OnEnable()
-            {
-                // onListChangedEvent = serializedObject.FindProperty("onListChanged");
-            }
-
             public override void OnInspectorGUI()
             {
                 base.OnInspectorGUI();
-                // EditorGUILayout.PropertyField(onListChangedEvent);
 
                 foreach (var value in target.characterEffects)
                 {

@@ -179,11 +179,10 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  IsPerforming: 1
+  isPerforming: 1
   inputAction: {fileID: 0}
   Priority: 2
   SpeedChange: 0
-  IsPressed: 0
   IsInterruptableWhenBlocked: 0
   IsInterruptOnHit: 1
   RestartWhenHolding: 1
@@ -449,6 +448,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
+      propertyPath: selfHeal.type
+      value: 32
+      objectReference: {fileID: 0}
+    - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
       propertyPath: AfterBlockTime
       value: 0.7
       objectReference: {fileID: 0}
@@ -457,16 +460,68 @@ PrefabInstance:
       value: 0.8
       objectReference: {fileID: 0}
     - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
+      propertyPath: selfHeal.value
+      value: -10
+      objectReference: {fileID: 0}
+    - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
       propertyPath: BeforeBlockTime
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
       propertyPath: BlockProcessTime
-      value: 0.2
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
+      propertyPath: backDamage.value
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
+      propertyPath: 'managedReferences[-2]'
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
+      propertyPath: selfHeal.pushDirection.y
+      value: 0.24
+      objectReference: {fileID: 0}
+    - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
+      propertyPath: selfHeal.pushDirection.z
+      value: -0.47
+      objectReference: {fileID: 0}
+    - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
+      propertyPath: backDamage.pushDirection.y
+      value: 0.76
+      objectReference: {fileID: 0}
+    - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
+      propertyPath: backDamage.pushDirection.z
+      value: 0.46
+      objectReference: {fileID: 0}
+    - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
+      propertyPath: backDamage.Effects.Array.size
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
       propertyPath: BeforeBlockCharacterPermissions
       value: 256
+      objectReference: {fileID: 0}
+    - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
+      propertyPath: 'backDamage.Effects.Array.data[0]'
+      value: 465147912337752184
+      objectReference: {fileID: 0}
+    - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
+      propertyPath: 'managedReferences[465147912337752184]'
+      value: Assembly-CSharp CharacterSystem.Effects.SlownessEffect
+      objectReference: {fileID: 0}
+    - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
+      propertyPath: managedReferences[465147912337752184].time
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
+      propertyPath: managedReferences[465147912337752184].force
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
+      propertyPath: managedReferences[465147912337752184].effectSourceID
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
       propertyPath: OnSuccesfulBlockingEvent.m_PersistentCalls.m_Calls.Array.size
@@ -538,9 +593,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e02cc2139c0c4704ca305884101e1c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
   TargetParentPath: ArmorModels/Armor_Armature/SpineCenter
   origin: {fileID: 3990853659444813445}
 --- !u!114 &2254239852142153775
@@ -555,9 +607,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91b59a25b78b63442bfa85d494b70054, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
   overrides:
   - Name: Blocking_OneHanded
     Clip: {fileID: 1167525259562148716, guid: 49a9270d79ae6ae47a418f511e4d2577, type: 3}

@@ -26,6 +26,6 @@ namespace CharacterSystem.DamageMath
         public bool Hit(Damage damage);
         public bool Heal(Damage damage);
 
-        public void Kill();
+        public void Kill(Damage damage);
     }
 }

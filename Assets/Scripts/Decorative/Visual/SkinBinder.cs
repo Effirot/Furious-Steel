@@ -19,6 +19,17 @@ public sealed class SkinBinder : MonoBehaviour
         Research(transform.parent.gameObject);
     }
 
+
+    private void OnParentChanged(NetworkIdentity networkIdentity)
+    {        
+        if (networkIdentity == null) 
+            return;
+        if (networkIdentity.transform.parent == null) 
+            return;
+        
+        Research(networkIdentity.transform.parent.gameObject);
+    }
+
     private void Research(GameObject target)
     {
         if (target != null)

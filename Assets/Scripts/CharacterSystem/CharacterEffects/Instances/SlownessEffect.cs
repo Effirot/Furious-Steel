@@ -16,7 +16,7 @@ namespace CharacterSystem.Effects
         public SlownessEffect() { }
         public SlownessEffect(float Time, float force)
         {
-        time = Time;
+            time = Time;
         }
 
         public override void Start()

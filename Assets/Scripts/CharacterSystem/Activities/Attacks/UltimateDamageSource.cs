@@ -22,18 +22,6 @@ public class UltimateDamageSource : DamageSource
 
     public override bool IsActive => base.IsActive && chargeValue.Value >= chargeValue.MaxValue;
 
-    protected override void Start()
-    {
-        base.Start();
-
-        chargeValue = GetComponent<CustomProperty>();
-        chargeValue.IsActive = !HasOverrides();
-
-        if (NetworkManager.singleton.isNetworkActive)
-        {
-            Source.onDamageDelivered += OnDamageDelivered_Event;    
-        }
-    }
     protected override void OnDestroy()
     {
         base.OnDestroy();
@@ -57,6 +45,17 @@ public class UltimateDamageSource : DamageSource
         }
     }
 
+    private void Start()
+    {
+        chargeValue = GetComponent<CustomProperty>();
+        chargeValue.IsActive = !HasOverrides();
+
+        if (NetworkManager.singleton.isNetworkActive)
+        {
+            Source.onDamageDelivered += OnDamageDelivered_Event;    
+        }
+    }
+    
     private void OnDamageDelivered_Event(DamageDeliveryReport report)
     {
         if (report.isDelivered && 

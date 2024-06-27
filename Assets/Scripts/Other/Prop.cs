@@ -62,7 +62,7 @@ public class Prop : NetworkBehaviour,
         return false;
     }
 
-    public void Kill()
+    public void Kill(Damage damage)
     {
         Destroy(gameObject);
     }

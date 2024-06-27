@@ -14,15 +14,6 @@ using Mirror;
 
 public class DedicateServerManager : MonoBehaviour
 {
-
-    private static void StartServerOnLoad_Event(Scene scene, LoadSceneMode mode)
-    {
-        NetworkManager.singleton.StartServer();
-        Debug.Log("Server was Started");
-
-        SceneManager.sceneLoaded -= StartServerOnLoad_Event;
-    }
-
 #if !UNITY_SERVER || UNITY_EDITOR
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void OnStartClient()
@@ -38,7 +29,6 @@ public class DedicateServerManager : MonoBehaviour
 
         Debug.Log("LoadingScene " + System.Environment.GetCommandLineArgs()[1]);
         
-        SceneManager.sceneLoaded += StartServerOnLoad_Event;
         SceneManager.LoadScene(System.Environment.GetCommandLineArgs()[1]);
     }
 #endif

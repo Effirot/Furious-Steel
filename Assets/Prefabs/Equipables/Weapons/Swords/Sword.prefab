@@ -87,7 +87,7 @@ MonoBehaviour:
   inputAction: {fileID: 2243838571553120747, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 2
   SpeedChange: 0
-  IsPressed: 0
+  isPressed: 0
   IsInterruptableWhenBlocked: 1
   IsInterruptOnHit: 1
   RestartWhenHolding: 1
@@ -641,7 +641,7 @@ MonoBehaviour:
   inputAction: {fileID: 2243838571553120747, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 2
   SpeedChange: 0
-  IsPressed: 0
+  isPressed: 0
   IsInterruptableWhenBlocked: 1
   IsInterruptOnHit: 1
   RestartWhenHolding: 1
@@ -1568,7 +1568,7 @@ MonoBehaviour:
   inputAction: {fileID: -697749738134341483, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 2
   SpeedChange: 0
-  IsPressed: 0
+  isPressed: 0
   IsInterruptableWhenBlocked: 0
   IsInterruptOnHit: 0
   RestartWhenHolding: 1
@@ -1841,7 +1841,7 @@ MonoBehaviour:
   inputAction: {fileID: 5277666054227158027, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 2
   SpeedChange: 0
-  IsPressed: 0
+  isPressed: 0
   IsInterruptableWhenBlocked: 1
   IsInterruptOnHit: 0
   RestartWhenHolding: 1
@@ -1854,6 +1854,7 @@ MonoBehaviour:
   - rid: 868176892238758014
   - rid: 6352953196298371167
   - rid: 8630937996126060644
+  - rid: 465147912337752162
   - rid: 6352953196298371242
   - rid: 8630937996126060730
   OnDamageReport:
@@ -1877,6 +1878,11 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: 465147912337752162
+      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        WaitTime: 0.1
+        Permissions: 19712
     - rid: 868176892238758012
       type: {class: PlayAnimation, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
@@ -2005,7 +2011,7 @@ MonoBehaviour:
     - rid: 8630937996126060644
       type: {class: WaitForGroudpound, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        Permissions: 57088
+        Permissions: 19712
         Reverse: 0
     - rid: 8630937996126060730
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
@@ -2467,7 +2473,7 @@ MonoBehaviour:
   inputAction: {fileID: 0}
   Priority: 2
   SpeedChange: 0
-  IsPressed: 0
+  isPressed: 0
   IsInterruptableWhenBlocked: 0
   IsInterruptOnHit: 1
   RestartWhenHolding: 1

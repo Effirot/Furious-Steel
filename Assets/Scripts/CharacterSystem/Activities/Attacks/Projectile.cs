@@ -97,7 +97,7 @@ public class Projectile : NetworkBehaviour,
     {
         onDamageRecieved?.Invoke(damage);
 
-        Kill();
+        Kill(damage);
 
         return false;
     }
@@ -110,7 +110,7 @@ public class Projectile : NetworkBehaviour,
         MoveDirection = direction;
     }
 
-    public virtual void Kill ()
+    public virtual void Kill (Damage damage)
     {
         NetworkServer.Destroy(gameObject);
     }
@@ -130,7 +130,7 @@ public class Projectile : NetworkBehaviour,
 
         if (!this.IsUnityNull())
         {
-            Kill ();
+            Kill (default);
         }
     }
     protected virtual void OnDestroy()
@@ -207,7 +207,7 @@ public class Projectile : NetworkBehaviour,
             }
             else
             {
-                Kill();
+                Kill(default);
             }
         }
 
@@ -220,7 +220,7 @@ public class Projectile : NetworkBehaviour,
         {
             if (DamageOnHit)
             {
-                Kill();
+                Kill(default);
             }
             else
             {

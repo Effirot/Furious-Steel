@@ -16,12 +16,6 @@ public class NetworkConnect : MonoBehaviour
 
     private static NetworkManager NetworkManager => NetworkManager.singleton;
 
-    private static void OnCharacterDisconnected_Event()
-    {
-        SceneManager.LoadScene(0);
-
-        NetworkClient.OnDisconnectedEvent -= OnCharacterDisconnected_Event;
-    }
     private static void StartHostOnLoad_Event(Scene scene, LoadSceneMode mode)
     {
         NetworkManager.StartHost();
@@ -38,8 +32,6 @@ public class NetworkConnect : MonoBehaviour
         if (NetworkClient.isConnected)
         {
             OnSuccesfullyConnect.Invoke();
-
-            NetworkClient.OnDisconnectedEvent += OnCharacterDisconnected_Event;
         }
         else
         {

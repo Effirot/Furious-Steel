@@ -92,7 +92,7 @@ namespace CharacterSystem.DamageMath
 
                 if (report.isLethal)
                 {
-                    target.Kill();
+                    target.Kill(damage);
                 }
             }
             catch (Exception e)

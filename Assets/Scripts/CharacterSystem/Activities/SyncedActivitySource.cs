@@ -46,7 +46,7 @@ public abstract class SyncedActivitySource : NetworkBehaviour
     public bool isPerforming = true;
 
     [SerializeField]
-    private InputActionReference inputAction;
+    public InputActionReference inputAction;
 
     [SerializeField]
     private SyncedActivityPriority Priority = SyncedActivityPriority.Normal;
@@ -67,13 +67,28 @@ public abstract class SyncedActivitySource : NetworkBehaviour
 
     private CharacterPermission permissions = CharacterPermission.Default;  
 
-    [HideInInspector, SyncVar(hook = nameof(OnStateChangedHook))]
-    public bool IsPressed;
-
     [HideInInspector]
     public ISyncedActivitiesSource Source;
-    
 
+    public bool IsPressed {
+        get => isPressed;
+        set {
+            if (isServer)
+            {
+                isPressed = value;
+            }
+            else
+            {
+                if (!this.IsUnityNull() && NetworkClient.active)
+                {
+                    SetPressState(value);
+                }
+            }
+        }
+    }
+
+    [SyncVar(hook = nameof(OnStateChangedHook))]
+    private bool isPressed;
 
     public bool IsInProcess => process != null;
     
@@ -93,38 +108,43 @@ public abstract class SyncedActivitySource : NetworkBehaviour
                 activity => 
                     activity.inputAction == inputAction && 
                     (int)activity.Priority > (int)Priority &&
-                    System.Object.ReferenceEquals(activity.Source, Source) && 
-                    !activity.Source.IsUnityNull() &&
+                    System.Object.ReferenceEquals(activity.Source, Source) &&
                     activity.isPerforming);
         }
 
         return !syncedActivityOverrider.IsUnityNull();
     }    
 
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+
+        Subscribe();
+    }
+    public override void OnStopClient()
+    {
+        base.OnStopClient();
+
+        Unsubscribe();
+    }
+
     protected virtual void Awake()
     {
         Register();
     }
-    protected virtual void Start()
-    {
-        Subscribe();
-    }
     protected virtual void OnDestroy()
     {
         regsitredSyncedActivities.Remove(this);
-
-        Unsubscribe();
     }
-    
-    [TargetRpc]
+
+
     public virtual void Play()
     {
         if (!IsInProcess)
         {
-            if (process != null)
+            if (isServer)
             {
-                StopCoroutine(process);
-                process = null;
+                Play_ClientRpc();
             }
 
             process = StartCoroutine(ProcessRoutine());
@@ -140,11 +160,15 @@ public abstract class SyncedActivitySource : NetworkBehaviour
             Stop(true);
         }
     }   
-    [TargetRpc]
     public virtual void Stop(bool interuptProcess)
     {
         if (IsInProcess)
         {
+            if (isServer && isClient!)
+            {
+                Stop_ClientRpc();
+            }
+            
             permissions = CharacterPermission.Default;
             
             if (interuptProcess)
@@ -163,7 +187,7 @@ public abstract class SyncedActivitySource : NetworkBehaviour
 
     protected virtual void OnStateChanged(bool IsPressed)
     {
-        if (!HasOverrides() && NetworkClient.active && IsPressed && !this.IsUnityNull())
+        if (isServer && !HasOverrides() && IsPressed && !this.IsUnityNull())
         {
             Play();
         }
@@ -174,6 +198,8 @@ public abstract class SyncedActivitySource : NetworkBehaviour
         yield return Process();
 
         Stop(false);
+
+        process = null;
     }
 
     private void Register ()
@@ -206,7 +232,7 @@ public abstract class SyncedActivitySource : NetworkBehaviour
     {        
         if (isOwned && inputAction != null)
         {
-            inputAction.action.Enable();
+            inputAction.action.Disable();
             inputAction.action.started -= OnInputPressStateChanged_Event;
             inputAction.action.performed -= OnInputPressStateChanged_Event;
             inputAction.action.canceled -= OnInputPressStateChanged_Event;
@@ -215,18 +241,42 @@ public abstract class SyncedActivitySource : NetworkBehaviour
 
     private void OnInputPressStateChanged_Event(CallbackContext callback)
     {
-        SetPressState(callback.ReadValueAsButton());
+        IsPressed = callback.ReadValueAsButton(); 
     }
     private void OnStateChangedHook(bool Old, bool New)
     {
-        if (HasOverrides()) return;
+        if (HasOverrides()) 
+            return;
+
         OnStateChanged(New);
+    }
+
+    [ClientRpc]
+    private void Play_ClientRpc()
+    {
+        if (!isServer)
+        {
+            Play();
+        }
+    }
+    [ClientRpc]
+    private void Stop_ClientRpc()
+    {
+        if (!isServer)
+        {
+            Stop();
+        }
     }
 
     [Client, Command]
     private void SetPressState(bool value)
     {
-        IsPressed = value;
+        if (isPressed != value && !isClient)
+        {
+            OnStateChanged(value);
+        }
+
+        isPressed = value;
     }
 }
 
@@ -239,7 +289,7 @@ public sealed class SyncedActivitiesList :
         Add,
         Remove
     }
-    
+
 
     public event OnSyncedActivityListChangedDelegate onSyncedActivityListChanged;
 
