@@ -179,7 +179,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  isPerforming: 1
+  isPerforming: 0
   inputAction: {fileID: 0}
   Priority: 2
   SpeedChange: 0
@@ -187,7 +187,9 @@ MonoBehaviour:
   IsInterruptOnHit: 1
   RestartWhenHolding: 1
   attackQueue:
+  - rid: 465147985859969102
   - rid: 2961813231421882371
+  - rid: 465147985859969102
   OnDamageReport:
     m_PersistentCalls:
       m_Calls: []
@@ -197,6 +199,11 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: 465147985859969102
+      type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
+      data:
+        WaitTime: 0.1
+        Permissions: 0
     - rid: 2961813231421882371
       type: {class: Cast, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
@@ -469,7 +476,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
       propertyPath: BlockProcessTime
-      value: 0.3
+      value: 0.21
       objectReference: {fileID: 0}
     - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
       propertyPath: backDamage.value
@@ -493,7 +500,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
       propertyPath: backDamage.pushDirection.z
-      value: 0.46
+      value: 0.64
       objectReference: {fileID: 0}
     - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
       propertyPath: backDamage.Effects.Array.size
@@ -513,7 +520,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
       propertyPath: managedReferences[465147912337752184].time
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 9166287497815280214, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
       propertyPath: managedReferences[465147912337752184].force
@@ -570,6 +577,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1101929112142831499, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6384283278851858717}
+    - targetCorrespondingSourceObject: {fileID: 1101929112142831499, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1721807869723039341}
   m_SourcePrefab: {fileID: 100100000, guid: 5f467602fd296d04dbcedc38f2a9e629, type: 3}
 --- !u!4 &2970410977556372486 stripped
 Transform:
@@ -627,3 +637,19 @@ MonoBehaviour:
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
+--- !u!114 &1721807869723039341
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5302916356213056320}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32e83e68725eb8e4db40d9b3a73c090e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  networkParent: {fileID: 0}

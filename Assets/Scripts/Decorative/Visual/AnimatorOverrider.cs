@@ -22,10 +22,11 @@ public class AnimatorOverrider : MonoBehaviour
 
     private void OnParentChanged(NetworkIdentity networkIdentity)
     {
-        ClearAnimationOverrides();
         
         if (networkIdentity == null) 
             return;
+            
+        ClearAnimationOverrides();
         
         UpdateParent(networkIdentity.gameObject);
     }

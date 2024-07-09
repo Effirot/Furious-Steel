@@ -113,8 +113,8 @@ public class ExplodeMagicTrinketUltimate : UltimateDamageSource
         gameObject.GetComponent<CinemachineImpulseSource>()?.GenerateImpulse();   
     }    
 
-    public override void OnFindSource(IDamageSource damageSource)
+    private void Start()
     {
-        damageSource.onDamageDelivered += OnDamageDelivered_event;
+        Source.onDamageDelivered += OnDamageDelivered_event;
     }
 }

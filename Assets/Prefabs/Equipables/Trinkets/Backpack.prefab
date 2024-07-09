@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2682705565289463711}
   - component: {fileID: 5965746403646386804}
+  - component: {fileID: 3401314902739035748}
   m_Layer: 6
   m_Name: Backpack
   m_TagString: Weapon
@@ -50,6 +51,22 @@ MonoBehaviour:
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
+--- !u!114 &3401314902739035748
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1517727645108543378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32e83e68725eb8e4db40d9b3a73c090e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  networkParent: {fileID: 0}
 --- !u!1 &8728585015151814461
 GameObject:
   m_ObjectHideFlags: 0
@@ -99,11 +116,10 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  IsPerforming: 1
+  isPerforming: 1
   inputAction: {fileID: -8254143158167318630, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 3
   SpeedChange: 0
-  IsPressed: 0
 --- !u!135 &178445117828346440
 SphereCollider:
   m_ObjectHideFlags: 0

@@ -25,7 +25,7 @@ namespace CharacterSystem.Effects
             return array.ToArray();
         }
 
-        public int indexOfEffect => Array.IndexOf(AllCharacterEffectTypes, this.GetType());
+        public int indexOfEffectType => Array.IndexOf(AllCharacterEffectTypes, this.GetType());
 
         public bool isServer => effectsHolder.isServer;
         public bool isClient => effectsHolder.isClient;
@@ -33,7 +33,7 @@ namespace CharacterSystem.Effects
         public CharacterEffectsHolder effectsHolder { get; internal set; }
         public IDamageSource effectsSource { 
             get {
-                if (NetworkServer.spawned.Count > effectSourceID && effectSourceID != 0)
+                if (NetworkServer.spawned.Count >= effectSourceID && effectSourceID != 0)
                 {
                     return NetworkServer.spawned[effectSourceID].GetComponent<IDamageSource>();
                 }
@@ -57,6 +57,7 @@ namespace CharacterSystem.Effects
         public virtual void Start() { }
         public virtual void Update() { }
         public virtual void Remove() { }
+        
         public virtual void AddDublicate(CharacterEffect effect) { }
 
         public override string ToString()
@@ -81,7 +82,7 @@ namespace CharacterSystem.Effects
                 return;
             }
 
-            writer.Write(value.indexOfEffect);
+            writer.Write(value.indexOfEffectType);
             writer.Write(value.effectSourceID);
 
             foreach(var field in value.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.GetField | BindingFlags.SetField))

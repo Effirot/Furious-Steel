@@ -103,7 +103,7 @@ public class RoomManager : NetworkManager
         }
 
         connectionData.Clear();
-    } 
+    }
 
     public override async void OnServerConnect(NetworkConnectionToClient conn)
     {

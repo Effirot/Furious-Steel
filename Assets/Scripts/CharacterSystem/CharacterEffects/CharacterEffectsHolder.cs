@@ -10,8 +10,6 @@ using Unity.Collections;
 using Cysharp.Threading.Tasks;
 using Mirror;
 
-
-
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -62,6 +60,10 @@ namespace CharacterSystem.Effects
             public async void Remove()
             {
                 var materialLink = material;
+
+                if (materialLink == null)
+                    return;
+
                 var color = materialLink.GetColor("_Color");
 
                 while (materialLink != null && color.a > 0.05f)
@@ -94,36 +96,35 @@ namespace CharacterSystem.Effects
 
         public bool AddEffect (CharacterEffect effect)
         {
-            if (effect != null)
+            if (effect == null)
+                return false;
+            
+            effect.effectsHolder = this;
+
+            if (isServer)
             {
-                if (isServer)
-                {
-                    AddEffect_ClientRpc(effect);
-                }
+                AddEffect_ClientRpc(effect);
+            }
 
-                var dublicate = characterEffects.Find(e => e.GetType() == effect.GetType());
-                if (dublicate != null) 
-                {
-                    if (effect.effectsSource != null)
-                    {
-                        dublicate.effectsSource = effect.effectsSource;
-                    }
+            var dublicate = characterEffects.Find(e => e.GetType() == effect.GetType());
 
+            if (dublicate == null && (effect.Existance || !isServer)) 
+            {
+                characterEffects.Add(effect);
+            
+                effect.IsValid = true;
+                effect.Start();
+                
+                return true;
+            }
+            else
+            {
+                if (dublicate != null)
+                {
+                    dublicate.effectsSource = effect.effectsSource;
                     dublicate.AddDublicate(effect);
 
                     return false;
-                }
-
-                effect.effectsHolder = this;
-
-                if (effect.Existance || !isServer)
-                {
-                    characterEffects.Add(effect);
-                
-                    effect.IsValid = true;
-                    effect.Start();
-                    
-                    return true;
                 }
             }
 
@@ -131,19 +132,20 @@ namespace CharacterSystem.Effects
         }
         public void RemoveEffect (CharacterEffect effect)
         {
-            RemoveEffect(characterEffects.IndexOf(effect));
+            RemoveEffect(effect.indexOfEffectType);
         }
-        public void RemoveEffect (int effectIndex)
+        public void RemoveEffect (int effectTypeIndex)
         {
-            RemoveGlowing(characterEffects[effectIndex]);
+            var effect = characterEffects.Find(effect => effect.indexOfEffectType == effectTypeIndex);
+            RemoveGlowing(effect);
 
-            characterEffects[effectIndex].IsValid = false;
-            characterEffects[effectIndex].Remove();
-            characterEffects.RemoveAt(effectIndex);
+            effect.IsValid = false;
+            effect.Remove();
+            characterEffects.Remove(effect);
 
             if (isServer)
             {
-                RemoveEffect_ClientRpc(effectIndex);
+                RemoveEffect_ClientRpc(effectTypeIndex);
             }
         }
 
@@ -168,7 +170,7 @@ namespace CharacterSystem.Effects
         public void RemoveGlowing(CharacterEffect bindingEffect)
         {
 #if !UNITY_SERVER || UNITY_EDITOR
-            if (characterGlowings.ContainsKey(bindingEffect))
+            if (bindingEffect != null && characterGlowings.ContainsKey(bindingEffect))
             {
                 characterGlowings[bindingEffect].Remove();
                 characterGlowings.Remove(bindingEffect);
@@ -205,7 +207,7 @@ namespace CharacterSystem.Effects
 
                 if (isServer && !characterEffects[i].Existance)
                 {
-                    RemoveEffect(i);
+                    RemoveEffect(characterEffects[i].indexOfEffectType);
                     
                     i--;
                 }

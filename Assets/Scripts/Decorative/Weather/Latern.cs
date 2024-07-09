@@ -1,5 +1,6 @@
 
 
+using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(Light))]
@@ -20,11 +21,10 @@ public class CharacterLatern : MonoBehaviour
     }
     private void LateUpdate()
     {
-#warning mak weather manager
-        // Light.intensity = Mathf.Lerp (
-        //     Light.intensity, 
-        //     WeatherManager.Singleton.LaternsEnabled ? 
-        //         (stealth != null && stealth.IsHidden ? (stealth.IsOwner ? intensity / 3 : 0) : intensity) : 0, 
-        //     3 * Time.deltaTime);
+        Light.intensity = Mathf.Lerp (
+            Light.intensity, 
+            !WeatherManager.Singleton.IsUnityNull() && WeatherManager.Singleton.laternState ? 
+                (stealth != null && stealth.IsHidden ? (stealth.isOwned ? intensity / 3 : 0) : intensity) : 0, 
+            3 * Time.deltaTime);
     }
 }

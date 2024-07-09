@@ -35,15 +35,6 @@ namespace CharacterSystem.Attacks
     [DisallowMultipleComponent]
     public class DamageSource : SyncedActivitySource<IDamageSource>
     {
-        [Flags]
-        public enum AdditiveExecutingConditions
-        {
-            OnInitialize,
-            OnHit,
-            OnDespawn,
-        }
-
-
         [Space]
         [SerializeField]
         private bool IsInterruptableWhenBlocked = false;

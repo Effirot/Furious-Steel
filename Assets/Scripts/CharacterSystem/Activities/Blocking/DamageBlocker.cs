@@ -80,14 +80,14 @@ namespace CharacterSystem.Blocking
 
         public virtual bool CheckBlocking(ref Damage damage)
         {            
-            if (damage.type == Damage.Type.Effect) 
+            if (damage.type == Damage.Type.Effect || 
+                damage.type == Damage.Type.Parrying || 
+                damage.type == Damage.Type.Unblockable) 
                 return false;
 
             if (!damage.sender.IsUnityNull() &&
                 IsBlockActive && 
-                Vector3.Angle(transform.forward, damage.sender.transform.position - transform.position) < blockingDegree && 
-                damage.type != Damage.Type.Parrying && 
-                damage.type != Damage.Type.Unblockable)
+                Vector3.Angle(transform.forward, damage.sender.transform.position - transform.position) < blockingDegree)
             {
                 if (isServer)
                 {
@@ -111,7 +111,6 @@ namespace CharacterSystem.Blocking
 
             return false;
 
-
             void SkipBlock()
             {
                 if (InterruptOnHit)
@@ -120,28 +119,26 @@ namespace CharacterSystem.Blocking
 
                     IsBlockActive = false;
                     Permissions = AfterBlockCharacterPermissions;
+
+                    OnAfterBlockingEvent.Invoke();
                 }
             }
-        
             async void LateDamageDelivery(Damage damage)
             {
+                await UniTask.WaitForFixedUpdate();
+                
                 var blockDamage = backDamage;
-
                 blockDamage.sender = Source;
                 blockDamage.pushDirection = -damage.pushDirection;
-                blockDamage.pushDirection += transform.rotation * backDamage.pushDirection;
+                blockDamage.pushDirection = transform.rotation * backDamage.pushDirection;
                 blockDamage.type = Damage.Type.Parrying;
                 
                 var selfDamage = selfHeal;
-
                 selfDamage.sender = Source;
-                selfDamage.pushDirection += transform.rotation * selfHeal.pushDirection;
+                selfDamage.pushDirection = transform.rotation * selfHeal.pushDirection;
                 selfDamage.type = Damage.Type.Parrying;
-                
-                await UniTask.WaitForFixedUpdate();
 
                 Damage.Deliver(damage.sender, blockDamage);
-
                 Damage.Deliver(Source, selfDamage);
             }
         }

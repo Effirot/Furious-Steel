@@ -50,16 +50,15 @@ namespace CharacterSystem.Effects
         public override void AddDublicate(CharacterEffect effect)
         {
             var speedEffect = (SpeedBoostEffect)effect;
-            
 
             var deltaForce = Mathf.Max(force, speedEffect.force);
             deltaForce -= force;
 
             force += deltaForce;
+            
             effectsHolder.character.Speed += deltaForce;
             time = Mathf.Max(time, speedEffect.time);
         }
-
 
         private void AddVisualEffect()
         {
@@ -86,10 +85,9 @@ namespace CharacterSystem.Effects
             }
         }
 
-
         public override string ToString()
         {
-            return base.ToString() + " - " + time;
+            return base.ToString() + " - " + force + " - " + time;
         }
     }
 }

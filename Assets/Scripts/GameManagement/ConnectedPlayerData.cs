@@ -78,6 +78,7 @@ public class ConnectedPlayerData : NetworkBehaviour
 
     public static ConnectedPlayerData Local => All.Find(data => data.isOwned); 
 
+
     [SyncVar(hook = nameof(OnNameChanged))]
     public string Name;
     
@@ -154,7 +155,6 @@ public class ConnectedPlayerData : NetworkBehaviour
             }
         }
     }
-
     
     private PlayerNetworkCharacter SpawnCharacter (Item item, NetworkConnectionToClient networkConnection)
     {
@@ -179,5 +179,4 @@ public class ConnectedPlayerData : NetworkBehaviour
 
         return characterGameObject.GetComponent<PlayerNetworkCharacter>();
     }
-
 }

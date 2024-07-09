@@ -1,0 +1,6 @@
+
+
+public class Mana : CustomProperty
+{
+    
+}

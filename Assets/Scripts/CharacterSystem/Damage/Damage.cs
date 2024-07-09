@@ -295,7 +295,15 @@ namespace CharacterSystem.DamageMath
                 return null;
             }
             set{
-                targetID = value?.gameObject?.GetComponent<NetworkIdentity>()?.netId ?? uint.MinValue;
+                if (!value.IsUnityNull() && value.gameObject.TryGetComponent<NetworkIdentity>(out var identity))
+                {
+                    targetID = identity.netId;
+                }
+                else
+                {
+                    targetID = uint.MinValue;
+                }
+
             } 
         }
 

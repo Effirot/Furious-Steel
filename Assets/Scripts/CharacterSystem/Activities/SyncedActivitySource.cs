@@ -53,7 +53,7 @@ public abstract class SyncedActivitySource : NetworkBehaviour
 
     [SerializeField, Range(-4, 10)]
     public float SpeedChange = 0;
-    
+
     public CharacterPermission Permissions { 
         get => permissions;
         set {
@@ -91,7 +91,7 @@ public abstract class SyncedActivitySource : NetworkBehaviour
     private bool isPressed;
 
     public bool IsInProcess => process != null;
-    
+
     private SyncedActivitySource syncedActivityOverrider;
 
     private Coroutine process = null;
@@ -147,7 +147,7 @@ public abstract class SyncedActivitySource : NetworkBehaviour
                 Play_ClientRpc();
             }
 
-            process = StartCoroutine(ProcessRoutine());
+            process = StartCoroutine(SubProcessRoutine());
 
             Source?.activities.Add(this);            
         }
@@ -155,16 +155,13 @@ public abstract class SyncedActivitySource : NetworkBehaviour
 
     public void Stop()
     {
-        if (NetworkClient.active)
-        {
-            Stop(true);
-        }
+        Stop(true);
     }   
     public virtual void Stop(bool interuptProcess)
     {
         if (IsInProcess)
         {
-            if (isServer && isClient!)
+            if (isServer)
             {
                 Stop_ClientRpc();
             }
@@ -183,6 +180,7 @@ public abstract class SyncedActivitySource : NetworkBehaviour
         }
     }
 
+
     public abstract IEnumerator Process();
 
     protected virtual void OnStateChanged(bool IsPressed)
@@ -193,7 +191,7 @@ public abstract class SyncedActivitySource : NetworkBehaviour
         }
     }
 
-    private IEnumerator ProcessRoutine()
+    private IEnumerator SubProcessRoutine()
     {
         yield return Process();
 

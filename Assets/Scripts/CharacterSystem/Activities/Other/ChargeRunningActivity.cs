@@ -226,7 +226,7 @@ public class ChargeRunningActivity : SyncedActivitySource<PlayerNetworkCharacter
     {
         return Source.characterController.velocity.magnitude <= stuckThresold;
     }
-    [Server, Command]
+    
     private void Explode()
     {
         onExplode.Invoke();
@@ -248,12 +248,11 @@ public class ChargeRunningActivity : SyncedActivitySource<PlayerNetworkCharacter
 
     private void FixedUpdate()
     {
-        if (isLocalPlayer && IsPressed)
+        if (isOwned && IsPressed)
         {
-            network_internal_lookVector = Source.internalLookVector;
+            SetLookVector(Source.internalLookVector);
         }  
     }
-   
     private void Start()
     {
         Source.isGroundedEvent += (state) => {
@@ -281,5 +280,11 @@ public class ChargeRunningActivity : SyncedActivitySource<PlayerNetworkCharacter
 
         Gizmos.DrawWireCube(colliderOffset, colliderScale);
         Gizmos.DrawWireSphere(Vector3.zero, explodeRange);
+    }
+
+    [Command]
+    private void SetLookVector(Vector2 value)
+    {
+        network_internal_lookVector = value;
     }
 }

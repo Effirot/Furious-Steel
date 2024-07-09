@@ -4,6 +4,7 @@ using Mirror;
 using UnityEngine;
 
 [RequireComponent(typeof(NetworkIdentity))]
+[DisallowMultipleComponent]
 public class NetworkIdentityParentSync : NetworkBehaviour
 {
     [SyncVar(hook = nameof(ParentChanged))]

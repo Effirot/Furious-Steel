@@ -171,7 +171,17 @@ namespace CharacterSystem.Objects
                     }
                     else
                     {
-                        combo = Mathf.Min(combo + 1, 30);
+                        if (report.target is NetworkCharacter)
+                        {
+                            var newCombo = Mathf.Clamp(combo + 1, 0, 30);
+                            
+                            if (isServerOnly)
+                            {
+                                OnComboChanged(combo, newCombo);
+                            }
+                            
+                            combo = newCombo;
+                        }
                     }
                 }
                 

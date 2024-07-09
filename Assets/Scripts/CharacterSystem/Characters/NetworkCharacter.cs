@@ -13,6 +13,7 @@ using Unity.VisualScripting;
 using Unity.Cinemachine;
 using Cysharp.Threading.Tasks;
 using CharacterSystem.Effects;
+using CharacterSystem.Attacks;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -105,6 +106,7 @@ namespace CharacterSystem.Objects
         public event Action<bool> isGroundedEvent = delegate { };
         public event Action onJumpEvent = delegate { };
         public event Action<bool> onStunStateChanged = delegate { };
+        public event Action<DamageDeliveryReport, DamageDeliveryReport> onWallHit = delegate { };
         
         [HideInInspector, SyncVar(hook = nameof(OnPermissionsChanged))]
         public CharacterPermission permissions = CharacterPermission.Default;
@@ -147,6 +149,8 @@ namespace CharacterSystem.Objects
                 {
                     if (isOwned)
                     {
+                        local_move_direction = value;
+
                         SetMovementDirection_Command(value);
                     }
                 }
@@ -173,7 +177,6 @@ namespace CharacterSystem.Objects
 
 
         float IDamagable.maxHealth => maxHealth;
-
         float IDamagable.health { get => health; set => health = value; }
         float IDamagable.stunlock { get => stunlock; set => stunlock = value; }
 
@@ -199,6 +202,8 @@ namespace CharacterSystem.Objects
 
 
         private Vector2 speed_acceleration_multipliyer = Vector2.zero;
+        
+        private Vector2 local_move_direction = Vector2.zero;
 
         private Vector3 resultMovePosition;
 
@@ -228,8 +233,12 @@ namespace CharacterSystem.Objects
                 Push(damage.pushDirection);
             }
 
-            health -= damage.value;  
+            if (isServerOnly)
+            {
+                OnHealthChanged(health, health - damage.value);
+            }
 
+            health -= damage.value;  
             stunlock = Mathf.Max(damage.stunlock, stunlock); 
 
             if (isServer)
@@ -246,7 +255,14 @@ namespace CharacterSystem.Objects
         }
         public virtual bool Heal (Damage damage)
         {
-            health = Mathf.Clamp(health + Mathf.Abs(damage.value), 0, maxHealth);
+            var newHealth = Mathf.Clamp(health + Mathf.Abs(damage.value), 0, maxHealth);
+            
+            if (isServerOnly)
+            {
+                OnHealthChanged(health, newHealth);
+            }
+            
+            health = newHealth;
 
             onDamageRecieved?.Invoke(damage);
 
@@ -500,7 +516,7 @@ namespace CharacterSystem.Objects
             var WallHitVelocity = velocity;
             WallHitVelocity.y = 0;
 
-            if (hit.gameObject.TryGetComponent<IPhysicObject>(out var component))
+            if (!hit.gameObject.isStatic && hit.gameObject.TryGetComponent<IPhysicObject>(out var component))
             {
                 WallHitVelocity -= this.velocity;
             }
@@ -567,24 +583,29 @@ namespace CharacterSystem.Objects
                 SetPosition(transform.position + newVelocity / 8f);
             }
 
-            Damage.Deliver(this, new Damage(
-                velocity.magnitude * 5, 
-                lastRecievedDamage.senderID, 
-                0.2f, 
-                newVelocity / 1.5f, 
-                Damage.Type.Physics));
-            
-            Damage.Deliver(hit.gameObject, new Damage(
-                velocity.magnitude * 5, 
-                lastRecievedDamage.senderID, 
-                0.2f, 
-                Quaternion.Euler(0, 180, 0) * newVelocity, 
-                Damage.Type.Physics));
+
+            onWallHit(
+                // Self Damage 
+                Damage.Deliver(this, new Damage(
+                    velocity.magnitude * 5, 
+                    lastRecievedDamage.senderID, 
+                    0.2f, 
+                    newVelocity / 1.5f, 
+                    Damage.Type.Physics)),
+                
+                // Other Damage 
+                Damage.Deliver(hit.gameObject, new Damage(
+                    velocity.magnitude * 5, 
+                    lastRecievedDamage.senderID, 
+                    0.2f, 
+                    Quaternion.Euler(0, 180, 0) * newVelocity, 
+                    Damage.Type.Physics))
+            );
         }
 
         protected virtual GameObject SpawnCorpse()
         {
-            if (NetworkManager.singleton?.isNetworkActive ?? false && isClient && CorpsePrefab != null)
+            if (NetworkManager.singleton?.isNetworkActive ?? false && isClient && !CorpsePrefab.IsUnityNull())
             {
                 var corpseObject = Instantiate(CorpsePrefab, transform.position, transform.rotation);
 
@@ -642,7 +663,7 @@ namespace CharacterSystem.Objects
 
             speed_acceleration_multipliyer = Vector2.Lerp(
                 speed_acceleration_multipliyer, 
-                Speed <= 0 ? Vector2.zero : movementVector * Mathf.Max(0, Speed) * (characterController.isGrounded ? 1f : 0.3f), 
+                Speed <= 0 ? Vector2.zero : (isLocalPlayer && !isServer ? local_move_direction : movementVector) * Mathf.Max(0, Speed) * (characterController.isGrounded ? 1f : 0.4f), 
                 20  * Time.fixedDeltaTime * LocalTimeScale);
 
             return new Vector3(speed_acceleration_multipliyer.x / 2, 0, speed_acceleration_multipliyer.y / 2) * Time.fixedDeltaTime * LocalTimeScale;
@@ -670,7 +691,7 @@ namespace CharacterSystem.Objects
         {
             if(!isServer)
             {
-                vector += Vector3.Lerp(Vector3.zero, network_position - transform.position, 18f * Time.fixedDeltaTime * LocalTimeScale);
+                vector += Vector3.Lerp(Vector3.zero, network_position - transform.position, 15f * Time.fixedDeltaTime * LocalTimeScale);
             }
 
             if (Vector3.Distance(network_position, transform.position) < 1.8f)
