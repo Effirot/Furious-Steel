@@ -74,6 +74,8 @@ public class ConnectedPlayerData : NetworkBehaviour
         }
     }   
 
+    public static event Action<ConnectedPlayerData> onConnectionDataChanged;
+
     public static List<ConnectedPlayerData> All = new ();
 
     public static ConnectedPlayerData Local => All.Find(data => data.isOwned); 
@@ -82,10 +84,10 @@ public class ConnectedPlayerData : NetworkBehaviour
     [SyncVar(hook = nameof(OnNameChanged))]
     public string Name;
     
-    [SyncVar]
+    [SyncVar(hook = nameof(OnSpawnArgumentsChanged))]
     public SpawnArguments spawnArguments = new SpawnArguments();
 
-    [SyncVar]
+    [SyncVar(hook = nameof(OnPlayerStatisticsChanged))]
     public PlayerStatistics statistics = PlayerStatistics.Empty();
 
     private void Awake()
@@ -107,6 +109,7 @@ public class ConnectedPlayerData : NetworkBehaviour
     {
         
     }
+    
     private void OnNameChanged(string Old, string New)
     {
         if (NetworkClient.localPlayer != null)
@@ -115,8 +118,29 @@ public class ConnectedPlayerData : NetworkBehaviour
         }
 
         gameObject.name = Name;
+        
+        InvokeEvent();
+    }
+    private void OnSpawnArgumentsChanged(SpawnArguments Old, SpawnArguments New)
+    {
+        InvokeEvent();
+    }
+    private void OnPlayerStatisticsChanged(PlayerStatistics Old, PlayerStatistics New)
+    {
+        InvokeEvent();
     }
 
+    private void InvokeEvent()
+    {
+        try 
+        {
+            onConnectionDataChanged?.Invoke(this);
+        }
+        catch (Exception e) 
+        { 
+            Debug.LogException(e);
+        }
+    }
 
     public Item JsonToItem (string json)
     {

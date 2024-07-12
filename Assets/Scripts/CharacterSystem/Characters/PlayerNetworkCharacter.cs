@@ -70,12 +70,17 @@ namespace CharacterSystem.Objects
         public UnityEvent<PowerUp> onPowerUpChanged { get; } = new();
 
         int IDamageSource.Combo => combo;
+        float IDamageSource.DamageMultipliyer { get => DamageMultipliyer; set => DamageMultipliyer = value; }
         int IPowerUpActivator.PowerUpId { get => powerUpId; set => powerUpId = value; }
 
         public ConnectedPlayerData Data => ConnectedPlayerData.All.Find(data => data.netIdentity.connectionToClient == netIdentity.connectionToClient);
 
+
         [SyncVar(hook = nameof(OnComboChanged))]
         protected int combo;
+
+        [SyncVar(/* hook = nameof(OnDamageMultipliyerChanged) */)]
+        public float DamageMultipliyer = 1f;
         
         [SyncVar(hook = nameof(OnPowerUpChanged))]
         private int powerUpId = -1;
@@ -106,7 +111,14 @@ namespace CharacterSystem.Objects
             var weaponGameObject = Instantiate(weaponPrefab, transform);
             if (!weaponGameObject.TryGetComponent<NetworkIdentity>(out weaponIdentity))
             {
-                Debug.Log($"Weapon {weaponGameObject.name} NetworkIdentity was not founded");
+                Debug.LogError($"Weapon {weaponGameObject.name} NetworkIdentity was not founded");
+            }
+            else
+            {
+                if (isServerOnly)
+                {
+                    OnWeaponChanged(null, weaponIdentity);
+                }
             }
 
             weaponGameObject.transform.SetParent(transform);
@@ -133,7 +145,14 @@ namespace CharacterSystem.Objects
             var trinketGameObject = Instantiate(trinketPrefab, transform);
             if (!trinketGameObject.TryGetComponent<NetworkIdentity>(out trinketIdentity))
             {
-                Debug.Log($"Weapon {trinketGameObject.name} NetworkIdentity was not founded");
+                Debug.LogError($"Weapon {trinketGameObject.name} NetworkIdentity was not founded");
+            }
+            else
+            {
+                if (isServerOnly)
+                {
+                    OnWeaponChanged(null, trinketIdentity);
+                }
             }
             
             trinketGameObject.transform.SetParent(transform);
@@ -366,7 +385,7 @@ namespace CharacterSystem.Objects
 
         protected virtual void OnWeaponChanged(NetworkIdentity Old, NetworkIdentity New)
         {
-            Debug.Log(New.gameObject.name);
+
         }
         protected virtual void OnTrinketChanged(NetworkIdentity Old, NetworkIdentity New)
         {
@@ -374,7 +393,7 @@ namespace CharacterSystem.Objects
         }
         protected virtual void OnPowerUpChanged(int Old, int New)
         {
-            onPowerUpChanged.Invoke(PowerUp.IdToPowerUpLink(New));
+            onPowerUpChanged?.Invoke(PowerUp.IdToPowerUpLink(New));
         }
         protected virtual void OnComboChanged(int Old, int New)
         {
@@ -392,7 +411,7 @@ namespace CharacterSystem.Objects
                 }
             }
 
-            onComboChanged.Invoke(New);
+            onComboChanged?.Invoke(New);
 
             Speed += (New - Old) / 12f;
         }

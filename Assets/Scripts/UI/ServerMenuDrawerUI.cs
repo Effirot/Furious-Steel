@@ -9,59 +9,25 @@ public class ServerMenuDrawerUI : MonoBehaviour
     [SerializeField]
     private GameObject prefab;
 
-    private List<ServerMenuDrawerPlayerData> clientDataFields = new List<ServerMenuDrawerPlayerData>();
+    private Dictionary<ConnectedPlayerData, ServerMenuDrawerPlayerData> clientDataFields = new();
 
-#warning fix server menu
-    // private void OnEnable()
-    // {
-    //     RoomManager.Singleton.playersData.OnListChanged += OnPlayerListChanged_Event;
+    private void OnEnable()
+    {
+        ConnectedPlayerData.onConnectionDataChanged += OnPlayerListChanged_Event;
 
-    //     RefreshAll();
-    // }
-    // private void OnDisable()
-    // {
-    //     RoomManager.Singleton.playersData.OnListChanged -= OnPlayerListChanged_Event;
+        RefreshAll();
+    }
+    private void OnDisable()
+    {
+        ConnectedPlayerData.onConnectionDataChanged -= OnPlayerListChanged_Event;
 
-    //     Clear();
-    // }
+        Clear();
+    }
 
-    // private void OnPlayerListChanged_Event(NetworkListEvent<PublicClientData> changeEvent)
-    // {
-    //     switch (changeEvent.Type)
-    //     {
-    //         case NetworkListEvent<PublicClientData>.EventType.Add:
-    //             var field = Create(changeEvent.Value);
-                
-    //             clientDataFields.Insert(changeEvent.Index, field);
-                
-    //             field.transform.SetSiblingIndex(changeEvent.Index);
-    //         break;
-
-    //         case NetworkListEvent<PublicClientData>.EventType.Insert : 
-    //             goto case NetworkListEvent<PublicClientData>.EventType.Add;
-
-    //         case NetworkListEvent<PublicClientData>.EventType.Remove:
-    //             Destroy(clientDataFields[changeEvent.Index].gameObject);
-
-    //             clientDataFields.RemoveAt(changeEvent.Index);
-    //         break;
-
-    //         case NetworkListEvent<PublicClientData>.EventType.RemoveAt:
-    //             goto case NetworkListEvent<PublicClientData>.EventType.Remove;
-
-    //         case NetworkListEvent<PublicClientData>.EventType.Value:
-    //             UpdateInfo(clientDataFields[changeEvent.Index], changeEvent.Value);
-    //         break;
-
-    //         case NetworkListEvent<PublicClientData>.EventType.Clear:
-    //             Clear();
-    //         break;
-
-    //         case NetworkListEvent<PublicClientData>.EventType.Full:
-    //             RefreshAll();
-    //         break;
-    //     }
-    // }
+    private void OnPlayerListChanged_Event(ConnectedPlayerData data)
+    {
+        UpdateInfo(clientDataFields[data], data);
+    }
 
     private ServerMenuDrawerPlayerData Create(ConnectedPlayerData clientData)
     {
@@ -105,7 +71,7 @@ public class ServerMenuDrawerUI : MonoBehaviour
     {
         foreach (var item in clientDataFields)
         {
-            Destroy(item.gameObject);
+            Destroy(item.Value.gameObject);
         }
 
         clientDataFields.Clear();
@@ -117,7 +83,7 @@ public class ServerMenuDrawerUI : MonoBehaviour
 
         foreach (var data in ConnectedPlayerData.All)
         {
-            clientDataFields.Add(Create(data));
+            clientDataFields.Add(data, Create(data));
         }
     }
 }

@@ -140,17 +140,18 @@ public abstract class SyncedActivitySource : NetworkBehaviour
 
     public virtual void Play()
     {
-        if (!IsInProcess)
+        if (IsInProcess || HasOverrides())
+            return;
+
+        if (isServer)
         {
-            if (isServer)
-            {
-                Play_ClientRpc();
-            }
-
-            process = StartCoroutine(SubProcessRoutine());
-
-            Source?.activities.Add(this);            
+            Play_ClientRpc();
         }
+
+        process = StartCoroutine(SubProcessRoutine());
+
+        Source?.activities.Add(this);            
+        
     }
 
     public void Stop()

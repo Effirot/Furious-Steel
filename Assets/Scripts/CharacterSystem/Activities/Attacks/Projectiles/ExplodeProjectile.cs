@@ -29,7 +29,12 @@ public class ExplodeProjectile : Projectile
 
     public override void Kill(Damage damage)
     {
-        Explode();
+        if (isServer)
+        {
+            ExplodeSynced();
+
+            Explode();
+        }
 
         base.Kill(damage);
     }

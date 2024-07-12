@@ -31,6 +31,10 @@ namespace CharacterSystem.Objects.AI
 
         public int Combo => 0;
 
+        float IDamageSource.DamageMultipliyer { get => DamageMultipliyer; set => DamageMultipliyer = value; }
+        
+        [SyncVar]
+        private float DamageMultipliyer = 1f;
 
         public event Action<DamageDeliveryReport> onDamageDelivered;
         public event Action<int> onComboChanged = delegate { };

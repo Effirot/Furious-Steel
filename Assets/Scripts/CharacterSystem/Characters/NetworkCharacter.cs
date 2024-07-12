@@ -511,17 +511,18 @@ namespace CharacterSystem.Objects
             controllerCollision = hit;
             groundCollisionTimeout = 0.05f;
 
-            IsGrounded = Vector3.Angle(Vector3.up, hit.normal) <= 55;
+            IsGrounded = Vector3.Angle(Vector3.up, hit.normal) <= 65;
 
             var WallHitVelocity = velocity;
-            WallHitVelocity.y = 0;
 
             if (!hit.gameObject.isStatic && hit.gameObject.TryGetComponent<IPhysicObject>(out var component))
             {
                 WallHitVelocity -= this.velocity;
             }
+            
+            WallHitVelocity.y = 0;
 
-            if (!IsGrounded && WallHitVelocity.magnitude > 0.4f)
+            if (isStunned && !IsGrounded && WallHitVelocity.magnitude > 0.4f)
             {   
                 OnWallHitEffect(hit);
             }
@@ -564,6 +565,8 @@ namespace CharacterSystem.Objects
 
         protected virtual void OnWallHitEffect(ControllerColliderHit hit)
         {
+            stunlock = 0;
+
             // Calculate Angle between hit normal and current velocity
             var angleNormal = hit.normal;
             angleNormal.y = 0;

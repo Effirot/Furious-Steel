@@ -21,7 +21,7 @@ public class ExplodeMagicTrinketUltimate : UltimateDamageSource
     private GameObject ExplodeEffectPrefab;
 
     [SerializeField]
-    private BurnEffect burnEffect = new();
+    private BurnEffect burnEffect = new(2, 0);
 
     [SerializeField]
     private Damage explodeDamage = new();

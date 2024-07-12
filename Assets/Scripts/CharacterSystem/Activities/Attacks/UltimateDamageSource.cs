@@ -20,7 +20,7 @@ public class UltimateDamageSource : DamageSource
     [HideInInspector]
     public CustomProperty chargeValue; 
 
-    public override bool IsActive => base.IsActive && chargeValue.Value >= chargeValue.MaxValue;
+    public override bool IsActive => base.IsActive && chargeValue != null && chargeValue.Value >= chargeValue.MaxValue;
 
     protected override void OnDestroy()
     {

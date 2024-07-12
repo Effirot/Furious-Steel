@@ -4,21 +4,15 @@ using UnityEngine;
 namespace CharacterSystem.Effects
 {
     [System.Serializable]
-    public class TimeScaleEffect : CharacterEffect
+    public class TimeScaleEffect : LifetimeCharacterEffect
     {
-        public override bool Existance => time > 0;
-
-        [SerializeField, Range(0, 120)]
-        private float time = 0.3f;
-
         [SerializeField, Range(0, 1)]
         private float force = 1f;
 
-        public TimeScaleEffect() { }
-        public TimeScaleEffect(float Time, float Force)
+        public TimeScaleEffect() : this(0.3f, 1) { }
+        public TimeScaleEffect(float time, float force) : base(time)
         {
-            time = Time;
-            force = Mathf.Clamp(Force, 0f, 1f);
+            this.force = Mathf.Clamp(force, 0f, 1f);
         }
 
         public override void Start()
@@ -29,21 +23,12 @@ namespace CharacterSystem.Effects
         {
             effectsHolder.character.LocalTimeScale += force;
         }
-        public override void Update()
-        {
-            time -= Time.fixedDeltaTime;
-        }
 
         public override void AddDublicate(CharacterEffect effect)
         {
-            var timeStopEffect = effect as TimeScaleEffect;
-            
-            time = timeStopEffect.time;
-        }
+            base.AddDublicate(effect);
 
-        public override string ToString()
-        {
-            return base.ToString() + " - " + time;
+            var timeStopEffect = effect as TimeScaleEffect;
         }
     }
 }

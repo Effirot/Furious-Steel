@@ -14,6 +14,17 @@ public class ExplodePowerUp : PowerUp
     
     public override void Activate(PowerUpHolder holder)
     {
+        Damage.Deliver(
+            holder.Source, 
+            new Damage(
+                10, 
+                null, 
+                0.5f, 
+                Vector3.up * 0.8f + holder.Source.transform.forward / 1.5f,
+                Damage.Type.Effect
+            )
+        );
+
         foreach (var collider in Physics.OverlapSphere(holder.transform.position, 4))
         {
             if (collider.gameObject == holder.gameObject)
@@ -21,8 +32,6 @@ public class ExplodePowerUp : PowerUp
 
             var VectorToTarget = holder.transform.position - collider.transform.position;
             VectorToTarget.Normalize();
-
-            holder.Source.Push(Vector3.up * 0.6f + holder.Source.transform.forward / 2f);
 
             var report = Damage.Deliver(collider.gameObject, new Damage()
             {

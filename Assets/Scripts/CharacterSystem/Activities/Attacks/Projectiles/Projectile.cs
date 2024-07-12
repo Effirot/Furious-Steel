@@ -68,14 +68,11 @@ public class Projectile : NetworkBehaviour,
         } 
     }
 
-
     [SyncVar]
     private GameObject summonerObject;
 
     public event Action<Damage> onDamageRecieved;
     
-
-
     public void Initialize (Vector3 direction, IDamageSource summoner, OnDamageDeliveryReport onDamageDeliveryReport = null)
     {
         if (!NetworkServer.spawned.ContainsKey(netIdentity.netId))
@@ -168,9 +165,9 @@ public class Projectile : NetworkBehaviour,
     {
         if (isClient)
         {
-            if (Vector3.Distance(transform.position, position) < 0.5f)
+            if (Vector3.Distance(transform.position, position) < 0.4f)
             {
-                transform.position = Vector3.Lerp(transform.position, position, 22 * Time.deltaTime);
+                transform.position = Vector3.Lerp(transform.position, position, 25f * Time.deltaTime);
             }
             else
             {
@@ -180,14 +177,13 @@ public class Projectile : NetworkBehaviour,
     }
     protected virtual void OnTriggerEnter (Collider other)
     {
-        if (!DamageOnHit) return;
+        if (!DamageOnHit || !isServer) return;
 
         var damage = this.damage;
         damage.pushDirection = transform.rotation * damage.pushDirection;
         damage.sender = Summoner;
 
         var report = Damage.Deliver(other.gameObject, damage);
-
 
         if (report.isDelivered)
         {

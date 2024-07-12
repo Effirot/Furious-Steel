@@ -19,7 +19,7 @@ public class InventoryDrawer : MonoBehaviour
         items = new Item[] {
             new Sword(), new LongSword(), new Axe(), null, new Plate(), 
             new Mace(), new Spear(), null, null, new Bone(), 
-            new HeavySword(), new Rapier(), null, null, new LeatherJacket(),
+            new HeavySword(), new Rapier(), new Katana(), null, new LeatherJacket(),
             
             new VoidMagic(), new ExplodeMagic(), null, null, new BaseballMan(), 
             new FlameMagic(), null, null, null, null, 

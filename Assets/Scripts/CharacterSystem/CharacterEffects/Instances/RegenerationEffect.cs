@@ -8,15 +8,10 @@ using UnityEngine.VFX;
 namespace CharacterSystem.Effects
 {
     [System.Serializable]
-    public class RegenerationEffect : CharacterEffect
+    public class RegenerationEffect : LifetimeCharacterEffect
     {
         private static VisualEffectAsset visualEffectAsset;
         
-        public override bool Existance => time > 0 && !Team.IsAlly(effectsSource, effectsHolder.character);
-
-        [SerializeField, Range(0, 120)]
-        public float time = 0;
-
         [SerializeField, Range(0, 20)]
         public float healthPerSecond = 5;
 
@@ -25,11 +20,10 @@ namespace CharacterSystem.Effects
 
         private VisualEffect visualEffect;
         
-        public RegenerationEffect() { }
-        public RegenerationEffect(float Time, float healthPerSecond)
+        public RegenerationEffect() : this(1, 1) { }
+        public RegenerationEffect(float time, float healthPerSecond) : base(time)
         {
-        time = Time;
-        this.healthPerSecond = healthPerSecond;
+            this.healthPerSecond = healthPerSecond;
         }
 
         public override void Start()
@@ -41,7 +35,7 @@ namespace CharacterSystem.Effects
         }
         public override void Update()
         {
-            time -= Time.fixedDeltaTime;
+            base.Update();
 
             effectsHolder.character.Heal(new Damage(healthPerSecond * Time.fixedDeltaTime, effectsSource, 0, Vector3.zero, Damage.Type.Effect));
         }
@@ -61,7 +55,7 @@ namespace CharacterSystem.Effects
             visualEffect = visualEffectObject.AddComponent<VisualEffect>();
             visualEffect.visualEffectAsset = visualEffectAsset;
             visualEffect.SetSkinnedMeshRenderer("SkinnedMeshRenderer", effectsHolder.characterSkinnedMeshRenderer);
-            visualEffect.SetVector4("Color", color * 2f);
+            visualEffect.SetVector4("Color", color);
             visualEffect.SendEvent("OnConstant");
         }
         private void RemoveVisualEffect()
@@ -78,9 +72,10 @@ namespace CharacterSystem.Effects
 
         public override void AddDublicate(CharacterEffect effect)
         {
+            base.AddDublicate(effect);
+
             var burn = (RegenerationEffect)effect;
 
-            time = burn.time;
             healthPerSecond = Mathf.Max(healthPerSecond, burn.healthPerSecond);
 
             effectsHolder.EditGlowing(this, burn.color);

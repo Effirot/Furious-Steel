@@ -3,20 +3,15 @@ using UnityEngine;
 namespace CharacterSystem.Effects
 {
     [System.Serializable]
-    public class SlownessEffect : CharacterEffect
+    public class SlownessEffect : LifetimeCharacterEffect
     {
-        public override bool Existance => time > 0;
-
-        [SerializeField, Range(0, 120)]
-        private float time = 0;
-
         [SerializeField, Range(0, 10)]
         private float force = 5;
 
-        public SlownessEffect() { }
-        public SlownessEffect(float Time, float force)
+        public SlownessEffect() : this(1, 1) { }
+        public SlownessEffect(float time, float force) : base(time)
         {
-            time = Time;
+            this.force = force;
         }
 
         public override void Start()
@@ -27,24 +22,5 @@ namespace CharacterSystem.Effects
         {
             effectsHolder.character.Speed += force;
         }
-        public override void Update()
-        {
-            if (isServer)
-            {
-                time -= Time.fixedDeltaTime;
-            }
-        }
-
-        public override void AddDublicate(CharacterEffect effect)
-        {
-            var slownessEffect = (SlownessEffect)effect;
-
-            time = Mathf.Max(time, slownessEffect.time);
-        }
-
-        public override string ToString()
-        {
-            return base.ToString() + " - " + time;
-        }
-}
+    }
 }

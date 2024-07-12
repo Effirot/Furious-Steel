@@ -23,6 +23,8 @@ namespace CharacterSystem.Attacks
     {
         public int Combo { get; }
 
+        public float DamageMultipliyer { get; set; }
+
         public DamageDeliveryReport lastReport { get; set; }
 
         public event Action<DamageDeliveryReport> onDamageDelivered;
@@ -57,7 +59,7 @@ namespace CharacterSystem.Attacks
 
         public DamageDeliveryReport currentAttackDamageReport { get; protected set; }
 
-        public virtual bool IsActive => !IsInProcess && !HasOverrides() && !Source.isStunned && Source.permissions.HasFlag(CharacterPermission.AllowAttacking) && isPerforming; 
+        public virtual bool IsActive => !IsInProcess && !HasOverrides() && Source != null && !Source.isStunned && Source.permissions.HasFlag(CharacterPermission.AllowAttacking) && isPerforming; 
 
         protected override void OnDestroy()
         {
@@ -157,38 +159,7 @@ namespace CharacterSystem.Attacks
 #region Queue elements
     [Serializable]
     public abstract class AttackQueueElement
-    {
-        protected void Execute(IEnumerable<Caster> casters, DamageSource damageSource)
-        {
-            var impactPushVector = Vector3.zero;
-            var impactsCount = 0; 
-
-            foreach (var cast in casters)
-            {
-                foreach (var collider in cast.CastCollider(damageSource.transform))
-                {
-                    if (collider.isTrigger)
-                        continue;
-
-                    var damage = cast.damage;
-                    damage.pushDirection = damageSource.Source.transform.rotation * cast.damage.pushDirection;
-                    damage.sender = damageSource.Source;
-
-                    var report = Damage.Deliver(collider.gameObject, damage);
-
-                    if (report.isDelivered)
-                    {
-                        impactsCount++;
-                        impactPushVector += -report.damage.pushDirection / 1.2f;
-                    }
-
-                    damageSource.HandleDamageReport(report);
-                }
-            }
-
-            damageSource.Source.Push(impactPushVector / impactsCount);
-        }
-    
+    {    
         public abstract IEnumerator AttackPipeline(DamageSource source);
 
         public abstract void OnDrawGizmos(Transform transform);
@@ -393,6 +364,37 @@ namespace CharacterSystem.Attacks
         [SerializeField]
         private Vector3 CastPushDirection = Vector3.forward / 2; 
         public UnityEvent OnCast = new();
+
+        private void Execute(IEnumerable<Caster> casters, DamageSource damageSource)
+        {
+            var impactPushVector = Vector3.zero;
+            var impactsCount = 0; 
+
+            foreach (var cast in casters)
+            {
+                foreach (var collider in cast.CastCollider(damageSource.transform))
+                {
+                    if (collider.isTrigger)
+                        continue;
+
+                    var damage = cast.damage * damageSource.Source.DamageMultipliyer;
+                    damage.pushDirection = damageSource.Source.transform.rotation * cast.damage.pushDirection;
+                    damage.sender = damageSource.Source;
+
+                    var report = Damage.Deliver(collider.gameObject, damage);
+
+                    if (report.isDelivered)
+                    {
+                        impactsCount++;
+                        impactPushVector += -report.damage.pushDirection / 1.2f;
+                    }
+
+                    damageSource.HandleDamageReport(report);
+                }
+            }
+
+            damageSource.Source.Push(impactPushVector / impactsCount);
+        }
         
         public override IEnumerator AttackPipeline(DamageSource source)
         {

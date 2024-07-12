@@ -5,15 +5,10 @@ using UnityEngine.VFX;
 namespace CharacterSystem.Effects
 {
     [System.Serializable]
-    public class SpeedBoostEffect : CharacterEffect
+    public class SpeedBoostEffect : LifetimeCharacterEffect
     {
         private static VisualEffectAsset visualEffectAsset;
         
-        public override bool Existance => time > 0;
-
-        [SerializeField, Range(0, 120)]
-        private float time = 0;
-
         [SerializeField, Range(0, 120)]
         private float force = 5;
 
@@ -22,11 +17,10 @@ namespace CharacterSystem.Effects
 
         private VisualEffect visualEffect;
 
-        public SpeedBoostEffect() { }
-        public SpeedBoostEffect(float Time, float Force)
+        public SpeedBoostEffect() : this(1, 1) { }
+        public SpeedBoostEffect(float time, float force) : base(time)
         {
-            time = Time;
-            force = Force;
+            this.force = force;
         }
 
         public override void Start()
@@ -39,16 +33,11 @@ namespace CharacterSystem.Effects
         {
             effectsHolder.character.Speed -= force;
         }
-        public override void Update()
-        {
-            if (isServer)
-            {
-                time -= Time.fixedDeltaTime;
-            }
-        }
 
         public override void AddDublicate(CharacterEffect effect)
         {
+            base.AddDublicate(effect);
+
             var speedEffect = (SpeedBoostEffect)effect;
 
             var deltaForce = Mathf.Max(force, speedEffect.force);
@@ -57,7 +46,6 @@ namespace CharacterSystem.Effects
             force += deltaForce;
             
             effectsHolder.character.Speed += deltaForce;
-            time = Mathf.Max(time, speedEffect.time);
         }
 
         private void AddVisualEffect()
@@ -83,11 +71,6 @@ namespace CharacterSystem.Effects
 
                 visualEffect = null;
             }
-        }
-
-        public override string ToString()
-        {
-            return base.ToString() + " - " + force + " - " + time;
         }
     }
 }

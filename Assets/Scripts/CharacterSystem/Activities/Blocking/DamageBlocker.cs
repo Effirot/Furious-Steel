@@ -89,6 +89,8 @@ namespace CharacterSystem.Blocking
                 IsBlockActive && 
                 Vector3.Angle(transform.forward, damage.sender.transform.position - transform.position) < blockingDegree)
             {
+                SkipBlock();
+
                 if (isServer)
                 {
                     OnSuccesfulBlockingEvent.Invoke();
@@ -102,8 +104,6 @@ namespace CharacterSystem.Blocking
                 }
                 damage *= 1f - DamageReducing;
                 
-                SkipBlock();
-
                 return true;
             }
             
