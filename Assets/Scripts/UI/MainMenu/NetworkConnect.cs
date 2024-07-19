@@ -29,7 +29,7 @@ public class NetworkConnect : MonoBehaviour
     
         await UniTask.WaitUntil(() => NetworkClient.isConnecting);
 
-        if (NetworkClient.isConnected)
+        if (NetworkClient.connection != null)
         {
             OnSuccesfullyConnect.Invoke();
         }

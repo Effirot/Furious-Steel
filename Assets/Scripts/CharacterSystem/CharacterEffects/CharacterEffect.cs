@@ -33,7 +33,7 @@ namespace CharacterSystem.Effects
         public CharacterEffectsHolder effectsHolder { get; internal set; }
         public IDamageSource effectsSource { 
             get {
-                if (NetworkServer.spawned.Count >= effectSourceID && effectSourceID != 0)
+                if (NetworkServer.spawned.Count > effectSourceID && effectSourceID != 0)
                 {
                     return NetworkServer.spawned[effectSourceID].GetComponent<IDamageSource>();
                 }

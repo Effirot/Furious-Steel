@@ -88,11 +88,8 @@ namespace CharacterSystem.Attacks
                 currentAttackDamageReport = null;
 
                 OnAttackEnded.Invoke();
-                
-                if (NetworkClient.active)
-                {
-                    base.Stop(interuptProcess);
-                }
+
+                base.Stop(interuptProcess);
             }
         }
         
@@ -195,6 +192,9 @@ namespace CharacterSystem.Attacks
         [SerializeField]
         private Vector3 MoveDirection = Vector3.forward * 30;
 
+        [SerializeField]
+        private string animationName = "Legs.Dash";
+
         [SerializeField, Range(0, 10)]
         private float time = 0.2f;
 
@@ -219,6 +219,11 @@ namespace CharacterSystem.Attacks
 
                 while (wasteTime < time * chargeValue && !source.Source.isStunned)
                 {
+                    if (source.Source.animator != null && source.Source.animator.gameObject.activeInHierarchy)
+                    {
+                        source.Source.animator.Play(animationName, -1, 0.1f);
+                    }
+                    
                     var direction = source.transform.rotation * MoveDirection * Time.fixedDeltaTime;
                     
                     if (CheckColision)
@@ -694,7 +699,6 @@ namespace CharacterSystem.Attacks
 
         public override IEnumerator AttackPipeline(DamageSource source)
         {
-
             if (source.Source.animator != null && source.Source.animator.gameObject.activeInHierarchy)
             {
                 source.Source.animator.Play(AnimationName, -1, 0.1f);

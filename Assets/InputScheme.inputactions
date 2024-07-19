@@ -60,7 +60,7 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "PowerUp",
+                    "name": "PickUp",
                     "type": "PassThrough",
                     "id": "892f4cdf-0414-435c-9cd2-ddbdbc6f7bb0",
                     "expectedControlType": "Button",
@@ -148,18 +148,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad;Joystick",
-                    "action": "PowerUp",
+                    "action": "PickUp",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
                     "id": "67e6b89b-b99c-4b1c-a6f0-9f60f075e353",
-                    "path": "<Keyboard>/q",
+                    "path": "<Keyboard>/f",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "PowerUp",
+                    "action": "PickUp",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -520,6 +520,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Scroll",
+                    "type": "Value",
+                    "id": "239902dd-578c-4d3a-bfb3-3e73dd6bd474",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -960,6 +969,17 @@
                     "processors": "",
                     "groups": "Joystick;Gamepad",
                     "action": "ServerInfo",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e1372e09-990c-4630-bc96-3a890832ee3a",
+                    "path": "<Mouse>/scroll/y",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Scroll",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

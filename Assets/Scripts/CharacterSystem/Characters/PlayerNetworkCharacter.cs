@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using CharacterSystem.Attacks;
 using CharacterSystem.Blocking;
 using CharacterSystem.DamageMath;
+using CharacterSystem.Interactions;
 using CharacterSystem.PowerUps;
 using Effiry.Items;
 using Mirror;
@@ -22,7 +23,8 @@ namespace CharacterSystem.Objects
         IDamageSource,
         IDamageBlocker,
         IPowerUpActivator,
-        IObservableObject
+        IObservableObject,
+        IThrower
     {
         public static bool AllowChampionMode = true;
 
@@ -92,11 +94,9 @@ namespace CharacterSystem.Objects
 
         private Coroutine comboResetTimer = null;
 
-        [HideInInspector]
-        public Vector2 internalMovementVector = Vector2.zero;
-        [HideInInspector]
-        public Vector2 internalLookVector = Vector2.zero;
-
+        public Vector2 internalMovementVector { get; set; } = Vector2.zero;
+        public Vector2 internalLookVector { get; set; } = Vector2.zero;
+        public Transform pickPoint { get; set; }
 
         public virtual NetworkIdentity SetWeapon (Item item)
         {
@@ -235,6 +235,7 @@ namespace CharacterSystem.Objects
                 var action = moveInput.action;
                 action.Enable();
 
+                action.started += OnMoveInput;
                 action.performed += OnMoveInput;
                 action.canceled += OnMoveInput;
             }
@@ -281,6 +282,7 @@ namespace CharacterSystem.Objects
             {
                 var action = moveInput.action;
                 
+                action.started -= OnMoveInput;
                 action.performed -= OnMoveInput;
                 action.canceled -= OnMoveInput;
             }
@@ -375,7 +377,7 @@ namespace CharacterSystem.Objects
         {
             var corpseObject = base.SpawnCorpse();
 
-            if (isLocalPlayer && !corpseObject.IsUnityNull() && corpseObject.TryGetComponent<IObservableObject>(out var observableObject))
+            if (isLocalPlayer && corpseObject.TryGetComponent<IObservableObject>(out var observableObject))
             {
                 CharacterCameraObserver.Singleton.ObservingObject = observableObject;
             }

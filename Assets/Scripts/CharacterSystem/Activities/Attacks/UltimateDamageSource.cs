@@ -60,7 +60,8 @@ public class UltimateDamageSource : DamageSource
     {
         if (report.isDelivered && 
             !report.isBlocked && 
-            report.damage.RechargeUltimate)
+            report.damage.RechargeUltimate &&
+            report.target is NetworkCharacter)
         {
             chargeValue.AddValue(report);
         }

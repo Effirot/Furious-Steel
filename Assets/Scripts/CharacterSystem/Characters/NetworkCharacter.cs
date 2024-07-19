@@ -37,7 +37,7 @@ namespace CharacterSystem.Objects
         
         AllowAttacking      = 0b_0001_0000_0000_0000,
         AllowBlocking       = 0b_0010_0000_0000_0000,
-        AllowPowerUps       = 0b_0100_0000_0000_0000,
+        AllowPickUps       = 0b_0100_0000_0000_0000,
     }
 
     [DisallowMultipleComponent]
@@ -135,7 +135,6 @@ namespace CharacterSystem.Objects
 
         public SyncedActivitiesList activities { get; } = new();
 
-
         public Vector2 movementVector
         { 
             get => network_movementVector.normalized;
@@ -144,6 +143,7 @@ namespace CharacterSystem.Objects
                 if (isServer)
                 {
                     network_movementVector = value;
+                    local_move_direction = value;
                 }
                 else
                 {
@@ -174,7 +174,6 @@ namespace CharacterSystem.Objects
                 }
             }
         }
-
 
         float IDamagable.maxHealth => maxHealth;
         float IDamagable.health { get => health; set => health = value; }
@@ -241,13 +240,12 @@ namespace CharacterSystem.Objects
             health -= damage.value;  
             stunlock = Mathf.Max(damage.stunlock, stunlock); 
 
+            onDamageRecieved?.Invoke(damage);
+
             if (isServer)
             {
                 OnHitReaction_ClientRpc(damage);
-            }
-
-            if (!isClient)
-            {
+                
                 OnHitReaction(damage);
             }
 
@@ -766,7 +764,10 @@ namespace CharacterSystem.Objects
         [ClientRpc]
         private void OnHitReaction_ClientRpc(Damage damage)
         {
-            OnHitReaction(damage);
+            if (!isServer)
+            {
+                OnHitReaction(damage);
+            }
         }
         [ClientRpc]
         private void OnHealReaction_ClientRpc(Damage damage)

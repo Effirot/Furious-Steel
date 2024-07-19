@@ -20,7 +20,7 @@ namespace CharacterSystem.Effects
             {
                 var source = effectsHolder.character as IDamageSource;
 
-                source.onDamageDelivered += OnDamageRecieved;
+                source.onDamageDelivered += OnDamageDelivered;
             }
         }
 
@@ -32,11 +32,11 @@ namespace CharacterSystem.Effects
             {
                 var source = effectsHolder.character as IDamageSource;
 
-                source.onDamageDelivered -= OnDamageRecieved;
+                source.onDamageDelivered -= OnDamageDelivered;
             }
         }
 
-        private async void OnDamageRecieved(DamageDeliveryReport damageDeliveryReport)
+        private async void OnDamageDelivered(DamageDeliveryReport damageDeliveryReport)
         {
             if (damageDeliveryReport.damage.type is not Damage.Type.Effect && Existance)
             {

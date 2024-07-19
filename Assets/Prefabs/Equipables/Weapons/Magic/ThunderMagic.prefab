@@ -261,6 +261,7 @@ VFXRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -775,6 +776,7 @@ SkinnedMeshRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1013,6 +1015,7 @@ VFXRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -1202,6 +1205,7 @@ VFXRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -1370,6 +1374,7 @@ VFXRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -1664,6 +1669,7 @@ VFXRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -1789,6 +1795,7 @@ VFXRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -1914,6 +1921,7 @@ VFXRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -2036,6 +2044,7 @@ VFXRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -2161,6 +2170,7 @@ VFXRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -2458,7 +2468,6 @@ MonoBehaviour:
   inputAction: {fileID: 5277666054227158027, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 2
   SpeedChange: 0
-  IsPressed: 0
   IsInterruptableWhenBlocked: 0
   IsInterruptOnHit: 0
   RestartWhenHolding: 0
@@ -2769,6 +2778,7 @@ MonoBehaviour:
           RechargeUltimate: 1
           SelfDamageUltimate: 0
           Effects: []
+          args: []
         position: {x: 0, y: 0, z: 0}
         radius: 4.5
     - rid: 2874887858773557331
@@ -2887,6 +2897,7 @@ VFXRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -3097,6 +3108,7 @@ VFXRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -3173,7 +3185,6 @@ MonoBehaviour:
   inputAction: {fileID: 4628471853980608337, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 2
   SpeedChange: 0
-  IsPressed: 0
   IsInterruptableWhenBlocked: 0
   IsInterruptOnHit: 1
   RestartWhenHolding: 0
@@ -3307,12 +3318,12 @@ MonoBehaviour:
       data:
         queue:
         - rid: 2874887799214964749
-        - rid: 2874887841219346512
         - rid: 2874887799214964748
     - rid: 2874887799214964748
       type: {class: Move, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         MoveDirection: {x: 0, y: 0, z: 31}
+        animationName: Legs.DisableModel
         time: 0.04
         CheckColision: 0
         permission: 128
@@ -3343,10 +3354,6 @@ MonoBehaviour:
       type: {class: Push, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
         CastPushDirection: {x: 0, y: 0.01, z: 0.53}
-    - rid: 2874887841219346512
-      type: {class: PlayAnimation, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
-      data:
-        AnimationName: Legs.DisableModel
     - rid: 2874887841219346519
       type: {class: Event, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
@@ -3532,6 +3539,7 @@ VFXRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -3992,8 +4000,12 @@ Light:
   m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
+  m_ForceVisible: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
+  m_LightUnit: 1
+  m_LuxAtDistance: 1
+  m_EnableSpotReflector: 1
 --- !u!114 &5727995576224265085
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4292,6 +4304,7 @@ VFXRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -4403,7 +4416,6 @@ MonoBehaviour:
   inputAction: {fileID: -697749738134341483, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 2
   SpeedChange: 0
-  IsPressed: 0
   IsInterruptableWhenBlocked: 0
   IsInterruptOnHit: 0
   RestartWhenHolding: 1
@@ -4531,6 +4543,7 @@ MonoBehaviour:
           RechargeUltimate: 0
           SelfDamageUltimate: 0
           Effects: []
+          args: []
         position: {x: 0, y: 0, z: 0}
         radius: 1.83
     - rid: 868177009411096688
@@ -4667,6 +4680,7 @@ VFXRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -4782,8 +4796,12 @@ Light:
   m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
+  m_ForceVisible: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
+  m_LightUnit: 1
+  m_LuxAtDistance: 1
+  m_EnableSpotReflector: 1
 --- !u!114 &6767397630810676116
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4924,6 +4942,7 @@ VFXRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -5133,7 +5152,6 @@ MonoBehaviour:
   inputAction: {fileID: 2243838571553120747, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 2
   SpeedChange: 0
-  IsPressed: 0
   IsInterruptableWhenBlocked: 1
   IsInterruptOnHit: 1
   RestartWhenHolding: 0
@@ -5287,6 +5305,7 @@ MonoBehaviour:
           RechargeUltimate: 1
           SelfDamageUltimate: 0
           Effects: []
+          args: []
         origin: {x: 0, y: 0, z: 0}
         target: {fileID: 3927181639931471979}
         maxDistance: 15
@@ -5301,6 +5320,7 @@ MonoBehaviour:
           RechargeUltimate: 1
           SelfDamageUltimate: 0
           Effects: []
+          args: []
         origin: {x: 0, y: 0, z: 0}
         target: {fileID: 6823387815018172437}
         maxDistance: 15
@@ -5315,6 +5335,7 @@ MonoBehaviour:
           RechargeUltimate: 1
           SelfDamageUltimate: 0
           Effects: []
+          args: []
         origin: {x: 0, y: 0, z: 0}
         target: {fileID: 3191779301174295649}
         maxDistance: 15

@@ -900,7 +900,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -923,7 +923,7 @@ Camera:
     height: 1
   near clip plane: 0.1
   far clip plane: 5000
-  field of view: 60
+  field of view: 80
   orthographic: 0
   orthographic size: 10
   m_Depth: -1
@@ -1012,7 +1012,7 @@ MonoBehaviour:
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
-  m_RenderPostProcessing: 0
+  m_RenderPostProcessing: 1
   m_Antialiasing: 0
   m_AntialiasingQuality: 2
   m_StopNaN: 0
@@ -1230,6 +1230,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   virtualCamera: {fileID: 4286721858986575388}
+  scrollInput: {fileID: 7891378538757407666, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
 --- !u!1 &5406392275324140013
 GameObject:
   m_ObjectHideFlags: 0
@@ -1816,6 +1817,7 @@ GameObject:
   - component: {fileID: 4286721858986575388}
   - component: {fileID: 9209308825083755365}
   - component: {fileID: 659721811452024483}
+  - component: {fileID: 7850231842390496845}
   m_Layer: 0
   m_Name: CM cam
   m_TagString: Untagged
@@ -1893,7 +1895,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b617507da6d07e749b7efdb34e1173e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  FollowOffset: {x: 0, y: 21.9, z: -11.14}
+  FollowOffset: {x: 0, y: 15.3, z: -7.1}
   TrackerSettings:
     BindingMode: 1
     PositionDamping: {x: 1, y: 1, z: 1}
@@ -1923,6 +1925,21 @@ MonoBehaviour:
     FrequencyGain: 1.4
     Duration: 0.5
     m_NoiseOffsets: {x: -130.88, y: -722.3761, z: -130.86853}
+--- !u!114 &7850231842390496845
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6135238136710525520}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4700f9f03ad19f94baf0367cb7a9c988, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Width: 30
+  Damping: 1
+  FovRange: {x: 1, y: 80}
 --- !u!1 &6631068699847730364
 GameObject:
   m_ObjectHideFlags: 0

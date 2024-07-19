@@ -152,6 +152,9 @@ namespace CharacterSystem.DamageMath
 
         [SerializeField, SubclassSelector, SerializeReference]
         public CharacterEffect[] Effects;
+        
+        [SerializeField]
+        public string[] args; 
 
         [NonSerialized]
         public uint senderID;
@@ -168,7 +171,6 @@ namespace CharacterSystem.DamageMath
                 return null;
             }
             set{
-                
                 if (value.IsUnityNull())
                 {
                     senderID = uint.MinValue; 
@@ -188,7 +190,6 @@ namespace CharacterSystem.DamageMath
             } 
         }
 
-
         public Damage(float value, uint senderID, float stunlock, Vector3 pushDirection, Type type, params CharacterEffect[] effects)
         {
             this.value = value;
@@ -199,6 +200,7 @@ namespace CharacterSystem.DamageMath
             this.Effects = effects;
             this.RechargeUltimate = true;   
             this.SelfDamageUltimate = false;   
+            this.args = new string[0];
         }
         public Damage(float value, IDamageSource sender, float stunlock, Vector3 pushDirection, Type type, params CharacterEffect[] effects)
         {
@@ -211,8 +213,10 @@ namespace CharacterSystem.DamageMath
             this.Effects = effects;
             this.RechargeUltimate = true;
             this.SelfDamageUltimate = false;   
+            this.args = new string[0];
             
             this.sender = sender;
+
         }
         public Damage(params CharacterEffect[] effects) : this (0, null, 0, Vector3.zero, Type.Effect, effects) { }
 
@@ -321,6 +325,11 @@ namespace CharacterSystem.DamageMath
                 other.isLethal == isLethal &&
                 other.time == time &&
                 other.targetID == targetID;
+        }
+
+        public override string ToString()
+        {
+            return $"{damage}\n Target: {target?.gameObject.ToSafeString()}\nIsDelivered: {isDelivered}\n IsBlocked: {isBlocked}\n IsLethal: {isLethal}\n Time: {time}\n Effects: {RecievedEffects}";
         }
     }
 

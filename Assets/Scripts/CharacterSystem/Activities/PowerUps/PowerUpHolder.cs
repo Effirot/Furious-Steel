@@ -51,7 +51,7 @@ namespace CharacterSystem.PowerUps
         
         public override IEnumerator Process()
         {
-            if (Source.permissions.HasFlag(CharacterPermission.AllowPowerUps))
+            if (Source.permissions.HasFlag(CharacterPermission.AllowPickUps))
             {
                 Source.PowerUp?.Activate(this);
 

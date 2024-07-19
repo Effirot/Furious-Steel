@@ -19,7 +19,6 @@ public class DedicateServerManager : MonoBehaviour
     private static void OnStartClient()
     {
         GameObject.DontDestroyOnLoad(GameObject.Instantiate(Resources.Load<GameObject>("NetworkManager")));
-        GameObject.DontDestroyOnLoad(GameObject.Instantiate(Resources.Load<GameObject>("MainMenu")));
     }
 #else 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]

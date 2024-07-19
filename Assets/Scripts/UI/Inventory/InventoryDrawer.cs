@@ -18,7 +18,7 @@ public class InventoryDrawer : MonoBehaviour
     public static ItemPack LocalInventoryInstance = new() { 
         items = new Item[] {
             new Sword(), new LongSword(), new Axe(), null, new Plate(), 
-            new Mace(), new Spear(), null, null, new Bone(), 
+            new Mace(), new Spear(), new Pan(), null, new Bone(), 
             new HeavySword(), new Rapier(), new Katana(), null, new LeatherJacket(),
             
             new VoidMagic(), new ExplodeMagic(), null, null, new BaseballMan(), 

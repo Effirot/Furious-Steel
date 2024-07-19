@@ -6,8 +6,10 @@ using CharacterSystem.Objects;
 using Mirror;
 using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.TextCore.Text;
 using UnityEngine.UI;
+using static UnityEngine.InputSystem.InputAction;
 
 public interface IObservableObject
 {
@@ -45,19 +47,58 @@ public class CharacterCameraObserver : MonoBehaviour
     [SerializeField]
     private CinemachineCamera virtualCamera; 
 
+    [SerializeField]
+    private InputActionReference scrollInput;
+
+    private CinemachineFollowZoom zoom;
+    private float zoomValue = 30f;
+
+    private const float MinZoomValue = 10;
+    private const float MaxZoomValue = 20;
+
     private void Awake()
     {
         Singleton = this;
         ObservingObject = null;
     
         PlayerNetworkCharacter.OnOwnerPlayerCharacterDead += ResetObserver_Event;
+
+        zoom = virtualCamera.GetComponent<CinemachineFollowZoom>();
+
+        if (zoom != null && scrollInput != null)
+        {
+            scrollInput.action.Enable();
+            scrollInput.action.performed += OnZoomAction;
+            scrollInput.action.started += OnZoomAction;
+            scrollInput.action.canceled += OnZoomAction;
+        }
     }
     private void OnDestroy()
     {
         Singleton = null;
 
         PlayerNetworkCharacter.OnOwnerPlayerCharacterDead -= ResetObserver_Event;
+
+        if (zoom != null && scrollInput != null)
+        {
+            scrollInput.action.performed -= OnZoomAction;
+            scrollInput.action.started -= OnZoomAction;
+            scrollInput.action.canceled -= OnZoomAction;
+        }
     }
+    private void LateUpdate()
+    {
+        if (zoom != null)
+        {
+            zoom.Width = zoomValue;
+        }
+    }
+
+    private void OnZoomAction(CallbackContext callback)
+    {
+        zoomValue = Mathf.Clamp(zoomValue - callback.ReadValue<float>(), MinZoomValue, MaxZoomValue);
+    }
+
 
     private void ResetObserver_Event(PlayerNetworkCharacter character)
     {
@@ -106,4 +147,6 @@ public class CharacterCameraObserver : MonoBehaviour
     {
 
     }
+
+
 }

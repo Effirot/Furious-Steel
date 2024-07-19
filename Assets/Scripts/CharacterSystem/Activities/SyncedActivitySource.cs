@@ -148,10 +148,9 @@ public abstract class SyncedActivitySource : NetworkBehaviour
             Play_ClientRpc();
         }
 
-        process = StartCoroutine(SubProcessRoutine());
+        process = StartCoroutine(SubprocessRoutine());
 
         Source?.activities.Add(this);            
-        
     }
 
     public void Stop()
@@ -162,7 +161,9 @@ public abstract class SyncedActivitySource : NetworkBehaviour
     {
         if (IsInProcess)
         {
-            if (isServer)
+            Source.activities.Remove(this);
+
+            if (isServer && !interuptProcess)
             {
                 Stop_ClientRpc();
             }
@@ -176,8 +177,6 @@ public abstract class SyncedActivitySource : NetworkBehaviour
             }
 
             process = null;
-
-            Source.activities.Remove(this);
         }
     }
 
@@ -192,7 +191,7 @@ public abstract class SyncedActivitySource : NetworkBehaviour
         }
     }
 
-    private IEnumerator SubProcessRoutine()
+    private IEnumerator SubprocessRoutine()
     {
         yield return Process();
 
@@ -288,7 +287,6 @@ public sealed class SyncedActivitiesList :
         Add,
         Remove
     }
-
 
     public event OnSyncedActivityListChangedDelegate onSyncedActivityListChanged;
 

@@ -25,7 +25,17 @@ public class WeatherManager : NetworkBehaviour
     private float deltaTime;
 
     public float Time { 
-        get => time;
+        get { 
+            if (SyncWithRealTime)
+            {
+                var currentTime = System.DateTime.Now;
+                return time = currentTime.Hour + (currentTime.Minute / 600f) + (currentTime.Second / 10000f);
+            }
+            else
+            {
+                return time;
+            }
+        }
         set {
             value %= 24f;
 
