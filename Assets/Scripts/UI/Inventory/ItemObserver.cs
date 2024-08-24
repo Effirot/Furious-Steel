@@ -70,6 +70,7 @@ Creation time: {value.CreationTime.ToLongTimeString()}");
         SelectedItem = null;
     }
 
+#if !UNITY_SERVER || UNITY_EDITOR 
     private void LateUpdate()
     {
         PointerEventData eventData = new(EventSystem.current);
@@ -97,4 +98,5 @@ Creation time: {value.CreationTime.ToLongTimeString()}");
             }
         }
     }
+#endif
 }

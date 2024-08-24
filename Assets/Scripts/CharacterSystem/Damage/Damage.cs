@@ -90,10 +90,7 @@ namespace CharacterSystem.DamageMath
 
                 report.isLethal = target.health <= 0;
 
-                if (report.isLethal)
-                {
-                    target.Kill(damage);
-                }
+
             }
             catch (Exception e)
             {
@@ -101,6 +98,12 @@ namespace CharacterSystem.DamageMath
             }
 
             damageDeliveryPipeline?.Invoke(report);
+                
+            if (report.isLethal)
+            {
+                target.Kill(damage);
+            }
+
             return report;
 
             bool DeliverEffects()
@@ -291,9 +294,9 @@ namespace CharacterSystem.DamageMath
 
         public IDamagable target {
             get {
-                if (NetworkServer.spawned.ContainsKey(targetID) && NetworkServer.spawned[targetID].TryGetComponent<IDamageSource>(out var component))
+                if (NetworkClient.active && NetworkClient.spawned.ContainsKey(targetID) && NetworkClient.spawned[targetID].TryGetComponent<IDamageSource>(out var clientComponent))
                 {
-                    return component;
+                    return clientComponent;
                 }
 
                 return null;
@@ -329,7 +332,7 @@ namespace CharacterSystem.DamageMath
 
         public override string ToString()
         {
-            return $"{damage}\n Target: {target?.gameObject.ToSafeString()}\nIsDelivered: {isDelivered}\n IsBlocked: {isBlocked}\n IsLethal: {isLethal}\n Time: {time}\n Effects: {RecievedEffects}";
+            return $"{damage}\n Target: {target?.gameObject.ToSafeString() ?? "null"} ({targetID})\nIsDelivered: {isDelivered}\n IsBlocked: {isBlocked}\n IsLethal: {isLethal}\n Time: {time}\n Effects: {RecievedEffects}";
         }
     }
 

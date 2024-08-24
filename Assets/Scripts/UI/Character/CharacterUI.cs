@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using CharacterSystem.Attacks;
 using CharacterSystem.Objects;
-using CharacterSystem.PowerUps;
 using Cysharp.Threading.Tasks;
 using JetBrains.Annotations;
 using TMPro;
@@ -36,7 +35,7 @@ public class CharacterUI : MonoBehaviour
     private TMP_Text ComboField;
 
     [SerializeField]
-    private PowerUpDrawer powerUpDrawer;
+    private Slider DodgeStateCount;
 
 
     private List<GameObject> additiveInstantiatedUIGameObjects = new();
@@ -47,7 +46,7 @@ public class CharacterUI : MonoBehaviour
         set {
             _networkCharacter = value;
 
-            UpdateValue();
+            LinkCharacter();
         }
     }
 
@@ -66,7 +65,7 @@ public class CharacterUI : MonoBehaviour
                 transform.localScale = Vector3.one * 1.5f;
             }
 
-            UpdateValue();
+            LinkCharacter();
         }
     }
 
@@ -87,7 +86,7 @@ public class CharacterUI : MonoBehaviour
     }
 #endif
 
-    private async void UpdateValue()
+    private async void LinkCharacter()
     {
         RemoveAllAdditiveUI();
 
@@ -95,7 +94,7 @@ public class CharacterUI : MonoBehaviour
         
         if (NetworkCharacter == null) 
         {
-
+            
         }
         else
         {
@@ -152,10 +151,10 @@ public class CharacterUI : MonoBehaviour
                     };
                 }
             }
-
-            if (powerUpDrawer != null && NetworkCharacter is IPowerUpActivator)
-            {                
-                powerUpDrawer.Initialize(NetworkCharacter as IPowerUpActivator);
+        
+            if (DodgeStateCount != null)
+            {
+                
             }
         }
     }

@@ -10,6 +10,7 @@ public class InstantiatePrefabOnDestroy : MonoBehaviour
     [SerializeField, Range(0, 20)]
     private float removeObjectAfter = 5;
 
+#if !UNITY_SERVER || UNITY_EDITOR
     private void OnDisable()
     {
         var spawnedObject = GameObject.Instantiate(targetObject, transform.position, transform.rotation);
@@ -18,4 +19,5 @@ public class InstantiatePrefabOnDestroy : MonoBehaviour
         
         Destroy(spawnedObject, removeObjectAfter);
     }
+#endif
 }

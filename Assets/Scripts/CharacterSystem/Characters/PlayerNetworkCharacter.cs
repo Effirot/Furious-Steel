@@ -6,7 +6,6 @@ using CharacterSystem.Attacks;
 using CharacterSystem.Blocking;
 using CharacterSystem.DamageMath;
 using CharacterSystem.Interactions;
-using CharacterSystem.PowerUps;
 using Effiry.Items;
 using Mirror;
 using Unity.Cinemachine;
@@ -15,14 +14,18 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.XInput;
+
 using static UnityEngine.InputSystem.InputAction;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace CharacterSystem.Objects
 {
     public class PlayerNetworkCharacter : NetworkCharacter,
         IDamageSource,
-        IDamageBlocker,
-        IPowerUpActivator,
+        IDamageBlockerAcivity,
         IObservableObject,
         IThrower
     {
@@ -58,10 +61,10 @@ namespace CharacterSystem.Objects
         [SerializeField]
         private GameObject suicideCorpsePrefab;
 
-        [field : SerializeField]
-        public Transform ObservingPoint { get; private set; }
+        [SerializeField]
+        public Transform observingPoint;
 
-        public DamageBlocker Blocker { get; set; }
+        public DamageBlockerAcivity Blocker { get; set; }
         public DamageDeliveryReport lastReport { get; set; } = new();
 
         [HideInInspector, SyncVar]
@@ -69,13 +72,13 @@ namespace CharacterSystem.Objects
 
         public event Action<DamageDeliveryReport> onDamageDelivered;
         public event Action<int> onComboChanged;
-        public UnityEvent<PowerUp> onPowerUpChanged { get; } = new();
 
         int IDamageSource.Combo => combo;
         float IDamageSource.DamageMultipliyer { get => DamageMultipliyer; set => DamageMultipliyer = value; }
-        int IPowerUpActivator.PowerUpId { get => powerUpId; set => powerUpId = value; }
 
         public ConnectedPlayerData Data => ConnectedPlayerData.All.Find(data => data.netIdentity.connectionToClient == netIdentity.connectionToClient);
+        
+        Transform IObservableObject.ObservingPoint => observingPoint;
 
 
         [SyncVar(hook = nameof(OnComboChanged))]
@@ -83,10 +86,7 @@ namespace CharacterSystem.Objects
 
         [SyncVar(/* hook = nameof(OnDamageMultipliyerChanged) */)]
         public float DamageMultipliyer = 1f;
-        
-        [SyncVar(hook = nameof(OnPowerUpChanged))]
-        private int powerUpId = -1;
-        
+                
         [SyncVar(hook = nameof(OnWeaponChanged))]
         private NetworkIdentity weaponIdentity;
         [SyncVar(hook = nameof(OnTrinketChanged))]
@@ -96,7 +96,8 @@ namespace CharacterSystem.Objects
 
         public Vector2 internalMovementVector { get; set; } = Vector2.zero;
         public Vector2 internalLookVector { get; set; } = Vector2.zero;
-        public Transform pickPoint { get; set; }
+
+
 
         public virtual NetworkIdentity SetWeapon (Item item)
         {
@@ -235,25 +236,25 @@ namespace CharacterSystem.Objects
                 var action = moveInput.action;
                 action.Enable();
 
-                action.started += OnMoveInput;
-                action.performed += OnMoveInput;
-                action.canceled += OnMoveInput;
+                action.started += OnMove_Input;
+                action.performed += OnMove_Input;
+                action.canceled += OnMove_Input;
             }
 
             if (lookInput != null) {
                 var action = lookInput.action;
                 action.Enable();
 
-                action.performed += OnLookInput;
-                action.canceled += OnLookInput;
+                action.performed += OnLook_Input;
+                action.canceled += OnLook_Input;
             }
 
             if (jumpInput != null) {
                 var action = jumpInput.action;
                 action.Enable();
 
-                action.performed += OnJumpInput;
-                action.canceled += OnJumpInput;
+                action.performed += OnJump_Input;
+                action.canceled += OnJump_Input;
                                     
                 isGroundedEvent += isGrounded => {
                     if (JumpButtonState && isGrounded)
@@ -282,23 +283,23 @@ namespace CharacterSystem.Objects
             {
                 var action = moveInput.action;
                 
-                action.started -= OnMoveInput;
-                action.performed -= OnMoveInput;
-                action.canceled -= OnMoveInput;
+                action.started -= OnMove_Input;
+                action.performed -= OnMove_Input;
+                action.canceled -= OnMove_Input;
             }
             
             {
                 var action = lookInput.action;
 
-                action.performed -= OnLookInput;
-                action.canceled -= OnLookInput;
+                action.performed -= OnLook_Input;
+                action.canceled -= OnLook_Input;
             }
 
             {
                 var action = jumpInput.action;
 
-                action.performed -= OnJumpInput;
-                action.canceled -= OnJumpInput;
+                action.performed -= OnJump_Input;
+                action.canceled -= OnJump_Input;
             }
 
             {
@@ -377,7 +378,10 @@ namespace CharacterSystem.Objects
         {
             var corpseObject = base.SpawnCorpse();
 
-            if (isLocalPlayer && corpseObject.TryGetComponent<IObservableObject>(out var observableObject))
+            if (!corpseObject.IsUnityNull() && 
+                corpseObject.TryGetComponent<IObservableObject>(out var observableObject) && 
+                !this.IsUnityNull() && 
+                isLocalPlayer)
             {
                 CharacterCameraObserver.Singleton.ObservingObject = observableObject;
             }
@@ -393,10 +397,7 @@ namespace CharacterSystem.Objects
         {
 
         }
-        protected virtual void OnPowerUpChanged(int Old, int New)
-        {
-            onPowerUpChanged?.Invoke(PowerUp.IdToPowerUpLink(New));
-        }
+
         protected virtual void OnComboChanged(int Old, int New)
         {
             if (isServer)
@@ -437,11 +438,11 @@ namespace CharacterSystem.Objects
             comboResetTimer = null;
         }
 
-        private void OnMoveInput(CallbackContext input)
+        private void OnMove_Input(CallbackContext input)
         {
             internalMovementVector = input.ReadValue<Vector2>();
         }
-        private void OnLookInput(CallbackContext input)
+        private void OnLook_Input(CallbackContext input)
         {
             var value = input.ReadValue<Vector2>();
 
@@ -464,7 +465,7 @@ namespace CharacterSystem.Objects
                 internalLookVector = value;
             }
         }
-        private void OnJumpInput(CallbackContext input)
+        private void OnJump_Input(CallbackContext input)
         {
             var state = input.ReadValueAsButton();
 
@@ -490,5 +491,46 @@ namespace CharacterSystem.Objects
                 Damage.Deliver(this, new Damage(maxHealth * 100, null, 100, Vector3.up, Damage.Type.Unblockable));
             }
         } 
+    
+#if UNITY_EDITOR
+        [CustomEditor(typeof (PlayerNetworkCharacter))]
+        protected class PlayerNetworkCharacter_Editor : NetworkCharacter_Editor
+        {
+            private SerializedProperty moveInput;
+            private SerializedProperty lookInput;
+            private SerializedProperty jumpInput;
+            private SerializedProperty killBindInput;
+            private SerializedProperty OnHitImpulseSource;
+            private SerializedProperty suicideCorpsePrefab;
+            private SerializedProperty observingPoint;
+
+            public override void OnInspectorGUI()
+            {
+                base.OnInspectorGUI();
+                
+                EditorGUI.BeginChangeCheck();
+
+                moveInput ??= serializedObject.FindProperty("moveInput");
+                lookInput ??= serializedObject.FindProperty("lookInput");
+                jumpInput ??= serializedObject.FindProperty("jumpInput");
+                killBindInput ??= serializedObject.FindProperty("killBindInput");
+                OnHitImpulseSource ??= serializedObject.FindProperty("OnHitImpulseSource");
+                suicideCorpsePrefab ??= serializedObject.FindProperty("suicideCorpsePrefab");
+                observingPoint ??= serializedObject.FindProperty("observingPoint");
+
+                EditorGUILayout.PropertyField(moveInput);
+                EditorGUILayout.PropertyField(lookInput);
+                EditorGUILayout.PropertyField(jumpInput);
+                EditorGUILayout.PropertyField(killBindInput);
+                EditorGUILayout.PropertyField(OnHitImpulseSource);
+                EditorGUILayout.PropertyField(suicideCorpsePrefab);
+                EditorGUILayout.PropertyField(observingPoint);
+                
+                serializedObject.ApplyModifiedProperties();
+                
+                EditorGUI.EndChangeCheck();
+            }
+        }
+#endif
     }
 }

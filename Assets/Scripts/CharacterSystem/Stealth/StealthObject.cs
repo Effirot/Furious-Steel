@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using CharacterSystem.Attacks;
 using CharacterSystem.Blocking;
 using CharacterSystem.DamageMath;
-using CharacterSystem.PowerUps;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;

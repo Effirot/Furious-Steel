@@ -30,10 +30,10 @@ public class KillsMenuElement : MonoBehaviour
 
     private Image image => GetComponent<Image>();
 
-    public void Initialize(DamageDeliveryReport report)
+    public void Initialize(string KillerName, string KilledName)
     {
-        killerNameField.SetText(report.damage.sender?.gameObject.name ?? "");
-        killedNameField.SetText(report.target?.gameObject.name ?? "");
+        killerNameField.SetText(KillerName);
+        killedNameField.SetText(KilledName);
 
         // if ((report.damage.sender != null && report.damage.sender.isLocalPlayer) || 
         //     (report.target.gameObject.TryGetComponent<NetworkIdentity>(out var net) && net.isOwned))

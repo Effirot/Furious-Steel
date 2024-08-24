@@ -141,11 +141,11 @@ GameObject:
   - component: {fileID: 9006059341019684582}
   - component: {fileID: 1124685883047191148}
   - component: {fileID: 4622216045612361692}
-  - component: {fileID: 6048406867287582554}
   - component: {fileID: 4430791935402549926}
   - component: {fileID: 7384744549645813480}
   - component: {fileID: 1926592197812351043}
   - component: {fileID: 4129201663435142706}
+  - component: {fileID: 6138983013690507984}
   m_Layer: 8
   m_Name: PowerUp
   m_TagString: Untagged
@@ -213,6 +213,7 @@ MeshRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -238,22 +239,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &6048406867287582554
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3895990821394289327}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 500f0180442c4294bbd4181e02f07fcc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  <Id>k__BackingField: 0
 --- !u!114 &4430791935402549926
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -318,3 +303,29 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   networkParent: {fileID: 0}
+--- !u!114 &6138983013690507984
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3895990821394289327}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aca7eb834acc03b469cb856b41d51981, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  IgnoreTag: 
+  damage:
+    value: -10
+    type: 32
+    stunlock: 0
+    pushDirection: {x: 0, y: 0, z: 0}
+    RechargeUltimate: 0
+    SelfDamageUltimate: 0
+    Effects: []
+    args: []
+  destroySelfOnDeliver: 1
+  references:
+    version: 2
+    RefIds: []

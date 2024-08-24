@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.VFX;
 using Telepathy;
+using UnityEditor.Localization.Plugins.XLIFF.V20;
 
 public class Projectile : NetworkBehaviour, 
     IDamagable,
@@ -16,17 +17,26 @@ public class Projectile : NetworkBehaviour,
 {
     public delegate void OnDamageDeliveryReport(DamageDeliveryReport damageDeliveryReport);
 
-    [field : SerializeField, Range (0.1f, 100)]
+    [SerializeField, Range (0.1f, 100)]
     public float speed = 1;
 
-    [field : SerializeField, Range (0.95f, 1.05f)]
+    [SerializeField, Range (0.95f, 1.05f)]
     private float speedTimeIncreacing = 1;
 
-    [field : SerializeField, Range (0.1f, 10)]
+    [SerializeField, Range (0.1f, 10)]
     private float lifetime = 3;
+ 
+    [SerializeField, Range (0f, 1f)]
+    private float bounciness = 0.1f;
+ 
+    [SerializeField, Range (0f, 1f)]
+    private float friction = 0f;
   
-    [field : SerializeField]
-    public bool DamageOnHit { get; private set; }
+    [SerializeField]
+    public bool DamageOnHit;
+
+    [SerializeField]
+    public bool DestroyOnGroundHit = true;
 
     [field : SerializeField]
     public bool AllowDeflecting { get; private set; }
@@ -43,7 +53,7 @@ public class Projectile : NetworkBehaviour,
     public OnDamageDeliveryReport onDamageDeliveryReport;
     
     [HideInInspector, SyncVar]
-    public Vector3 MoveDirection;
+    public Vector3 velocity;
     [HideInInspector, SyncVar]
     public Vector3 position = Vector3.zero;
 
@@ -96,6 +106,8 @@ public class Projectile : NetworkBehaviour,
 
         Kill(damage);
 
+        Debug.Log(damage);
+
         return false;
     }
     public bool Heal (Damage damage)
@@ -104,7 +116,7 @@ public class Projectile : NetworkBehaviour,
     }
     public void Push (Vector3 direction)
     {
-        MoveDirection = direction;
+        velocity = direction;
     }
 
     public virtual void Kill (Damage damage)
@@ -146,9 +158,9 @@ public class Projectile : NetworkBehaviour,
 
         if (isServer)
         {
-            transform.position += MoveDirection * Time.fixedDeltaTime * speed;
+            transform.position += velocity * Time.fixedDeltaTime * speed;
 
-            MoveDirection = Vector3.Lerp(MoveDirection, Physics.gravity, Gravity);
+            velocity = Vector3.Lerp(velocity, Physics.gravity, Gravity);
             
 
             position = transform.position;
@@ -156,9 +168,9 @@ public class Projectile : NetworkBehaviour,
             CheckGroundCollision();
         }
 
-        if (MoveDirection.magnitude > 0)
+        if (velocity.magnitude > 0)
         {
-            transform.rotation = Quaternion.LookRotation(MoveDirection);
+            transform.rotation = Quaternion.LookRotation(velocity);
         }
     }
     protected virtual void LateUpdate()
@@ -212,15 +224,23 @@ public class Projectile : NetworkBehaviour,
 
     private void CheckGroundCollision()
     {
-        if (Physics.Linecast(transform.position - MoveDirection, transform.position + MoveDirection, out var hit, LayerMask.GetMask("Ground", "Projectile"), QueryTriggerInteraction.Collide))
+        if (Physics.Linecast(transform.position - velocity, transform.position + velocity, out var hit, LayerMask.GetMask("Ground"), QueryTriggerInteraction.Collide))
         {
-            if (DamageOnHit)
+            if (DestroyOnGroundHit)
             {
+                position = transform.position = hit.point;
                 Kill(default);
             }
             else
             {
-                transform.position += hit.normal * hit.distance * Time.fixedDeltaTime * speed;
+                var deltaAngle = Quaternion.FromToRotation(hit.normal, Vector3.down);
+                var deltaVelocity = deltaAngle * velocity;
+
+                deltaVelocity.y = Mathf.Min(0, -deltaVelocity.y) * bounciness;
+                deltaVelocity.x = Mathf.MoveTowards(deltaVelocity.x, 0, Time.fixedTime * (10 * friction));
+                deltaVelocity.z = Mathf.MoveTowards(deltaVelocity.z, 0, Time.fixedTime * (10 * friction));
+
+                velocity = Quaternion.Inverse(deltaAngle) * deltaVelocity;
             }
         }
     }

@@ -126,6 +126,7 @@ VFXRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -245,6 +246,7 @@ VFXRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -338,6 +340,7 @@ MonoBehaviour:
     RechargeUltimate: 1
     SelfDamageUltimate: 0
     Effects: []
+    args: []
   explodeDamage:
     value: 25
     type: 8
@@ -346,6 +349,7 @@ MonoBehaviour:
     RechargeUltimate: 1
     SelfDamageUltimate: 0
     Effects: []
+    args: []
   collideBackPush: {x: 0, y: 0.33, z: 1.63}
   onStartRunning:
     m_PersistentCalls:
@@ -635,6 +639,7 @@ VFXRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -839,6 +844,7 @@ VFXRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -1008,6 +1014,7 @@ VFXRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -1156,6 +1163,7 @@ VFXRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -1304,6 +1312,7 @@ VFXRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -1555,6 +1564,7 @@ VFXRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -2118,6 +2128,7 @@ VFXRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -2234,6 +2245,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2437272728646873351, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
       propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2437272728646873351, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
+      propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2656361031415205472, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
@@ -2380,6 +2395,10 @@ PrefabInstance:
       propertyPath: OnCharacterUnhide.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
+    - target: {fileID: 3742709772564582372, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4510306183629817814, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
       propertyPath: m_Layer
       value: 6
@@ -2425,8 +2444,12 @@ PrefabInstance:
       value: 1.4
       objectReference: {fileID: 0}
     - target: {fileID: 5804015679080351171, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
+      propertyPath: mass
+      value: 1.522
+      objectReference: {fileID: 0}
+    - target: {fileID: 5804015679080351171, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
       propertyPath: Speed
-      value: 9.5
+      value: 11.5
       objectReference: {fileID: 0}
     - target: {fileID: 5804015679080351171, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
       propertyPath: JumpForce
@@ -2495,6 +2518,14 @@ PrefabInstance:
     - target: {fileID: 7339049487124217837, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
       propertyPath: m_Center.y
       value: 1.84
+      objectReference: {fileID: 0}
+    - target: {fileID: 7731706045980808795, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7731706045980808795, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7841805040289970568, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
       propertyPath: m_AnchorMax.x

@@ -27,7 +27,7 @@ public class InventoryDrawer : MonoBehaviour
 
             new Bag(), new Pistol(), null, null, null, 
             new Buckler(), new Shield(), new Deflector(), null, null, 
-            new Mortar(), null, null, null, null
+            new Mortar(), new RapidShooter(), null, null, null
         }
     };
     

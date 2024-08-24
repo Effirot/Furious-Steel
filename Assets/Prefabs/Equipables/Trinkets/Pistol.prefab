@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 2682705565289463711}
   - component: {fileID: 4868943474249717089}
-  - component: {fileID: 3382474808171941762}
   - component: {fileID: 1070689373927008318}
   - component: {fileID: 8549215278612622993}
+  - component: {fileID: 1055935573984288566}
   m_Layer: 6
   m_Name: Pistol
   m_TagString: Weapon
@@ -54,29 +54,6 @@ MonoBehaviour:
     Clip: {fileID: -8742961236503954806, guid: badcb3bbdec5cc341b4e3c375120cd60, type: 3}
   - Name: Trinket_Attack1
     Clip: {fileID: 3262201019511805127, guid: badcb3bbdec5cc341b4e3c375120cd60, type: 3}
---- !u!114 &3382474808171941762
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1517727645108543378}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f7833ff246d1754459595b40d8d6c25c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  DefaultValue: 3
-  MaxValue: 3
-  color: {r: 1, g: 0.54877096, b: 0.015686274, a: 1}
-  fullChargeColor: {r: 1, g: 0.54901963, b: 0.015686275, a: 1}
-  OnValueChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  IsActive: 1
 --- !u!114 &1070689373927008318
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -110,6 +87,31 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   networkParent: {fileID: 0}
+--- !u!114 &1055935573984288566
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1517727645108543378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f33f700d19759654199fa933d831ff38, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  DefaultValue: 2
+  MaxValue: 2
+  color: {r: 1, g: 0.54901963, b: 0.015686275, a: 1}
+  fullChargeColor: {r: 1, g: 0.54901963, b: 0.015686275, a: 1}
+  OnValueChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  IsActive: 1
+  RegenerationPerSecond: 1
+  BeforeRegenerationTimeout: 3
 --- !u!1 &2429100434997788893
 GameObject:
   m_ObjectHideFlags: 0
@@ -421,6 +423,7 @@ VFXRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -606,19 +609,7 @@ MonoBehaviour:
   OnDamageReport:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3382474808171941762}
-        m_TargetAssemblyTypeName: CustomProperty, Assembly-CSharp
-        m_MethodName: AddValue
-        m_Mode: 4
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0.5
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 3382474808171941762}
+      - m_Target: {fileID: 1055935573984288566}
         m_TargetAssemblyTypeName: CustomProperty, Assembly-CSharp
         m_MethodName: RefillOnKill
         m_Mode: 0
@@ -647,7 +638,7 @@ MonoBehaviour:
         m_CallState: 2
   MinRequiredValue: 1
   StopOnValueLessThenMinimum: 1
-  customProperty: {fileID: 3382474808171941762}
+  customProperty: {fileID: 1055935573984288566}
   references:
     version: 2
     RefIds:
@@ -660,7 +651,7 @@ MonoBehaviour:
         OnCast:
           m_PersistentCalls:
             m_Calls:
-            - m_Target: {fileID: 3382474808171941762}
+            - m_Target: {fileID: 1055935573984288566}
               m_TargetAssemblyTypeName: CustomProperty, Assembly-CSharp
               m_MethodName: SubtractValue
               m_Mode: 4
@@ -719,6 +710,7 @@ MonoBehaviour:
           RechargeUltimate: 1
           SelfDamageUltimate: 0
           Effects: []
+          args: []
         position: {x: 0, y: 0, z: 7.68}
         size: {x: 1.48, y: 2.16, z: 6.7}
         angle: {x: 0, y: 0, z: 0}

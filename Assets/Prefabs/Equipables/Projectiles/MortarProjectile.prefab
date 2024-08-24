@@ -97,6 +97,7 @@ VFXRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -248,6 +249,7 @@ VFXRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -473,7 +475,10 @@ MonoBehaviour:
   speed: 34
   speedTimeIncreacing: 1
   lifetime: 1.28
-  <DamageOnHit>k__BackingField: 1
+  bounciness: 0.1
+  friction: 0
+  DamageOnHit: 1
+  DestroyOnGroundHit: 1
   <AllowDeflecting>k__BackingField: 1
   <Gravity>k__BackingField: 0.0042
   onDespawnEvent:
@@ -487,7 +492,8 @@ MonoBehaviour:
     RechargeUltimate: 1
     SelfDamageUltimate: 0
     Effects: []
-  MoveDirection: {x: 0, y: 0, z: 0}
+    args: []
+  velocity: {x: 0, y: 0, z: 0}
   position: {x: 0, y: 0, z: 0}
   Range: 2.31
   PushForce: 0.51
@@ -499,6 +505,7 @@ MonoBehaviour:
     RechargeUltimate: 1
     SelfDamageUltimate: 1
     Effects: []
+    args: []
   <OnExplodePrefab>k__BackingField: {fileID: 731231275301304977}
   PereodicExplodeDelay: 0
   references:
@@ -573,6 +580,7 @@ MeshRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

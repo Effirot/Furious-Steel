@@ -547,6 +547,7 @@ VFXRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -622,6 +623,7 @@ VFXRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -776,6 +778,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2437272728646873351, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
       propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2437272728646873351, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
+      propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2656361031415205472, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
@@ -958,6 +964,10 @@ PrefabInstance:
       propertyPath: OnCharacterUnhide.m_PersistentCalls.m_Calls.Array.data[3].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
+    - target: {fileID: 3742709772564582372, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4510306183629817814, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
       propertyPath: m_Layer
       value: 6
@@ -1090,6 +1100,14 @@ PrefabInstance:
       propertyPath: m_Center.y
       value: 1.625
       objectReference: {fileID: 0}
+    - target: {fileID: 7731706045980808795, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7731706045980808795, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7750556069037450647, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
       propertyPath: _networkCharacter
       value: 
@@ -1150,17 +1168,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1288931942115344864, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
   m_PrefabInstance: {fileID: 4267881592209223414}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &4206042751654752111 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 100295437377061273, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
-  m_PrefabInstance: {fileID: 4267881592209223414}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0777d029ed3dffa4692f417d4aba19ca, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &6518801678340056005 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7011506643223629107, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
@@ -1194,31 +1201,47 @@ MonoBehaviour:
   syncInterval: 0
   maxHealth: 75
   regenerationPerSecond: 8
-  Speed: 9.5
-  <mass>k__BackingField: 1
+  Speed: 12
+  mass: 1
   CorpsePrefab: {fileID: 7144468389626513097}
-  OnHitSound: {fileID: 8163247360859426925}
-  OnHitEffect: {fileID: 0}
   JumpForce: 0.31
   JumpCount: 1
-  JumpEffect: {fileID: 3793116028592274626}
-  shadow: {fileID: 4206042751654752111}
   permissions: 65280
   health: 0
   stunlock: 0
   velocity: {x: 0, y: 0, z: 0}
+  OnHitSound: {fileID: 8163247360859426925}
+  OnHitEffect:
+  - {fileID: 0}
+  OnHit:
+    m_PersistentCalls:
+      m_Calls: []
+  OnHealSound: {fileID: 0}
+  OnHealEffect: []
+  OnHeal:
+    m_PersistentCalls:
+      m_Calls: []
+  OnStunned:
+    m_PersistentCalls:
+      m_Calls: []
+  OnJump:
+    m_PersistentCalls:
+      m_Calls: []
+  OnGrounded:
+    m_PersistentCalls:
+      m_Calls: []
+  OnWallHit:
+    m_PersistentCalls:
+      m_Calls: []
   moveInput: {fileID: -3797342247120088548, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   lookInput: {fileID: 9093183501225965390, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   jumpInput: {fileID: 3350768162098237311, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   killBindInput: {fileID: 7880830833157163440, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   OnHitImpulseSource: {fileID: 6518801678340056005}
   suicideCorpsePrefab: {fileID: 95016300665387997}
-  <ObservingPoint>k__BackingField: {fileID: 2949111950295989654}
-  combo: 0
-  PowerUpId: 0
+  observingPoint: {fileID: 2949111950295989654}
   JumpButtonState: 0
-  internalMovementVector: {x: 0, y: 0}
-  internalLookVector: {x: 0, y: 0}
+  DamageMultipliyer: 1
   healthDrainPercent: 0.35
   healtPerBlock: 15
   healReducingByRangeHits: 3

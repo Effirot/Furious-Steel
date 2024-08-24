@@ -1,5 +1,6 @@
 
 using System;
+using System.Collections;
 using CharacterSystem.DamageMath;
 
 namespace CharacterSystem.Interactions 
@@ -7,10 +8,9 @@ namespace CharacterSystem.Interactions
     public interface IInteractable : 
         IGameObjectLink
     {
-        public void OnSelect(IInteractor interactor);
-        public void OnDeselect(IInteractor interactor);
+        public bool IsInteractionAllowed(IInteractor interactor);
 
-        public void Interact(IInteractor interactor);    
+        public IEnumerator Interact(IInteractor interactor);    
     }
 
     public interface IInteractor : 

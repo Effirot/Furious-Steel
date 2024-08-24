@@ -102,18 +102,22 @@ public abstract class SyncedActivitySource : NetworkBehaviour
     }
     public bool HasOverrides()
     {
-        if (syncedActivityOverrider.IsUnityNull() || !syncedActivityOverrider.isPerforming || (int)syncedActivityOverrider.Priority <= (int)Priority)
+        if (syncedActivityOverrider.IsUnityNull() || !IsValid(syncedActivityOverrider))
         {
-            syncedActivityOverrider = regsitredSyncedActivities.Find(
-                activity => 
-                    activity.inputAction == inputAction && 
-                    (int)activity.Priority > (int)Priority &&
-                    System.Object.ReferenceEquals(activity.Source, Source) &&
-                    activity.isPerforming);
+            syncedActivityOverrider = regsitredSyncedActivities.Find(activity => IsValid(activity));
         }
 
         return !syncedActivityOverrider.IsUnityNull();
     }    
+
+    public virtual bool IsValid(SyncedActivitySource other)
+    {
+        return other.inputAction == inputAction && 
+                (int)other.Priority > (int)Priority &&
+                System.Object.ReferenceEquals(other.Source, Source) &&
+                other.isPerforming;
+
+    }
 
     public override void OnStartClient()
     {

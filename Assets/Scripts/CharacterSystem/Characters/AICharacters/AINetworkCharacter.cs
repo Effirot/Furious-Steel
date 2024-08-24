@@ -6,27 +6,33 @@ using CharacterSystem.Blocking;
 using CharacterSystem.DamageMath;
 using Cysharp.Threading.Tasks;
 using Mirror;
-using Org.BouncyCastle.Security;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace CharacterSystem.Objects.AI
 {   
     public class AINetworkCharacter : NetworkCharacter, 
         IDamageSource,
-        IDamageBlocker
+        IDamageBlockerAcivity
     {       
         private static Team botTeam = new(); 
         
+        [Header("AI")]
+        [SerializeField]
         public int PatchLayerIndex = 0;
-
-        private NavMeshPath path;
 
         [SerializeField, SerializeReference, SubclassSelector]
         private AICompute AICompute = new AllWeaponAICompute();
 
-        public DamageBlocker Blocker { get; set; }
+
+        private NavMeshPath path;
+
+        public DamageBlockerAcivity Blocker { get; set; }
         public DamageDeliveryReport lastReport { get; set; }
 
         public int Combo => 0;
@@ -205,5 +211,25 @@ namespace CharacterSystem.Objects.AI
                 await UniTask.Delay(100);
             }
         }
+
+#if UNITY_EDITOR
+        [CustomEditor(typeof (AINetworkCharacter), true)]
+        protected class AINetworkCharacter_Editor : NetworkCharacter_Editor
+        {
+            private SerializedProperty patchLayerIndex;
+            private SerializedProperty AICompute;
+
+            public override void OnInspectorGUI()
+            {
+                patchLayerIndex ??= serializedObject.FindProperty("PatchLayerIndex");
+                AICompute       ??= serializedObject.FindProperty("AICompute");
+
+                EditorGUILayout.PropertyField(patchLayerIndex);
+                EditorGUILayout.PropertyField(AICompute);
+
+                base.OnInspectorGUI();
+            }
+        }
+#endif
     }
 }

@@ -10,13 +10,4 @@ namespace CharacterSystem.Interactions
         public void Pick(IThrower thrower);
         public void Throw(IThrower thrower);
     }
-
-    public interface IThrower : 
-        ISyncedActivitiesSource,
-        IInteractor,
-        IPhysicObject,
-        IDamageSource
-    {
-        public Transform pickPoint { get; set; }
-    }
 }

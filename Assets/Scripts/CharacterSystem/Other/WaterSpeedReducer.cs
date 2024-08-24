@@ -7,8 +7,11 @@ using UnityEngine;
 [RequireComponent(typeof(IPhysicObject))]
 public class WaterSpeedReducer : MonoBehaviour
 {
-    [SerializeField, Range(0, 1)]
-    private float speedReducing = 1f;
+    [SerializeField, Range(-1, 1)]
+    private float physicsScaleReducing = 0.5f;
+
+    [SerializeField, Range(-1, 1)]
+    private float GravityScale = 0.5f;
 
     public bool isInWater { 
         get => m_isInWater;
@@ -18,11 +21,13 @@ public class WaterSpeedReducer : MonoBehaviour
             {
                 if (value)
                 {
-                    physicObject.PhysicTimeScale -= speedReducing;
+                    physicObject.PhysicTimeScale -= physicsScaleReducing;
+                    physicObject.GravityScale -= GravityScale;
                 }
                 else
                 {
-                    physicObject.PhysicTimeScale += speedReducing;
+                    physicObject.PhysicTimeScale += physicsScaleReducing;
+                    physicObject.GravityScale += GravityScale;
                 }
             }
             

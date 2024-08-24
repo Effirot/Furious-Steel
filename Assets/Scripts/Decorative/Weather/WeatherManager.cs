@@ -24,6 +24,13 @@ public class WeatherManager : NetworkBehaviour
     [SerializeField, Range(0, 10)]
     private float deltaTime;
 
+    [SerializeField]
+    private Gradient lightGradient;
+
+    [SerializeField]
+    private new Light light;
+
+
     public float Time { 
         get { 
             if (SyncWithRealTime)
@@ -43,33 +50,39 @@ public class WeatherManager : NetworkBehaviour
         }
     }
 
-    private Vector3 angle => new Vector3((time / 24f * 360f) - 180f, 0, 0);
-
     private void Awake()
     {
         Singleton = this;
     }
-    private void Start()
-    {
-        transform.localEulerAngles = angle;
-    }
+
 
     protected override void OnValidate()
     {
         base.OnValidate();
 
-        transform.localEulerAngles = angle;
+        if (light != null)
+        {
+            light.color = lightGradient.Evaluate(Time / 24f);
+        }
     }
 
     protected virtual void FixedUpdate()
     {
         Time += deltaTime * UnityEngine.Time.fixedDeltaTime;
-
-        transform.localEulerAngles = new Vector3((time / 24f * 360f) - 180f, 0, 0);
     
         if (AutoEnableLaternsAfter12)
         {
             laternState = Time >= 8f ;
+        }
+
+        UpdateLight();
+    }
+
+    private void UpdateLight()
+    {
+        if (light != null)
+        {
+            light.color = Color.Lerp(light.color, lightGradient.Evaluate(Time / 24f), 18f * UnityEngine.Time.fixedDeltaTime);
         }
     }
 

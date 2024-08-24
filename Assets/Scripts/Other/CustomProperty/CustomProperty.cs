@@ -4,6 +4,9 @@ using CharacterSystem.DamageMath;
 using UnityEngine;
 using UnityEngine.Events;
 using Mirror;
+using CharacterSystem.Objects;
+
+
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -18,6 +21,9 @@ public class CustomProperty : NetworkBehaviour
     [SerializeField, Range(0, 1000)]
     public float MaxValue = 10;
     
+    [SerializeField]
+    public bool roundToInt = false;
+
     [Space]
     [SerializeField]
     public Color color = Color.yellow;
@@ -26,7 +32,14 @@ public class CustomProperty : NetworkBehaviour
     public Color fullChargeColor = Color.red;
 
     [Space]
+    [SerializeField]
     public UnityEvent<float> OnValueChanged = new();
+
+    [SerializeField]
+    public UnityEvent OnPropertyEmpty = new();
+    
+    [SerializeField]
+    public UnityEvent OnPropertyFull = new();
 
 
     public float Value {
@@ -36,6 +49,11 @@ public class CustomProperty : NetworkBehaviour
             {
                 var newValue = Mathf.Clamp(value, 0, MaxValue); 
                 
+                if (roundToInt)
+                {
+                    newValue = Mathf.RoundToInt(newValue);
+                }
+
                 if (isServerOnly)
                 {
                     OnValueChangedHook(_value, newValue);
@@ -88,7 +106,7 @@ public class CustomProperty : NetworkBehaviour
 
     public void RefillOnKill(DamageDeliveryReport report)
     {
-        if (report.isLethal)
+        if (report.isLethal && report.target is NetworkCharacter)
         {
             Value = MaxValue;
         }
@@ -100,6 +118,16 @@ public class CustomProperty : NetworkBehaviour
     }
     protected virtual void OnValueChangedHook(float Old, float New)
     {
+        if (New == MaxValue && Old < New)
+        {
+            OnPropertyFull.Invoke();
+        }
+        
+        if (New == 0 && Old > New)
+        {
+            OnPropertyEmpty.Invoke();
+        }
+
         OnValueChanged.Invoke(New);
     }
 

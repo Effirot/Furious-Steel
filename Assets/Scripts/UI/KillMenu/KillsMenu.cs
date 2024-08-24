@@ -10,33 +10,28 @@ public class KillsMenu : NetworkBehaviour
     [SerializeField]
     private GameObject killPrefab;
 
-    private void OnDestroy()
-    {
-        Damage.damageDeliveryPipeline -= OnDamageDelivered;
-    }
     private void Start()
     {
         Damage.damageDeliveryPipeline += OnDamageDelivered;
     }
+    private void OnDestroy()
+    {
+        Damage.damageDeliveryPipeline -= OnDamageDelivered;
+    }
 
     private void OnDamageDelivered(DamageDeliveryReport report)
     {
-        if (!isServer)
+        if (!isServer || !report.isLethal || report.target.IsUnityNull()) 
             return;
 
-        if (!report.isLethal) 
-            return;
-        if (report.target.IsUnityNull()) 
-            return;
-
-        Draw(report);
+        Draw(report.damage.sender?.gameObject.name ?? "", report.target?.gameObject.name ?? "");
     }
 
-    [Command(requiresAuthority = false)]
-    private void Draw(DamageDeliveryReport report)
+    [ClientRpc]
+    private void Draw(string KillerName, string KilledName)
     {
         var obj = Instantiate(killPrefab, transform);
-        obj.GetComponent<KillsMenuElement>().Initialize(report);
+        obj.GetComponent<KillsMenuElement>().Initialize(KillerName, KilledName);
         obj.SetActive(true);
     }
 }

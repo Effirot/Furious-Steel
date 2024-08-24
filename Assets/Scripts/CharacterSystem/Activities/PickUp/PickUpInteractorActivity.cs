@@ -1,16 +1,26 @@
 
-
 using System.Collections;
 using System.Linq;
+using CharacterSystem.Attacks;
 using CharacterSystem.DamageMath;
 using CharacterSystem.Objects;
 using JetBrains.Annotations;
+using Mirror;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace CharacterSystem.Interactions
 {
+    public interface IThrower : 
+        ISyncedActivitiesSource,
+        IInteractor,
+        IPhysicObject,
+        IDamageSource
+    {
+
+    }
+
     public class PickUpInteractorActivity : SyncedActivitySource<IThrower>
     {
         [SerializeField]
@@ -28,30 +38,47 @@ namespace CharacterSystem.Interactions
 
         [SerializeField]
         private CharacterPermission throwPermisssions = CharacterPermission.Default;
-
-        [SerializeField, Range(0, 2)]
-        private float throwDelay = 0.5f;
         
         [SerializeField]
         private CharacterPermission afterThrowPermisssions = CharacterPermission.Default;
 
         [SerializeField, Range(0, 2)]
+        private float throwDelay = 0.5f;
+
+        [SerializeField, Range(0, 2)]
         private float afterThrowDelay = 0.5f;
+        
+        [SerializeField]
+        private bool DropPropOnHit = false;
+
+        public IThrowable pickedObject = null;
 
         public IInteractable AvailableInteractableObject { 
             get => availableInteractableObject; 
             set {
                 if (!object.ReferenceEquals(availableInteractableObject, value))
                 {
-                    availableInteractableObject?.OnDeselect(Source);
+                    if (isOwned && !availableInteractableObject.IsUnityNull())
+                    {
+                        // Destroy(availableInteractableObject?.gameObject.GetComponent<Outline>());
+                    }
+
                     availableInteractableObject = value;
-                    availableInteractableObject?.OnSelect(Source);
+
+                    if (isOwned && !availableInteractableObject.IsUnityNull())
+                    {
+                        // var outline = availableInteractableObject.gameObject.AddComponent<Outline>();
+
+                        // outline.OutlineColor = Color.green;
+
+                        // outline.OutlineWidth = 5;
+                    }
                 }
             }
         } 
-        
+
         private IInteractable availableInteractableObject = null;
-        private IThrowable pickedObject = null;
+        
 
         private IInteractable GetInteractable() 
         {
@@ -71,47 +98,51 @@ namespace CharacterSystem.Interactions
 
         public override void Play()
         {
-            if (!Source.activities.Any())
+            while (Source.activities.Any())
             {
-                base.Play();
+                Source.activities.First().Stop();
+            }
+
+            var interactable = GetInteractable();
+
+            if (interactable.IsUnityNull())
+                return;
+
+            AvailableInteractableObject = interactable;
+
+            base.Play();
+
+            if (interactable is IThrowable)
+            {
+                var preparePickedObject = interactable as IThrowable;
+                
+                if (preparePickedObject.IsInteractionAllowed(Source) && isServer)
+                {
+                    pickedObject = preparePickedObject;
+
+                    SetPickedObject(preparePickedObject.gameObject.GetComponent<NetworkIdentity>()?.netId ?? 0);
+                }
             }
         }
 
         public override IEnumerator Process()
-        {   
-            var interactable = GetInteractable();
-
-            Source.pickPoint = transform;
-
-            if (interactable.IsUnityNull())
-                yield break;
-            
-            if (interactable is IThrowable)
+        {
+            if (!pickedObject.IsUnityNull())
             {
-                Permissions = pickTimePermissions;
-                
-                pickedObject = interactable as IThrowable;
-                
-                pickedObject.Pick(Source);
+                yield return pickedObject.Interact(Source);
 
                 yield return new WaitWhile(() => IsPressed);
-                yield return new WaitUntil(() => IsPressed);
 
-                pickedObject.Interact(Source);
-
-                yield return new WaitWhile(() => IsPressed);
+                var relativeVelocity = transform.InverseTransformDirection(Source.velocity);
+                relativeVelocity.z = Mathf.Min(PushForce.z, relativeVelocity.z);
 
                 Permissions = throwPermisssions;
                 yield return new WaitForSeconds(throwDelay);
 
-                Drop(transform.rotation * (PushForce / 2));
+                Drop(transform.rotation * (PushForce + relativeVelocity));
 
                 Permissions = afterThrowPermisssions;
                 yield return new WaitForSeconds(afterThrowDelay);
-            }
-            else
-            {
-                interactable.Interact(Source);
             }
         }
 
@@ -121,10 +152,50 @@ namespace CharacterSystem.Interactions
             {
                 pickedObject.Push(direction);
                 Source.Push(-direction);
+                
+                if (isServer)
+                {
+                    SetPickedObject(0);
+                }
 
                 pickedObject.Throw(Source);
                 pickedObject = null;
             }
+        }
+        private void Pick(IThrowable throwable)
+        {
+            AvailableInteractableObject = null;
+
+            pickedObject = throwable;
+            Permissions = pickTimePermissions;
+
+            pickedObject.Pick(Source);
+        }
+
+        private void OnHitReaction_Event(Damage damage)
+        {
+            if (DropPropOnHit && damage.type is not Damage.Type.Effect and not Damage.Type.Magical)
+            {
+                Drop(Vector3.up / 2);
+            }
+        }
+
+        [ClientRpc]
+        private void SetPickedObject(uint ID)
+        {
+            if (isServer)
+                return;
+
+            if (ID == 0 || ID >= NetworkClient.spawned.Count)
+            {
+                pickedObject = null;
+
+                return;
+            }
+
+            var identity = NetworkClient.spawned[ID];
+
+            Pick(identity.GetComponent<IThrowable>());
         }
 
         private void OnDrawGizmosSelected()
@@ -135,16 +206,32 @@ namespace CharacterSystem.Interactions
         }
         private void FixedUpdate()
         {
-            if (isOwned)
+            if (isOwned && pickedObject.IsUnityNull())
             {
                 AvailableInteractableObject = GetInteractable();
             }
         }
+        private void LateUpdate()
+        {
+            if (!pickedObject.IsUnityNull())
+            {
+                Source.permissions = pickTimePermissions;
+
+                pickedObject.transform.position = transform.position;
+                pickedObject.transform.rotation = transform.rotation;
+
+                pickedObject.velocity = Vector3.zero;
+
+                return;
+            }
+        }
+
         protected override void OnDestroy()
         {
             base.OnDestroy();
 
             Drop(Vector3.up);
+            AvailableInteractableObject = null;
         }
     }
 }

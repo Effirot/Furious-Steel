@@ -15,7 +15,7 @@ using Mirror;
 using CharacterSystem.Effects;
 using CharacterSystem.Attacks;
 
-public class ExplodeMagicTrinketUltimate : UltimateDamageSource
+public class ExplodeMagicTrinketUltimate : UltimateAttackActivity
 {
     [SerializeField]
     private GameObject ExplodeEffectPrefab;

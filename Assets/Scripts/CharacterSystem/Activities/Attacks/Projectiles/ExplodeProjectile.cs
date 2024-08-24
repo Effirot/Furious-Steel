@@ -11,6 +11,8 @@ using System;
 
 public class ExplodeProjectile : Projectile
 {
+    [Space]
+    [Header("Explode")]
     [SerializeField, Range(0, 10)]
     private float Range = 2;
 

@@ -51,7 +51,7 @@ public class CharacterCameraObserver : MonoBehaviour
     private InputActionReference scrollInput;
 
     private CinemachineFollowZoom zoom;
-    private float zoomValue = 30f;
+    private float zoomValue = 20f;
 
     private const float MinZoomValue = 10;
     private const float MaxZoomValue = 20;

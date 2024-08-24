@@ -29,10 +29,10 @@ namespace CharacterSystem.Objects.AI
         [SerializeField]
         private bool AllowUsingUltimates = false;
 
-        public List<DamageSource> damageSources = new();
+        public List<AttackActivity> damageSources = new();
         
         private Transform target = null;
-        private DamageSource selectedDamageSource; 
+        private AttackActivity selectedDamageSource; 
 
         public override void StartAI()
         {
@@ -112,11 +112,11 @@ namespace CharacterSystem.Objects.AI
             }
         }
 
-        private DamageSource SelectDamageSource()
+        private AttackActivity SelectDamageSource()
         {
             return damageSources.Where(source => source.IsActive).LastOrDefault();   
         }
-        private Cast[] GetDamageSourceCasts(DamageSource damageSource)
+        private Cast[] GetDamageSourceCasts(AttackActivity damageSource)
         {
             List<Cast> casts = new();
 

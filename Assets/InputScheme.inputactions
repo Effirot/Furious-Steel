@@ -60,6 +60,15 @@
                     "initialStateCheck": true
                 },
                 {
+                    "name": "Dodge",
+                    "type": "Button",
+                    "id": "8b672a78-2bf8-4354-8253-abd5241c1bf1",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "PickUp",
                     "type": "PassThrough",
                     "id": "892f4cdf-0414-435c-9cd2-ddbdbc6f7bb0",
@@ -122,7 +131,7 @@
                 {
                     "name": "",
                     "id": "de53f97f-4b4d-4777-ba54-a8976656a8e9",
-                    "path": "<Keyboard>/shift",
+                    "path": "<Keyboard>/q",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
@@ -413,6 +422,28 @@
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "VoiceChat",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a602cbe6-fe1b-4c62-ae5d-9c04be6641a2",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Dodge",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3a0dc6a6-d7ad-4810-93a9-43cf73838639",
+                    "path": "<Gamepad>/leftStickPress",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "Dodge",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

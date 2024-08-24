@@ -37,12 +37,13 @@ namespace CharacterSystem.Objects
         
         AllowAttacking      = 0b_0001_0000_0000_0000,
         AllowBlocking       = 0b_0010_0000_0000_0000,
-        AllowPickUps       = 0b_0100_0000_0000_0000,
+        AllowPickUps        = 0b_0100_0000_0000_0000,
+        AllowDodge          = 0b_1000_0000_0000_0000,
     }
 
     [DisallowMultipleComponent]
     [RequireComponent(typeof(CharacterController))]
-    public abstract class NetworkCharacter : NetworkBehaviour,
+    public abstract partial class NetworkCharacter : NetworkBehaviour,
         IDamagable,
         ITeammate,
         ISyncedActivitiesSource,
@@ -63,6 +64,7 @@ namespace CharacterSystem.Objects
         public const float VelocityReducingMultipliyer = 0.85f;
 
 #region Stats
+
         [Header("Stats")]
         [SerializeField, Range (1, 1000), SyncVar]
         public float maxHealth = 150;
@@ -73,17 +75,11 @@ namespace CharacterSystem.Objects
         [Range (0.1f, 25f), SyncVar]
         public float Speed;
 
-        [field : SerializeField, Range (0.1f, 2.5f), SyncVar]
-        public float mass { get; set; } = 1f;
+        [SerializeField, Range (0.1f, 2.5f), SyncVar]
+        public float mass = 1f;
 
         [SerializeField]
         public GameObject CorpsePrefab = null;
-
-        [SerializeField]
-        public AudioSource OnHitSound;
-
-        [SerializeField]
-        public VisualEffect OnHitEffect;
 
         [Header("Jump")]
         [SerializeField]
@@ -92,14 +88,9 @@ namespace CharacterSystem.Objects
         [SerializeField]
         private int JumpCount = 1;
 
-        [SerializeField]
-        private VisualEffect JumpEffect;
-
         public Team team { get; set; }
 
 #endregion
-        [SerializeField]
-        private DecalProjector shadow;
 
         public event Action<Damage> onDamageRecieved = delegate { };
         public event Action<float> onHealthChanged = delegate { };
@@ -182,7 +173,7 @@ namespace CharacterSystem.Objects
         CharacterPermission ISyncedActivitiesSource.permissions { get => permissions; set => permissions = value; }
 
         Vector3 IPhysicObject.velocity { get => velocity; set => velocity = value; }
-
+        float IPhysicObject.mass { get => mass; set => mass = value; }
 
         [SyncVar]
         private Vector3 network_position = Vector3.zero;    
@@ -204,7 +195,7 @@ namespace CharacterSystem.Objects
         
         private Vector2 local_move_direction = Vector2.zero;
 
-        private Vector3 resultMovePosition;
+        private Vector3 resultMovementValue = Vector3.zero;
 
         public virtual void Kill (Damage damage)
         {
@@ -310,13 +301,15 @@ namespace CharacterSystem.Objects
         {
             network_position = position;
             transform.position = position;
+
+            Physics.SyncTransforms();
         }
         
         [Client, Command]
         public void Jump (Vector2 direction)
         {
             direction.Normalize();
-            direction *= Mathf.Max(0, Speed) * Time.fixedDeltaTime * LocalTimeScale * 1.5f;
+            direction *= Mathf.Max(0, Speed) * Time.fixedDeltaTime * LocalTimeScale * 0.9f;
 
             if (!isStunned && (IsGrounded || completeJumpCount < JumpCount) && permissions.HasFlag(CharacterPermission.AllowJump))
             {
@@ -329,13 +322,8 @@ namespace CharacterSystem.Objects
                     completeJumpCount++;
                 }
 
-
                 var V3direction = new Vector3(direction.x, 0, direction.y);
             
-                if (isClient && JumpEffect != null) {
-                    JumpEffect.Play();
-                }
-
                 V3direction.y = JumpForce;
 
                 Push(V3direction);
@@ -354,11 +342,6 @@ namespace CharacterSystem.Objects
                 {
                     OnHitSound.Play();
                 }
-                if (OnHitEffect != null && damage.value > 0)
-                {
-                    OnHitEffect.SetVector3("Direction", damage.pushDirection);
-                    OnHitEffect.Play();
-                }
             }
         }
         protected virtual void OnHealReaction(Damage damage) 
@@ -375,13 +358,11 @@ namespace CharacterSystem.Objects
         {
             base.OnStartClient();
 
-            isGroundedEvent += (isGrounded) => 
-            {
-                if (isGrounded)
-                {
-                    JumpEffect.Play();
-                }
-            };
+            onDamageRecieved += OnDamageRecieved_Event;
+            onStunStateChanged += OnStunned.Invoke;
+            isGroundedEvent += OnGrounded.Invoke;
+            onJumpEvent += OnJump.Invoke;
+            onWallHit += OnWallHit.Invoke;
 
             NetworkCharacters.Add(this);
         }
@@ -457,7 +438,7 @@ namespace CharacterSystem.Objects
             }
             
             CalculatePhysicsSimulation();
-            CharacterMove(CalculateMovement()); 
+            resultMovementValue = CalculateMovement(); 
 
             if (isGroundedDeltaState != IsGrounded)
             {
@@ -477,24 +458,15 @@ namespace CharacterSystem.Objects
             {
                 controllerCollision = null;
             }
-            
-            if (shadow != null)
-            {
-                if (Physics.Raycast(transform.position, Vector3.down, out var hit, LayerMask.GetMask("Ground")))
-                {
-                    shadow.transform.position = hit.point + Vector3.up * 0.1f;
-                }
-                else
-                {
-                    shadow.transform.position = transform.position;
-                }      
-
-                shadow.fadeFactor = 1 / Vector3.Distance(shadow.transform.position, transform.position);
-            }
+        }
+        protected virtual void Update () 
+        {
 
         }
-        protected virtual void Update () { }
-        protected virtual void LateUpdate () { }
+        protected virtual void LateUpdate () 
+        { 
+            CharacterMove(resultMovementValue);
+        }
 
         protected virtual void OnDrawGizmos () { }
         protected virtual void OnDrawGizmosSelected ()
@@ -660,14 +632,21 @@ namespace CharacterSystem.Objects
 
         private Vector3 CalculateMovement ()
         {
+            var PhysicTimeScale = Mathf.Max(this.PhysicTimeScale, 0);
             var characterMovement = Vector3.zero;
+            var friction = 0F;
+
+            if (controllerCollision != null && controllerCollision.collider != null)
+            {
+                friction = controllerCollision.collider.material.dynamicFriction;
+            }
 
             speed_acceleration_multipliyer = Vector2.Lerp(
                 speed_acceleration_multipliyer, 
-                Speed <= 0 ? Vector2.zero : (isLocalPlayer && !isServer ? local_move_direction : movementVector) * Mathf.Max(0, Speed) * (characterController.isGrounded ? 1f : 0.4f), 
-                20  * Time.fixedDeltaTime * LocalTimeScale);
+                Speed <= 0 ? Vector2.zero : (isLocalPlayer && !isServer ? local_move_direction : movementVector) * Mathf.Max(0, Speed) * (characterController.isGrounded ? 1f : 0.6f) * PhysicTimeScale, 
+                friction * 3 + 2 * Time.fixedDeltaTime * LocalTimeScale);
 
-            return new Vector3(speed_acceleration_multipliyer.x / 2, 0, speed_acceleration_multipliyer.y / 2) * Time.fixedDeltaTime * LocalTimeScale;
+            return new Vector3(speed_acceleration_multipliyer.x / 2, 0, speed_acceleration_multipliyer.y / 2) * LocalTimeScale;
         }
         private void CalculatePhysicsSimulation ()
         {
@@ -675,8 +654,8 @@ namespace CharacterSystem.Objects
             var PhysicTimeScale = Mathf.Max(this.PhysicTimeScale, 0);
 
             velocity.y =  permissions.HasFlag(CharacterPermission.AllowGravity) ? 
-                Mathf.Lerp(velocity.y, IsGrounded ? -0.1f : Physics.gravity.y, 0.2f * Time.fixedDeltaTime * LocalTimeScale * PhysicTimeScale) : 
-                Mathf.Lerp(velocity.y, 0, 10f * Time.fixedDeltaTime * LocalTimeScale);
+                Mathf.Lerp(velocity.y, IsGrounded ? -0.1f : Physics.gravity.y, 0.23f * Time.fixedDeltaTime * LocalTimeScale * PhysicTimeScale) : 
+                Mathf.Lerp(velocity.y, 0, 8f * Time.fixedDeltaTime * LocalTimeScale);
 
             if (controllerCollision != null)
             {
@@ -692,13 +671,14 @@ namespace CharacterSystem.Objects
         {
             if(!isServer)
             {
-                vector += Vector3.Lerp(Vector3.zero, network_position - transform.position, 15f * Time.fixedDeltaTime * LocalTimeScale);
+                vector += Vector3.Lerp(Vector3.zero, network_position - transform.position, 15f * Time.deltaTime * LocalTimeScale);
             }
 
             if (Vector3.Distance(network_position, transform.position) < 1.8f)
             {
                 var PhysicTimeScale = Mathf.Max(this.PhysicTimeScale, 0);
-                characterController.Move(vector + (velocity * LocalTimeScale * PhysicTimeScale));
+
+                characterController.Move(vector * Time.deltaTime + (50f * velocity * LocalTimeScale * PhysicTimeScale * Time.deltaTime));
             }
             else
             {
@@ -812,41 +792,79 @@ namespace CharacterSystem.Objects
                 lookVector = walkDirection;
             }
         }
-    }
 
 #if UNITY_EDITOR
-    [CustomEditor(typeof (NetworkCharacter), true)]
-    public class NetworkCharacter_Editor : Editor
-    {
-        private new NetworkCharacter target => base.target as NetworkCharacter;
+        [CustomEditor(typeof (NetworkCharacter))]
+        protected partial class NetworkCharacter_Editor : Editor
+        {
+            private new NetworkCharacter target => base.target as NetworkCharacter;
+            
+            private bool effectsFoldState = false;
 
-        public override void OnInspectorGUI()
-        { 
-            if (target.netIdentity?.isServer ?? false)
-            {
-                if (GUILayout.Button("Heal"))
+            private SerializedProperty maxHealth;
+            private SerializedProperty regenerationPerSecond;
+            private SerializedProperty Speed;
+            private SerializedProperty mass;
+            private SerializedProperty CorpsePrefab;
+            private SerializedProperty JumpForce;
+            private SerializedProperty JumpCount;
+
+            public override void OnInspectorGUI()
+            { 
+                if (target.netIdentity?.isServer ?? false)
                 {
-                    target.Heal(new Damage(
-                        9999.99f,
-                        null,
-                        0,
-                        Vector3.zero,
-                        Damage.Type.Unblockable));
+                    if (GUILayout.Button("Heal"))
+                    {
+                        target.Heal(new Damage(
+                            9999.99f,
+                            null,
+                            0,
+                            Vector3.zero,
+                            Damage.Type.Unblockable));
+                    }
+
+                    if (GUILayout.Button("Kill"))
+                    {
+                        target.Kill(new Damage(
+                            9999.99f,
+                            null,
+                            0,
+                            Vector3.zero,
+                            Damage.Type.Unblockable));
+                    }
                 }
 
-                if (GUILayout.Button("Kill"))
+                EditorGUI.BeginChangeCheck();
+
+                maxHealth             ??= serializedObject.FindProperty("maxHealth");
+                regenerationPerSecond ??= serializedObject.FindProperty("regenerationPerSecond");
+                Speed                 ??= serializedObject.FindProperty("Speed");
+                mass                  ??= serializedObject.FindProperty("mass");
+                CorpsePrefab          ??= serializedObject.FindProperty("CorpsePrefab");
+                JumpForce             ??= serializedObject.FindProperty("JumpForce");
+                JumpCount             ??= serializedObject.FindProperty("JumpCount");
+
+                EditorGUILayout.PropertyField(maxHealth);
+                EditorGUILayout.PropertyField(regenerationPerSecond);
+                EditorGUILayout.PropertyField(Speed);
+                EditorGUILayout.PropertyField(mass);
+                EditorGUILayout.PropertyField(CorpsePrefab);
+                EditorGUILayout.PropertyField(JumpForce);
+                EditorGUILayout.PropertyField(JumpCount);
+
+                EditorGUILayout.Space();
+
+                serializedObject.ApplyModifiedProperties();
+                
+                if (effectsFoldState = EditorGUILayout.Foldout(effectsFoldState, "Effects"))
                 {
-                    target.Kill(new Damage(
-                        9999.99f,
-                        null,
-                        0,
-                        Vector3.zero,
-                        Damage.Type.Unblockable));
+                    DrawNetworkCharacterEffects();
                 }
+
+                EditorGUI.EndChangeCheck();
             }
-
-            base.OnInspectorGUI();
         }
-    }
 #endif
+    }
+
 }
