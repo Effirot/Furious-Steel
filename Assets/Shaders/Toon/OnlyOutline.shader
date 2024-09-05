@@ -1,5 +1,5 @@
 
-Shader "Effirot\Outline"
+Shader "Effirot/Outline"
 {
     Properties
     {		
@@ -13,9 +13,19 @@ Shader "Effirot\Outline"
         Pass 
 		{
 			LOD 500
-
+            
             Name "Outline"
-			Cull Front
+            Cull Off
+            ZWrite Off
+            // ZTest [_ZTest]
+            Blend SrcAlpha OneMinusSrcAlpha
+            ColorMask RGB
+      
+            Stencil {
+                Ref 1
+                Comp NotEqual
+            }
+
             Tags 
             {
                 "IgnoreProjector"="True"

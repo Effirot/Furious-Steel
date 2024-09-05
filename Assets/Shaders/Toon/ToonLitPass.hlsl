@@ -1,5 +1,6 @@
 
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/RealtimeLights.hlsl"
 
 TEXTURE2D(_Texture); SAMPLER(sampler_Texture);
 
@@ -56,8 +57,22 @@ float4 frag(v2f input) : SV_TARGET{
 #endif
 
 	fragmentData = (fragmentData.x + fragmentData.y + fragmentData.z + fragmentData.w) / 4;
-	fragmentData += 0.3f;
+	fragmentData += 0.7f;
 	fragmentData = lerp(0.2f, 1, floor(fragmentData / 1.3f) + floor(fragmentData / 1.05f));
+
 	
-	return _Color * colorSample * fragmentData;
+
+	int realtimeLightsCount = GetAdditionalLightsCount();
+	Light light = GetAdditionalLight(0, input.positionWS);
+	// float3 color = (realtimeLightsCount, realtimeLightsCount, realtimeLightsCount) * 0.01f;
+
+	for (int i = 0; i < realtimeLightsCount; i++)
+	{
+		
+		// color = min(light.distanceAttenuation, color);
+	}
+	
+	// return (color, 1);
+	return (light.color, 0.5);
+	// return _Color * colorSample * fragmentData;
 }

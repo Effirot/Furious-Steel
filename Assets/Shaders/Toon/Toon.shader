@@ -1,13 +1,17 @@
 
 Shader "Effirot/Toon + Outline" {
     Properties{
-        [Header(Surface)]
-
-        [MainTexture] 
-        _Texture("Texture", 2D) = "white" {}
+        [Header(Texture)]
+        
         [MainColor] 
         _Color("Color", Color) = (1, 1, 1, 1)
-
+        [MainTexture] 
+        _Texture("Texture", 2D) = "white" {}
+        
+        [Header(Normals)]
+        
+        _NormalWidth("Normal width", range(0, 1.25)) = 1  
+        _Normals("Normals", 2D) = "black" {}
         
         [Header(Outline)]
 		
@@ -20,6 +24,7 @@ Shader "Effirot/Toon + Outline" {
         
         Tags {
             "Queue"="Transparent" 
+            "RenderType"="Transparent" 
             "RenderPipeline" = "UniversalPipeline" 
         }        
                 

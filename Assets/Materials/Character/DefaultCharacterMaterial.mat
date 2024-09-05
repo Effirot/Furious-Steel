@@ -21,7 +21,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: DefaultCharacterMaterial
-  m_Shader: {fileID: -6465566751694194690, guid: b6be06d07c6e8c34aa7da9ef08a63f45, type: 3}
+  m_Shader: {fileID: 4800000, guid: b5652a50ce4ad0f4693f918b8c95b9be, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -29,9 +29,8 @@ Material:
   m_LightmapFlags: 1
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 1
-  m_CustomRenderQueue: 2000
-  stringTagMap:
-    RenderType: Opaque
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
   disabledShaderPasses:
   - MOTIONVECTORS
   m_LockedProperties: 
@@ -86,6 +85,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Normals:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -107,6 +110,10 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SpecGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Texture:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -150,9 +157,11 @@ Material:
     - _GlossyReflections: 0
     - _Metalic: 1
     - _Metallic: 0
+    - _NormalWidth: 1
     - _OcclusionStrength: 1
     - _Oclusion: 0
     - _Opacity: 1
+    - _OutlineWidth: 15
     - _Parallax: 0.005
     - _QueueControl: 0
     - _QueueOffset: 0
@@ -182,6 +191,7 @@ Material:
     - _BaseColor: {r: 0.7075471, g: 0.8483578, b: 1, a: 1}
     - _Color: {r: 0.50618553, g: 0.55737, b: 0.6132076, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _OutlineColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 0.565}
     - _UvOffset: {r: 0, g: 0, b: 0, a: 0}
     - _UvTiling: {r: 1, g: 1, b: 0, a: 0}
