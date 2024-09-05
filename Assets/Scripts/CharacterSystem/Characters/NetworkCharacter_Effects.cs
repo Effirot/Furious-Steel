@@ -112,9 +112,11 @@ namespace CharacterSystem.Objects
             private SerializedProperty OnHitSound;
             private SerializedProperty OnHitEffect;
             private SerializedProperty OnHit;
+
             private SerializedProperty OnHealSound;
             private SerializedProperty OnHealEffect;
             private SerializedProperty OnHeal;
+
             private SerializedProperty OnStunned;
             private SerializedProperty OnJump;
             private SerializedProperty OnGrounded;

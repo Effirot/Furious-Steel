@@ -63,6 +63,8 @@ namespace CharacterSystem.Objects
         public const float ServerPositionInterpolationTime = 0.07f;
         public const float VelocityReducingMultipliyer = 0.85f;
 
+        public const float CollisionTimeout = 0.1f;
+
 #region Stats
 
         [Header("Stats")]
@@ -99,16 +101,16 @@ namespace CharacterSystem.Objects
         public event Action<bool> onStunStateChanged = delegate { };
         public event Action<DamageDeliveryReport, DamageDeliveryReport> onWallHit = delegate { };
         
-        [HideInInspector, SyncVar(hook = nameof(OnPermissionsChanged))]
+        [SyncVar(hook = nameof(OnPermissionsChanged))]
         public CharacterPermission permissions = CharacterPermission.Default;
 
-        [HideInInspector, SyncVar(hook = nameof(OnHealthChanged))]
+        [SyncVar(hook = nameof(OnHealthChanged))]
         public float health;
 
 
-        [HideInInspector, SyncVar]
+        [SyncVar]
         public float stunlock;
-        [HideInInspector, SyncVar]
+        [SyncVar]
         public Vector3 velocity = Vector3.zero;   
 
         public float PhysicTimeScale { get; set; } = 1;
@@ -125,6 +127,9 @@ namespace CharacterSystem.Objects
         public bool isStunned => stunlock > 0;
 
         public SyncedActivitiesList activities { get; } = new();
+
+        public float slopeAngle { get; set; } = 65;
+        public ControllerColliderHit controllerCollision { get; private set; } = null;
 
         public Vector2 movementVector
         { 
@@ -158,7 +163,7 @@ namespace CharacterSystem.Objects
                 }
                 else
                 {
-                    if (isOwned && permissions.HasFlag(CharacterPermission.AllowRotate))
+                    if (isOwned)
                     {
                         SetLookDirection_Command(value);
                     }
@@ -175,6 +180,7 @@ namespace CharacterSystem.Objects
         Vector3 IPhysicObject.velocity { get => velocity; set => velocity = value; }
         float IPhysicObject.mass { get => mass; set => mass = value; }
 
+
         [SyncVar]
         private Vector3 network_position = Vector3.zero;    
         [SyncVar]
@@ -187,8 +193,7 @@ namespace CharacterSystem.Objects
         private int completeJumpCount = 0;
 
         private bool isGroundedDeltaState = false;
-        private float groundCollisionTimeout = 0.05f;
-        private ControllerColliderHit controllerCollision = null;
+        private float groundCollisionTimeout = CollisionTimeout;
 
 
         private Vector2 speed_acceleration_multipliyer = Vector2.zero;
@@ -216,7 +221,7 @@ namespace CharacterSystem.Objects
                 NetworkServer.Destroy(gameObject);
             }
         }
-        public virtual bool Hit (Damage damage)
+        public virtual bool Hit (ref Damage damage)
         {
             if (!permissions.HasFlag(CharacterPermission.Unpushable))
             {
@@ -242,7 +247,7 @@ namespace CharacterSystem.Objects
 
             return false;
         }
-        public virtual bool Heal (Damage damage)
+        public virtual bool Heal (ref Damage damage)
         {
             var newHealth = Mathf.Clamp(health + Mathf.Abs(damage.value), 0, maxHealth);
             
@@ -273,6 +278,9 @@ namespace CharacterSystem.Objects
         {
             if (direction.magnitude > 0 && !permissions.HasFlag(CharacterPermission.Unpushable))
             {
+                controllerCollision = null;
+                groundCollisionTimeout = -1;
+
                 speed_acceleration_multipliyer = Vector2.zero;
                 velocity = direction / mass;
             }
@@ -308,6 +316,9 @@ namespace CharacterSystem.Objects
         [Client, Command]
         public void Jump (Vector2 direction)
         {
+            controllerCollision = null;
+            groundCollisionTimeout = -1;
+
             direction.Normalize();
             direction *= Mathf.Max(0, Speed) * Time.fixedDeltaTime * LocalTimeScale * 0.9f;
 
@@ -432,10 +443,6 @@ namespace CharacterSystem.Objects
                     onStunStateChanged.Invoke(isStunned);
                 }
             }
-            else
-            {
-                RotateCharacter();
-            }
             
             CalculatePhysicsSimulation();
             resultMovementValue = CalculateMovement(); 
@@ -466,6 +473,8 @@ namespace CharacterSystem.Objects
         protected virtual void LateUpdate () 
         { 
             CharacterMove(resultMovementValue);
+
+            RotateCharacter();
         }
 
         protected virtual void OnDrawGizmos () { }
@@ -479,9 +488,9 @@ namespace CharacterSystem.Objects
         protected virtual void OnControllerColliderHit(ControllerColliderHit hit)
         {
             controllerCollision = hit;
-            groundCollisionTimeout = 0.05f;
+            groundCollisionTimeout = CollisionTimeout;
 
-            IsGrounded = Vector3.Angle(Vector3.up, hit.normal) <= 65;
+            IsGrounded = Vector3.Angle(Vector3.up, hit.normal) <= slopeAngle;
 
             var WallHitVelocity = velocity;
 
@@ -560,25 +569,25 @@ namespace CharacterSystem.Objects
             onWallHit(
                 // Self Damage 
                 Damage.Deliver(this, new Damage(
-                    velocity.magnitude * 5, 
+                    Mathf.Round(velocity.magnitude * 10f), 
                     lastRecievedDamage.senderID, 
                     0.2f, 
                     newVelocity / 1.5f, 
-                    Damage.Type.Physics)),
+                    Damage.Type.Physics) { args = new Damage.DamageArgument[] { Damage.DamageArgument.WALL_HIT } }),
                 
                 // Other Damage 
                 Damage.Deliver(hit.gameObject, new Damage(
-                    velocity.magnitude * 5, 
+                    Mathf.Round(velocity.magnitude * 10), 
                     lastRecievedDamage.senderID, 
                     0.2f, 
                     Quaternion.Euler(0, 180, 0) * newVelocity, 
-                    Damage.Type.Physics))
+                    Damage.Type.Physics) { args = new Damage.DamageArgument[] { Damage.DamageArgument.WALL_HIT } })
             );
         }
 
         protected virtual GameObject SpawnCorpse()
         {
-            if (NetworkManager.singleton?.isNetworkActive ?? false && isClient && !CorpsePrefab.IsUnityNull())
+            if (CorpsePrefab != null && NetworkClient.active)
             {
                 var corpseObject = Instantiate(CorpsePrefab, transform.position, transform.rotation);
 
@@ -610,16 +619,21 @@ namespace CharacterSystem.Objects
 
         private void HandleActivitiesChanges_Event(SyncedActivitiesList.EventType type, SyncedActivitySource syncedActivity)
         {
+            permissions = activities.CalculatePermissions();
+
             switch (type)
             {
                 case SyncedActivitiesList.EventType.Add:
-                    permissions = activities.CalculatePermissions();
                     syncedActivity.onPermissionsChanged += HandlePermissionsChanged_Event;
                     Speed -= syncedActivity.SpeedChange;
                     break;
                 
                 case SyncedActivitiesList.EventType.Remove:
-                    permissions = activities.CalculatePermissions();
+                    if (!activities.Any())
+                    {
+                        permissions = CharacterPermission.Default;
+                    }
+
                     syncedActivity.onPermissionsChanged -= HandlePermissionsChanged_Event;
                     Speed += syncedActivity.SpeedChange;
                     break;
@@ -641,9 +655,13 @@ namespace CharacterSystem.Objects
                 friction = controllerCollision.collider.material.dynamicFriction;
             }
 
+            var newValue = !permissions.HasFlag(CharacterPermission.AllowMove) ? 
+                Vector2.zero : 
+                (isLocalPlayer && !isServer ? local_move_direction : movementVector) * Mathf.Max(0, Speed) * (characterController.isGrounded ? 1f : 0.6f) * PhysicTimeScale;
+
             speed_acceleration_multipliyer = Vector2.Lerp(
                 speed_acceleration_multipliyer, 
-                Speed <= 0 ? Vector2.zero : (isLocalPlayer && !isServer ? local_move_direction : movementVector) * Mathf.Max(0, Speed) * (characterController.isGrounded ? 1f : 0.6f) * PhysicTimeScale, 
+                newValue, 
                 friction * 3 + 2 * Time.fixedDeltaTime * LocalTimeScale);
 
             return new Vector3(speed_acceleration_multipliyer.x / 2, 0, speed_acceleration_multipliyer.y / 2) * LocalTimeScale;
@@ -652,14 +670,16 @@ namespace CharacterSystem.Objects
         {
             var velocity = this.velocity;
             var PhysicTimeScale = Mathf.Max(this.PhysicTimeScale, 0);
+            var timescale = Time.fixedDeltaTime * Time.timeScale * LocalTimeScale * PhysicTimeScale;
 
             velocity.y =  permissions.HasFlag(CharacterPermission.AllowGravity) ? 
-                Mathf.Lerp(velocity.y, IsGrounded ? -0.1f : Physics.gravity.y, 0.23f * Time.fixedDeltaTime * LocalTimeScale * PhysicTimeScale) : 
-                Mathf.Lerp(velocity.y, 0, 8f * Time.fixedDeltaTime * LocalTimeScale);
+                Mathf.Lerp(velocity.y, IsGrounded ? -0.1f : Physics.gravity.y, 0.23f * timescale) : 
+                Mathf.Lerp(velocity.y, 0, 16f * timescale);
 
-            if (controllerCollision != null)
+            if (controllerCollision != null && controllerCollision.collider != null)
             {
-                var interpolateValue = 8 * mass * Time.fixedDeltaTime * LocalTimeScale * PhysicTimeScale;
+                var interpolateValue = 
+                    (controllerCollision.collider.material.dynamicFriction) * mass * timescale;
                 
                 velocity.x =  Mathf.Lerp(velocity.x, IsGrounded ? 0 : controllerCollision.normal.x * 0.2f, interpolateValue);
                 velocity.z =  Mathf.Lerp(velocity.z, IsGrounded ? 0 : controllerCollision.normal.z * 0.2f, interpolateValue);
@@ -691,24 +711,30 @@ namespace CharacterSystem.Objects
         {
             if (isStunned)
             {
-                var newVelocity = velocity;
-                newVelocity.y = 0;
+                // var newVelocity = velocity;
+                // newVelocity.y = 0;
 
-                transform.rotation = Quaternion.LookRotation(newVelocity);
+                // if (newVelocity.magnitude > 0)
+                // {
+                //     transform.rotation = Quaternion.LookRotation(-newVelocity);
+                // }
             }
             else
             {
-                var LookVector = new Vector3 (lookVector.x, 0, lookVector.y);
-
-                if (LookVector.magnitude > 0)
+                if (permissions.HasFlag(CharacterPermission.AllowRotate))
                 {
-                    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(LookVector), RotateInterpolationTime * Time.fixedDeltaTime * LocalTimeScale);
+                    var LookVector = new Vector3 (lookVector.x, 0, lookVector.y);
+
+                    if (LookVector.magnitude > 0)
+                    {
+                        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(LookVector), RotateInterpolationTime * Time.fixedDeltaTime * LocalTimeScale);
+                    }
                 }
             }
         }
         private void SetAnimationStates ()
         {
-            if (animator.gameObject.activeInHierarchy && animator != null)
+            if (animator != null && animator.gameObject.activeInHierarchy)
             {
                 animator.speed = LocalTimeScale;
 
@@ -787,7 +813,7 @@ namespace CharacterSystem.Objects
         [Client, Command]
         private void SetLookDirection_Command(Vector2 walkDirection)
         {
-            if (permissions.HasFlag(CharacterPermission.AllowRotate) && isServer)
+            if (isServer)
             {
                 lookVector = walkDirection;
             }
@@ -809,18 +835,29 @@ namespace CharacterSystem.Objects
             private SerializedProperty JumpForce;
             private SerializedProperty JumpCount;
 
+            public virtual void OnEnable()
+            {
+                maxHealth             ??= serializedObject.FindProperty("maxHealth");
+                regenerationPerSecond ??= serializedObject.FindProperty("regenerationPerSecond");
+                Speed                 ??= serializedObject.FindProperty("Speed");
+                mass                  ??= serializedObject.FindProperty("mass");
+                CorpsePrefab          ??= serializedObject.FindProperty("CorpsePrefab");
+                JumpForce             ??= serializedObject.FindProperty("JumpForce");
+                JumpCount             ??= serializedObject.FindProperty("JumpCount");
+            }
             public override void OnInspectorGUI()
             { 
                 if (target.netIdentity?.isServer ?? false)
                 {
                     if (GUILayout.Button("Heal"))
                     {
-                        target.Heal(new Damage(
+                        var damage = new Damage(
                             9999.99f,
                             null,
                             0,
                             Vector3.zero,
-                            Damage.Type.Unblockable));
+                            Damage.Type.Unblockable);
+                        target.Heal(ref damage);
                     }
 
                     if (GUILayout.Button("Kill"))
@@ -835,14 +872,6 @@ namespace CharacterSystem.Objects
                 }
 
                 EditorGUI.BeginChangeCheck();
-
-                maxHealth             ??= serializedObject.FindProperty("maxHealth");
-                regenerationPerSecond ??= serializedObject.FindProperty("regenerationPerSecond");
-                Speed                 ??= serializedObject.FindProperty("Speed");
-                mass                  ??= serializedObject.FindProperty("mass");
-                CorpsePrefab          ??= serializedObject.FindProperty("CorpsePrefab");
-                JumpForce             ??= serializedObject.FindProperty("JumpForce");
-                JumpCount             ??= serializedObject.FindProperty("JumpCount");
 
                 EditorGUILayout.PropertyField(maxHealth);
                 EditorGUILayout.PropertyField(regenerationPerSecond);

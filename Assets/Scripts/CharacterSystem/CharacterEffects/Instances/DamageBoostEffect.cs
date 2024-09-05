@@ -13,7 +13,7 @@ namespace CharacterSystem.Effects
     {
         private static VisualEffectAsset visualEffectAsset;
 
-        public override bool Existance => base.Existance && effectsHolder.character is IDamageSource;
+        public override bool Existance => base.Existance && effectsHolder.character is IAttackSource;
 
         [SerializeField, Range(1, 5)]
         private float force = 2f; 
@@ -33,9 +33,9 @@ namespace CharacterSystem.Effects
         { 
             AddVisualEffect();
 
-            if (effectsHolder.character is IDamageSource)
+            if (effectsHolder.character is IAttackSource)
             {
-                var source = effectsHolder.character as IDamageSource;
+                var source = effectsHolder.character as IAttackSource;
 
                 source.DamageMultipliyer += force - 1;
             }
@@ -46,9 +46,9 @@ namespace CharacterSystem.Effects
         {
             RemoveVisualEffect();
 
-            if (effectsHolder.character is IDamageSource)
+            if (effectsHolder.character is IAttackSource)
             {
-                var source = effectsHolder.character as IDamageSource;
+                var source = effectsHolder.character as IAttackSource;
 
                 source.DamageMultipliyer -= force - 1;
             }

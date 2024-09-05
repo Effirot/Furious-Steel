@@ -21,7 +21,7 @@ namespace CharacterSystem.Objects.AI
         private float AfterAttackDelay = 0.3f;
         [SerializeField, Range(0, 3)]
         private float BeforeAttackDelay = 0.3f;
-            
+
         [SerializeField]
         private bool AllowUsingAttack = true;
         [SerializeField]
@@ -74,7 +74,7 @@ namespace CharacterSystem.Objects.AI
                     var casterVector = casterValue.Item2;
 
                     var isAttackAvailable =
-                        Array.Exists(caster.CastCollider(selectedDamageSource.transform), Collider => Collider.transform == target);
+                        Array.Exists(caster.CastCollider(selectedDamageSource), Collider => Collider.transform == target);
 
                     if (isAttackAvailable)
                     {
@@ -136,15 +136,15 @@ namespace CharacterSystem.Objects.AI
                     return;
                 }
 
-                if (element is CharacterSystem.Attacks.Queue)
-                {   
-                    var queue = (CharacterSystem.Attacks.Queue) element;
+                // if (element is CharacterSystem.Attacks.Queue)
+                // {   
+                //     var queue = (CharacterSystem.Attacks.Queue) element;
 
-                    foreach (var queueElement in queue.queue)
-                    {
-                        GetCast (queueElement);
-                    }
-                }
+                //     foreach (var queueElement in queue.queue)
+                //     {
+                //         GetCast (queueElement);
+                //     }
+                // }
 
                 if (element is CharacterSystem.Attacks.Charger)
                 {
@@ -160,9 +160,9 @@ namespace CharacterSystem.Objects.AI
                 {
                     var charger = (CharacterSystem.Attacks.Repeat) element;
 
-                    if (charger.queueElement is AttackQueueElement)
+                    foreach (var queueElement in charger.queueElements)
                     {
-                        GetCast ((AttackQueueElement) charger.queueElement);
+                        GetCast (queueElement);
                     }
                 }
 
@@ -170,9 +170,9 @@ namespace CharacterSystem.Objects.AI
                 {
                     var charger = (CharacterSystem.Attacks.HoldRepeat) element;
 
-                    if (charger.queueElement is AttackQueueElement)
+                    foreach (var queueElement in charger.queueElements)
                     {
-                        GetCast ((AttackQueueElement) charger.queueElement);
+                        GetCast (queueElement);
                     }
                 }
             }

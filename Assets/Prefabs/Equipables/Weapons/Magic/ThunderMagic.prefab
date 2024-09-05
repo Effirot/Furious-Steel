@@ -655,9 +655,16 @@ MonoBehaviour:
   syncInterval: 0
   DefaultValue: 100
   MaxValue: 100
+  roundToInt: 0
   color: {r: 0.015686274, g: 0.696047, b: 1, a: 1}
   fullChargeColor: {r: 0.015686275, g: 0.69411767, b: 1, a: 1}
   OnValueChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  OnPropertyEmpty:
+    m_PersistentCalls:
+      m_Calls: []
+  OnPropertyFull:
     m_PersistentCalls:
       m_Calls: []
   IsActive: 1
@@ -3142,7 +3149,7 @@ GameObject:
   - component: {fileID: 698400827903392113}
   - component: {fileID: 6330136604209916642}
   m_Layer: 0
-  m_Name: BlockAttack
+  m_Name: Dash
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3182,7 +3189,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   isPerforming: 1
-  inputAction: {fileID: 4628471853980608337, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
+  inputAction: {fileID: -1197061071052274946, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 2
   SpeedChange: 0
   IsInterruptableWhenBlocked: 0
@@ -3348,7 +3355,7 @@ MonoBehaviour:
     - rid: 2874887799214964750
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        WaitTime: 0.4
+        WaitTime: 0.1
         Permissions: 41728
     - rid: 2874887799214964751
       type: {class: Push, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
@@ -3429,6 +3436,18 @@ MonoBehaviour:
                 m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
                 m_IntArgument: 0
                 m_FloatArgument: 0
+                m_StringArgument: 
+                m_BoolArgument: 1
+              m_CallState: 2
+            - m_Target: {fileID: 7780115441992960662}
+              m_TargetAssemblyTypeName: CustomProperty, Assembly-CSharp
+              m_MethodName: SubtractValue
+              m_Mode: 4
+              m_Arguments:
+                m_ObjectArgument: {fileID: 0}
+                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+                m_IntArgument: 0
+                m_FloatArgument: 10
                 m_StringArgument: 
                 m_BoolArgument: 1
               m_CallState: 2
@@ -4569,9 +4588,16 @@ MonoBehaviour:
   syncInterval: 0
   DefaultValue: 0
   MaxValue: 160
+  roundToInt: 0
   color: {r: 0, g: 1, b: 0.9411765, a: 1}
   fullChargeColor: {r: 0.11372549, g: 0.8392157, b: 0.36078432, a: 1}
   OnValueChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  OnPropertyEmpty:
+    m_PersistentCalls:
+      m_Calls: []
+  OnPropertyFull:
     m_PersistentCalls:
       m_Calls: []
   IsActive: 1

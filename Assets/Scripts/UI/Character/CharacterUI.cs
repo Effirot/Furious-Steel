@@ -92,11 +92,7 @@ public class CharacterUI : MonoBehaviour
 
         await UniTask.WaitForSeconds(0.01f);
         
-        if (NetworkCharacter == null) 
-        {
-            
-        }
-        else
+        if (NetworkCharacter != null) 
         {
             if (CustomPropertyDrawerPrefab != null)
             {
@@ -139,9 +135,9 @@ public class CharacterUI : MonoBehaviour
             if (ComboField != null)
             {
                 ComboField.gameObject.SetActive(false);
-                if (NetworkCharacter is IDamageSource)
+                if (NetworkCharacter is IAttackSource)
                 {
-                    var damageSource = NetworkCharacter as IDamageSource;
+                    var damageSource = NetworkCharacter as IAttackSource;
 
                     damageSource.onComboChanged += (value) => {
 
@@ -151,10 +147,22 @@ public class CharacterUI : MonoBehaviour
                     };
                 }
             }
-        
+            
+            
             if (DodgeStateCount != null)
             {
-                
+                DodgeStateCount.gameObject.SetActive(false);
+
+                var dodge = NetworkCharacter.GetComponentsInChildren<DodgeActivity>().Where(activity => !activity.HasOverrides()).FirstOrDefault();   
+
+                if (dodge != default)
+                {
+                    DodgeStateCount.gameObject.SetActive(true);
+
+                    DodgeStateCount.value = DodgeStateCount.maxValue = dodge.MaxDodgesCount;
+
+                    dodge.onDodgeCountChanged.AddListener(count => DodgeStateCount.value = count);
+                }
             }
         }
     }

@@ -41,7 +41,6 @@ public abstract class SyncedActivitySource : NetworkBehaviour
 
     [Space]
     [Header("Input")]
-    
     [SerializeField, SyncVar]
     public bool isPerforming = true;
 
@@ -102,9 +101,9 @@ public abstract class SyncedActivitySource : NetworkBehaviour
     }
     public bool HasOverrides()
     {
-        if (syncedActivityOverrider.IsUnityNull() || !IsValid(syncedActivityOverrider))
+        if (syncedActivityOverrider.IsUnityNull() || !syncedActivityOverrider.IsValid(this))
         {
-            syncedActivityOverrider = regsitredSyncedActivities.Find(activity => IsValid(activity));
+            syncedActivityOverrider = regsitredSyncedActivities.Find(activity => activity.IsValid(this));
         }
 
         return !syncedActivityOverrider.IsUnityNull();
@@ -112,10 +111,11 @@ public abstract class SyncedActivitySource : NetworkBehaviour
 
     public virtual bool IsValid(SyncedActivitySource other)
     {
-        return other.inputAction == inputAction && 
-                (int)other.Priority > (int)Priority &&
-                System.Object.ReferenceEquals(other.Source, Source) &&
-                other.isPerforming;
+        return 
+            other.inputAction == inputAction && 
+            (int)other.Priority < (int)Priority &&
+            System.Object.ReferenceEquals(other.Source, Source) &&
+            other.isPerforming;
 
     }
 
@@ -172,12 +172,11 @@ public abstract class SyncedActivitySource : NetworkBehaviour
                 Stop_ClientRpc();
             }
             
-            permissions = CharacterPermission.Default;
+            Permissions = CharacterPermission.Default;
             
             if (interuptProcess)
             {
                 StopCoroutine(process);
-                StopAllCoroutines();
             }
 
             process = null;

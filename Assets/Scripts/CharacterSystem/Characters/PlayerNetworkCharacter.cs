@@ -24,7 +24,7 @@ using UnityEditor;
 namespace CharacterSystem.Objects
 {
     public class PlayerNetworkCharacter : NetworkCharacter,
-        IDamageSource,
+        IAttackSource,
         IDamageBlockerAcivity,
         IObservableObject,
         IThrower
@@ -55,6 +55,7 @@ namespace CharacterSystem.Objects
         [SerializeField]
         private InputActionReference killBindInput;
 
+        [Space]
         [SerializeField]
         private CinemachineImpulseSource OnHitImpulseSource;
 
@@ -73,8 +74,8 @@ namespace CharacterSystem.Objects
         public event Action<DamageDeliveryReport> onDamageDelivered;
         public event Action<int> onComboChanged;
 
-        int IDamageSource.Combo => combo;
-        float IDamageSource.DamageMultipliyer { get => DamageMultipliyer; set => DamageMultipliyer = value; }
+        int IAttackSource.Combo => combo;
+        float IAttackSource.DamageMultipliyer { get => DamageMultipliyer; set => DamageMultipliyer = value; }
 
         public ConnectedPlayerData Data => ConnectedPlayerData.All.Find(data => data.netIdentity.connectionToClient == netIdentity.connectionToClient);
         
@@ -168,9 +169,9 @@ namespace CharacterSystem.Objects
             return trinketIdentity;
         }
 
-        public override bool Hit(Damage damage)
+        public override bool Hit(ref Damage damage)
         {
-            var isBlocked = Blocker != null && Blocker.CheckBlocking(ref damage) || base.Hit(damage);
+            var isBlocked = Blocker != null && Blocker.CheckBlocking(ref damage) || base.Hit(ref damage);
 
             if (isBlocked)
             {                
@@ -338,15 +339,9 @@ namespace CharacterSystem.Objects
 
             if (isLocalPlayer)
             {
-                if (permissions.HasFlag(CharacterPermission.AllowMove))
-                {
-                    movementVector = internalMovementVector;
-                }
-
-                if (permissions.HasFlag(CharacterPermission.AllowRotate))
-                {
-                    lookVector = internalLookVector;
-                }
+                movementVector = internalMovementVector;
+                
+                lookVector = internalLookVector;
             }
         }
         protected override void OnDrawGizmosSelected()
@@ -504,11 +499,9 @@ namespace CharacterSystem.Objects
             private SerializedProperty suicideCorpsePrefab;
             private SerializedProperty observingPoint;
 
-            public override void OnInspectorGUI()
+            public override void OnEnable()
             {
-                base.OnInspectorGUI();
-                
-                EditorGUI.BeginChangeCheck();
+                base.OnEnable();
 
                 moveInput ??= serializedObject.FindProperty("moveInput");
                 lookInput ??= serializedObject.FindProperty("lookInput");
@@ -517,6 +510,12 @@ namespace CharacterSystem.Objects
                 OnHitImpulseSource ??= serializedObject.FindProperty("OnHitImpulseSource");
                 suicideCorpsePrefab ??= serializedObject.FindProperty("suicideCorpsePrefab");
                 observingPoint ??= serializedObject.FindProperty("observingPoint");
+            }
+            public override void OnInspectorGUI()
+            {
+                base.OnInspectorGUI();
+                
+                EditorGUI.BeginChangeCheck();
 
                 EditorGUILayout.PropertyField(moveInput);
                 EditorGUILayout.PropertyField(lookInput);

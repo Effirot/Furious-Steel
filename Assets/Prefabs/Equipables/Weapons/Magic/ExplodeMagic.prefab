@@ -180,6 +180,7 @@ SkinnedMeshRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -372,9 +373,16 @@ MonoBehaviour:
   syncInterval: 0
   DefaultValue: 100
   MaxValue: 100
+  roundToInt: 0
   color: {r: 0.015686274, g: 0.696047, b: 1, a: 1}
   fullChargeColor: {r: 0.015686275, g: 0.69411767, b: 1, a: 1}
   OnValueChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  OnPropertyEmpty:
+    m_PersistentCalls:
+      m_Calls: []
+  OnPropertyFull:
     m_PersistentCalls:
       m_Calls: []
   IsActive: 1
@@ -424,7 +432,7 @@ GameObject:
   - component: {fileID: 7603754523266505145}
   - component: {fileID: 4732907055801026765}
   m_Layer: 6
-  m_Name: BlockAttack
+  m_Name: Dodge
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -462,13 +470,13 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   isPerforming: 1
-  inputAction: {fileID: 4628471853980608337, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
+  inputAction: {fileID: -1197061071052274946, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 2
   SpeedChange: 4
-  IsPressed: 0
   IsInterruptableWhenBlocked: 0
   IsInterruptOnHit: 0
   RestartWhenHolding: 0
+  workOnlyCondition: 0
   attackQueue:
   - rid: 465147837004644435
   - rid: 465147837004644434
@@ -492,6 +500,12 @@ MonoBehaviour:
   OnAttackEnded:
     m_PersistentCalls:
       m_Calls: []
+  OnAttackInterrupted:
+    m_PersistentCalls:
+      m_Calls: []
+  OnUnsuccesfullyStart:
+    m_PersistentCalls:
+      m_Calls: []
   MinRequiredValue: 50
   StopOnValueLessThenMinimum: 0
   customProperty: {fileID: 4533531134351662696}
@@ -503,7 +517,7 @@ MonoBehaviour:
       data:
         casters:
         - rid: 465147837004644433
-        CastPushDirection: {x: 0, y: 0.2, z: 0.83}
+        CastPushDirection: {x: 0, y: 0.38, z: 0.83}
         OnCast:
           m_PersistentCalls:
             m_Calls:
@@ -554,6 +568,7 @@ MonoBehaviour:
           RechargeUltimate: 1
           SelfDamageUltimate: 0
           Effects: []
+          args: []
         position: {x: 0, y: 0, z: 0}
         radius: 4
     - rid: 465147837004644434
@@ -567,6 +582,7 @@ MonoBehaviour:
           RechargeUltimate: 0
           SelfDamageUltimate: 1
           Effects: []
+          args: []
     - rid: 465147837004644435
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
@@ -575,7 +591,7 @@ MonoBehaviour:
     - rid: 465147837004644436
       type: {class: Wait, ns: CharacterSystem.Attacks, asm: Assembly-CSharp}
       data:
-        WaitTime: 1
+        WaitTime: 0.2
         Permissions: 65280
 --- !u!1 &2550411166488077007
 GameObject:
@@ -712,6 +728,7 @@ VFXRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -785,10 +802,10 @@ MonoBehaviour:
   inputAction: {fileID: -697749738134341483, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 2
   SpeedChange: 0
-  IsPressed: 0
   IsInterruptableWhenBlocked: 0
   IsInterruptOnHit: 0
   RestartWhenHolding: 1
+  workOnlyCondition: 0
   attackQueue:
   - rid: 2874887858773557336
   - rid: 2874887858773557337
@@ -796,6 +813,12 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   OnAttackEnded:
+    m_PersistentCalls:
+      m_Calls: []
+  OnAttackInterrupted:
+    m_PersistentCalls:
+      m_Calls: []
+  OnUnsuccesfullyStart:
     m_PersistentCalls:
       m_Calls: []
   MinRequiredValue: 60
@@ -963,7 +986,6 @@ MonoBehaviour:
   inputAction: {fileID: 2243838571553120747, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 5
   SpeedChange: 0
-  IsPressed: 0
 --- !u!1 &8082012029032708640
 GameObject:
   m_ObjectHideFlags: 0
@@ -1010,7 +1032,7 @@ AudioSource:
   m_audioClip: {fileID: 8300000, guid: 96495f1f7ea3c1047b41c43ce726a35d, type: 3}
   m_Resource: {fileID: 8300000, guid: 96495f1f7ea3c1047b41c43ce726a35d, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 0.108
+  m_Volume: 0.078
   m_Pitch: 0.5
   Loop: 0
   Mute: 0
@@ -1054,7 +1076,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -1161,10 +1183,10 @@ MonoBehaviour:
   inputAction: {fileID: 5277666054227158027, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 2
   SpeedChange: 0
-  IsPressed: 0
   IsInterruptableWhenBlocked: 0
   IsInterruptOnHit: 0
   RestartWhenHolding: 1
+  workOnlyCondition: 0
   attackQueue:
   - rid: 2874887858773557343
   - rid: 2874887858773557344
@@ -1187,6 +1209,12 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   OnAttackEnded:
+    m_PersistentCalls:
+      m_Calls: []
+  OnAttackInterrupted:
+    m_PersistentCalls:
+      m_Calls: []
+  OnUnsuccesfullyStart:
     m_PersistentCalls:
       m_Calls: []
   MinRequiredValue: 20

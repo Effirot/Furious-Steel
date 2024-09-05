@@ -23,11 +23,11 @@ namespace CharacterSystem.Interactions
         [SerializeField]
         private GameObject OnExplodePrefab;
 
-        public override bool Hit(Damage damage)
+        public override bool Hit(ref Damage damage)
         {
             explodeDamage.senderID = damage.senderID;
 
-            return base.Hit(damage);
+            return base.Hit(ref damage);
         }
 
         public override void Throw(IThrower thrower)

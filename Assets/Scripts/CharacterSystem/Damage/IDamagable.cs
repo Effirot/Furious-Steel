@@ -8,6 +8,7 @@ namespace CharacterSystem.DamageMath
 {
     public interface IDamagable : 
         IGameObjectLink, 
+        IPhysicObject,
         ITeammate
     {
         public float maxHealth { get; }
@@ -23,8 +24,8 @@ namespace CharacterSystem.DamageMath
         public event Action<Damage> onDamageRecieved;
 
 
-        public bool Hit(Damage damage);
-        public bool Heal(Damage damage);
+        public bool Hit(ref Damage damage);
+        public bool Heal(ref Damage damage);
 
         public void Kill(Damage damage);
     }

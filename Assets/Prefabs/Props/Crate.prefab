@@ -72,6 +72,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: f31e64fa3ec01444ba291851cb8d80a1, type: 2}
+  - {fileID: 2100000, guid: 7c12ee7bbd72dfb499a0d18a7f3cac57, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -110,19 +111,19 @@ MonoBehaviour:
   syncInterval: 0
   Locked: 1
   Undestroyable: 0
-  <maxHealth>k__BackingField: 150
-  health: 150
+  <maxHealth>k__BackingField: 50
+  health: 50
   velocity: {x: 0, y: 0, z: 0}
   position: {x: 0, y: 0, z: 0}
   DamageOnHit:
-    value: 15
+    value: 30
     type: 1
     stunlock: 0
     pushDirection: {x: 0, y: 0, z: 0}
     RechargeUltimate: 0
     SelfDamageUltimate: 0
     Effects: []
-    args: []
+    args: 
   selfDamageOnHit:
     value: 50
     type: 32
@@ -131,7 +132,7 @@ MonoBehaviour:
     RechargeUltimate: 0
     SelfDamageUltimate: 0
     Effects: []
-    args: []
+    args: 
   <mass>k__BackingField: 0.9
   onHitEffect: {fileID: 8209129759019766808}
   onHitSound: {fileID: 5169456774655543893}
@@ -217,6 +218,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetObject: {fileID: 8414471019726036979}
   removeObjectAfter: 5
+  randomRotation: 1
 --- !u!1 &5747677798735532212
 GameObject:
   m_ObjectHideFlags: 0

@@ -16,9 +16,9 @@ namespace CharacterSystem.Effects
         {
             base.Start();
 
-            if (effectsHolder.character is IDamageSource)
+            if (effectsHolder.character is IAttackSource)
             {
-                var source = effectsHolder.character as IDamageSource;
+                var source = effectsHolder.character as IAttackSource;
 
                 source.onDamageDelivered += OnDamageDelivered;
             }
@@ -28,9 +28,9 @@ namespace CharacterSystem.Effects
         {
             base.Remove();
 
-            if (effectsHolder.character is IDamageSource)
+            if (effectsHolder.character is IAttackSource)
             {
-                var source = effectsHolder.character as IDamageSource;
+                var source = effectsHolder.character as IAttackSource;
 
                 source.onDamageDelivered -= OnDamageDelivered;
             }

@@ -19,7 +19,7 @@ namespace CharacterSystem.Blocking
     public interface IDamageBlockerAcivity : 
         ISyncedActivitiesSource, 
         IDamagable,
-        IDamageSource
+        IAttackSource
     {
         DamageBlockerAcivity Blocker { set; }
 
@@ -152,15 +152,15 @@ namespace CharacterSystem.Blocking
         }
         public override void Stop(bool interuptProcess = true)
         {
+            Permissions = CharacterPermission.Default;
+
             if (IsInProcess)
             {                                
-                Permissions = CharacterPermission.Default;
-            
                 Source.animator.SetBool("Blocking", false);
-                IsBlockActive = false;
-                
-                base.Stop(interuptProcess);
+                IsBlockActive = false;    
             }
+
+            base.Stop(interuptProcess);
         }
         
         public override IEnumerator Process()
@@ -209,6 +209,8 @@ namespace CharacterSystem.Blocking
             OnAfterBlockingEvent.Invoke();
 
             yield return new WaitForSeconds(AfterBlockTime);
+
+            Permissions = CharacterPermission.Default;
         }
 
         [ClientRpc]

@@ -11,17 +11,20 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using UnityEngine.TextCore;
+
 using static UnityEngine.InputSystem.InputAction;
 
 namespace CharacterSystem.Attacks
 {
-    public interface IDamageSource :
+    public interface IAttackSource :
         ISyncedActivitiesSource,
         IDamagable,
         ITimeScalable,
         IPhysicObject
     {
         public int Combo { get; }
+
+        public bool IsGrounded { get; }
 
         public float DamageMultipliyer { get; set; }
 
@@ -35,9 +38,21 @@ namespace CharacterSystem.Attacks
     }
 
     [DisallowMultipleComponent]
-    public class AttackActivity : SyncedActivitySource<IDamageSource>
+    public class AttackActivity : SyncedActivitySource<IAttackSource>
     {
+        public enum WorkOnlyCondition
+        {
+            Always,
+            OnGround,
+            OnAir,
+            OnDodge,
+            OnNotDodge,
+            OnChampion,
+        }
+
+
         [Space]
+        [Header("Attack")]
         [SerializeField]
         private bool IsInterruptableWhenBlocked = false;
 
@@ -46,20 +61,50 @@ namespace CharacterSystem.Attacks
 
         [SerializeField]
         private bool RestartWhenHolding = true;
-        
+
+        [SerializeField]
+        private WorkOnlyCondition workOnlyCondition = WorkOnlyCondition.Always;
+
+
         [SerializeField, SerializeReference, SubclassSelector]
         public AttackQueueElement[] attackQueue;
 
+
+        [Space]
+        [Header("Events")]
         [SerializeField]
         public UnityEvent<DamageDeliveryReport> OnDamageReport = new ();
         
         [SerializeField]
         public UnityEvent OnAttackEnded = new ();
+        
+        [SerializeField]
+        public UnityEvent OnAttackInterrupted = new ();
+        
+        [SerializeField]
+        public UnityEvent OnUnsuccesfullyStart = new ();
 
 
         public DamageDeliveryReport currentAttackDamageReport { get; protected set; }
 
-        public virtual bool IsActive => !IsInProcess && !HasOverrides() && Source != null && !Source.isStunned && Source.permissions.HasFlag(CharacterPermission.AllowAttacking) && isPerforming;
+        public virtual bool IsActive => 
+            !IsInProcess && 
+            Source != null && 
+            !Source.isStunned && 
+            Source.activities.CalculatePermissions().HasFlag(CharacterPermission.AllowAttacking) && 
+            isPerforming &&
+            workOnlyCondition switch
+            {
+                WorkOnlyCondition.Always => true,
+                
+                WorkOnlyCondition.OnGround => Source.IsGrounded,
+                WorkOnlyCondition.OnAir => !Source.IsGrounded,
+                
+                WorkOnlyCondition.OnDodge => Source.activities.Any(activity => activity is DodgeActivity),
+                WorkOnlyCondition.OnNotDodge => Source.activities.All(activity => activity is not DodgeActivity),
+                
+                _ => throw new NotImplementedException(),
+            };
 
         public override void OnStartServer()
         {
@@ -69,6 +114,8 @@ namespace CharacterSystem.Attacks
                 if (damage.type is not Damage.Type.Effect && IsInterruptOnHit)
                 {
                     Stop(true);
+
+                    OnAttackInterrupted.Invoke();
                 }
             };
         }
@@ -85,17 +132,22 @@ namespace CharacterSystem.Attacks
         }
         public override void Play()
         {   
-            if (IsActive)
+            if (!HasOverrides())
             {
-                PlayForced();
-            }    
+                if (IsActive)
+                {
+                    PlayForced();
+                }
+                else
+                {
+                    OnUnsuccesfullyStart.Invoke();
+                }
+            }
         }
         public override void Stop(bool interuptProcess = true)
         {
             if (IsInProcess)
-            {
-                Permissions = CharacterPermission.Default;
-                
+            {                
                 currentAttackDamageReport = null;
 
                 OnAttackEnded.Invoke();
@@ -110,7 +162,10 @@ namespace CharacterSystem.Attacks
 
             foreach (var item in attackQueue)
             {
-                yield return item.AttackPipeline(this);
+                if (item != null)
+                {
+                    yield return item.AttackPipeline(this);
+                }
             }
         }
 
@@ -130,6 +185,8 @@ namespace CharacterSystem.Attacks
                 {
                     Stop();
 
+                    OnAttackInterrupted.Invoke();
+
                     Permissions = CharacterPermission.Default;
                 }
 
@@ -147,7 +204,10 @@ namespace CharacterSystem.Attacks
         {
             foreach (var item in attackQueue)
             {
-                item?.OnDrawGizmos(transform);
+                if (item != null)
+                {
+                    item.OnDrawGizmos(transform);
+                } 
             }
         }
     }
@@ -160,8 +220,80 @@ namespace CharacterSystem.Attacks
 
         public abstract void OnDrawGizmos(Transform transform);
     }
-    
-    [Serializable]
+        
+    [Serializable, AddTypeMenu("Event", -1)]
+    public sealed class Event : AttackQueueElement
+    {
+        [Header("Events")]
+        
+        [Space]
+        [SerializeField]
+        private UnityEvent Function = new(); 
+        
+        public override IEnumerator AttackPipeline(AttackActivity source)
+        {
+            Function.Invoke();
+
+            yield break;
+        }
+
+        public override void OnDrawGizmos(Transform transform)
+        {
+            
+        }
+    }
+    [Serializable, AddTypeMenu("Play Animation", -1)]
+    public sealed class PlayAnimation : AttackQueueElement
+    {
+        [SerializeField]
+        public string AnimationName = "Torso.Attack1";
+        
+        [SerializeField]
+        public float NormalizeTime = 0.1f;
+
+        public override IEnumerator AttackPipeline(AttackActivity source)
+        {
+            if (source.Source.animator != null && source.Source.animator.gameObject.activeInHierarchy)
+            {
+                source.Source.animator.Play(AnimationName, -1, NormalizeTime);
+            }
+
+            yield break;
+        }
+
+        public override void OnDrawGizmos(Transform transform){ }
+    }
+    [Serializable, AddTypeMenu("Pattern", -1)]
+    public sealed class Pattern : AttackQueueElement
+    {
+        [SerializeField]
+        public AttackPattern attackPattern;
+
+        public override IEnumerator AttackPipeline(AttackActivity source)
+        {
+            if (attackPattern == null)
+            {
+                Debug.LogWarning($"Pattern is not selected in {source.gameObject.ToSafeString()}");
+
+                yield break;
+            }
+
+            foreach (var item in attackPattern.attackQueue)
+            {
+                if (item != null)
+                {
+                    yield return item.AttackPipeline(source);
+                }
+            }
+        }
+
+        public override void OnDrawGizmos(Transform transform) 
+        { 
+            attackPattern.GetGizmos(transform);
+        }
+    }
+
+    [Serializable, AddTypeMenu("Move/Push")]
     public sealed class Push : AttackQueueElement, Charger.IChargeListener
     {        
         [Space]
@@ -184,7 +316,7 @@ namespace CharacterSystem.Attacks
 
         }
     }
-    [Serializable]
+    [Serializable, AddTypeMenu("Move/Move")]
     public sealed class Move : AttackQueueElement, Charger.IChargeListener
     {        
         [Space]
@@ -248,8 +380,6 @@ namespace CharacterSystem.Attacks
                     wasteTime += Time.fixedDeltaTime;
                 }
             }
-            
-            yield break;
         }
 
         public override void OnDrawGizmos(Transform transform)
@@ -257,48 +387,7 @@ namespace CharacterSystem.Attacks
 
         }
     }
-    [Serializable]
-    public sealed class SelfDamage : AttackQueueElement
-    {        
-        [Space]
-        [SerializeField]
-        private Damage damage = new Damage();
-        
-        public override IEnumerator AttackPipeline(AttackActivity source)
-        {
-            Damage.Deliver(source.Source, damage);
-
-            yield break;
-        }
-
-        public override void OnDrawGizmos(Transform transform)
-        {
-
-        }
-    }
-    
-    [Serializable]
-    public sealed class Event : AttackQueueElement
-    {
-        [Header("Events")]
-        
-        [Space]
-        [SerializeField]
-        private UnityEvent Function = new(); 
-        
-        public override IEnumerator AttackPipeline(AttackActivity source)
-        {
-            Function.Invoke();
-
-            yield break;
-        }
-
-        public override void OnDrawGizmos(Transform transform)
-        {
-            
-        }
-    }
-    [Serializable]
+    [Serializable, AddTypeMenu("Move/Teleport")]
     public sealed class Teleport : AttackQueueElement
     {
         [Header("Events")]
@@ -336,7 +425,7 @@ namespace CharacterSystem.Attacks
 
         }
     }
-    [Serializable]
+    [Serializable, AddTypeMenu("Move/Teleport To Last Target")]
     public sealed class TeleportToLastTarget : AttackQueueElement
     {
         [Header("Events")]
@@ -360,7 +449,8 @@ namespace CharacterSystem.Attacks
 
         }
     }
-    [Serializable]
+    
+    [Serializable, AddTypeMenu("Attack/Cast")]
     public sealed class Cast : AttackQueueElement, Charger.IChargeListener
     {
         [Header("Casters")]
@@ -378,33 +468,13 @@ namespace CharacterSystem.Attacks
 
         private void Execute(IEnumerable<Caster> casters, AttackActivity damageSource)
         {
-            var impactPushVector = Vector3.zero;
-            var impactsCount = 0; 
-
             foreach (var cast in casters)
             {
-                foreach (var collider in cast.CastCollider(damageSource.transform))
+                foreach (var report in cast.CalculateReports(damageSource))
                 {
-                    if (collider.isTrigger)
-                        continue;
-
-                    var damage = cast.damage * damageSource.Source.DamageMultipliyer;
-                    damage.pushDirection = damageSource.Source.transform.rotation * cast.damage.pushDirection;
-                    damage.sender = damageSource.Source;
-
-                    var report = Damage.Deliver(collider.gameObject, damage);
-
-                    if (report.isDelivered)
-                    {
-                        impactsCount++;
-                        impactPushVector += -report.damage.pushDirection / 1.2f;
-                    }
-
                     damageSource.HandleDamageReport(report);
                 }
             }
-
-            damageSource.Source.Push(impactPushVector / impactsCount);
         }
         
         public override IEnumerator AttackPipeline(AttackActivity source)
@@ -415,7 +485,7 @@ namespace CharacterSystem.Attacks
         {
             var invoker = source.Source;
 
-            var newCasters = CopyArray(flexibleCollider ? chargeValue : 1, flexibleDamage ? chargeValue : 1);
+            var newCasters = CopyArray(flexibleCollider ? chargeValue : 1, flexibleDamage ? chargeValue : 1 * source.Source.DamageMultipliyer);
 
             OnCast.Invoke();
 
@@ -449,7 +519,7 @@ namespace CharacterSystem.Attacks
             return newArray;
         } 
     }
-    [Serializable]
+    [Serializable, AddTypeMenu("Attack/Projectile Shoot")]
     public sealed class ProjectileShooter : AttackQueueElement, Charger.IChargeListener
     {
         [SerializeField]
@@ -497,199 +567,16 @@ namespace CharacterSystem.Attacks
             
         }
     }
-    
-    [Serializable]
-    public sealed class Queue : AttackQueueElement
-    {
-        [SerializeField, SerializeReference, SubclassSelector]
-        public AttackQueueElement[] queue;
-
-        public override IEnumerator AttackPipeline(AttackActivity source)
-        {
-            foreach (var queueElement in queue)
-            {
-                yield return queueElement.AttackPipeline(source);
-            }
-        }
-
-        public override void OnDrawGizmos(Transform transform)
-        {
-            foreach (var queueElement in queue)
-            {
-                queueElement?.OnDrawGizmos(transform);
-            }
-        }
-    }
-    [Serializable]
-    public sealed class Repeat : AttackQueueElement
-    {
-        [SerializeField, SerializeReference, SubclassSelector]
-        public AttackQueueElement queueElement;
-
-        [SerializeField, Range(1, 50)]
-        public int RepeatCount = 5;
-
-        public override IEnumerator AttackPipeline(AttackActivity source)
-        {
-            for (int i = 0; i < RepeatCount; i++)
-            {
-                yield return queueElement.AttackPipeline(source);
-            }
-        }
-
-        public override void OnDrawGizmos(Transform transform)
-        {
-            queueElement?.OnDrawGizmos(transform);
-        }
-    }
-    [Serializable]
-    public sealed class HoldRepeat : AttackQueueElement
-    {
-        [SerializeField, SerializeReference, SubclassSelector]
-        public AttackQueueElement queueElement;
-
-        [SerializeField, Range(0, 100)]
-        public int RepeatLimit = 0;
-
-        public override IEnumerator AttackPipeline(AttackActivity source)
-        {
-            int repeats = 0;
-
-            while (repeats <= RepeatLimit && source.IsPressed)
-            {
-                yield return queueElement.AttackPipeline(source);
-                
-                if (RepeatLimit > 0)
-                {
-                    repeats++;
-                }
-            }
-        }
-
-        public override void OnDrawGizmos(Transform transform)
-        {
-            queueElement?.OnDrawGizmos(transform);
-        }
-    }
-    [Serializable]
-    public sealed class Wait : AttackQueueElement
-    {
-        [SerializeField, Range(0, 10)]
-        private float WaitTime = 1;
-        
-        [SerializeField]
-        private CharacterPermission Permissions = CharacterPermission.Default;
-
-        public override IEnumerator AttackPipeline(AttackActivity source)
-        {
-            source.Permissions = Permissions;
-            
-            yield return new WaitForSeconds(WaitTime * source.Source.LocalTimeScale);
-        }
-        
-        public override void OnDrawGizmos(Transform transform)
-        {
-            
-        }
-    }
-    [Serializable]
-    public sealed class WaitForGroudpound : AttackQueueElement
+    [Serializable, AddTypeMenu("Attack/Self Damage")]
+    public sealed class SelfDamage : AttackQueueElement
     {        
+        [Space]
         [SerializeField]
-        private CharacterPermission Permissions = CharacterPermission.Default;
+        private Damage damage = new Damage();
         
-        [SerializeField]
-        private bool Reverse = false;
-
         public override IEnumerator AttackPipeline(AttackActivity source)
         {
-            source.Permissions = Permissions;
-            
-            yield return new WaitUntil(() => {
-                if (source.Source.gameObject.TryGetComponent<CharacterController>(out var character))
-                {
-                    return Reverse ? !character.isGrounded : character.isGrounded;
-                }
-                
-                return true;
-            });
-        }
-        
-        public override void OnDrawGizmos(Transform transform)
-        {
-            
-        }
-    }
-    [Serializable]
-    public sealed class ReducableWait : AttackQueueElement
-    {
-        [SerializeField, Range(0, 10)]
-        private float WaitTime = 1;
-
-        [SerializeField, Range(0, 10)]
-        private float MinWaitTime = 0.2f;
-
-        [SerializeField, Range(0, 10)]
-        private float ReducingByHit = 0.03f;
-        
-        [SerializeField]
-        private CharacterPermission Permissions = CharacterPermission.Default;
-
-        public override IEnumerator AttackPipeline(AttackActivity source)
-        {
-            source.Permissions = Permissions;
-            
-            yield return new WaitForSeconds(Mathf.Clamp(WaitTime - source.Source.Combo * ReducingByHit, MinWaitTime, WaitTime) * source.Source.LocalTimeScale);
-        }
-        
-        public override void OnDrawGizmos(Transform transform)
-        {
-            
-        }
-    }
-    [Serializable]
-    public sealed class InterruptableWait : AttackQueueElement
-    {
-        [SerializeField, Range(0, 10)]
-        private float WaitTime = 1;
-
-        [SerializeField, Range(0, 5)]
-        private float LastHitRequireSeconds = 1;
-        
-        [SerializeField]
-        private CharacterPermission Permissions = CharacterPermission.Default;
-
-        public override IEnumerator AttackPipeline(AttackActivity source)
-        {
-            source.Permissions = Permissions;
-
-            var deltaTime = DateTime.Now - (source.Source.lastReport?.time ?? DateTime.MinValue);
-                        
-            if (deltaTime > new TimeSpan((long)Mathf.Round(TimeSpan.TicksPerSecond * LastHitRequireSeconds / source.Source.LocalTimeScale)))
-            {
-                yield return new WaitForSeconds(WaitTime * source.Source.LocalTimeScale);
-            }           
-        }
-        
-        public override void OnDrawGizmos(Transform transform)
-        {
-            
-        }
-    }
-
-
-    [Serializable]
-    public sealed class PlayAnimation : AttackQueueElement
-    {
-        [SerializeField]
-        public string AnimationName = "Torso.Attack1";
-
-        public override IEnumerator AttackPipeline(AttackActivity source)
-        {
-            if (source.Source.animator != null && source.Source.animator.gameObject.activeInHierarchy)
-            {
-                source.Source.animator.Play(AnimationName, -1, 0.1f);
-            }
+            Damage.Deliver(source.Source, damage);
 
             yield break;
         }
@@ -699,8 +586,7 @@ namespace CharacterSystem.Attacks
 
         }
     }
-
-    [Serializable]
+    [Serializable, AddTypeMenu("Attack/Charger")]
     public sealed class Charger : AttackQueueElement
     {
         public interface IChargeListener 
@@ -751,7 +637,7 @@ namespace CharacterSystem.Attacks
             var waitForFixedUpdate = new WaitForFixedUpdate();
             var waitedTime = 0f;
 
-            while (source.IsPressed)
+            while (source.IsPressed && source.isPerforming)
             {
                 if (waitedTime < MaxChargingTime)
                 {
@@ -770,11 +656,6 @@ namespace CharacterSystem.Attacks
 
             if (chargeListener != null)
             {
-                if (waitedTime >= MaxChargingTime)
-                {
-                    yield return FullyChargeQueue.AttackPipeline(source);
-                }
-
                 yield return chargeListener.ChargedAttackPipeline(source, Mathf.Lerp(MinChargeValue, MaxChargeValue, waitedTime / MaxChargingTime), flexibleCollider, flexibleDamage);           
             }
 
@@ -783,8 +664,185 @@ namespace CharacterSystem.Attacks
         
         public override void OnDrawGizmos(Transform transform)
         {
-            FullyChargeQueue?.OnDrawGizmos(transform);
             chargeListener?.OnDrawGizmos(transform);
+        }
+    }
+
+    [Serializable, AddTypeMenu("Repeat/Repeat")]
+    public sealed class Repeat : AttackQueueElement
+    {
+        [SerializeField, SerializeReference, SubclassSelector]
+        public AttackQueueElement[] queueElements;
+
+        [SerializeField, Range(1, 50)]
+        public int RepeatCount = 5;
+
+        public override IEnumerator AttackPipeline(AttackActivity source)
+        {
+            for (int i = 0; i < RepeatCount; i++)
+            {
+                foreach (var element in queueElements)
+                {
+                    if (element != null)
+                    {
+                        yield return element.AttackPipeline(source);
+                    }
+                }
+            }
+        }
+
+        public override void OnDrawGizmos(Transform transform)
+        {
+            foreach (var element in queueElements)
+            {
+                if (element != null)
+                {
+                    element.OnDrawGizmos(transform);
+                }
+            }
+        }
+    }
+    [Serializable, AddTypeMenu("Repeat/Hold Repeat")]
+    public sealed class HoldRepeat : AttackQueueElement
+    {
+        [SerializeField, SerializeReference, SubclassSelector]
+        public AttackQueueElement[] queueElements;
+
+        [SerializeField, Range(0, 100)]
+        public int RepeatLimit = 0;
+
+        public override IEnumerator AttackPipeline(AttackActivity source)
+        {
+            int repeats = 0;
+
+            do 
+            {
+                foreach (var element in queueElements)
+                {
+                    if (element != null)
+                    {
+                        yield return element.AttackPipeline(source);
+                    }
+                }
+
+                if (RepeatLimit > 0)
+                {
+                    repeats++;
+                }
+            }
+            while (repeats <= RepeatLimit && source.IsPressed);
+        }
+
+        public override void OnDrawGizmos(Transform transform)
+        {
+            foreach (var element in queueElements)
+            {
+                if (element != null)
+                {
+                    element.OnDrawGizmos(transform);
+                }
+            }
+        }
+    }
+    
+    [Serializable, AddTypeMenu("Wait/Wait")]
+    public sealed class Wait : AttackQueueElement
+    {
+        [SerializeField, Range(0, 10)]
+        private float WaitTime = 1;
+        
+        [SerializeField]
+        private CharacterPermission Permissions = CharacterPermission.Default;
+
+        public override IEnumerator AttackPipeline(AttackActivity source)
+        {
+            source.Permissions = Permissions;
+            
+            yield return new WaitForSeconds(WaitTime * source.Source.LocalTimeScale);
+        }
+        
+        public override void OnDrawGizmos(Transform transform)
+        {
+            
+        }
+    }
+    [Serializable, AddTypeMenu("Wait/Wait For Groudpound")]
+    public sealed class WaitForGroudpound : AttackQueueElement
+    {        
+        [SerializeField]
+        private CharacterPermission Permissions = CharacterPermission.Default;
+        
+        [SerializeField]
+        private bool Reverse = false;
+
+        public override IEnumerator AttackPipeline(AttackActivity source)
+        {
+            source.Permissions = Permissions;
+            
+            yield return new WaitUntil(() => {
+                return Reverse ? !source.Source.IsGrounded : source.Source.IsGrounded;
+            });
+        }
+        
+        public override void OnDrawGizmos(Transform transform)
+        {
+            
+        }
+    }
+    [Serializable, AddTypeMenu("Wait/Reducable Wait")]
+    public sealed class ReducableWait : AttackQueueElement
+    {
+        [SerializeField, Range(0, 10)]
+        private float WaitTime = 1;
+
+        [SerializeField, Range(0, 10)]
+        private float MinWaitTime = 0.2f;
+
+        [SerializeField, Range(0, 10)]
+        private float ReducingByHit = 0.03f;
+        
+        [SerializeField]
+        private CharacterPermission Permissions = CharacterPermission.Default;
+
+        public override IEnumerator AttackPipeline(AttackActivity source)
+        {
+            source.Permissions = Permissions;
+            
+            yield return new WaitForSeconds(Mathf.Clamp(WaitTime - source.Source.Combo * ReducingByHit, MinWaitTime, WaitTime) * source.Source.LocalTimeScale);
+        }
+        
+        public override void OnDrawGizmos(Transform transform)
+        {
+            
+        }
+    }
+    [Serializable, AddTypeMenu("Wait/Interruptable Wait")]
+    public sealed class InterruptableWait : AttackQueueElement
+    {
+        [SerializeField, Range(0, 10)]
+        private float WaitTime = 1;
+
+        [SerializeField, Range(0, 5)]
+        private float LastHitRequireSeconds = 1;
+        
+        [SerializeField]
+        private CharacterPermission Permissions = CharacterPermission.Default;
+
+        public override IEnumerator AttackPipeline(AttackActivity source)
+        {
+            source.Permissions = Permissions;
+
+            var deltaTime = DateTime.Now - (source.Source.lastReport?.time ?? DateTime.MinValue);
+                        
+            if (deltaTime > new TimeSpan((long)Mathf.Round(TimeSpan.TicksPerSecond * LastHitRequireSeconds / source.Source.LocalTimeScale)))
+            {
+                yield return new WaitForSeconds(WaitTime * source.Source.LocalTimeScale);
+            }           
+        }
+        
+        public override void OnDrawGizmos(Transform transform)
+        {
+            
         }
     }
 
@@ -794,7 +852,7 @@ namespace CharacterSystem.Attacks
     {
         public Damage damage;
 
-        public abstract Collider[] CastCollider(Transform transform);
+        public abstract Collider[] CastCollider(AttackActivity attack);
         public abstract void CastColliderGizmos(Transform transform);
 
         public abstract void MultiplySize(float multiplyer); 
@@ -810,6 +868,30 @@ namespace CharacterSystem.Attacks
 
             return caster;
         } 
+
+        public DamageDeliveryReport[] CalculateReports(AttackActivity attack)
+        {
+            var colliders = CastCollider(attack);
+            var result = new DamageDeliveryReport[colliders.Length];
+            var index = 0;
+
+            foreach (var collider in colliders)
+            {
+                if (collider.isTrigger)
+                    continue;
+
+                var newDamage = damage;
+
+                newDamage.pushDirection = attack.transform.rotation * damage.pushDirection;
+                newDamage.sender = attack.Source;
+
+                var report = result[index] = Damage.Deliver(collider.gameObject, newDamage);
+
+                index++;
+            }
+
+            return result;
+        }
     }
 
     [Serializable]
@@ -819,8 +901,10 @@ namespace CharacterSystem.Attacks
         public Vector3 size = Vector3.one;
         public Vector3 angle = Vector3.zero;
 
-        public override Collider[] CastCollider(Transform transform)
+        public override Collider[] CastCollider(AttackActivity attack)
         {
+            var transform = attack.transform;
+
             return Physics.OverlapBox(transform.position + (transform.rotation * position), size, Quaternion.Euler(angle + transform.eulerAngles), ~(1 << 7));
         }
 
@@ -844,8 +928,10 @@ namespace CharacterSystem.Attacks
         public Vector3 position;
         public float radius = 1;
 
-        public override Collider[] CastCollider(Transform transform)
+        public override Collider[] CastCollider(AttackActivity attack)
         {
+            var transform = attack.transform;
+
             return Physics.OverlapSphere(transform.position + (transform.rotation * position), radius, ~(1 << 7));
         }
 
@@ -870,8 +956,10 @@ namespace CharacterSystem.Attacks
         public Vector3 direction;
         public float maxDistance;
 
-        public override Collider[] CastCollider(Transform transform)
+        public override Collider[] CastCollider(AttackActivity attack)
         {
+            var transform = attack.transform;
+
             if (Physics.Raycast((transform.rotation * origin) + transform.position, transform.rotation * direction, out var hit, maxDistance, ~(1 << 7)))
             {
                 return new Collider[] { hit.collider };
@@ -899,8 +987,10 @@ namespace CharacterSystem.Attacks
         public Transform target;
         public float maxDistance;
 
-        public override Collider[] CastCollider(Transform transform)
+        public override Collider[] CastCollider(AttackActivity attack)
         {
+            var transform = attack.transform;
+
             if (target != null)
             {
                 var RayOrigin = (transform.rotation * origin) + transform.position;

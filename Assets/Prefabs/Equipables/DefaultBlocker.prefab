@@ -58,13 +58,12 @@ MonoBehaviour:
   inputAction: {fileID: 4628471853980608337, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
   Priority: 2
   SpeedChange: 3
-  isPressed: 0
   BeforeBlockCharacterPermissions: 64
   BeforeBlockTime: 0
   BlockCharacterPermissions: 320
   BlockProcessTime: 0.6
   HoldMode: 0
-  AfterBlockCharacterPermissions: 24320
+  AfterBlockCharacterPermissions: 65280
   AfterBlockTime: 0.5
   blockingDegree: 75
   InterruptOnHit: 1
@@ -76,6 +75,16 @@ MonoBehaviour:
     RechargeUltimate: 1
     SelfDamageUltimate: 0
     Effects: []
+    args: []
+  selfHeal:
+    value: 0
+    type: 0
+    stunlock: 0
+    pushDirection: {x: 0, y: 0, z: 0}
+    RechargeUltimate: 0
+    SelfDamageUltimate: 0
+    Effects: []
+    args: []
   DamageReducing: 1
   OnBeforeBlockingEvent:
     m_PersistentCalls:
@@ -422,6 +431,7 @@ VFXRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -643,6 +653,7 @@ VFXRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -759,6 +770,7 @@ VFXRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:

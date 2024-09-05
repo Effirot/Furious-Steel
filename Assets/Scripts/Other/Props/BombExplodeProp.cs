@@ -27,7 +27,6 @@ namespace CharacterSystem.Interactions
             yield break;
         }
 
-
         protected virtual void OnTriggerEnter(Collider collider)
         {
             if (collider.gameObject.layer == LayerMask.NameToLayer("Water"))
@@ -36,14 +35,14 @@ namespace CharacterSystem.Interactions
             }
         }
 
-        public override bool Hit(Damage damage)
+        public override bool Hit(ref Damage damage)
         {
-            if (damage.args.Contains("PUT_OUT_THEFUSE"))
+            if (damage.args.Contains(Damage.DamageArgument.COLD))
             {
                 PutOutTheFuse();
             }
 
-            return base.Hit(damage);
+            return base.Hit(ref damage);
         }
 
         private void LightItUp()
@@ -96,10 +95,8 @@ namespace CharacterSystem.Interactions
 
         public override void Kill(Damage damage)
         {
-            if (isServer)
-            {
-                NetworkServer.Destroy(gameObject);
-            }
+            Explode();
+            base.Kill(default);
         }
 
         private IEnumerator LitWickProcess()

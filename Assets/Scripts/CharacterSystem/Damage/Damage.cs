@@ -26,6 +26,16 @@ namespace CharacterSystem.DamageMath
             Effect = 32,
         }
 
+        public enum DamageArgument : byte
+        {
+            DETONATE_BURN,
+            
+            COLD,
+            HEAT,
+
+            WALL_HIT
+        }
+
         public delegate void OnDamageDeliveredDelegate(DamageDeliveryReport damage);
         
         public static event OnDamageDeliveredDelegate damageDeliveryPipeline;
@@ -71,7 +81,7 @@ namespace CharacterSystem.DamageMath
                             damage.sender = target.lastRecievedDamage.sender;
                         }
 
-                        report.isBlocked = target.Hit(damage);
+                        report.isBlocked = target.Hit(ref damage);
                         report.isDelivered = true;
 
                         target.lastRecievedDamage = damage;
@@ -79,7 +89,7 @@ namespace CharacterSystem.DamageMath
                 }
                 else
                 {
-                    report.isBlocked = target.Heal(damage);
+                    report.isBlocked = target.Heal(ref damage);
                     report.isDelivered = true;
                 }
  
@@ -157,16 +167,16 @@ namespace CharacterSystem.DamageMath
         public CharacterEffect[] Effects;
         
         [SerializeField]
-        public string[] args; 
+        public DamageArgument[] args; 
 
         [NonSerialized]
         public uint senderID;
          
-        public IDamageSource sender { 
+        public IAttackSource sender { 
             get {
-                var dictionary = NetworkServer.spawned;
+                var dictionary = NetworkClient.spawned;
 
-                if (dictionary.ContainsKey(senderID) && dictionary[senderID].TryGetComponent<IDamageSource>(out var component))
+                if (dictionary.ContainsKey(senderID) && dictionary[senderID].TryGetComponent<IAttackSource>(out var component))
                 {
                     return component;
                 }
@@ -203,9 +213,9 @@ namespace CharacterSystem.DamageMath
             this.Effects = effects;
             this.RechargeUltimate = true;   
             this.SelfDamageUltimate = false;   
-            this.args = new string[0];
+            this.args = new DamageArgument[0];
         }
-        public Damage(float value, IDamageSource sender, float stunlock, Vector3 pushDirection, Type type, params CharacterEffect[] effects)
+        public Damage(float value, IAttackSource sender, float stunlock, Vector3 pushDirection, Type type, params CharacterEffect[] effects)
         {
             senderID = 0;
 
@@ -216,7 +226,7 @@ namespace CharacterSystem.DamageMath
             this.Effects = effects;
             this.RechargeUltimate = true;
             this.SelfDamageUltimate = false;   
-            this.args = new string[0];
+            this.args = new DamageArgument[0];
             
             this.sender = sender;
 
@@ -294,9 +304,11 @@ namespace CharacterSystem.DamageMath
 
         public IDamagable target {
             get {
-                if (NetworkClient.active && NetworkClient.spawned.ContainsKey(targetID) && NetworkClient.spawned[targetID].TryGetComponent<IDamageSource>(out var clientComponent))
+                var dictionary = NetworkClient.spawned;
+
+                if (dictionary.ContainsKey(targetID) && dictionary[targetID].TryGetComponent<IAttackSource>(out var component))
                 {
-                    return clientComponent;
+                    return component;
                 }
 
                 return null;
@@ -310,7 +322,6 @@ namespace CharacterSystem.DamageMath
                 {
                     targetID = uint.MinValue;
                 }
-
             } 
         }
 
@@ -332,61 +343,7 @@ namespace CharacterSystem.DamageMath
 
         public override string ToString()
         {
-            return $"{damage}\n Target: {target?.gameObject.ToSafeString() ?? "null"} ({targetID})\nIsDelivered: {isDelivered}\n IsBlocked: {isBlocked}\n IsLethal: {isLethal}\n Time: {time}\n Effects: {RecievedEffects}";
+            return $"{damage}\nTarget: {target?.gameObject.ToSafeString() ?? "null"} ({targetID})\nIsDelivered: {isDelivered}\nIsBlocked: {isBlocked}\nIsLethal: {isLethal}\nTime: {time}\nEffects: {RecievedEffects}";
         }
-    }
-
-    public static class CustomDamageSerialization 
-    {
-        // public static void WriteDamage(this NetworkWriter writer, Damage value)
-        // {
-        //     writer.Write(value.value);
-        //     writer.Write((byte)value.type);
-        //     writer.Write(value.stunlock);
-        //     writer.Write(value.pushDirection);
-        //     writer.Write(value.RechargeUltimate);
-        //     writer.Write(value.SelfDamageUltimate);
-        //     writer.Write(value.senderID);
-        //     writer.Write(value.Effects); // ------------------------ FIX THIS
-        // }
-
-        // public static Damage ReadDamage(this NetworkReader reader)
-        // {
-        //     return new Damage()
-        //     {
-        //         value = reader.Read<float>(),
-        //         type = (Damage.Type)reader.Read<byte>(),
-        //         stunlock = reader.Read<float>(),
-        //         pushDirection = reader.Read<Vector3>(),
-        //         RechargeUltimate = reader.Read<bool>(),
-        //         SelfDamageUltimate = reader.Read<bool>(),
-        //         senderID = reader.Read<uint>(),
-        //         Effects = reader.Read<CharacterEffect[]>(), // ------------------------ FIX THIS
-        //     };
-        // }
-
-        // public static void WriteDamageReport(this NetworkWriter writer, DamageDeliveryReport value)
-        // {
-        //     writer.Write(value.damage);
-        //     writer.Write(value.isDelivered);
-        //     writer.Write(value.isBlocked);
-        //     writer.Write(value.isLethal);
-        //     writer.Write(value.time);
-        //     writer.Write(value.targetID);
-        //     writer.Write(value.RecievedEffects); // ------------------------ FIX THIS
-        // }
-
-        // public static DamageDeliveryReport ReadDamageReport(this NetworkReader reader)
-        // {
-        //     return new DamageDeliveryReport() {
-        //         damage = reader.Read<Damage>(),
-        //         isDelivered = reader.Read<bool>(),
-        //         isBlocked = reader.Read<bool>(),
-        //         isLethal = reader.Read<bool>(),
-        //         time = reader.Read<DateTime>(),
-        //         targetID = reader.Read<uint>(),                
-        //         RecievedEffects = reader.Read<CharacterEffect[]>(), // ------------------------ FIX THIS
-        //     };
-        // }
     }
 }

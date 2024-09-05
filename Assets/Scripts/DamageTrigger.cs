@@ -15,8 +15,11 @@ public class DamageTrigger : MonoBehaviour
     [SerializeField]
     private bool destroySelfOnDeliver = false;
 
+    [SerializeField]
+    private bool killOnTouch = false;
 
-    private void OnTriggerStay(Collider other)
+
+    private void OnTriggerEnter(Collider other)
     {
         if (other.tag != IgnoreTag)
         {
@@ -25,6 +28,11 @@ public class DamageTrigger : MonoBehaviour
                 if (report.isDelivered && destroySelfOnDeliver && NetworkServer.active)
                 {
                     NetworkServer.Destroy(gameObject);
+                }
+
+                if (!report.isLethal && killOnTouch)
+                {
+                    report.target?.Kill(damage);
                 }
             }
         }

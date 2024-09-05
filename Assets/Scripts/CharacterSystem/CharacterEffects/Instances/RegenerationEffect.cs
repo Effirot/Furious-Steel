@@ -29,7 +29,9 @@ namespace CharacterSystem.Effects
         public override void Start()
         {
             effectsHolder.AddGlowing(this, color, 5f);
-            effectsHolder.character.Heal(new Damage(20, effectsSource, 0, Vector3.zero, Damage.Type.Effect));
+            
+            var heal = new Damage(20, effectsSource, 0, Vector3.zero, Damage.Type.Effect);
+            effectsHolder.character.Heal(ref heal);
 
             AddVisualEffect();
         }
@@ -37,7 +39,9 @@ namespace CharacterSystem.Effects
         {
             base.Update();
 
-            effectsHolder.character.Heal(new Damage(healthPerSecond * Time.fixedDeltaTime, effectsSource, 0, Vector3.zero, Damage.Type.Effect));
+            var heal = new Damage(healthPerSecond * Time.fixedDeltaTime, effectsSource, 0, Vector3.zero, Damage.Type.Effect);
+
+            effectsHolder.character.Heal(ref heal);
         }
         public override void Remove()
         {

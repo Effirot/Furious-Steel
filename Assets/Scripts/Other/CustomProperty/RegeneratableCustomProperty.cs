@@ -49,9 +49,18 @@ public class RegeneratableCustomProperty : CustomProperty
 
         while (Value < MaxValue)
         {
-            Value += RegenerationPerSecond * Time.fixedDeltaTime;
-        
-            yield return new WaitForFixedUpdate();
+            if (roundToInt)
+            {
+                Value += RegenerationPerSecond;
+
+                yield return new WaitForSeconds(1);
+            }
+            else
+            {
+                Value += RegenerationPerSecond * Time.fixedDeltaTime;
+            
+                yield return new WaitForFixedUpdate();
+            }
         }
 
         Value = MaxValue;

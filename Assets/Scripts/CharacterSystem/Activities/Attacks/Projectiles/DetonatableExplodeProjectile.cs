@@ -12,12 +12,12 @@ public class DetonatableExplodeProjectile : ExplodeProjectile
     
     public UnityEvent OnAfterDetonateEvent = new();
 
-    public static void Detonate(IDamageSource source)
+    public static void Detonate(IAttackSource source)
     {
         detonateAll_Evenet.Invoke(source);
     }
 
-    private static UnityEvent<IDamageSource> detonateAll_Evenet = new();
+    private static UnityEvent<IAttackSource> detonateAll_Evenet = new();
 
     protected override void Start()
     {
@@ -32,7 +32,7 @@ public class DetonatableExplodeProjectile : ExplodeProjectile
         detonateAll_Evenet.RemoveListener(Detonate_Event);
     }
 
-    private async void Detonate_Event(IDamageSource source)
+    private async void Detonate_Event(IAttackSource source)
     {
         detonateAll_Evenet.RemoveListener(Detonate_Event);
 

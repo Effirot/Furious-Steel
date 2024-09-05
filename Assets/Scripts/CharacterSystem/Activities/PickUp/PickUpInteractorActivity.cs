@@ -16,7 +16,7 @@ namespace CharacterSystem.Interactions
         ISyncedActivitiesSource,
         IInteractor,
         IPhysicObject,
-        IDamageSource
+        IAttackSource
     {
 
     }
@@ -103,30 +103,20 @@ namespace CharacterSystem.Interactions
                 Source.activities.First().Stop();
             }
 
-            var interactable = GetInteractable();
+            AvailableInteractableObject = GetInteractable();
 
-            if (interactable.IsUnityNull())
-                return;
-
-            AvailableInteractableObject = interactable;
+            if (!pickedObject.IsUnityNull())
+            {
+                Stop();
+            }
 
             base.Play();
-
-            if (interactable is IThrowable)
-            {
-                var preparePickedObject = interactable as IThrowable;
-                
-                if (preparePickedObject.IsInteractionAllowed(Source) && isServer)
-                {
-                    pickedObject = preparePickedObject;
-
-                    SetPickedObject(preparePickedObject.gameObject.GetComponent<NetworkIdentity>()?.netId ?? 0);
-                }
-            }
         }
 
         public override IEnumerator Process()
         {
+            var waitForFixedUpdate = new WaitForFixedUpdate();
+
             if (!pickedObject.IsUnityNull())
             {
                 yield return pickedObject.Interact(Source);
@@ -143,6 +133,32 @@ namespace CharacterSystem.Interactions
 
                 Permissions = afterThrowPermisssions;
                 yield return new WaitForSeconds(afterThrowDelay);
+
+                yield break;
+            }
+
+            if (AvailableInteractableObject is IThrowable)
+            {
+                var preparePickedObject = AvailableInteractableObject as IThrowable;
+                
+                if (preparePickedObject.IsInteractionAllowed(Source) && isServer)
+                {
+                    pickedObject = preparePickedObject;
+
+                    Pick(preparePickedObject);
+                }
+            }
+
+            if (!pickedObject.IsUnityNull())
+            {
+                
+
+                while (true) 
+                { 
+                    Permissions = pickTimePermissions;    
+                    
+                    yield return waitForFixedUpdate; 
+                }
             }
         }
 
@@ -183,7 +199,7 @@ namespace CharacterSystem.Interactions
         [ClientRpc]
         private void SetPickedObject(uint ID)
         {
-            if (isServer)
+            if (!isServer)
                 return;
 
             if (ID == 0 || ID >= NetworkClient.spawned.Count)
@@ -206,9 +222,12 @@ namespace CharacterSystem.Interactions
         }
         private void FixedUpdate()
         {
-            if (isOwned && pickedObject.IsUnityNull())
+            if (pickedObject.IsUnityNull())
             {
-                AvailableInteractableObject = GetInteractable();
+                if (isOwned)
+                {
+                    AvailableInteractableObject = GetInteractable();
+                }            
             }
         }
         private void LateUpdate()

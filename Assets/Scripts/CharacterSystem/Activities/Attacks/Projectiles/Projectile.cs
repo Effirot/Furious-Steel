@@ -9,10 +9,10 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.VFX;
 using Telepathy;
-using UnityEditor.Localization.Plugins.XLIFF.V20;
 
 public class Projectile : NetworkBehaviour, 
     IDamagable,
+    IPhysicObject,
     ITeammate
 {
     public delegate void OnDamageDeliveryReport(DamageDeliveryReport damageDeliveryReport);
@@ -64,9 +64,9 @@ public class Projectile : NetworkBehaviour,
     public float stunlock { get => 0; set { return; } }
     public Team team { get => Summoner.team; }
 
-    public IDamageSource Summoner {
+    public IAttackSource Summoner {
         get {
-            if (!summonerObject.IsUnityNull() && summonerObject.TryGetComponent<IDamageSource>(out var component))
+            if (!summonerObject.IsUnityNull() && summonerObject.TryGetComponent<IAttackSource>(out var component))
             {
                 return component;
             }
@@ -78,12 +78,18 @@ public class Projectile : NetworkBehaviour,
         } 
     }
 
+    Vector3 IPhysicObject.velocity { get => velocity; set => velocity = value; }
+    float IPhysicObject.mass { get => 0; set { return; } }
+    float IPhysicObject.PhysicTimeScale { get => 0; set { return; } }
+    float IPhysicObject.GravityScale { get => 0; set { return; } }
+
+
     [SyncVar]
     private GameObject summonerObject;
 
     public event Action<Damage> onDamageRecieved;
     
-    public void Initialize (Vector3 direction, IDamageSource summoner, OnDamageDeliveryReport onDamageDeliveryReport = null)
+    public void Initialize (Vector3 direction, IAttackSource summoner, OnDamageDeliveryReport onDamageDeliveryReport = null)
     {
         if (!NetworkServer.spawned.ContainsKey(netIdentity.netId))
         {
@@ -100,7 +106,7 @@ public class Projectile : NetworkBehaviour,
         this.onDamageDeliveryReport = onDamageDeliveryReport;
     }
 
-    public bool Hit (Damage damage)
+    public bool Hit (ref Damage damage)
     {
         onDamageRecieved?.Invoke(damage);
 
@@ -110,7 +116,7 @@ public class Projectile : NetworkBehaviour,
 
         return false;
     }
-    public bool Heal (Damage damage)
+    public bool Heal (ref Damage damage)
     {        
         return false;
     }
@@ -206,7 +212,7 @@ public class Projectile : NetworkBehaviour,
                 speed *= 1.5f;
                 lifetime += 5;
 
-                if (other.TryGetComponent<IDamageSource>(out var source))
+                if (other.TryGetComponent<IAttackSource>(out var source))
                 {
                     Summoner = source;
                 }

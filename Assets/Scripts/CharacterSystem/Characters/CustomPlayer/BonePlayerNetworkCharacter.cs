@@ -34,7 +34,9 @@ public class BonePlayerNetworkCharacter : PlayerNetworkCharacter
         {
             if (report.isLethal)
             {
-                Heal(new Damage(maxHealth, null, 0, Vector3.zero, Damage.Type.Effect));
+                var heal = new Damage(maxHealth, null, 0, Vector3.zero, Damage.Type.Effect);
+
+                Heal(ref heal);
             }
             else
             {
@@ -51,7 +53,9 @@ public class BonePlayerNetworkCharacter : PlayerNetworkCharacter
                     newDrainPercent /= healReducingByBotHits;
                 }
 
-                Heal(new Damage(-report.damage.value * newDrainPercent, null, 0, Vector3.zero, Damage.Type.Effect));
+                var heal = new Damage(-report.damage.value * newDrainPercent, null, 0, Vector3.zero, Damage.Type.Effect);
+
+                Heal(ref heal);
             }
 
             if (report.target?.gameObject?.TryGetComponent<NetworkIdentity>(out var component) ?? false)
@@ -62,13 +66,14 @@ public class BonePlayerNetworkCharacter : PlayerNetworkCharacter
     
         base.DamageDelivered(report);
     }
-    public override bool Hit(Damage damage)
+    public override bool Hit(ref Damage damage)
     {
-        var result = base.Hit(damage);
+        var result = base.Hit(ref damage);
 
         if (result)
         {
-            result = Heal(new Damage(healtPerBlock, null, 0, Vector3.zero, Damage.Type.Effect)) || result;
+            var heal = new Damage(healtPerBlock, null, 0, Vector3.zero, Damage.Type.Effect);
+            result = Heal(ref heal) || result;
         }
 
         return result;

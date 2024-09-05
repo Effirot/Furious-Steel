@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using CharacterSystem.Attacks;
 using UnityEngine;
 
-public class DetonateProjectilesActivity : SyncedActivitySource<IDamageSource>
+public class DetonateProjectilesActivity : SyncedActivitySource<IAttackSource>
 {
     public override IEnumerator Process()
     {

@@ -69,7 +69,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: fbf19b2a828d02145ad7e92570219349, type: 2}
-  - {fileID: 2100000, guid: fbf19b2a828d02145ad7e92570219349, type: 2}
+  - {fileID: 2100000, guid: 7c12ee7bbd72dfb499a0d18a7f3cac57, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -147,7 +147,7 @@ MonoBehaviour:
     RechargeUltimate: 0
     SelfDamageUltimate: 0
     Effects: []
-    args: []
+    args: 
   selfDamageOnHit:
     value: 0
     type: 0
@@ -156,8 +156,10 @@ MonoBehaviour:
     RechargeUltimate: 0
     SelfDamageUltimate: 0
     Effects: []
-    args: []
+    args: 
   <mass>k__BackingField: 1.25
+  onHitEffect: {fileID: 0}
+  onHitSound: {fileID: 0}
   references:
     version: 2
     RefIds: []

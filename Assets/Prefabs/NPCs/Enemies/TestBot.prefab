@@ -1058,13 +1058,12 @@ MonoBehaviour:
       data:
         SearchRadius: 10.5
         AfterAttackDelay: 0.3
-        BeforeAttackDelay: 0
+        BeforeAttackDelay: 0.1
         AllowUsingAttack: 1
         AllowUsingBlocks: 0
         AllowUsingUltimates: 0
         damageSources:
         - {fileID: 427237478250195772}
-        - {fileID: 8237294264296293688}
         - {fileID: 2921422547789334856}
         - {fileID: 6628208926988467578}
 --- !u!114 &7052221366371748053
@@ -2489,9 +2488,17 @@ PrefabInstance:
       value: 10
       objectReference: {fileID: 0}
     - target: {fileID: -2157062192948810478, guid: 7d18d4b75635ffc4996135a927a45782, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -2157062192948810478, guid: 7d18d4b75635ffc4996135a927a45782, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 4cde90ee6d36ebd41b2880f92114afa5, type: 2}
+    - target: {fileID: -2157062192948810478, guid: 7d18d4b75635ffc4996135a927a45782, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 7c12ee7bbd72dfb499a0d18a7f3cac57, type: 2}
     - target: {fileID: 919132149155446097, guid: 7d18d4b75635ffc4996135a927a45782, type: 3}
       propertyPath: m_Name
       value: ArmorModels
@@ -3039,6 +3046,14 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -57.52
       objectReference: {fileID: 0}
+    - target: {fileID: 4426938782379853808, guid: c00d9bda7fc8af444bd7ffecc8c9a80c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4426938782379853808, guid: c00d9bda7fc8af444bd7ffecc8c9a80c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4444117556360541244, guid: c00d9bda7fc8af444bd7ffecc8c9a80c, type: 3}
       propertyPath: NameField
       value: 
@@ -3066,6 +3081,14 @@ PrefabInstance:
     - target: {fileID: 4444117556360541244, guid: c00d9bda7fc8af444bd7ffecc8c9a80c, type: 3}
       propertyPath: 'holders.Array.data[0]'
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5357669240306162672, guid: c00d9bda7fc8af444bd7ffecc8c9a80c, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5357669240306162672, guid: c00d9bda7fc8af444bd7ffecc8c9a80c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5518014957221820556, guid: c00d9bda7fc8af444bd7ffecc8c9a80c, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3243,6 +3266,10 @@ PrefabInstance:
       propertyPath: _assetId
       value: 3590870004
       objectReference: {fileID: 0}
+    - target: {fileID: 3257169498811237959, guid: 54650083ed61d98459b52cb5dd808ab8, type: 3}
+      propertyPath: inputAction
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 5929780959385866301, guid: 54650083ed61d98459b52cb5dd808ab8, type: 3}
       propertyPath: inputAction
       value: 
@@ -3300,14 +3327,3 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2682705565289463711, guid: 54650083ed61d98459b52cb5dd808ab8, type: 3}
   m_PrefabInstance: {fileID: 8845115889249229173}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &8237294264296293688 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 617157475109657677, guid: 54650083ed61d98459b52cb5dd808ab8, type: 3}
-  m_PrefabInstance: {fileID: 8845115889249229173}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a8ecdfc990da94647995780684bb1166, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

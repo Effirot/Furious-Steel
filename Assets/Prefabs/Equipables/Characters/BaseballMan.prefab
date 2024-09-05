@@ -340,7 +340,7 @@ MonoBehaviour:
     RechargeUltimate: 1
     SelfDamageUltimate: 0
     Effects: []
-    args: []
+    args: 
   explodeDamage:
     value: 25
     type: 8
@@ -349,7 +349,7 @@ MonoBehaviour:
     RechargeUltimate: 1
     SelfDamageUltimate: 0
     Effects: []
-    args: []
+    args: 
   collideBackPush: {x: 0, y: 0.33, z: 1.63}
   onStartRunning:
     m_PersistentCalls:
@@ -2547,6 +2547,10 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 8617206954446008864, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
+      propertyPath: m_PropertySheet.m_NamedObject.m_Array.Array.data[0].m_Value
+      value: 
+      objectReference: {fileID: 5930416976427743142}
     m_RemovedComponents:
     - {fileID: 7945737309752349265, guid: 2f5788b5811d611498aea7a5b5329c0a, type: 3}
     m_RemovedGameObjects:
@@ -2636,9 +2640,17 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -7697226695614548207, guid: 9ae212ebcb224044a9d5293ac6ff9e0d, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -7697226695614548207, guid: 9ae212ebcb224044a9d5293ac6ff9e0d, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 4541666cc7935654ea42fab4a7d9c37e, type: 2}
+    - target: {fileID: -7697226695614548207, guid: 9ae212ebcb224044a9d5293ac6ff9e0d, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 7c12ee7bbd72dfb499a0d18a7f3cac57, type: 2}
     - target: {fileID: -2472029982381228751, guid: 9ae212ebcb224044a9d5293ac6ff9e0d, type: 3}
       propertyPath: m_LocalScale.x
       value: 0
@@ -2664,9 +2676,17 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1268763561036341400, guid: 9ae212ebcb224044a9d5293ac6ff9e0d, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1268763561036341400, guid: 9ae212ebcb224044a9d5293ac6ff9e0d, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: f339fcc7858df444f96ec0d656e6adc0, type: 2}
+    - target: {fileID: 1268763561036341400, guid: 9ae212ebcb224044a9d5293ac6ff9e0d, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: -876546973899608171, guid: 2864672acce2d914697eb20995e81678, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:

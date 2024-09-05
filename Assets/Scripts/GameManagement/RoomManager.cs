@@ -23,6 +23,11 @@ using UnityEditor;
 [DisallowMultipleComponent]
 public class RoomManager : NetworkManager
 {
+    public struct SetTimescaleMessage : NetworkMessage
+    {
+        public float NewValue;
+    }
+
     public static RoomManager Singleton { get; private set; }
 
     [Space]
@@ -77,6 +82,67 @@ public class RoomManager : NetworkManager
     }
 
 
+    public void SetTimescale(float newValue)
+    {
+        if (!NetworkServer.active)
+            throw new Exception();
+
+        Time.timeScale = newValue;
+
+        var timescaleMessage = new SetTimescaleMessage()
+        {
+            NewValue = newValue
+        }; 
+
+        NetworkServer.SendToAll(timescaleMessage);
+    }
+    public void SetTimescale(float newValue, NetworkConnectionToClient networkConnectionTo)
+    {
+        if (!NetworkServer.active)
+            throw new Exception();
+
+        var timescaleMessage = new SetTimescaleMessage()
+        {
+            NewValue = newValue
+        }; 
+
+        Time.timeScale = newValue;
+
+        networkConnectionTo.Send(timescaleMessage);
+    }
+
+    
+    public void SetGameRuleConfig(GameRules gameRules)
+    {
+        if (!NetworkServer.active)
+            throw new Exception();
+
+        var syncGameRulesMessage = new SyncGameRulesMessage()
+        {
+            data = gameRules
+        };
+
+        NetworkServer.SendToAll(syncGameRulesMessage);
+    }
+    public void SetGameRuleConfig(GameRules gameRules, NetworkConnectionToClient networkConnectionTo)
+    {
+        if (!NetworkServer.active)
+            throw new Exception();
+
+        var syncGameRulesMessage = new SyncGameRulesMessage()
+        {
+            data = gameRules
+        };
+
+        networkConnectionTo.Send(syncGameRulesMessage);
+    }
+
+
+    public override void OnStartClient()
+    {
+        NetworkClient.RegisterHandler<SetTimescaleMessage>(OnSetTimescale_Handler);
+        NetworkClient.RegisterHandler<SyncGameRulesMessage>(GameRules.SetAsCurrent);
+    }
     public override void OnStartServer()
     {
         if (SceneManager.GetActiveScene().buildIndex == 0)
@@ -103,6 +169,9 @@ public class RoomManager : NetworkManager
         }
 
         connectionData.Clear();
+
+        Time.timeScale = 0;
+        GameRules.Reset();
     }
 
     public override async void OnServerConnect(NetworkConnectionToClient conn)
@@ -117,6 +186,12 @@ public class RoomManager : NetworkManager
         await UniTask.WaitUntil(() => conn.isReady);
         
         AddPlayerData(conn);
+        SetGameRuleConfig(GameRules.current, conn);
+
+        if (Time.timeScale != 1)
+        {
+            SetTimescale(Time.timeScale, conn);
+        }
     }
     public override void OnServerDisconnect(NetworkConnectionToClient conn)
     {
@@ -149,6 +224,11 @@ public class RoomManager : NetworkManager
         base.OnValidate();
 
         Singleton = this;
+    }
+
+    private void OnSetTimescale_Handler(SetTimescaleMessage setTimescale)
+    {
+        Time.timeScale = setTimescale.NewValue;
     }
 
     private void AddPlayerData(NetworkConnectionToClient conn)

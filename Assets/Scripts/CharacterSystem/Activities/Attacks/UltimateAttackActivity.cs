@@ -59,9 +59,8 @@ public class UltimateAttackActivity : AttackActivity
     private void OnDamageDelivered_Event(DamageDeliveryReport report)
     {
         if (report.isDelivered && 
-            !report.isBlocked && 
             report.damage.RechargeUltimate &&
-            report.target is NetworkCharacter)
+            report.target is NetworkCharacter or null)
         {
             chargeValue.AddValue(report);
         }

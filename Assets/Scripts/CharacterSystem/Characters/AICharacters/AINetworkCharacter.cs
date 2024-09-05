@@ -17,7 +17,7 @@ using UnityEditor;
 namespace CharacterSystem.Objects.AI
 {   
     public class AINetworkCharacter : NetworkCharacter, 
-        IDamageSource,
+        IAttackSource,
         IDamageBlockerAcivity
     {       
         private static Team botTeam = new(); 
@@ -37,8 +37,8 @@ namespace CharacterSystem.Objects.AI
 
         public int Combo => 0;
 
-        float IDamageSource.DamageMultipliyer { get => DamageMultipliyer; set => DamageMultipliyer = value; }
-        
+        float IAttackSource.DamageMultipliyer { get => DamageMultipliyer; set => DamageMultipliyer = value; }
+
         [SyncVar]
         private float DamageMultipliyer = 1f;
 

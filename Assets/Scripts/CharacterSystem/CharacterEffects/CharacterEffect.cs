@@ -31,11 +31,11 @@ namespace CharacterSystem.Effects
         public bool isClient => effectsHolder.isClient;
 
         public CharacterEffectsHolder effectsHolder { get; internal set; }
-        public IDamageSource effectsSource { 
+        public IAttackSource effectsSource { 
             get {
                 if (NetworkServer.spawned.Count > effectSourceID && effectSourceID != 0)
                 {
-                    return NetworkServer.spawned[effectSourceID].GetComponent<IDamageSource>();
+                    return NetworkServer.spawned[effectSourceID].GetComponent<IAttackSource>();
                 }
 
                 return null;

@@ -92,7 +92,7 @@ namespace CharacterSystem.Interactions
         {
             DamageOnHit.sender = this.thrower = thrower; 
 
-            foreach (var collider in GetComponents<Collider>())
+            foreach (var collider in GetComponentsInChildren<Collider>())
             {
                 collider.enabled = false;
             }
@@ -102,8 +102,6 @@ namespace CharacterSystem.Interactions
         }
         public virtual void Throw(IThrower thrower)
         {
-            this.thrower = null; 
-
             foreach (var collider in GetComponents<Collider>())
             {
                 collider.enabled = true;
@@ -112,11 +110,11 @@ namespace CharacterSystem.Interactions
             Locked = false;
         }
 
-        public virtual bool Heal(Damage damage)
+        public virtual bool Heal(ref Damage damage)
         {
             return false;
         }
-        public virtual bool Hit(Damage damage)
+        public virtual bool Hit(ref Damage damage)
         {
             if (!Undestroyable)
             {

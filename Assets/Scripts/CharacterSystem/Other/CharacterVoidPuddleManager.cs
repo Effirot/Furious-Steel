@@ -145,7 +145,7 @@ public class CharacterVoidPuddleManager : NetworkBehaviour
                         hit.gameObject, 
                         new Damage(
                             Time.fixedDeltaTime, 
-                            networkCharacter is IDamageSource ? networkCharacter as IDamageSource : null, 
+                            networkCharacter is IAttackSource ? networkCharacter as IAttackSource : null, 
                             0, 
                             Vector3.zero, 
                             Damage.Type.Effect, 

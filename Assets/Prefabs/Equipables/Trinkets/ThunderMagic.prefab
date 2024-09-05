@@ -150,6 +150,7 @@ SkinnedMeshRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -380,6 +381,7 @@ VFXRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -581,8 +583,8 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   isPerforming: 1
-  inputAction: {fileID: 4628471853980608337, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
-  Priority: 3
+  inputAction: {fileID: -1197061071052274946, guid: 0c20c462b1b180043bf29d42c76ae34f, type: 3}
+  Priority: 4
   SpeedChange: 0
   IsInterruptableWhenBlocked: 0
   IsInterruptOnHit: 0
@@ -656,6 +658,7 @@ MonoBehaviour:
           RechargeUltimate: 1
           SelfDamageUltimate: 0
           Effects: []
+          args: []
         position: {x: 0, y: 0, z: 4.52}
         size: {x: 1, y: 1.61, z: 4}
         angle: {x: 0, y: 0, z: 0}

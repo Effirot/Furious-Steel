@@ -16,9 +16,9 @@ public class PlatePlayerNetworkCharacter : PlayerNetworkCharacter
     [SerializeField]
     private Damage HealingEffect = new Damage(30, null, 0, Vector3.zero, Damage.Type.Effect, new SpeedBoostEffect(3, 5));
 
-    public override bool Hit(Damage damage)
+    public override bool Hit(ref Damage damage)
     {
-        var result = base.Hit(damage);
+        var result = base.Hit(ref damage);
 
         if (result)
         {

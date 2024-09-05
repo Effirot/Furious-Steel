@@ -26,9 +26,4 @@ public class PropertyRequiredAttackActivity : AttackActivity
 
         base.OnStartServer();
     }
-
-    public override bool IsValid(SyncedActivitySource other)
-    {
-        return base.IsValid(other) && customProperty.Value <= MinRequiredValue;
-    }
 }
