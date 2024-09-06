@@ -21,6 +21,17 @@ struct v2f {
 	float3 normalWS : TEXCOORD2;
 };
 
+float2 GetScreenSpaceUV(v2f input)
+{
+	// float2 uv = input.spos.xy / input.spos.w;
+	// float4 cpos = UnityObjectToClipPos(float3(0,0,0));
+	// uv -= cpos.xy / cpos.w;
+	// uv *= cpos.w / UNITY_MATRIX_P._m11;
+	// uv.x *= _ScreenParams.x / _ScreenParams.y;
+
+	// return uv
+}
+
 v2f vert(appdata input) {
 	v2f output;
 
@@ -48,31 +59,15 @@ float4 frag(v2f input) : SV_TARGET{
 	SurfaceData surfaceInput = (SurfaceData)0;
 	surfaceInput.albedo = 1;
 	surfaceInput.alpha = colorSample.a * _Color.a;
+	surfaceInput.smoothness = 0.5;
 
-	float4 fragmentData;
-#if UNITY_VERSION >= 202120
-	fragmentData = UniversalFragmentBlinnPhong(lightingInput, surfaceInput);
-#else
-	fragmentData = UniversalFragmentBlinnPhong(lightingInput, surfaceInput.albedo, float4(surfaceInput.specular, 1), surfaceInput.smoothness, surfaceInput.emission, surfaceInput.alpha);
-#endif
+	float4 fragmentData = UniversalFragmentPBR(lightingInput, surfaceInput);
 
-	fragmentData = (fragmentData.x + fragmentData.y + fragmentData.z + fragmentData.w) / 4;
-	fragmentData += 0.7f;
-	fragmentData = lerp(0.2f, 1, floor(fragmentData / 1.3f) + floor(fragmentData / 1.05f));
+	float normalizedFragmetData = fragmentData;
+	normalizedFragmetData += 1.4;
+	normalizedFragmetData = floor(normalizedFragmetData * 2) / 2;
+	normalizedFragmetData = lerp(0.1, 1, normalizedFragmetData);
 
-	
-
-	int realtimeLightsCount = GetAdditionalLightsCount();
-	Light light = GetAdditionalLight(0, input.positionWS);
-	// float3 color = (realtimeLightsCount, realtimeLightsCount, realtimeLightsCount) * 0.01f;
-
-	for (int i = 0; i < realtimeLightsCount; i++)
-	{
-		
-		// color = min(light.distanceAttenuation, color);
-	}
-	
-	// return (color, 1);
-	return (light.color, 0.5);
-	// return _Color * colorSample * fragmentData;
+	// return _Color * colorSample * normalizedFragmetData * normalize(fragmentData);
+	return _Color * colorSample * normalizedFragmetData;
 }
