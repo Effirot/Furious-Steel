@@ -29,8 +29,6 @@ namespace CharacterSystem.Objects
         IObservableObject,
         IThrower
     {
-        public static bool AllowChampionMode = true;
-
         public delegate void OnPlayerCharacterStateChangedDelegate (PlayerNetworkCharacter character);
 
         public static event OnPlayerCharacterStateChangedDelegate OnPlayerCharacterDead = delegate { };

@@ -1,11 +1,16 @@
 
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/RealtimeLights.hlsl"
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+
+#pragma target 3.0
 
 TEXTURE2D(_Texture); SAMPLER(sampler_Texture);
 
 float4 _Texture_ST; 
 float4 _Color;
+
+float3 _WorldSpaceLightPos0;
 
 struct appdata {
 	float3 positionOS : POSITION;
@@ -20,17 +25,6 @@ struct v2f {
 	float3 positionWS : TEXCOORD1;
 	float3 normalWS : TEXCOORD2;
 };
-
-float2 GetScreenSpaceUV(v2f input)
-{
-	// float2 uv = input.spos.xy / input.spos.w;
-	// float4 cpos = UnityObjectToClipPos(float3(0,0,0));
-	// uv -= cpos.xy / cpos.w;
-	// uv *= cpos.w / UNITY_MATRIX_P._m11;
-	// uv.x *= _ScreenParams.x / _ScreenParams.y;
-
-	// return uv
-}
 
 v2f vert(appdata input) {
 	v2f output;
@@ -63,11 +57,22 @@ float4 frag(v2f input) : SV_TARGET{
 
 	float4 fragmentData = UniversalFragmentPBR(lightingInput, surfaceInput);
 
-	float normalizedFragmetData = fragmentData;
-	normalizedFragmetData += 1.4;
-	normalizedFragmetData = floor(normalizedFragmetData * 2) / 2;
-	normalizedFragmetData = lerp(0.1, 1, normalizedFragmetData);
+	float depthLight = max(max(fragmentData.r, fragmentData.g), max(fragmentData.b, fragmentData.a));
+	
+	// float scribbleDirtectionValue = 
+	// 	_WorldSpaceLightPos0.x * input.positionWS.x + 
+	// 	_WorldSpaceLightPos0.y * input.positionWS.y + 
+	// 	_WorldSpaceLightPos0.z * input.positionWS.z;
+	// float scribbleDirtectionValueAlt = 
+	// 	_WorldSpaceLightPos0.x * input.positionWS.y + 
+	// 	_WorldSpaceLightPos0.y * input.positionWS.x + 
+	// 	_WorldSpaceLightPos0.z * input.positionWS.z;
 
-	// return _Color * colorSample * normalizedFragmetData * normalize(fragmentData);
-	return _Color * colorSample * normalizedFragmetData;
+	// float scribble = sin(scribbleDirtectionValueAlt * 300); 
+	// scribble = min(scribble, sin(scribbleDirtectionValue * 300)); 
+	// scribble = clamp(scribble - (1.5 - depthLight * 3) + dot(input.normalWS, _WorldSpaceLightPos0), 0, 1);
+
+	float normalizedLight = lerp(0.2, 1, floor(1 + depthLight / 1.5) * 1.5);
+
+	return _Color * colorSample * normalizedLight;
 }

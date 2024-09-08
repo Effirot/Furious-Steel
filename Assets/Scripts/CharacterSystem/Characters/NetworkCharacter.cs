@@ -223,6 +223,11 @@ namespace CharacterSystem.Objects
         }
         public virtual bool Hit (ref Damage damage)
         {
+            if (damage.args.Contains(Damage.DamageArgument.REMOVE_STUN))
+            {
+                stunlock = 0;
+            }
+
             if (!permissions.HasFlag(CharacterPermission.Unpushable))
             {
                 Push(damage.pushDirection);
@@ -320,7 +325,7 @@ namespace CharacterSystem.Objects
             groundCollisionTimeout = -1;
 
             direction.Normalize();
-            direction *= Mathf.Max(0, Speed) * Time.fixedDeltaTime * LocalTimeScale * 0.9f;
+            direction *= Mathf.Max(0, Speed / 2) * Time.fixedDeltaTime * LocalTimeScale * 0.9f;
 
             if (!isStunned && (IsGrounded || completeJumpCount < JumpCount) && permissions.HasFlag(CharacterPermission.AllowJump))
             {

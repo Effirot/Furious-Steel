@@ -9,6 +9,7 @@ using Mirror;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.VFX;
 
 namespace CharacterSystem.Interactions
 {
@@ -23,6 +24,17 @@ namespace CharacterSystem.Interactions
 
     public class PickUpInteractorActivity : SyncedActivitySource<IThrower>
     {
+        private static Material OutlineMaterial;
+
+        [RuntimeInitializeOnLoadMethod]
+        private static void OnLoad()
+        {
+            OutlineMaterial = new Material(Shader.Find("Effirot/Outline"));
+            OutlineMaterial.SetColor("_OutlineColor", Color.green); 
+            OutlineMaterial.SetFloat("_OutlineWidth", 30); 
+            OutlineMaterial.renderQueue = 3000;
+        }
+
         [SerializeField]
         private Vector3 PickRayStart;
         [SerializeField]
@@ -58,20 +70,46 @@ namespace CharacterSystem.Interactions
             set {
                 if (!object.ReferenceEquals(availableInteractableObject, value))
                 {
-                    if (isOwned && !availableInteractableObject.IsUnityNull())
+                    if (isOwned && isClient && !availableInteractableObject.IsUnityNull())
                     {
-                        // Destroy(availableInteractableObject?.gameObject.GetComponent<Outline>());
+                        foreach (var renderer in availableInteractableObject.gameObject.GetComponentsInChildren<Renderer>())
+                        {
+                            if (renderer is MeshRenderer)
+                            {
+                                var meshRenderer = renderer as MeshRenderer;
+
+                                meshRenderer.sharedMaterials = meshRenderer.sharedMaterials.Where(material => material != OutlineMaterial).ToArray();
+                            }
+
+                            if (renderer is SkinnedMeshRenderer)
+                            {
+                                var skinnedMeshRenderer = renderer as SkinnedMeshRenderer;
+
+                                skinnedMeshRenderer.sharedMaterials = skinnedMeshRenderer.sharedMaterials.Where(material => material != OutlineMaterial).ToArray();
+                            }
+                        }
                     }
 
                     availableInteractableObject = value;
 
-                    if (isOwned && !availableInteractableObject.IsUnityNull())
-                    {
-                        // var outline = availableInteractableObject.gameObject.AddComponent<Outline>();
+                    if (isOwned && isClient && !availableInteractableObject.IsUnityNull())
+                    {                        
+                        foreach (var renderer in availableInteractableObject.gameObject.GetComponentsInChildren<Renderer>())
+                        {
+                            if (renderer is MeshRenderer)
+                            {
+                                var meshRenderer = renderer as MeshRenderer;
 
-                        // outline.OutlineColor = Color.green;
+                                meshRenderer.sharedMaterials = meshRenderer.sharedMaterials.Prepend(OutlineMaterial).ToArray();
+                            }
 
-                        // outline.OutlineWidth = 5;
+                            if (renderer is SkinnedMeshRenderer)
+                            {
+                                var skinnedMeshRenderer = renderer as SkinnedMeshRenderer;
+
+                                skinnedMeshRenderer.sharedMaterials = skinnedMeshRenderer.sharedMaterials.Prepend(OutlineMaterial).ToArray();
+                            }
+                        }
                     }
                 }
             }

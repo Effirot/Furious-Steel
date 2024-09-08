@@ -17,7 +17,7 @@ Shader "Effirot/Toon + Outline" {
 		
         [HDR]
         _OutlineColor("Outline Color", Color) = (0, 0, 0, 1)
-        _OutlineWidth("Outline Width", Range(1.0, 20)) = 15
+        _OutlineWidth("Outline Width", Range(1.0, 20)) = 10
     }
     
     SubShader {
@@ -47,10 +47,8 @@ Shader "Effirot/Toon + Outline" {
             #pragma multi_compile_fragment _ _SHADOWS_SOFT _SHADOWS_SOFT_LOW _SHADOWS_SOFT_MEDIUM _SHADOWS_SOFT_HIGH
             #pragma multi_compile_fragment _ _DBUFFER_MRT1 _DBUFFER_MRT2 _DBUFFER_MRT3
             #pragma multi_compile_fragment _ _LIGHT_COOKIES
-            // #pragma multi_compile _ _LIGHT_LAYERS
+            #pragma multi_compile _ _LIGHT_LAYERS
             #pragma multi_compile _ _FORWARD_PLUS
-            // #pragma multi_compile_fragment _ _SHADOWS_SOFT
-
 
             #pragma multi_compile _ LIGHTMAP_SHADOW_MIXING
             #pragma multi_compile _ SHADOWS_SHADOWMASK
@@ -75,7 +73,8 @@ Shader "Effirot/Toon + Outline" {
             // ZTest [_ZTest]
             Blend SrcAlpha OneMinusSrcAlpha
             ColorMask RGB
-      
+            Offset 1, 1
+            
             Stencil {
                 Ref 1
                 Comp NotEqual
@@ -106,43 +105,26 @@ Shader "Effirot/Toon + Outline" {
                 "LightMode" = "ShadowCaster"
             }
 
-            // -------------------------------------
-            // Render State Commands
             ZWrite On
             ZTest LEqual
             ColorMask 0
-            Cull[_Cull]
+            Cull [_Cull]
 
             HLSLPROGRAM
             #pragma target 2.0
 
-            // -------------------------------------
-            // Shader Stages
             #pragma vertex ShadowPassVertex
             #pragma fragment ShadowPassFragment
 
-            // -------------------------------------
-            // Material Keywords
             #pragma shader_feature_local _ALPHATEST_ON
             #pragma shader_feature_local_fragment _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
 
-            //--------------------------------------
-            // GPU Instancing
             #pragma multi_compile_instancing
             #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DOTS.hlsl"
 
-            // -------------------------------------
-            // Universal Pipeline keywords
-
-            // -------------------------------------
-            // Unity defined keywords
             #pragma multi_compile _ LOD_FADE_CROSSFADE
-
-            // This is used during shadow map generation to differentiate between directional and punctual light shadows, as they use different formulas to apply Normal Bias
             #pragma multi_compile_vertex _ _CASTING_PUNCTUAL_LIGHT_SHADOW
 
-            // -------------------------------------
-            // Includes
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/ShadowCasterPass.hlsl"
             ENDHLSL

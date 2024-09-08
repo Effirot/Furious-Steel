@@ -103,7 +103,6 @@ namespace CharacterSystem.Interactions
         {
             yield return new WaitForSeconds(LitTimeout);
 
-            Explode();
             Kill(default);
         }
     }

@@ -50,7 +50,7 @@ namespace CharacterSystem.Effects
 
         private void OnDamageRecieved(Damage damage)
         {
-            if (damage.type != Damage.Type.Effect && damage.args.Contains(Damage.DamageArgument.DETONATE_BURN) && Existance)
+            if (damage.type != Damage.Type.Effect && damage.args.Contains(Damage.DamageArgument.TRIGGER) && Existance)
             {
                 time = -1;
                 

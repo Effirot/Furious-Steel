@@ -28,12 +28,16 @@ namespace CharacterSystem.DamageMath
 
         public enum DamageArgument : byte
         {
-            DETONATE_BURN,
+            TRIGGER,
             
             COLD,
             HEAT,
 
-            WALL_HIT
+            WALL_HIT,
+            REMOVE_STUN,
+            PUSH_RIGIDBODYS,
+
+            NO_CORPSE
         }
 
         public delegate void OnDamageDeliveredDelegate(DamageDeliveryReport damage);
@@ -52,6 +56,11 @@ namespace CharacterSystem.DamageMath
         }
         public static DamageDeliveryReport Deliver(Transform transform, Damage damage)
         {
+            if (damage.args.Contains(DamageArgument.PUSH_RIGIDBODYS) && transform.gameObject.TryGetComponent<Rigidbody>(out var rb))
+            {
+                rb.AddForce(damage.pushDirection * 100);
+            }
+
             if (!transform.gameObject.TryGetComponent<IDamagable>(out var target)) 
             {
                 return new();
@@ -143,7 +152,6 @@ namespace CharacterSystem.DamageMath
                 return false;
             }
         }
-
 
         [SerializeField, Range(-50, 300)]
         public float value;

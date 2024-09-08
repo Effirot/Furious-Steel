@@ -221,6 +221,33 @@ namespace CharacterSystem.Attacks
         public abstract void OnDrawGizmos(Transform transform);
     }
         
+    [Serializable, AddTypeMenu("Set permissions", -1)]
+    public sealed class SetPermissions : AttackQueueElement
+    {
+        [SerializeField]
+        private CharacterPermission permission = CharacterPermission.Default;
+
+        public override IEnumerator AttackPipeline(AttackActivity source)
+        {
+            source.Permissions = permission;
+
+            yield break;
+        }
+
+        public override void OnDrawGizmos(Transform transform) { }
+    }
+    [Serializable, AddTypeMenu("Reset Velocity", -1)]
+    public sealed class ResetVelocity : AttackQueueElement
+    {
+        public override IEnumerator AttackPipeline(AttackActivity source)
+        {
+            source.Source.velocity = Vector3.zero;
+
+            yield break;
+        }
+
+        public override void OnDrawGizmos(Transform transform) { }
+    }
     [Serializable, AddTypeMenu("Event", -1)]
     public sealed class Event : AttackQueueElement
     {
