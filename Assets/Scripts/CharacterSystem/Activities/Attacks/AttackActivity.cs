@@ -11,6 +11,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using UnityEngine.TextCore;
+using UnityEngine.VFX;
 
 using static UnityEngine.InputSystem.InputAction;
 
@@ -220,7 +221,31 @@ namespace CharacterSystem.Attacks
 
         public abstract void OnDrawGizmos(Transform transform);
     }
-        
+
+
+    [Serializable, AddTypeMenu("Play VFX", -1)]
+    public sealed class PlayVFX : AttackQueueElement
+    {
+        [SerializeField]
+        private VisualEffect visualEffect;
+
+        public override IEnumerator AttackPipeline(AttackActivity source)
+        {
+            if (visualEffect != null)
+            {
+                visualEffect.playRate = source.Source.LocalTimeScale;
+                visualEffect.Play();
+            }
+            else
+            {
+                Debug.LogWarning("Visual effect is null");
+            }
+
+            yield break;
+        }
+
+        public override void OnDrawGizmos(Transform transform) { }
+    }
     [Serializable, AddTypeMenu("Set permissions", -1)]
     public sealed class SetPermissions : AttackQueueElement
     {

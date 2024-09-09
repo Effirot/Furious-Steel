@@ -75,6 +75,8 @@ namespace CharacterSystem.Blocking
         private UnityEvent OnBlockingEvent = new();
         [SerializeField]
         private UnityEvent OnSuccesfulBlockingEvent = new();
+        [SerializeField]
+        private UnityEvent OnInterrupted = new();
 
         public bool IsBlockActive { get; private set; }
 
@@ -83,7 +85,9 @@ namespace CharacterSystem.Blocking
             if (damage.type == Damage.Type.Effect || 
                 damage.type == Damage.Type.Parrying || 
                 damage.type == Damage.Type.Unblockable) 
+            {
                 return false;
+            }
 
             if (!damage.sender.IsUnityNull() &&
                 IsBlockActive && 
@@ -121,6 +125,7 @@ namespace CharacterSystem.Blocking
                     Permissions = AfterBlockCharacterPermissions;
 
                     OnAfterBlockingEvent.Invoke();
+                    OnInterrupted.Invoke();
                 }
             }
             async void LateDamageDelivery(Damage damage)

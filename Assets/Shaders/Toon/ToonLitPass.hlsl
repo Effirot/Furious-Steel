@@ -53,26 +53,38 @@ float4 frag(v2f input) : SV_TARGET{
 	SurfaceData surfaceInput = (SurfaceData)0;
 	surfaceInput.albedo = 1;
 	surfaceInput.alpha = colorSample.a * _Color.a;
-	surfaceInput.smoothness = 0.5;
+	surfaceInput.smoothness = 0;
 
 	float4 fragmentData = UniversalFragmentPBR(lightingInput, surfaceInput);
 
+	
 	float depthLight = max(max(fragmentData.r, fragmentData.g), max(fragmentData.b, fragmentData.a));
 	
-	// float scribbleDirtectionValue = 
-	// 	_WorldSpaceLightPos0.x * input.positionWS.x + 
-	// 	_WorldSpaceLightPos0.y * input.positionWS.y + 
-	// 	_WorldSpaceLightPos0.z * input.positionWS.z;
-	// float scribbleDirtectionValueAlt = 
-	// 	_WorldSpaceLightPos0.x * input.positionWS.y + 
-	// 	_WorldSpaceLightPos0.y * input.positionWS.x + 
-	// 	_WorldSpaceLightPos0.z * input.positionWS.z;
-
-	// float scribble = sin(scribbleDirtectionValueAlt * 300); 
-	// scribble = min(scribble, sin(scribbleDirtectionValue * 300)); 
-	// scribble = clamp(scribble - (1.5 - depthLight * 3) + dot(input.normalWS, _WorldSpaceLightPos0), 0, 1);
-
+	float scribbleDirtectionValue = 
+	_WorldSpaceLightPos0.x * input.positionWS.x + 
+	_WorldSpaceLightPos0.y * input.positionWS.y + 
+	_WorldSpaceLightPos0.z * input.positionWS.z;
+	float scribbleDirtectionValueAlt = 
+	_WorldSpaceLightPos0.x * input.positionWS.y + 
+	_WorldSpaceLightPos0.y * input.positionWS.x + 
+	_WorldSpaceLightPos0.z * input.positionWS.z;
+	
+	float scribble = sin(scribbleDirtectionValueAlt * 300); 
+	scribble = min(scribble, sin(scribbleDirtectionValue * 300)); 
+	scribble = clamp(scribble - (1.5 - depthLight * 3) + dot(input.normalWS, _WorldSpaceLightPos0), 0, 1);
+	// scribble = 1;
+	
 	float normalizedLight = lerp(0.2, 1, floor(1 + depthLight / 1.5) * 1.5);
+	normalizedLight = clamp(normalizedLight, 0, 3);
+	
+	if (normalizedLight == 3)
+	{
+		normalizedLight *= 3;
+	}
 
-	return _Color * colorSample * normalizedLight;
+	fragmentData += 1;
+	fragmentData *= 3;
+	fragmentData = normalize(fragmentData); 
+
+	return scribble * _Color * colorSample * normalizedLight * fragmentData;
 }
